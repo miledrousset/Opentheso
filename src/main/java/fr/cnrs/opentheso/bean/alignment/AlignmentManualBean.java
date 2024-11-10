@@ -8,7 +8,7 @@ import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -33,7 +33,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private AlignmentBean alignmentBean;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -60,7 +60,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){
@@ -75,7 +75,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void reset() {
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
@@ -92,7 +92,7 @@ public class AlignmentManualBean implements Serializable {
         
         if(nodeAlignment == null) return;
 
-        if(!alignmentHelper.deleteAlignment(connect.getPoolConnexion(), nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
+        if(!alignmentHelper.deleteAlignment(nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -121,7 +121,7 @@ public class AlignmentManualBean implements Serializable {
 
         FacesMessage msg;
 
-        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+        if(!alignmentHelper.updateAlignment(
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -155,7 +155,7 @@ public class AlignmentManualBean implements Serializable {
 
         if(nodeAlignment == null) return;
 
-        if(!new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
+        if(!new AlignmentHelper().updateAlignment(
                 nodeAlignment.getId_alignement(),
                 nodeAlignment.getConcept_target(),
                 nodeAlignment.getThesaurus_target(),
@@ -186,7 +186,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void updateAlignementFromConceptInterface(){
-        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+        if(!alignmentHelper.updateAlignment(
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -237,16 +237,8 @@ public class AlignmentManualBean implements Serializable {
             return;            
         }
 
-        if(!alignmentHelper.addNewAlignment(
-                connect.getPoolConnexion(),
-                currentUser.getNodeUser().getIdUser(),
-                "",
-                manualAlignmentSource,
-                manualAlignmentUri,
-                manualAlignmentType,
-                idConcept,
-                selectedTheso.getCurrentIdTheso(),
-                0)) {
+        if(!alignmentHelper.addNewAlignment(currentUser.getNodeUser().getIdUser(), "", manualAlignmentSource,
+                manualAlignmentUri, manualAlignmentType, idConcept, selectedTheso.getCurrentIdTheso(), 0)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -258,7 +250,7 @@ public class AlignmentManualBean implements Serializable {
             conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                     conceptView.getSelectedLang(), currentUser);
         } else {
-            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(
                     idConcept, selectedTheso.getCurrentIdTheso()));
         }
 
@@ -282,11 +274,11 @@ public class AlignmentManualBean implements Serializable {
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 idTheso,
                 idConcept, idUser);      
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, idTheso);
         ///////////////        

@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.rightbody.viewhome;
 import fr.cnrs.opentheso.repositories.HtmlPageHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
@@ -16,6 +15,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
@@ -27,8 +27,8 @@ import org.primefaces.PrimeFaces;
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     @Autowired @Lazy
     private LanguageBean languageBean;
@@ -81,10 +81,10 @@ public class ViewEditorHomeBean implements Serializable {
     public void initText() {
         String lang = languageBean.getIdLangue().toLowerCase();
         if (lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+            lang = workLanguage;
         }
 
-        text = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
+        text = htmlPageHelper.getHomePage(lang);
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -96,8 +96,7 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void initGoogleAnalytics() {
 
-        codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics(
-                connect.getPoolConnexion());
+        codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics();
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
@@ -107,8 +106,7 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void updateGoogleAnalytics() {
 
-        preferencesHelper.setCodeGoogleAnalytics(
-                connect.getPoolConnexion(), codeGoogleAnalitics);
+        preferencesHelper.setCodeGoogleAnalytics(codeGoogleAnalitics);
         isInEditing = false;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -125,9 +123,9 @@ public class ViewEditorHomeBean implements Serializable {
     public String getHomePage(String idLang) {
         String lang = languageBean.getIdLangue().toLowerCase();
         if (lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+            lang = workLanguage;
         }
-        String homePage = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
+        String homePage = htmlPageHelper.getHomePage(lang);
         return homePage;
     }
 
@@ -139,9 +137,9 @@ public class ViewEditorHomeBean implements Serializable {
         FacesMessage msg;
         String lang = languageBean.getIdLangue().toLowerCase();
         if (lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+            lang = workLanguage;
         }
-        if (!htmlPageHelper.setHomePage(connect.getPoolConnexion(), text, lang)) {
+        if (!htmlPageHelper.setHomePage(text, lang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -184,14 +182,6 @@ public class ViewEditorHomeBean implements Serializable {
 
     public boolean isTextVisible() {
         return !isInEditingGoogleAnalytics && !isInEditingHomePage;
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
     }
 
     public LanguageBean getLanguageBean() {

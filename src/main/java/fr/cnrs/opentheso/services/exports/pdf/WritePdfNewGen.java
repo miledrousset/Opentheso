@@ -12,7 +12,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public class WritePdfNewGen {
     private final ArrayList<Paragraph> paragraphTradList = new ArrayList<>();
 
 
-    public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, String codeLanguage1,
+    public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLanguage1,
                                 String codeLanguage2, PdfExportType pdfExportType, UriHelper uriHelper) throws DocumentException, IOException {
 
         Document document = new Document();
@@ -49,8 +49,7 @@ public class WritePdfNewGen {
                 writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             } else {
                 WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument, uriHelper);
-                writeHierachiquePDF.writeHierachiquePDF(hikariDataSource, paragraphList, paragraphTradList,
-                        codeLanguage1, codeLanguage2);
+                writeHierachiquePDF.writeHierachiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             }
 
             createPdfFile(document, codeLanguage2);

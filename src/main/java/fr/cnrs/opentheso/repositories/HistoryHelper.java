@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,16 +7,23 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class HistoryHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
     
-    public ArrayList<HistoryValue> getLabelHistory(HikariDataSource ds, String idTerm, String idTheso){
+    public ArrayList<HistoryValue> getLabelHistory(String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -25,7 +31,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -60,7 +66,7 @@ public class HistoryHelper {
         return historyValues;
     }
     
-    public ArrayList<HistoryValue> getSynonymHistory(HikariDataSource ds,
+    public ArrayList<HistoryValue> getSynonymHistory(
             String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
@@ -69,7 +75,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -104,7 +110,7 @@ public class HistoryHelper {
         return historyValues;
     }    
     
-     public ArrayList<HistoryValue> getRelationsHistory(HikariDataSource ds,
+     public ArrayList<HistoryValue> getRelationsHistory(
             String idConcept, String idTheso){
         Connection conn;
         Statement stmt;
@@ -113,7 +119,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -149,7 +155,7 @@ public class HistoryHelper {
         return historyValues;
     }  
     
-     public ArrayList<HistoryValue> getNotesHistory(HikariDataSource ds,
+     public ArrayList<HistoryValue> getNotesHistory(
             String idConcept, String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
@@ -158,7 +164,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -214,6 +220,7 @@ public class HistoryHelper {
     /**
      * Classe pour les attribus du tableau historique
      */
+    @Data
     public class HistoryValue {
 
         //// pour l'historique des relations
@@ -223,90 +230,11 @@ public class HistoryHelper {
         
         //// pour les notes
         private String noteType;
-        
-                
-
         private String value;
         private String lang;
         private String action;
         private Date date;
         private String user;
-
-        public HistoryValue() {
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public String getAction() {
-            return action;
-        }
-
-        public void setAction(String action) {
-            this.action = action;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public void setUser(String user) {
-            this.user = user;
-        }
-
-        public String getLang() {
-            return lang;
-        }
-
-        public void setLang(String lang) {
-            this.lang = lang;
-        }
-
-        public String getId_concept1() {
-            return id_concept1;
-        }
-
-        public void setId_concept1(String id_concept1) {
-            this.id_concept1 = id_concept1;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
-
-        public String getId_concept2() {
-            return id_concept2;
-        }
-
-        public void setId_concept2(String id_concept2) {
-            this.id_concept2 = id_concept2;
-        }
-
-        public String getNoteType() {
-            return noteType;
-        }
-
-        public void setNoteType(String noteType) {
-            this.noteType = noteType;
-        }
-        
     }
     
     

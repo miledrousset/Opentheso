@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import java.sql.Connection;
@@ -14,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+
 /**
  * Helper permettant de vérifier l'existence d'une clé API dans la table useres
  */
@@ -22,6 +23,9 @@ public class ApiKeyHelper {
 
     @Autowired
     private ToolsHelper toolsHelper;
+
+    @Autowired
+    private DataSource dataSource;
 
     /**
      * Génère une clé API d'une longueur choisie avec le header voulu
@@ -45,8 +49,8 @@ public class ApiKeyHelper {
      * @return True si la clé a bien été sauvegardé, False sinon
      * @throws SQLException Appelé quand il y a eu une erreur dans l'exécution de la commande SQL
      */
-    public boolean saveApiKey(HikariDataSource ds, String apiKey, int idUser) {
-        try (Connection connection = ds.getConnection()) {
+    public boolean saveApiKey(String apiKey, int idUser) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("UPDATE users SET apikey = ? WHERE id_user = ?");
             stmt.setString(1, apiKey);
             stmt.setInt(2, idUser);
@@ -96,9 +100,9 @@ public class ApiKeyHelper {
      * @param apiKey
      * @return Optional<Integer> Id utilisateur trouvé ou null sinon
      */
-    public int getIdUser(HikariDataSource ds, String apiKey) {
+    public int getIdUser(String apiKey) {
 
-        try (Connection connection = ds.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement stmt = connection.prepareStatement("SELECT id_user, key_expires_at FROM users WHERE apikey =?")) {
                 stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
                 ResultSet result = stmt.executeQuery();
@@ -117,10 +121,10 @@ public class ApiKeyHelper {
      * @param apiKey
      * @return ApiKeyState Etat de validation de la clé
      */
-    public ApiKeyState checkApiKey(HikariDataSource ds, String apiKey){
+    public ApiKeyState checkApiKey(String apiKey){
         if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
 
-        try (Connection connection = ds.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire  FROM users WHERE apikey =?")){
                 stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
                 ResultSet result = stmt.executeQuery();

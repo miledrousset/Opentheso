@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.repositories.HtmlPageHelper;
 import fr.cnrs.opentheso.repositories.StatisticHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -19,8 +18,8 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  *
@@ -30,8 +29,8 @@ import org.primefaces.PrimeFaces;
 @Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     @Autowired
     private DcElementHelper dcElementHelper;
@@ -74,10 +73,10 @@ public class ViewEditorThesoHomeBean implements Serializable {
     
     public void initText(String idLanguage, String idThesaurus) {
         if(idLanguage == null || idLanguage.isEmpty()) {
-            idLanguage = connect.getWorkLanguage();
+            idLanguage = workLanguage;
         }
 
-        text = htmlPageHelper.getThesoHomePage(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        text = htmlPageHelper.getThesoHomePage(idThesaurus, idLanguage);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
@@ -87,12 +86,9 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public String getThesoHomePage(String idLanguage, String idThesaurus){
 
         if(idLanguage == null || idLanguage.isEmpty()) {
-            idLanguage = connect.getWorkLanguage();
+            idLanguage = workLanguage;
         }
-        String homePage = htmlPageHelper.getThesoHomePage(
-                connect.getPoolConnexion(),
-                idThesaurus,
-                idLanguage);
+        String homePage = htmlPageHelper.getThesoHomePage(idThesaurus, idLanguage);
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
             PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
@@ -103,7 +99,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     
     public List<DcElement> meta(String idThesaurus){
 
-        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idThesaurus);
+        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(idThesaurus);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();           
         return dcElements;
@@ -114,14 +110,10 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public void updateThesoHomePage(String idLanguage, String idThesaurus) {
         FacesMessage msg;
         if(idLanguage == null || idLanguage.isEmpty()) {
-            idLanguage = connect.getWorkLanguage();
+            idLanguage = workLanguage;
         }
 
-        if (!htmlPageHelper.setThesoHomePage(
-                connect.getPoolConnexion(),
-                text,
-                idThesaurus,
-                idLanguage)){
+        if (!htmlPageHelper.setThesoHomePage(text, idThesaurus, idLanguage)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;               
@@ -134,27 +126,27 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     public String getTotalConceptOfTheso(String idThesaurus){
 
-        int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), idThesaurus);
+        int count = statisticHelper.getNbCpt(idThesaurus);
         return "" + count;
     }
 
     public String getLastModifiedDate(String idThesaurus){
-        Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), idThesaurus);
+        Date date = conceptHelper.getLastModification(idThesaurus);
         if(date != null)
             return date.toString();
         return "";
     }
 
     public String getProjectName(String idThesaurus){
-        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), idThesaurus);
+        int idProject = userHelper.getGroupOfThisTheso(idThesaurus);
         if(idProject != -1) {
-            return userHelper.getGroupName(connect.getPoolConnexion(), idProject);
+            return userHelper.getGroupName(idProject);
         } else
             return "";
     }
 
     public ArrayList<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
-        return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        return conceptHelper.getLastModifiedConcept(idThesaurus, idLanguage);
     }        
     
     public void setViewPlainTextTo(boolean status){

@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,24 +9,29 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class PreferencesHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
     /**
      * Permet de mettre à jour le status de l'utilisation du serveur Ark
-     * 
-     * @param ds
+     *
      * @param idTheso
      * @param useArk
      * @return 
      */
-    public boolean setUseArk(HikariDataSource ds, String idTheso, boolean useArk) {
+    public boolean setUseArk(String idTheso, boolean useArk) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set use_ark = '" + useArk
                         + "' where id_thesaurus = '" + idTheso + "'");
@@ -41,15 +45,14 @@ public class PreferencesHelper {
     
     /**
      * Permet de mettre à jour le status de l'utilisation du serveur Ark local
-     * 
-     * @param ds
+     *
      * @param idTheso
      * @param useArk
      * @return 
      */
-    public boolean setUseArkLocal(HikariDataSource ds, String idTheso, boolean useArk) {
+    public boolean setUseArkLocal(String idTheso, boolean useArk) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set use_ark_local = '" + useArk
                         + "' where id_thesaurus = '" + idTheso + "'");
@@ -64,15 +67,14 @@ public class PreferencesHelper {
     
     /**
      * Permet de mettre à jour le status de l'utilisation du serveur Handle
-     * 
-     * @param ds
+     *
      * @param idTheso
      * @param useHandle
      * @return 
      */
-    public boolean setUseHandle(HikariDataSource ds, String idTheso, boolean useHandle) {
+    public boolean setUseHandle(String idTheso, boolean useHandle) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set use_handle = '" + useHandle
                         + "' where id_thesaurus = '" + idTheso + "'");
@@ -86,13 +88,10 @@ public class PreferencesHelper {
     
     /**
      * permet de retourner le code JavaScript de GoogleAnalytics
-    * 
-    * @param ds
-    * @return 
      */
-    public String getCodeGoogleAnalytics(HikariDataSource ds) {
+    public String getCodeGoogleAnalytics() {
         String codeAnalytics = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
                     if (resultSet.next()) {
@@ -108,13 +107,12 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour le code javaScript de GoogleAnalytics
-     * @param ds
      * @param codeJavaScript
      * @return 
      */
-    public boolean setCodeGoogleAnalytics(HikariDataSource ds, String codeJavaScript) {
+    public boolean setCodeGoogleAnalytics(String codeJavaScript) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update info set googleanalytics = '" + fr.cnrs.opentheso.utils.StringUtils.addQuotes(codeJavaScript) + "'");
                 return true;
@@ -128,11 +126,10 @@ public class PreferencesHelper {
     /**
      * permet de retourner les préferences d'un thésaurus
      *
-     * @param ds
      * @param idThesaurus
      * @return
      */
-    public NodePreference getThesaurusPreferences(HikariDataSource ds, String idThesaurus) {
+    public NodePreference getThesaurusPreferences(String idThesaurus) {
         NodePreference np = null;
 
         if (idThesaurus == null || idThesaurus.isEmpty()) {
@@ -140,7 +137,7 @@ public class PreferencesHelper {
             return np;
         }
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM preferences where id_thesaurus = '" + idThesaurus + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -218,13 +215,12 @@ public class PreferencesHelper {
 
     /**
      * Permet de retourner la langue de préference pour un thésaurus
-     * @param ds
      * @param idThesourus
      * @return 
      */
-    public String getWorkLanguageOfTheso(HikariDataSource ds, String idThesourus) {
+    public String getWorkLanguageOfTheso(String idThesourus) {
         String workLanguage = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet resultSet = stmt.executeQuery(
                         "select source_lang from preferences where id_thesaurus = '" + idThesourus + "'")) {
@@ -241,17 +237,16 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour la langue source pour un thésaurus
-     * 
-     * @param ds
+     *
      * @param idLang
      * @param idTheso
      * @return 
      */
-    public boolean setWorkLanguageOfTheso(HikariDataSource ds, String idLang, String idTheso) {
+    public boolean setWorkLanguageOfTheso(String idLang, String idTheso) {
 
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set source_lang = '" + idLang
                         + "' where id_thesaurus = '" + idTheso + "'");
@@ -263,33 +258,15 @@ public class PreferencesHelper {
         return status;
     }
 
-    public boolean isWebservicesOn(HikariDataSource ds, String idThesaurus) {
-        boolean status = false;
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet resultSet = stmt.executeQuery(
-                        "SELECT webservices FROM preferences where id_thesaurus = '" + idThesaurus + "'")) {
-                    if (resultSet.next()) {
-                        status = resultSet.getBoolean("webservices");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
     /**
      * retourne l'id du thésaurus d'après son nom dans les préferances
-     * 
-     * @param ds
+     *
      * @param thesoName
      * @return 
      */
-    public String getIdThesaurusFromName(HikariDataSource ds, String thesoName) {
+    public String getIdThesaurusFromName(String thesoName) {
         String idTheso = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
                         + thesoName + "'")) {
@@ -307,14 +284,13 @@ public class PreferencesHelper {
 
     /**
      * Cette fonction permet d'initialiser les préférences d'un thésaurus
-     * 
-     * @param ds
+     *
      * @param idThesaurus
      * @param workLanguage 
      */
-    public void initPreferences(HikariDataSource ds, String idThesaurus, String workLanguage) {
+    public void initPreferences(String idThesaurus, String workLanguage) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into preferences (id_thesaurus,source_lang, preferredname)"
                         + " values ('" + idThesaurus + "', '" + workLanguage + "','" + idThesaurus + "')");
@@ -326,16 +302,15 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour toutes les préférence
-     * @param ds
      * @param np
      * @param idThesaurus
      * @return
      */
-    public boolean updateAllPreferenceUser(HikariDataSource ds, NodePreference np, String idThesaurus) {
+    public boolean updateAllPreferenceUser(NodePreference np, String idThesaurus) {
         boolean status = false;
         
         np = normalizeDatas(np);
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "update preferences set "
                         + "source_lang='" + StringUtils.convertString(np.getSourceLang()) + "'"
@@ -416,16 +391,15 @@ public class PreferencesHelper {
     /**
      * Permet d'ajouter une nouvelle préférence
      *
-     * @param ds
      * @param np
      * @param idThesaurus
      * @return
      */
-    public boolean addPreference(HikariDataSource ds, NodePreference np, String idThesaurus) {
+    public boolean addPreference(NodePreference np, String idThesaurus) {
         boolean status = false;
         
         np = normalizeDatas(np);
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "insert into preferences("
                         + "id_thesaurus, source_lang, identifier_type,"

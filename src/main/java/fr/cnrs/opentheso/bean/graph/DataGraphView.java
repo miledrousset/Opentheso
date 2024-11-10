@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.graph;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import lombok.Data;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -47,8 +45,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @SessionScoped
 public class DataGraphView implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired @Lazy
     private GraphService graphService;
@@ -106,14 +103,10 @@ public class DataGraphView implements Serializable {
      */
     public List<NodeSearchMini> getAutoComplete(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), selectedIdTheso);
+        String idLang = preferencesHelper.getWorkLanguageOfTheso(selectedIdTheso);
         
         if (selectedIdTheso != null && idLang != null) {
-            liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
-                    value,
-                    idLang,
-                    selectedIdTheso, true);
+            liste = searchHelper.searchAutoCompletionForRelation(value, idLang, selectedIdTheso, true);
         }
         return liste;
     }

@@ -5,6 +5,7 @@
  */
 package ark;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
@@ -25,7 +26,7 @@ public class createArkFromConceptId {
     @Test
     public void generateArkFromConceptId() {
         ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();   
+        HikariDataSource ds = connexionTest.getConnexionPool();
         
         String idTheso = "th414";
         String naan = "66666";
@@ -33,16 +34,16 @@ public class createArkFromConceptId {
         int count = 0; 
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> conceptIds = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        ArrayList<String> conceptIds = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
         
         for (String conceptId : conceptIds) {
             if(!overwrite) {
-                if(!conceptHelper.isHaveIdArk(ds, idTheso, conceptId)) {
-                    conceptHelper.updateArkIdOfConcept(ds, conceptId, idTheso, naan + "/" + conceptId);
+                if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
+                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
                     count++;
                 }
             } else {
-                conceptHelper.updateArkIdOfConcept(ds, conceptId, idTheso, naan + "/" + conceptId);
+                conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
                 count++;
             }
         }

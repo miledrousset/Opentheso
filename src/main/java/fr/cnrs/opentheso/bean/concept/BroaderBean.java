@@ -10,7 +10,7 @@ import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -40,7 +40,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class BroaderBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Tree tree;
@@ -93,10 +93,7 @@ public class BroaderBean implements Serializable {
     public List<NodeSearchMini> getAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
-                    value,
-                    conceptBean.getSelectedLang(),
+            liste = searchHelper.searchAutoCompletionForRelation(value, conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), true);
         }
         return liste;
@@ -122,11 +119,8 @@ public class BroaderBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        if (!validateActionHelper.isAddRelationBTValid(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                searchSelected.getIdConcept())) {
+        if (!validateActionHelper.isAddRelationBTValid(selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), searchSelected.getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -135,28 +129,9 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        try {
-            Connection conn = connect.getPoolConnexion().getConnection();
-            conn.setAutoCommit(false);
-            if (!relationsHelper.addRelationBT(
-                    conn,
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
-                conn.rollback();
-                conn.close();
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            } else {
-                conn.commit();
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SynonymBean.class.getName()).log(Level.SEVERE, null, ex);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur SQL !", ex.getMessage());
+        if (!relationsHelper.addRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
@@ -165,12 +140,8 @@ public class BroaderBean implements Serializable {
         }
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
-        if (conceptHelper.isTopConcept(
-                connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso())) {
-            if (!conceptHelper.setNotTopConcept(connect.getPoolConnexion(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        if (conceptHelper.isTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+            if (!conceptHelper.setNotTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en enlevant le concept du TopConcept, veuillez utiliser les outils de coorection de cohérence !");
@@ -186,12 +157,12 @@ public class BroaderBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
@@ -233,7 +204,7 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.deleteRelationBT(connect.getPoolConnexion(),
+        if (!relationsHelper.deleteRelationBT(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeBT.getIdConcept(),
@@ -247,13 +218,9 @@ public class BroaderBean implements Serializable {
         }
 
         // on vérifie si le concept en cours n'a plus de BT, on le rend TopTerme
-        if (!relationsHelper.isConceptHaveRelationBT(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        if (!relationsHelper.isConceptHaveRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
-            if (!conceptHelper.setTopConcept(
-                    connect.getPoolConnexion(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso())) {
+            if (!conceptHelper.setTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en passant le concept et TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -268,12 +235,12 @@ public class BroaderBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          

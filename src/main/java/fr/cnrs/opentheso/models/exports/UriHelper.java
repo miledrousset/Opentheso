@@ -1,7 +1,5 @@
-
 package fr.cnrs.opentheso.models.exports;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import jakarta.faces.context.FacesContext;
@@ -20,7 +18,6 @@ public class UriHelper {
 
     private NodePreference nodePreference;
     private String idTheso;
-    private HikariDataSource ds;
 
     
     /**
@@ -152,7 +149,7 @@ public class UriHelper {
     
     public String getIdArk(String idConcept) {
         if(nodePreference.isOriginalUriIsArk()){
-            return conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso);
+            return conceptHelper.getIdArkOfConcept(idConcept, idTheso);
         }
         return null;
     }

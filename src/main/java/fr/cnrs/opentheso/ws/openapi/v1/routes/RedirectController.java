@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -54,7 +54,7 @@ public class RedirectController {
             })
     public ResponseEntity<Object> getUriFromArk(@PathVariable("naan") String naan, @PathVariable("idArk") String arkId) throws URISyntaxException {
 
-        var webUrl = restRDFHelper.getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
+        var webUrl = restRDFHelper.getUrlFromIdArk(naan, arkId);
         return ResponseEntity.status(307).location(new URI(webUrl)).build();
     }
 

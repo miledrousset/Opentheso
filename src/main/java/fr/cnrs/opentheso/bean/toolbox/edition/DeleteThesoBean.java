@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -12,17 +7,13 @@ import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+
 import java.io.IOException;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +27,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "deleteThesoBean")
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
-    
-    @Autowired @Lazy 
-    private Connect connect;
     
     @Autowired @Lazy 
     private SelectedTheso selectedTheso;
@@ -98,35 +86,25 @@ public class DeleteThesoBean implements Serializable {
      */
     public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);
             if(deletePerennialIdentifiers) {
-                conceptHelper.deleteAllIdHandle(connect.getPoolConnexion(), idThesoToDelete);
+                conceptHelper.deleteAllIdHandle(idThesoToDelete);
             }
         }
         FacesMessage msg;
         
         // supression des droits
-        try {
-            try (Connection conn = connect.getPoolConnexion().getConnection()) {
-                conn.setAutoCommit(false);
-                if(!userHelper.deleteThesoFromGroup(conn, idThesoToDelete)) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    conn.rollback();
-                    conn.commit();
-                    return;
-                }
-                conn.commit();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DeleteThesoBean.class.getName()).log(Level.SEVERE, null, ex);
+        if(!userHelper.deleteThesoFromGroup(idThesoToDelete)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
         
         // suppression complète du thésaurus
-        if(!thesaurusHelper.deleteThesaurus(connect.getPoolConnexion(), idThesoToDelete)){
+        if(!thesaurusHelper.deleteThesaurus(idThesoToDelete)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

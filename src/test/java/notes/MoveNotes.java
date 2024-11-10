@@ -5,6 +5,7 @@
  */
 package notes;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class MoveNotes {
     @Test
     public void moveNoteToDefinition() {
         ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();   
+        HikariDataSource ds = connexionTest.getConnexionPool();
 
         
         String idThesaurus = "24";

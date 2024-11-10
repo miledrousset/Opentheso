@@ -4,6 +4,7 @@
  */
 package handle;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -22,10 +23,10 @@ public class ManageHandle {
     @Test
     public void testCreateHandle() {
         ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();        
+        HikariDataSource ds = connexionTest.getConnexionPool();
 
         PreferencesHelper preferencesHelper = new PreferencesHelper();
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, "th24");        
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences("th24");        
         
         
         HandleService hs = HandleService.getInstance();
@@ -49,7 +50,7 @@ public class ManageHandle {
         HikariDataSource ds = connexionTest.getConnexionPool();        
 
         PreferencesHelper preferencesHelper = new PreferencesHelper();
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, "th24");        
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences("th24");        
         
         
         HandleService hs = HandleService.getInstance();

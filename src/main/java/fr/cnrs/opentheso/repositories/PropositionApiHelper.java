@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
@@ -45,39 +44,39 @@ public class PropositionApiHelper {
 
 
 
-    public void createProposition(HikariDataSource connexion, PropositionFromApi proposition, int userId) {
+    public void createProposition(PropositionFromApi proposition, int userId) {
 
-        var user = userHelper.getUser(connexion, userId);
-        var thesaurusLang = preferencesHelper.getWorkLanguageOfTheso(connexion, proposition.getIdTheso());
+        var user = userHelper.getUser(userId);
+        var thesaurusLang = preferencesHelper.getWorkLanguageOfTheso(proposition.getIdTheso());
 
-        int propositionId = saveProposition(connexion, proposition, thesaurusLang, user);
+        int propositionId = saveProposition(proposition, thesaurusLang, user);
 
-        saveTerme(proposition, connexion, propositionId, thesaurusLang);
+        saveTerme(proposition, propositionId, thesaurusLang);
 
         if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
-            saveTraductions(proposition, propositionId, connexion, thesaurusLang);
+            saveTraductions(proposition, propositionId, thesaurusLang);
         }
 
         if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
-            saveSynonymes(proposition, propositionId, connexion);
+            saveSynonymes(proposition, propositionId);
         }
 
         if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
             for (NotePropBean note : proposition.getNotes()) {
-                noteManagement(connexion, propositionId, note, PropositionCategoryEnum.NOTE.name());
+                noteManagement(propositionId, note, PropositionCategoryEnum.NOTE.name());
             }
         }
 
         if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
             for (NotePropBean definition : proposition.getDefinitions()) {
-                noteManagement(connexion, propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
+                noteManagement(propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
             }
         }
     }
 
-    private Integer saveProposition(HikariDataSource ds, PropositionFromApi proposition, String thesaurusLang, NodeUser user) {
+    private Integer saveProposition(PropositionFromApi proposition, String thesaurusLang, NodeUser user) {
 
-        var thesaurusName = thesaurusHelper.getTitleOfThesaurus(ds, proposition.getIdTheso(), thesaurusLang);
+        var thesaurusName = thesaurusHelper.getTitleOfThesaurus(proposition.getIdTheso(), thesaurusLang);
 
         var propositionDao = PropositionDao.builder()
                 .nom(user.getName())
@@ -90,10 +89,10 @@ public class PropositionApiHelper {
                 .status(PropositionStatusEnum.ENVOYER.name())
                 .thesoName(thesaurusName)
                 .build();
-        return propositionHelper.createNewProposition(ds, propositionDao);
+        return propositionHelper.createNewProposition(propositionDao);
     }
 
-    private void saveTerme(PropositionFromApi proposition, HikariDataSource ds, Integer propositionId, String thesaurusLang) {
+    private void saveTerme(PropositionFromApi proposition,  Integer propositionId, String thesaurusLang) {
         var prefLabel = proposition.getTraductionsProp().stream()
                 .filter(element -> element.getLang().equals(thesaurusLang))
                 .findFirst();
@@ -106,11 +105,11 @@ public class PropositionApiHelper {
                     .value(prefLabel.get().getLexicalValue())
                     .oldValue(prefLabel.get().getOldValue())
                     .build();
-            propositionDetailHelper.createNewPropositionDetail(ds, propositionDetail);
+            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
         }
     }
 
-    private void saveTraductions(PropositionFromApi proposition, Integer propositionId, HikariDataSource ds, String thesaurusLang) {
+    private void saveTraductions(PropositionFromApi proposition, Integer propositionId,  String thesaurusLang) {
 
         var traduction = proposition.getTraductionsProp().stream()
                 .filter(element -> !element.getLang().equals(thesaurusLang))
@@ -130,7 +129,7 @@ public class PropositionApiHelper {
                     propositionDetail.setOldValue(traduction.get().getOldValue());
                 }
 
-                var idTerm = termHelper.getIdTermOfConcept(ds, proposition.getConceptID(), proposition.getIdTheso());
+                var idTerm = termHelper.getIdTermOfConcept(proposition.getConceptID(), proposition.getIdTheso());
                 if (StringUtils.isNotEmpty(idTerm)) {
                     propositionDetail.setIdProposition(propositionId);
                     propositionDetail.setAction(action.name());
@@ -138,13 +137,13 @@ public class PropositionApiHelper {
                     propositionDetail.setLang(traduction.get().getLang());
                     propositionDetail.setValue(traduction.get().getLexicalValue());
                     propositionDetail.setIdTerm(idTerm);
-                    propositionDetailHelper.createNewPropositionDetail(ds, propositionDetail);
+                    propositionDetailHelper.createNewPropositionDetail(propositionDetail);
                 }
             }
         }
     }
 
-    private void saveSynonymes(PropositionFromApi proposition, Integer propositionId, HikariDataSource ds) {
+    private void saveSynonymes(PropositionFromApi proposition, Integer propositionId) {
         for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
             if (synonymProp.isToAdd() || synonymProp.isToUpdate() || synonymProp.isToRemove()) {
                 PropositionActionEnum action;
@@ -167,12 +166,12 @@ public class PropositionApiHelper {
                         .hiden(synonymProp.isHiden())
                         .idTerm(synonymProp.getIdTerm())
                         .build();
-                propositionDetailHelper.createNewPropositionDetail(ds, propositionDetail);
+                propositionDetailHelper.createNewPropositionDetail(propositionDetail);
             }
         }
     }
 
-    private void noteManagement(HikariDataSource connexion, int propositionID, NotePropBean note, String category) {
+    private void noteManagement(int propositionID, NotePropBean note, String category) {
         if (note.isToAdd() || note.isToUpdate() || note.isToRemove()) {
             var propositionDetail = new PropositionDetailDao();
             PropositionActionEnum action;
@@ -193,7 +192,7 @@ public class PropositionApiHelper {
             propositionDetail.setLang(note.getLang());
             propositionDetail.setValue(note.getLexicalValue());
             propositionDetail.setIdTerm(note.getIdTerm());
-            propositionDetailHelper.createNewPropositionDetail(connexion, propositionDetail);
+            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
         }
     }
 

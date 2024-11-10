@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,7 +50,7 @@ public class ThesaurusController {
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {
 
-        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), false);
+        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -59,7 +59,7 @@ public class ThesaurusController {
             job.add("idTheso", idTheso);
             var jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(connect.getPoolConnexion(), idTheso);
+            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 var jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());

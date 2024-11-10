@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,21 +7,27 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class ExternalResourcesHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
 
     /**
      * Permet d'ajouter un lien vers une ressource externe lien de type URI
      */
-    public boolean addExternalResource(HikariDataSource ds, String idConcept, String idThesausus, String description, String uri) {
+    public boolean addExternalResource(String idConcept, String idThesausus, String description, String uri) {
 
         description = fr.cnrs.opentheso.utils.StringUtils.convertString(description);
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_resources (id_concept, id_thesaurus, description, "
                         + " external_uri) values ('"
@@ -42,9 +47,9 @@ public class ExternalResourcesHelper {
      * Pemret de supprimer l'URI d'une image, donc la suppression de l'image
      * distante
      */
-    public boolean deleteExternalResource(HikariDataSource ds, String idConcept, String idThesaurus, String uri) {
+    public boolean deleteExternalResource(String idConcept, String idThesaurus, String uri) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from external_resources where id_thesaurus = '" + idThesaurus
                         + "' and id_concept  = '" + idConcept + "' and external_uri  = '" + uri + "'");
@@ -61,11 +66,11 @@ public class ExternalResourcesHelper {
      * Permet de récupérer les URI des resources distantes qui sont liées au
      * concept
      */
-    public ArrayList<NodeImage> getExternalResources(HikariDataSource ds, String idConcept, String idThesausus) {
+    public ArrayList<NodeImage> getExternalResources(String idConcept, String idThesausus) {
 
         ArrayList<NodeImage> nodeImageList = null;
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from external_resources where id_concept = '"
                         + idConcept + "' and id_thesaurus = '" + idThesausus + "'");
@@ -91,11 +96,11 @@ public class ExternalResourcesHelper {
     /**
      * Change l'URI de la ressource externe liée au concept
      */
-    public boolean setExternalResourceUri(HikariDataSource ds,
-            String idTheso, String idConcept,
-            String oldUri, String newUri, String description, int idUser){
+    public boolean setExternalResourceUri(String idTheso, String idConcept,
+            String oldUri, String newUri, String description, int idUser) {
+
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update external_resources SET external_uri = '" + newUri + "'"
                         + ", id_user = " + idUser

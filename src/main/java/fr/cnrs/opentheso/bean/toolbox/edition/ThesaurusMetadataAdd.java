@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.RowEditEvent;
@@ -27,15 +26,14 @@ public class ThesaurusMetadataAdd implements Serializable{
     private List<String> dcmiTypes;     
     private String idTheso;
     
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired
     private DcElementHelper dcElementHelper;
     
     public void init(String idTheso1) {
 
-        dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso1);
+        dcElements = dcElementHelper.getDcElementOfThesaurus(idTheso1);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();
         dcmiResource = new DCMIResource().getAllResources();
@@ -49,7 +47,7 @@ public class ThesaurusMetadataAdd implements Serializable{
      * @return 
      */
     public List<DcElement> getThesaurusMetadata(String idTheso){
-        return dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso);
+        return dcElementHelper.getDcElementOfThesaurus(idTheso);
     }
     
     public void initlanguage(DcElement dcElement){
@@ -62,7 +60,7 @@ public class ThesaurusMetadataAdd implements Serializable{
     }
 
     public void deleteThesoMetadata(DcElement dcElement){
-        dcElementHelper.deleteDcElementThesaurus(connect.getPoolConnexion(), dcElement, idTheso);
+        dcElementHelper.deleteDcElementThesaurus(dcElement, idTheso);
         init(idTheso);
         FacesMessage msg = new FacesMessage("Dcterms deleted", "");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
@@ -77,7 +75,7 @@ public class ThesaurusMetadataAdd implements Serializable{
         }
 
         if(dcElementTemp.getId() == -1) {
-            int id = dcElementHelper.addDcElementThesaurus(connect.getPoolConnexion(), dcElementTemp, idTheso);
+            int id = dcElementHelper.addDcElementThesaurus(dcElementTemp, idTheso);
             if(id != -1) {
                 dcElementTemp.setId(id);
             } else {
@@ -85,7 +83,7 @@ public class ThesaurusMetadataAdd implements Serializable{
                 FacesContext.getCurrentInstance().addMessage(null, msg);                
             }
         } else {
-            dcElementHelper.updateDcElementThesaurus(connect.getPoolConnexion(), dcElementTemp, idTheso);
+            dcElementHelper.updateDcElementThesaurus(dcElementTemp, idTheso);
         } 
         FacesMessage msg = new FacesMessage("Dcterms updated", dcElementTemp.getValue());
         FacesContext.getCurrentInstance().addMessage(null, msg);

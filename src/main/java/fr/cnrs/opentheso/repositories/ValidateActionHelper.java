@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,22 +18,22 @@ public class ValidateActionHelper {
     /**
      * Vérifie la cohérence des relations avant l'action
      */
-    public boolean isAddRelationNTValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+    public boolean isAddRelationNTValid(String idTheso, String idConcept, String idConceptToAdd) {
 
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)){
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)){
             return false;
         }
         
         // relation entre frères est interdite 
-        if(relationsHelper.isConceptHaveBrother(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveBrother(idConcept, idConceptToAdd, idTheso)){
             return false;
         }        
         return true;
@@ -43,24 +42,24 @@ public class ValidateActionHelper {
     /**
      * vérifie la cohérence des relations avant l'action
      */
-    public boolean isAddRelationBTValid( HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+    public boolean isAddRelationBTValid(  String idTheso, String idConcept, String idConceptToAdd) {
 
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)){
             message = "Une relation associative existe déjà entre les deux concepts";            
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)){
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
         }
         
         // relation entre frères est interdite 
-        if(relationsHelper.isConceptHaveBrother(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveBrother(idConcept, idConceptToAdd, idTheso)){
             message = "Les concepts ont déjà une relation frère";            
             return false;
         }        
@@ -70,18 +69,18 @@ public class ValidateActionHelper {
     /**
      * Vérifie la cohérence des relations avant l'action
      */
-    public boolean isMoveConceptToConceptValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+    public boolean isMoveConceptToConceptValid(String idTheso, String idConcept, String idConceptToAdd) {
 
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)){
             message = "Une relation associative existe déjà entre les deux concepts";
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
+        if(relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)){
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";            
             return false;
         }
@@ -93,9 +92,9 @@ public class ValidateActionHelper {
     /**
      * Vérifie la cohérence des relations avant l'action
      */
-    public boolean isAddRelationRTValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+    public boolean isAddRelationRTValid(String idTheso, String idConcept, String idConceptToAdd) {
 
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)) {
+        if(relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)) {
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
         }  

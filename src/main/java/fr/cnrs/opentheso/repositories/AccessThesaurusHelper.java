@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,28 +7,33 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class AccessThesaurusHelper {
+
+    @Autowired
+    private DataSource dataSource;
     
     /**
      * permet de mettre à jour la visibilité du thésaurus en publique ou privé 
-     * 
-     * @param ds
+     *
      * @param idTheso
      * @param isPrivate
      * @return 
      * #MR
      */
-    public boolean updateVisibility(HikariDataSource ds, String idTheso, boolean isPrivate) {
+    public boolean updateVisibility(String idTheso, boolean isPrivate) {
         
         Statement stmt = null;
         boolean status = false;
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 String query = "UPDATE thesaurus SET private = " +  isPrivate + " WHERE id_thesaurus='" + idTheso + "'";
@@ -49,16 +53,15 @@ public class AccessThesaurusHelper {
      * Fonction getAThesaurus
      * #JM
      * permet de récupérer un thésaurus d'après son identifiant
-     * @param ds
      * @param idTheso
      * @param idLang
      * @return 
      */
-    public Thesaurus getAThesaurus(HikariDataSource ds, String idTheso,String idLang){
+    public Thesaurus getAThesaurus(String idTheso,String idLang){
         
         Thesaurus th =new Thesaurus();
         
-        try (Connection conn=ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             
             try (PreparedStatement stmt = conn.prepareStatement("SELECT *  FROM thesaurus INNER JOIN thesaurus_label ON thesaurus.id_thesaurus=thesaurus_label.id_thesaurus WHERE thesaurus.id_thesaurus=? AND lang=?")) {
                 

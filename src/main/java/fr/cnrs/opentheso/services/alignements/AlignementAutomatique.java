@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.services.alignements;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -13,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 public class AlignementAutomatique {
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private AlignmentHelper alignmentHelper;
 
     @Autowired
@@ -38,16 +41,16 @@ public class AlignementAutomatique {
     private ThesaurusHelper thesaurusHelper;
 
 
-    public List<NodeAlignment> searchAlignementsAutomatique(HikariDataSource connection, String idTheso, String idCurrentLang,
+    public List<NodeAlignment> searchAlignementsAutomatique(String idTheso, String idCurrentLang,
                                                             List<AlignementElement> allignementsList,
                                                             AlignementSource alignementSource, String nom, String prenom,
                                                             String alignementMode, List<NodeIdValue> idsAndValues) {
 
         List<NodeAlignment> allAlignementFound = new ArrayList<>();
 
-        var thesaurusLangs = thesaurusHelper.getIsoLanguagesOfThesaurus(connection, idTheso);
+        var thesaurusLangs = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
         thesaurusLangs.remove(idCurrentLang);
-        var allLangsTheso = thesaurusHelper.getIsoLanguagesOfThesaurus(connection, idTheso);
+        var allLangsTheso = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
 
         var listConcepts = new HashSet<>(allignementsList);
 
@@ -58,7 +61,7 @@ public class AlignementAutomatique {
             //Supprimer l'alignement déjà ajouté dans la liste des alignements proposés
             idsAndValues = idsAndValues.stream()
                     .peek(element -> {
-                        var alignements = alignmentHelper.getAllAlignmentOfConcept(connection, element.getId(), idTheso)
+                        var alignements = alignmentHelper.getAllAlignmentOfConcept(element.getId(), idTheso)
                                 .stream()
                                 .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
                                         || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())
@@ -71,7 +74,7 @@ public class AlignementAutomatique {
                     .collect(Collectors.toList());
 
             for (NodeIdValue concept : idsAndValues) {
-                var definitions = noteHelper.getDefinition(connection, concept.getId(), idTheso, idCurrentLang);
+                var definitions = noteHelper.getDefinition(concept.getId(), idTheso, idCurrentLang);
                 var definition = "";
                 if (CollectionUtils.isNotEmpty(definitions)) {
                     definition = definitions.get(0);
@@ -82,7 +85,7 @@ public class AlignementAutomatique {
                                 || (alignementSource.getSource().contains("sparql") && source.getThesaurus_target().contains("Wikidata")))
                         .findFirst();
                 if (alignmentSelected.isPresent()) {
-                    callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso,
+                    callables.add(new SearchAllignementByConceptCallable(alignementSource, dataSource, allLangsTheso,
                             thesaurusLangs, idTheso, concept, idCurrentLang, nom, prenom, alignmentSelected.get(), definition,
                             alignementMode));
                 }
@@ -90,7 +93,7 @@ public class AlignementAutomatique {
         } else {
             for (AlignementElement alignementElement : listConcepts) {
                 var concept = idsAndValues.stream().filter(element -> element.getId().equals(alignementElement.getIdConceptOrig())).findFirst().get();
-                callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso, thesaurusLangs, idTheso,
+                callables.add(new SearchAllignementByConceptCallable(alignementSource, dataSource, allLangsTheso, thesaurusLangs, idTheso,
                         concept, idCurrentLang, nom, prenom, null, null, alignementMode));
             }
         }

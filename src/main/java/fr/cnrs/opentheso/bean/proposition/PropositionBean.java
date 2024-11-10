@@ -7,7 +7,7 @@ import fr.cnrs.opentheso.models.propositions.Proposition;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -40,8 +40,7 @@ import java.util.List;
 @Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired @Lazy
     private IndexSetting indexSetting;
@@ -97,7 +96,7 @@ public class PropositionBean implements Serializable {
 
         this.propositionSelected = propositionDao;
 
-        NodePreference preference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), propositionDao.getIdTheso());
+        NodePreference preference = preferencesHelper.getThesaurusPreferences(propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("rightbody.proposal.avertissement"));
             return;

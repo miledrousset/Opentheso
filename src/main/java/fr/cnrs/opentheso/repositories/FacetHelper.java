@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,29 +8,33 @@ import java.util.ArrayList;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.concept.NodeUri;
-
 import java.util.Collections;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class FacetHelper {
+
+    @Autowired
+    private DataSource dataSource;
+
     
     /**
      * permet de savoir si le Parent de la Facette est dans ces collections
-     * @param ds
      * @param idTheso
      * @param idFacet
      * @param groups
      * @return 
      */
-    public boolean isFacetInGroups(HikariDataSource ds, 
-            String idTheso, String idFacet, List<String> groups){
+    public boolean isFacetInGroups(String idTheso, String idFacet, List<String> groups) {
+
         String existId = null;
         
         if(groups == null || groups.isEmpty()) return false;
@@ -45,7 +48,7 @@ public class FacetHelper {
             }
         }
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept_parent from thesaurus_array " +
                         " where" +
@@ -74,13 +77,13 @@ public class FacetHelper {
     /**
      * permet de mettre à jour la date du concept quand il y a une modification
      *
-     * @param ds
      * @param idTheso
      * @param idFacet
      * @param contributor
      */
-    public void updateDateOfFacet(HikariDataSource ds, String idTheso, String idFacet, int contributor) {
-        try (Connection conn = ds.getConnection()) {
+    public void updateDateOfFacet(String idTheso, String idFacet, int contributor) {
+
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE thesaurus_array set modified = current_date, contributor = " + contributor + " WHERE id_facet ='" + idFacet + "'"
                         + " AND id_thesaurus='" + idTheso + "'");
@@ -91,12 +94,12 @@ public class FacetHelper {
     }    
     
     
-    public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds,
-            String name, String lang, String idThesaurus) {
+    public ArrayList<NodeIdValue> searchFacet(String name, String lang, String idThesaurus) {
+
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         
         name = fr.cnrs.opentheso.utils.StringUtils.convertString(name);
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang
                         + "' AND unaccent(lower(lexical_value)) like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
@@ -122,17 +125,16 @@ public class FacetHelper {
      * appartiennent à ce concept, ceci est pour les noeuds dans l'arbre si le
      * concept est traduit, on a le label, sinon, on a une chaine vide
      *
-     * @param ds
      * @param idConcept
      * @param idThesaurus
      * @param idLang
      * @return #MR
      */
-    public List<NodeIdValue> getAllIdValueFacetsOfConcept(HikariDataSource ds,
+    public List<NodeIdValue> getAllIdValueFacetsOfConcept(
             String idConcept, String idThesaurus, String idLang) {
 
         List<NodeIdValue> listFacets = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(
                         "SELECT thesaurus_array.id_facet" +
@@ -146,7 +148,7 @@ public class FacetHelper {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(resultSet.getString("id_facet"));
-                        nodeIdValue.setValue(getLabelOfFacet(ds, nodeIdValue.getId(), idThesaurus, idLang));
+                        nodeIdValue.setValue(getLabelOfFacet(nodeIdValue.getId(), idThesaurus, idLang));
                         listFacets.add(nodeIdValue);
                     }
                 }
@@ -162,15 +164,14 @@ public class FacetHelper {
     /**
      * permet de retourner la liste des id facettes où ce concept en fait partie
      *
-     * @param ds
      * @param idConcept
      * @param idThesaurus
      * @return #MR
      */
-    public List<String> getAllIdFacetsConceptIsPartOf(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public List<String> getAllIdFacetsConceptIsPartOf(String idConcept, String idThesaurus) {
 
         List<String> listIdFacets = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT concept_facet.id_facet"
                         + " FROM concept_facet "
@@ -193,15 +194,14 @@ public class FacetHelper {
      * permet de retourner la liste des id facettes qui sont sous ce concept
      * où ce concept est le parent
      *
-     * @param ds
      * @param idConcept
      * @param idThesaurus
      * @return #MR
      */
-    public List<String> getAllIdFacetsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public List<String> getAllIdFacetsOfConcept(String idConcept, String idThesaurus) {
 
         List<String> listIdFacets = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT thesaurus_array.id_facet"
                         + " FROM thesaurus_array "
@@ -224,19 +224,18 @@ public class FacetHelper {
      * de la facette si le label n'est pas traduit, il est remplacé par une
      * chaine vide
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param lang
      * @return
      */
-    public NodeFacet getThisFacet(HikariDataSource ds, String idFacet, String idThesaurus, String lang) {
+    public NodeFacet getThisFacet(String idFacet, String idThesaurus, String lang) {
         Connection conn;
         ResultSet resultSet = null;
         NodeFacet nodeFacet = new NodeFacet();
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try ( Statement stmt = conn.createStatement()) {
                 try {
                     String query = "SELECT node_label.id_facet, thesaurus_array.id_concept_parent"
@@ -254,7 +253,7 @@ public class FacetHelper {
                         nodeFacet.setIdFacet(resultSet.getString("id_facet"));
                         nodeFacet.setIdThesaurus(idThesaurus);
                         nodeFacet.setIdConceptParent(resultSet.getString("id_concept_parent"));
-                        nodeFacet.setLexicalValue(getLabelOfFacet(ds, idFacet, idThesaurus, lang));
+                        nodeFacet.setLexicalValue(getLabelOfFacet(idFacet, idThesaurus, lang));
                         nodeFacet.setLang(lang);
                     }
                 } finally {
@@ -276,14 +275,13 @@ public class FacetHelper {
     /**
      * permet de retourner l'id parent d'une facette
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @return
      */
-    public String getIdConceptParentOfFacet(HikariDataSource ds, String idFacet, String idThesaurus) {
+    public String getIdConceptParentOfFacet(String idFacet, String idThesaurus) {
         String idParentFacet = null;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT thesaurus_array.id_concept_parent"
                             + " FROM thesaurus_array"
@@ -313,19 +311,14 @@ public class FacetHelper {
      * Cette fonction permet d'ajouter une nouvelle Facette si l'indentifiant
      * est fourni, on l'ajoute, sinon, on génère un nouveau
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idConceptParent
      * @param lexicalValue
      * @param idLang
-     * @param notation
      * @return Id of Facet
      */
-    public String addNewFacet(HikariDataSource ds,
-            String idFacet,
-            String idThesaurus, String idConceptParent,
-            String lexicalValue, String idLang, String notation) {
+    public String addNewFacet(String idFacet, String idThesaurus, String idConceptParent, String lexicalValue, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -333,15 +326,15 @@ public class FacetHelper {
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
 
         if (idFacet == null || idFacet.isEmpty()) {
-            idFacet = getNewId(ds);
+            idFacet = getNewId();
             // si le nouveau Id existe, on l'incrémente
-            while (isIdFacetExist(ds, idFacet)) {
-                idFacet = getNewId(ds);
+            while (isIdFacetExist(idFacet)) {
+                idFacet = getNewId();
             }
         }
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -367,10 +360,10 @@ public class FacetHelper {
         return idFacet;
     }
 
-    private String getNewId(HikariDataSource ds) {
+    private String getNewId() {
         String idFacet = null;
         ResultSet resultSet = null;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select nextval('thesaurus_array_facet_id_seq') from thesaurus_array_facet_id_seq");
                 resultSet = stmt.getResultSet();
@@ -394,15 +387,12 @@ public class FacetHelper {
     /**
      * Cette fonction permet d'ajouter un concept dans une Facette
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idConcept
      * @return
      */
-    public boolean addConceptToFacet(HikariDataSource ds,
-            String idFacet,
-            String idThesaurus, String idConcept) {
+    public boolean addConceptToFacet(String idFacet, String idThesaurus, String idConcept) {
 
         Connection conn;
         Statement stmt;
@@ -410,7 +400,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -435,20 +425,16 @@ public class FacetHelper {
     /**
      * Cette fonction permet de rajouter une traduction à une facette existante.
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param lexicalValue
      * @param idLang
      * @return
      */
-    public boolean addFacetTraduction(HikariDataSource ds,
-            String idFacet,
-            String idThesaurus,
-            String lexicalValue, String idLang) {
+    public boolean addFacetTraduction(String idFacet, String idThesaurus, String lexicalValue, String idLang) {
         boolean status = false;
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into node_label "
                         + "(id_facet, id_thesaurus, lexical_value, lang)"
@@ -471,22 +457,17 @@ public class FacetHelper {
     /**
      * Cette fonction permet de mettre à jour une facette
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idLang
      * @param lexicalValue
      * @return
      */
-    public boolean updateFacetTraduction(HikariDataSource ds,
-            String idFacet,
-            String idThesaurus,
-            String idLang,
-            String lexicalValue) {
+    public boolean updateFacetTraduction(String idFacet, String idThesaurus, String idLang, String lexicalValue) {
         boolean status = false;
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE node_label set"
                         + " lexical_value = '" + lexicalValue + "'"
@@ -505,14 +486,12 @@ public class FacetHelper {
     /**
      * Cette fonction permet de savoir s'il a une traduction dans cette langue
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idLang
      * @return Objet class NodeConceptTree
      */
-    public boolean isTraductionExistOfFacet(HikariDataSource ds,
-            String idFacet, String idThesaurus, String idLang) {
+    public boolean isTraductionExistOfFacet(String idFacet, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -521,7 +500,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -562,14 +541,13 @@ public class FacetHelper {
      * permet de retourner le label de la facette, si la facette n'est pas
      * traduite, elle retourne chaine vide
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param lang
      * @return
      */
-    public String getLabelOfFacet(HikariDataSource ds, String idFacet,
-            String idThesaurus, String lang) {
+    public String getLabelOfFacet(String idFacet, String idThesaurus, String lang) {
+
         Connection conn;
         Statement stmt;
         ResultSet resultSet = null;
@@ -577,7 +555,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -602,8 +580,7 @@ public class FacetHelper {
         return label;
     }
 
-    public List<NodeFacet> getAllTraductionsFacet(HikariDataSource ds, String idFacet,
-            String idThesaurus, String lang) {
+    public List<NodeFacet> getAllTraductionsFacet(String idFacet, String idThesaurus, String lang) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet = null;
@@ -611,7 +588,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -645,18 +622,18 @@ public class FacetHelper {
     /**
      * Cette fonction permet de supprimer une Facette avec ses relations
      *
-     * @param ds
      * @param idFacet
      * @param idThesaurus
      * @return
      */
-    public boolean deleteFacet(HikariDataSource ds, String idFacet, String idThesaurus) {
+    public boolean deleteFacet(String idFacet, String idThesaurus) {
+
         Connection conn;
         Statement stmt;
         boolean status = false;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -700,14 +677,14 @@ public class FacetHelper {
      * @param idLang
      * @return
      */
-    public boolean deleteTraductionFacet(HikariDataSource ds, String idFacet, String idThesaurus,
+    public boolean deleteTraductionFacet(String idFacet, String idThesaurus,
             String idLang) {
         Connection conn;
         Statement stmt;
         boolean status = false;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -736,20 +713,18 @@ public class FacetHelper {
     /**
      * Cette fonction permet de supprimer un concept de la Facette
      *
-     * @param ds
      * @param idFacet
      * @param idConcept
      * @param idThesaurus
      * @return
      */
-    public boolean deleteConceptFromFacet(HikariDataSource ds,
-            String idFacet, String idConcept, String idThesaurus) {
+    public boolean deleteConceptFromFacet(String idFacet, String idConcept, String idThesaurus) {
         Connection conn;
         Statement stmt;
         boolean status = false;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -779,11 +754,10 @@ public class FacetHelper {
      * Cette fonction permet de retourner toutes les Facettes d'un thésaurus
      * sous forme de NodeFacet
      *
-     * @param ds
      * @param idThesaurus
      * @return ArrayList de NodeFacet
      */
-    public ArrayList<NodeFacet> getAllFacetsDetailsOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public ArrayList<NodeFacet> getAllFacetsDetailsOfThesaurus(String idThesaurus) {
 
         Connection conn;
         Statement stmt;
@@ -792,7 +766,7 @@ public class FacetHelper {
         ArrayList<NodeFacet> nodeFacetlist = new ArrayList();
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -817,8 +791,8 @@ public class FacetHelper {
 
                         //infos pour la constructions des Uris
                         NodeUri nodeUri = new NodeUri();
-                        nodeUri.setIdArk(getIdArkOfConcept(ds, nodeFacet.getIdConceptParent(), idThesaurus));
-                        nodeUri.setIdHandle(getIdHandleOfConcept(ds, nodeFacet.getIdConceptParent(), idThesaurus));
+                        nodeUri.setIdArk(getIdArkOfConcept(nodeFacet.getIdConceptParent(), idThesaurus));
+                        nodeUri.setIdHandle(getIdHandleOfConcept(nodeFacet.getIdConceptParent(), idThesaurus));
                         nodeUri.setIdConcept(nodeFacet.getIdConceptParent());
                         nodeFacet.setNodeUri(nodeUri);
 
@@ -837,10 +811,10 @@ public class FacetHelper {
         return nodeFacetlist;
     }
 
-    private String getIdHandleOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private String getIdHandleOfConcept(String idConcept, String idThesaurus) {
 
         String handle = "";
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_handle from concept where id_thesaurus = '"
                         + idThesaurus + "' and id_concept = '" + idConcept + "'");
@@ -857,10 +831,10 @@ public class FacetHelper {
         return handle;
     }
 
-    private String getIdArkOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private String getIdArkOfConcept(String idConcept, String idThesaurus) {
 
         String ark = "";
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_ark from concept where id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
@@ -876,7 +850,7 @@ public class FacetHelper {
         return ark;
     }
 
-    public boolean checkExistanceFacetByNameAndLangAndThesau(HikariDataSource ds,
+    public boolean checkExistanceFacetByNameAndLangAndThesau(
             String name, String lang, String idThesaurus) {
 
         Connection conn;
@@ -886,7 +860,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -912,18 +886,17 @@ public class FacetHelper {
     /**
      * permet de retourner la liste des concepts membres de la facette triés
      *
-     * @param ds
      * @param idFacet
      * @param idLang
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<NodeIdValue> getAllMembersOfFacetSorted(HikariDataSource ds,
+    public ArrayList<NodeIdValue> getAllMembersOfFacetSorted(
             String idFacet, String idLang, String idTheso) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                     stmt.executeQuery("SELECT concept_facet.id_concept "
                             + " FROM concept_facet" 
@@ -966,13 +939,11 @@ public class FacetHelper {
         /**
          * permet de retourner la liste des concepts membres de la facette
          *
-         * @param ds
          * @param idFacet
          * @param idTheso
          * @return #MR
          */
-    public List<String> getAllMembersOfFacet(HikariDataSource ds,
-            String idFacet, String idTheso) {
+    public List<String> getAllMembersOfFacet(String idFacet, String idTheso) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -980,7 +951,7 @@ public class FacetHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1007,10 +978,10 @@ public class FacetHelper {
         return members;
     }
 
-    public boolean updateLabelFacet(HikariDataSource ds, String newLabel, String idFacet, String idThes, String lang) {
+    public boolean updateLabelFacet(String newLabel, String idFacet, String idThes, String lang) {
         boolean status = false;
         newLabel = (fr.cnrs.opentheso.utils.StringUtils.convertString(newLabel));
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE node_label SET lexical_value='" + newLabel + "' WHERE id_facet = '"
                         + idFacet + "' AND lang = '" + lang + "' AND id_thesaurus = '" + idThes + "'");
@@ -1022,9 +993,9 @@ public class FacetHelper {
         return status;
     }
 
-    public void updateFacetParent(HikariDataSource ds, String idConceptParent, String idFacet, String idThes) {
+    public void updateFacetParent(String idConceptParent, String idFacet, String idThes) {
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 Statement stmt = conn.createStatement();
                 try {
@@ -1042,20 +1013,18 @@ public class FacetHelper {
     /**
      * Permet de savoir si la facette a ce concept en particulier
      *
-     * @param ds
      * @param idFacet
      * @param idCocnept
      * @param idTheso
      * @return
      */
-    public boolean isFacetHaveThisMember(HikariDataSource ds,
-            String idFacet, String idCocnept, String idTheso) {
+    public boolean isFacetHaveThisMember(String idFacet, String idCocnept, String idTheso) {
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
 
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1085,17 +1054,16 @@ public class FacetHelper {
     /**
      * Permet de savoir si la facette a des concepts membres
      *
-     * @param ds
      * @param idFacet
      * @return
      */
-    public boolean isIdFacetExist(HikariDataSource ds, String idFacet) {
+    public boolean isIdFacetExist(String idFacet) {
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
 
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1123,18 +1091,17 @@ public class FacetHelper {
     /**
      * Permet de savoir si la facette a des concepts membres
      *
-     * @param ds
      * @param idFacet
      * @param idTheso
      * @return
      */
-    public boolean isFacetHaveMembers(HikariDataSource ds, String idFacet, String idTheso) {
+    public boolean isFacetHaveMembers(String idFacet, String idTheso) {
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
 
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1163,14 +1130,13 @@ public class FacetHelper {
     /**
      * Permet de savoir si le concept a des facettes
      *
-     * @param ds
      * @param idConcept
      * @param idTheso
      * @return
      */
-    public boolean isConceptHaveFacet(HikariDataSource ds, String idConcept, String idTheso) {
+    public boolean isConceptHaveFacet(String idConcept, String idTheso) {
         boolean existe = false;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select count(id_facet) from thesaurus_array where "
                         + " id_thesaurus = '" + idTheso + "'"

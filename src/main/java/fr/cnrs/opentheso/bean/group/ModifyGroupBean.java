@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -35,8 +34,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
     @Autowired @Lazy
     private TreeGroups treeGroups;
     @Autowired @Lazy
@@ -85,7 +82,7 @@ public class ModifyGroupBean implements Serializable {
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
         selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
 
-        listGroupType = groupHelper.getAllGroupType(connect.getPoolConnexion());
+        listGroupType = groupHelper.getAllGroupType();
     }
 
     public void infos() {
@@ -101,11 +98,11 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        String idParent = groupHelper.getIdFather(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso());
+        String idParent = groupHelper.getIdFather(idGroup, selectedTheso.getCurrentIdTheso());
 
         if(isMoveToRoot()) {
             if(!StringUtils.isEmpty(idParent)) {
-                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
@@ -130,7 +127,7 @@ public class ModifyGroupBean implements Serializable {
             }
 
             /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
-            if(groupHelper.isMoveToDescending(connect.getPoolConnexion(),
+            if(groupHelper.isMoveToDescending(
                     idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -145,13 +142,13 @@ public class ModifyGroupBean implements Serializable {
                     return;
                 }
 
-                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
                 }
             }
-            groupHelper.addSubGroup(connect.getPoolConnexion(),
+            groupHelper.addSubGroup(
                     selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
         }
 
@@ -171,11 +168,7 @@ public class ModifyGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(
-                    connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang(),
-                    value);
+            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), value);
         }
         return liste;
     }
@@ -198,7 +191,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.getPoolConnexion(),
+        if (groupHelper.isDomainExist(
                 titleGroup,
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang())) {
@@ -209,13 +202,8 @@ public class ModifyGroupBean implements Serializable {
             }
             return;
         }
-        if(groupHelper.isHaveTraduction(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
-            if (!groupHelper.renameGroup(
-                    connect.getPoolConnexion(),
-                    titleGroup,
-                    selectedTheso.getCurrentLang(),
-                    idGroup,
-                    selectedTheso.getCurrentIdTheso(),
+        if(groupHelper.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+            if (!groupHelper.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
                     currentUser.getNodeUser().getIdUser())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -225,12 +213,7 @@ public class ModifyGroupBean implements Serializable {
                 return;
             }
         } else {
-            if (!groupHelper.addGroupTraduction(
-                    connect.getPoolConnexion(),
-                    idGroup,
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang(),
-                    titleGroup)) {
+            if (!groupHelper.addGroupTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), titleGroup)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
@@ -278,10 +261,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isNotationExist(
-                connect.getPoolConnexion(),
-                notation,
-                selectedTheso.getCurrentIdTheso())) {
+        if (groupHelper.isNotationExist(notation, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -290,7 +270,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.setNotationOfGroup(connect.getPoolConnexion(),
+        if (!groupHelper.setNotationOfGroup(
                 notation,
                 idGroup,
                 selectedTheso.getCurrentIdTheso())) {
@@ -338,11 +318,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.updateTypeGroup(
-                connect.getPoolConnexion(),
-                selectedGroupType,
-                selectedTheso.getCurrentIdTheso(),
-                idGroup)) {
+        if (!groupHelper.updateTypeGroup(selectedGroupType, selectedTheso.getCurrentIdTheso(), idGroup)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {

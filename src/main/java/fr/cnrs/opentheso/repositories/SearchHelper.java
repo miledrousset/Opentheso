@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,9 +31,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+
+
 @Slf4j
 @Service
 public class SearchHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private TermHelper termHelper;
@@ -48,7 +53,7 @@ public class SearchHelper {
     /**
      * Permet de chercher les terms avec précision pour limiter le bruit avec filtre par langue et ou par groupe
      */
-    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds, String value, String idLang,
+    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(String value, String idLang,
                                                                 String[] idGroups, String idTheso, boolean withNotes) {
         Connection conn;
         Statement stmt;
@@ -104,7 +109,7 @@ public class SearchHelper {
 
         String query;
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -156,7 +161,7 @@ public class SearchHelper {
                         }
                         if (withNotes) {
                             if (noteHelper != null) {
-                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(ds, nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
+                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
                             }
                         }
                     }
@@ -212,7 +217,7 @@ public class SearchHelper {
                         }
                         if (withNotes) {
                             if (noteHelper != null) {
-                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(ds, nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
+                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
                             }
                         }
                     }
@@ -230,43 +235,43 @@ public class SearchHelper {
     }
 
 
-    public List<NodeConceptSearch> searchConceptWSV2(HikariDataSource ds, String value, String idLang, String idGroup, String idTheso) {
+    public List<NodeConceptSearch> searchConceptWSV2(String value, String idLang, String idGroup, String idTheso) {
 
         var results = new ArrayList<NodeConceptSearch>();
 
-        try (var conn = ds.getConnection()){
+        try (var conn = dataSource.getConnection()){
             try (var stmt = conn.createStatement()) {
 
-                var groups = generateGroupCondition(ds, idTheso, idGroup);
+                var groups = generateGroupCondition(idTheso, idGroup);
                 var resultSet = stmt.executeQuery(getSqlSearch(value, idTheso, idLang, groups));
                 while (resultSet.next()) {
                     var idConcept = resultSet.getString("id_concept");
 
                     var synonymes = new ArrayList<NodeElement>();
-                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(ds, idConcept, idTheso, "fr"))
+                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(idConcept, idTheso, "fr"))
                             .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
-                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(ds, idConcept, idTheso, "ar"))
+                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(idConcept, idTheso, "ar"))
                             .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
 
                     var notes = new ArrayList<NodeElement>();
-                    var noteFr = noteHelper.getNodeNote(ds, idConcept, idTheso, "fr", "note");
+                    var noteFr = noteHelper.getNodeNote(idConcept, idTheso, "fr", "note");
                     if (ObjectUtils.isNotEmpty(noteFr)) notes.add(toElement(noteFr));
-                    var noteAr = noteHelper.getNodeNote(ds, idConcept, idTheso, "ar", "note");
+                    var noteAr = noteHelper.getNodeNote(idConcept, idTheso, "ar", "note");
                     if (ObjectUtils.isNotEmpty(noteAr)) notes.add(toElement(noteAr));
 
                     var definitions = new ArrayList<NodeElement>();
-                    var definitionFr = noteHelper.getNodeNote(ds, idConcept, idTheso, "fr", "definition");
+                    var definitionFr = noteHelper.getNodeNote(idConcept, idTheso, "fr", "definition");
                     if (ObjectUtils.isNotEmpty(definitionFr)) definitions.add(toElement(definitionFr));
-                    var definitionAr = noteHelper.getNodeNote(ds, idConcept, idTheso, "ar", "definition");
+                    var definitionAr = noteHelper.getNodeNote(idConcept, idTheso, "ar", "definition");
                     if (ObjectUtils.isNotEmpty(definitionAr)) definitions.add(toElement(definitionAr));
 
                     var terms = new ArrayList<NodeElement>();
-                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(ds, idConcept, idTheso, "fr"))
+                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(idConcept, idTheso, "fr"))
                             .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
-                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(ds, idConcept, idTheso, "ar"))
+                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(idConcept, idTheso, "ar"))
                             .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
 
@@ -276,7 +281,7 @@ public class SearchHelper {
                             .idTerm(resultSet.getString("id_term"))
                             .terms(terms)
                             .status(getStatusLabel(resultSet.getString("status")))
-                            .collections(groupHelper.getListGroupOfConcept(ds, idTheso, idConcept, idLang).stream()
+                            .collections(groupHelper.getListGroupOfConcept(idTheso, idConcept, idLang).stream()
                                     .map(this::toElement)
                                     .collect(Collectors.toList()))
                             .synonymes(synonymes)
@@ -293,10 +298,10 @@ public class SearchHelper {
         }
     }
 
-    private String generateGroupCondition(HikariDataSource ds, String idTheso, String idGroup) {
+    private String generateGroupCondition(String idTheso, String idGroup) {
         String groups = null;
         if (!StringUtils.isEmpty(idGroup)) {
-            var groupList = groupHelper.getAllGroupDescending(ds, idGroup, idTheso);
+            var groupList = groupHelper.getAllGroupDescending(idGroup, idTheso);
             if (CollectionUtils.isEmpty(groupList)) groupList = new ArrayList<>();
             groups = String.join(",", groupList.stream()
                     .map(element -> String.format("'%s'", element.toLowerCase()))
@@ -377,7 +382,7 @@ public class SearchHelper {
      * filtre par langue et ou par groupe Adapter pour le widget de connexion
      * avec l'affichage d'un arbre
      */
-    public ArrayList<String> searchAutoCompletionWSForWidget(HikariDataSource ds,
+    public ArrayList<String> searchAutoCompletionWSForWidget(
             String value, String idLang, String[] idGroups, String idTheso) {
         Connection conn;
         Statement stmt;
@@ -463,7 +468,7 @@ public class SearchHelper {
 
         String query;
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -581,15 +586,13 @@ public class SearchHelper {
      * filtre par langue et ou par groupe Adapter pour le widget de connexion
      * avec l'affichage d'un arbre
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idGroups
      * @param idTheso
      * @return
      */
-    public ArrayList<String> searchAutoCompletionWSForWidgetMatchExact(HikariDataSource ds,
-            String value, String idLang, String[] idGroups, String idTheso) {
+    public ArrayList<String> searchAutoCompletionWSForWidgetMatchExact(String value, String idLang, String[] idGroups, String idTheso) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -632,7 +635,7 @@ public class SearchHelper {
 
         String query;
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -759,15 +762,14 @@ public class SearchHelper {
      * le résultat sans chercher sur altLabel sinon, on cherche alors dans les
      * altLabels
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idGroups
      * @param idTheso
      * @return
      */
-    public ArrayList<String> searchAutoCompletionWSForWidgetMatchExactForOneLabel(HikariDataSource ds,
-            String value, String idLang, String[] idGroups, String idTheso) {
+    public ArrayList<String> searchAutoCompletionWSForWidgetMatchExactForOneLabel(String value, String idLang,
+                                                                                  String[] idGroups, String idTheso) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -810,7 +812,7 @@ public class SearchHelper {
 
         String query;
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -942,15 +944,13 @@ public class SearchHelper {
      *
      * Elle retourne la liste des termes + identifiants
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idThesaurus
      * @param limit
      * @return
      */
-    public ArrayList<NodeSearchMini> searchFullText(HikariDataSource ds,
-            String value, String idLang, String idThesaurus, int limit) {
+    public ArrayList<NodeSearchMini> searchFullText(String value, String idLang, String idThesaurus, int limit) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -976,7 +976,7 @@ public class SearchHelper {
             langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
         }
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1054,20 +1054,18 @@ public class SearchHelper {
     /**
      * Permet de chercher les terms par identifiant (idConcept, idArk, idHandle, notation)
      *
-     * @param ds
      * @param identifier
      * @param idLang
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchByAllId(HikariDataSource ds,
-            String identifier, String idLang, String idTheso) {
+    public ArrayList<NodeSearchMini> searchByAllId(String identifier, String idLang, String idTheso) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         if(StringUtils.isEmpty(identifier)) return nodeSearchMinis;
         identifier = identifier.trim();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " +
                             " from term, preferred_term, concept" +
@@ -1113,8 +1111,7 @@ public class SearchHelper {
         }
         return nodeSearchMinis;
     }    
-    private ArrayList<NodeSearchMini> searchCollectionsById(Connection conn,
-            String idTheso, String identifier, String idLang,
+    private ArrayList<NodeSearchMini> searchCollectionsById(Connection conn, String idTheso, String identifier, String idLang,
             ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select idGroup, lexicalvalue from concept_group_label " +
@@ -1171,15 +1168,12 @@ public class SearchHelper {
      * Permet de chercher les terms exacts avec des règles précises pour trouver
      * par exemple : or, Ur, d'Ur ...
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchExactMatch(HikariDataSource ds,
-            String value, String idLang, String idTheso) {
-        
+    public ArrayList<NodeSearchMini> searchExactMatch(String value, String idLang, String idTheso) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1190,7 +1184,7 @@ public class SearchHelper {
             lang = " and term.lang = '" + idLang + "'";
         }
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
@@ -1333,13 +1327,12 @@ public class SearchHelper {
     /**
      * Permet de chercher les terms qui commencent par un mot
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchStartWith(HikariDataSource ds,
+    public ArrayList<NodeSearchMini> searchStartWith(
             String value, String idLang, String idTheso) {
         
 
@@ -1352,7 +1345,7 @@ public class SearchHelper {
             lang = " and term.lang = '" + idLang + "'";
         }
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
@@ -1487,14 +1480,13 @@ public class SearchHelper {
     /**
      * Permet de chercher les concepts qui ont un status déprécié
      *
-     * @param ds
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<String> searchAllDeprecatedConcepts(HikariDataSource ds, String idTheso) {
+    public ArrayList<String> searchAllDeprecatedConcepts(String idTheso) {
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where status = 'DEP'"
                         + " and id_thesaurus = '" + idTheso + "' limit 200");
@@ -1514,14 +1506,13 @@ public class SearchHelper {
     /**
      * Permet de chercher les concepts qui ont une poly-hiérérachie
      *
-     * @param ds
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<String> searchAllPolyierarchy(HikariDataSource ds, String idTheso) {
+    public ArrayList<String> searchAllPolyierarchy(String idTheso) {
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1 from hierarchical_relationship where role = 'BT'"
                         + " and id_thesaurus = '" + idTheso + "'"
@@ -1542,14 +1533,13 @@ public class SearchHelper {
     /**
      * Permet de chercher les concepts qui ont plusieurs Groupes
      *
-     * @param ds
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<String> searchConceptWithMultiGroup(HikariDataSource ds, String idTheso) {
+    public ArrayList<String> searchConceptWithMultiGroup(String idTheso) {
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select idconcept from concept_group_concept where idthesaurus = '" + idTheso + "'"
                         + " group by idconcept having count(idconcept) > 1 limit 200");
@@ -1568,14 +1558,13 @@ public class SearchHelper {
     /**
      * Permet de chercher les concepts qui n'ont pas de Groupes
      *
-     * @param ds
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<String> searchConceptWithoutGroup(HikariDataSource ds, String idTheso) {
+    public ArrayList<String> searchConceptWithoutGroup(String idTheso) {
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept where concept.id_thesaurus = '" + idTheso + "'"
                         + " and concept.status != 'CA' "
@@ -1596,15 +1585,14 @@ public class SearchHelper {
     /**
      * Permet de chercher les libellés qui sont en doublons
      *
-     * @param ds
      * @param idTheso
      * @param idLang
      * @return #MR
      */
-    public ArrayList<String> searchConceptDuplicated(HikariDataSource ds, String idTheso, String idLang) {
+    public ArrayList<String> searchConceptDuplicated(String idTheso, String idLang) {
         ArrayList<String> conceptLabels = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select lower(lexical_value) from term "
                         + " where"
@@ -1662,13 +1650,12 @@ public class SearchHelper {
      * Permet de chercher les concepts qui ont RT et BT ou NT à la fois, ce qui
      * est interdit
      *
-     * @param ds
      * @param idConcept
      * @param idTheso
      * @return #MR
      */
-    public boolean isConceptHaveRTandBT(HikariDataSource ds, String idConcept, String idTheso) {
-        try (Connection conn = ds.getConnection()) {
+    public boolean isConceptHaveRTandBT(String idConcept, String idTheso) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1"
                         + " from hierarchical_relationship"
@@ -1701,13 +1688,12 @@ public class SearchHelper {
      * ignorant les accents et la casse)
      *
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchExactTermForAutocompletion(HikariDataSource ds,
+    public ArrayList<NodeSearchMini> searchExactTermForAutocompletion(
             String value, String idLang, String idTheso) {
         Connection conn;
         Statement stmt;
@@ -1740,7 +1726,7 @@ public class SearchHelper {
         }
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1812,8 +1798,6 @@ public class SearchHelper {
      * mais en ajoutant uniquement les mots commencant par.Ca sert à afficher
      * les index par ordre alphabétique
      *
-     *
-     * @param ds
      * @param value
      * @param idLang
      * @param idThesaurus
@@ -1821,7 +1805,7 @@ public class SearchHelper {
      * @param synonym
      * @return
      */
-    public ArrayList<NodeIdValue> searchTermForIndex(HikariDataSource ds,
+    public ArrayList<NodeIdValue> searchTermForIndex(
             String value, String idLang, String idThesaurus,
             boolean permuted, boolean synonym) {
 
@@ -1837,7 +1821,7 @@ public class SearchHelper {
         String query;
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -1950,13 +1934,12 @@ public class SearchHelper {
      * Cette fonction permet de faire une recherche par value sur les notes et
      * retourner les Ids des concepts
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idThesaurus
      * @return #MR
      */
-    public ArrayList<String> searchIdConceptFromNotes(HikariDataSource ds,
+    public ArrayList<String> searchIdConceptFromNotes(
             String value, String idLang, String idThesaurus) {
 
         Connection conn;
@@ -1982,7 +1965,7 @@ public class SearchHelper {
         String query;
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2044,12 +2027,11 @@ public class SearchHelper {
      * Cette fonction permet de faire une recherche sur les identifiants
      * (idConcept, idHandle, IdArk)
      *
-     * @param ds
      * @param value
      * @param idTheso
      * @return #MR
      */
-    public ArrayList<String> searchForIds(HikariDataSource ds, String value, String idTheso) {
+    public ArrayList<String> searchForIds(String value, String idTheso) {
 
         Connection conn;
         Statement stmt;
@@ -2057,7 +2039,7 @@ public class SearchHelper {
         ArrayList<String> idConcepts = null;
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2099,13 +2081,12 @@ public class SearchHelper {
      *
      * Elle retourne la liste des termes + identifiants
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idThesaurus
      * @return #MR
      */
-    public ArrayList<NodeSearchMini> searchFullTextElastic(HikariDataSource ds, String value, String idLang, String idThesaurus) {
+    public ArrayList<NodeSearchMini> searchFullTextElastic(String value, String idLang, String idThesaurus) {
         if (value == null) {
             return null;
         }
@@ -2127,7 +2108,7 @@ public class SearchHelper {
             lang = " and term.lang ='" + idLang + "'";
             langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
         }
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
                         + " FROM term, preferred_term, concept "
@@ -2231,14 +2212,13 @@ public class SearchHelper {
      *
      * Elle retourne la liste des termes + identifiants
      *
-     * @param ds
      * @param value
      * @param idLang
      * @param idThesaurus
      * @return #MR
      */
-    public ArrayList<String> searchFullTextElasticId(HikariDataSource ds,
-            String value, String idLang, String idThesaurus) {
+    public ArrayList<String> searchFullTextElasticId(String value, String idLang, String idThesaurus) {
+
         if (value == null) {
             return null;
         }
@@ -2260,7 +2240,7 @@ public class SearchHelper {
             lang = " and term.lang ='" + idLang + "'";
             langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
         }
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
                         + " FROM term, preferred_term, concept "
@@ -2403,7 +2383,6 @@ public class SearchHelper {
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
      *
-     * @param ds
      * @param value
      * @param idTheso
      * @param idLang
@@ -2411,7 +2390,7 @@ public class SearchHelper {
      * @return #MR
      */
     public List<NodeSearchMini> searchAutoCompletionForRelation(
-            HikariDataSource ds,
+            
             String value,
             String idLang,
             String idTheso,
@@ -2436,7 +2415,7 @@ public class SearchHelper {
         
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2520,17 +2499,12 @@ public class SearchHelper {
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
      *
-     * @param ds
      * @param value
      * @param idTheso
      * @param idLang
      * @return #MR
      */
-    public List<NodeSearchMini> searchAutoCompletionForCustomRelation(
-            HikariDataSource ds,
-            String value,
-            String idLang,
-            String idTheso) {
+    public List<NodeSearchMini> searchAutoCompletionForCustomRelation(String value, String idLang, String idTheso) {
 
         Connection conn;
         Statement stmt;
@@ -2543,7 +2517,7 @@ public class SearchHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2632,17 +2606,12 @@ public class SearchHelper {
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
      *
-     * @param ds
      * @param value
      * @param idTheso
      * @param idLang
      * @return #MR
      */
-    public ArrayList<NodeIdValue> searchAutoCompletionForRelationIdValue(
-            HikariDataSource ds,
-            String value,
-            String idLang,
-            String idTheso) {
+    public ArrayList<NodeIdValue> searchAutoCompletionForRelationIdValue(String value, String idLang, String idTheso) {
 
         Connection conn;
         Statement stmt;
@@ -2655,7 +2624,7 @@ public class SearchHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2738,7 +2707,7 @@ public class SearchHelper {
      * dans une chaine) exp : la recherche de "ceramiqu four" trouve la chaine
      * (four à céramique)
      */
-    public ArrayList<NodeSearch> searchTermNew(HikariDataSource ds, String value, String idLang, String idThesaurus, String idGroup, boolean withNote) {
+    public ArrayList<NodeSearch> searchTermNew(String value, String idLang, String idThesaurus, String idGroup, boolean withNote) {
 
         Connection conn;
         Statement stmt;
@@ -2795,7 +2764,7 @@ public class SearchHelper {
         }
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -2971,13 +2940,11 @@ public class SearchHelper {
      * valeur unique, on peut cherche sur tout le thésaurus sans filter par
      * groupe
      *
-     * @param ds
      * @param value
      * @param idThesaurus
      * @return
      */
-    public ArrayList<String> searchNotationId(HikariDataSource ds,
-            String value, String idThesaurus) {
+    public ArrayList<String> searchNotationId(String value, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
@@ -2987,7 +2954,7 @@ public class SearchHelper {
         String query;
 
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -3009,62 +2976,5 @@ public class SearchHelper {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ListIdConcept;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la valeur d'origine du concept
-     * réorganisé dans le bon ordre pour construire un tableau de 3 colonnes : 1
-     * - le premier est le contenu avant la valeur recherchée 2 - le deuxième
-     * contient le mot recherché 3 - le troisième contient le reste de la valeur
-     * exp : saint clair du rhone si on cherche (clair) 1 = saint 2 = clair 3 =
-     * du rhone
-     *
-     * @param ds
-     * @param idThesaurus
-     * @param idConcept
-     * @param idLang
-     * @param isPreferredTerm
-     * @return ArrayList de String (les valeurs dans l'ordre)
-     */
-    public ArrayList<String> getThisConceptPermute(HikariDataSource ds,
-            String idThesaurus, String idConcept, String idLang, boolean isPreferredTerm) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        ArrayList<String> tabValues = null;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT ord, lexical_value"
-                            + " FROM permuted WHERE"
-                            + " id_lang = '" + idLang + "'"
-                            + " and id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept = '" + idConcept + "'"
-                            + " and ispreferredterm = " + isPreferredTerm
-                            + " order by ord ASC";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    tabValues = new ArrayList<>();
-                    while (resultSet.next()) {
-                        tabValues.add(resultSet.getString("lexical_value"));
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting the value Permute of Concept : " + idConcept, sqle);
-        }
-        return tabValues;
     }
 }

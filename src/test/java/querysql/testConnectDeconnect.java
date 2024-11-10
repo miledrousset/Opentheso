@@ -5,6 +5,7 @@
  */
 package querysql;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -15,6 +16,8 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
 
 /**
  *
@@ -32,15 +35,15 @@ public class testConnectDeconnect {
     @Test
     public void testGet() {
         ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();    
+        HikariDataSource ds = connexionTest.getConnexionPool();
         Concept concept;
         for (int i = 0; i < 1000000; i++) {
-            concept = getThisConceptTest(ds, "293300", "th19");            
+            concept = getThisConceptTest(ds,"293300", "th19");
         }
     }
-    private Concept getThisConceptTest(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private Concept getThisConceptTest(DataSource dataSource, String idConcept, String idThesaurus) {
         Concept concept = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from concept where id_thesaurus = '" + idThesaurus + "'"
                         + " and id_concept = '" + idConcept + "'");
@@ -90,9 +93,9 @@ public class testConnectDeconnect {
         }
         
     }   
-    private void insert(HikariDataSource ds, Concept concept) {
+    private void insert(DataSource dataSource, Concept concept) {
         
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept "
                             + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
@@ -136,8 +139,8 @@ public class testConnectDeconnect {
         }
         
     }   
-    private void insertWithAutocommitFalse(HikariDataSource ds, Concept concept) {
-        try ( Connection conn = ds.getConnection()) {
+    private void insertWithAutocommitFalse(DataSource dataSource, Concept concept) {
+        try ( Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
             if(step1(conn, concept)){
                 conn.rollback();

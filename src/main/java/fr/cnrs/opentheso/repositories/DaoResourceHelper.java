@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptImage;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
@@ -8,15 +7,14 @@ import fr.cnrs.opentheso.models.concept.ConceptNote;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
-
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Service
@@ -33,23 +34,25 @@ public class DaoResourceHelper {
 
     private final static String SEPARATEUR = "##";
     private final static String SUB_SEPARATEUR = "@@";
+    
+    @Autowired
+    private DataSource dataSource;
 
     /**
      * retourne la liste de Top termes pour un thesaurus concept trié par alpha
      * la liste des champs retournés sont :
      * idConcept, notation, status, label, havechildren, uri, definitions, synonymes
-     * @param ds
      * @param idTheso
      * @param idBT
 
      * @return 
      */
-    public List<String> getConceptsTT(HikariDataSource ds, String idTheso, String idBT) {
+    public List<String> getConceptsTT(String idTheso, String idBT) {
 
         // on récupère les concepts fils et les facettes
         List<String> listIds = new ArrayList<>();
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_narrowers_ignorefacet"
                         + "('" + idTheso + "','" + idBT + "'); "
@@ -72,18 +75,16 @@ public class DaoResourceHelper {
      * retourne la liste de Top termes pour un thesaurus concept trié par alpha
      * la liste des champs retournés sont :
      * idConcept, notation, status, label, havechildren, uri, definitions, synonymes
-     * @param ds
      * @param idTheso
-
      * @param idLang
      * @return 
      */
-    public List<NodeConceptGraph> getConceptsTTForGraph(HikariDataSource ds, String idTheso, String idLang) {
+    public List<NodeConceptGraph> getConceptsTTForGraph(String idTheso, String idLang) {
 
         // on récupère les concepts fils et les facettes
         List<NodeConceptGraph> nodeConceptGraphs = new ArrayList<>();
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_topterm_forgraph"
                         + "('" + idTheso + "', '" + idLang + "') "
@@ -137,19 +138,18 @@ public class DaoResourceHelper {
      * retourne la liste de fils pour un concept trié par alpha
      * la liste des champs retournés sont :
      * idConcept, notation, status, label, havechildren, uri, definitions, synonymes
-     * @param ds
      * @param idTheso
      * @param idConceptBT
      * @param idLang
      * @return 
      */
-    public List<NodeConceptGraph> getConceptsNTForGraph(HikariDataSource ds, String idTheso,
+    public List<NodeConceptGraph> getConceptsNTForGraph(String idTheso,
             String idConceptBT, String idLang) {
 
         // on récupère les concepts fils et les facettes
         List<NodeConceptGraph> nodeConceptGraphs = new ArrayList<>();
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_narrower_forgraph"
                         + "('" + idTheso + "', '" + idConceptBT + "', '" + idLang + "') "
@@ -201,21 +201,20 @@ public class DaoResourceHelper {
     
     /**
      * permet de récupérer les concept fils pour le concept à déplier
-     * elle retourne : idConcept, notation, status, label, havechildren (trié) 
-     * @param ds
+     * elle retourne : idConcept, notation, status, label, havechildren (trié)
      * @param idTheso
      * @param idConceptBT
      * @param idLang
      * @param isSortByNotation
      * @return 
      */
-    public List<NodeConceptTree> getConceptsNTForTree(HikariDataSource ds, String idTheso,
+    public List<NodeConceptTree> getConceptsNTForTree(String idTheso,
             String idConceptBT, String idLang, boolean isSortByNotation) {
 
         // on récupère les concepts fils et les facettes
         List<NodeConceptTree> nodeConceptTrees = new ArrayList<>();
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_narrower_fortree"
                         + "('" + idTheso + "', '" + idConceptBT + "', '" + idLang + "') "
@@ -287,124 +286,10 @@ public class DaoResourceHelper {
         }
         return nodeConceptTrees;
     }
-
-    /**
-     * pemret de récupérer une collection par langue
-     *
-     * @param ds
-     * @param idTheso
-     * @param idGroup
-     * @param idLang
-     * @return
-     */
-/*    public NodeFullConcept getFullCollection(HikariDataSource ds, String idTheso, String idGroup, String idLang) {
-        NodeFullConcept nodeFullConcept = null;
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
-                        + "as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar,"
-                        + "prefLabel varchar, altLabel varchar, hidenlabel varchar,"
-                        + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
-                        + "scopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
-                        + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text,"
-                        + " membre text, created timestamp with time zone, modified timestamp with time zone, images text, creator text, contributor text,"
-                        + "replaces text, replaced_by text, facets text, externalResources text);"
-                );
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeFullConcept = new NodeFullConcept();
-
-                        nodeFullConcept.setUri(resultSet.getString("URI"));
-
-                        // type de concept 
-                        nodeFullConcept.setResourceType(SKOSProperty.CONCEPT);
-
-                        // Status du concept 
-                        nodeFullConcept.setResourceStatus(SKOSProperty.CONCEPT);
-                        if ("DEP".equalsIgnoreCase(resultSet.getString("conceptType"))) {
-                            nodeFullConcept.setResourceStatus(SKOSProperty.DEPRECATED);
-                        }
-                        if ("CA".equalsIgnoreCase(resultSet.getString("conceptType"))) {
-                            nodeFullConcept.setResourceStatus(SKOSProperty.CANDIDATE);
-                        }
-
-                        // identifiants
-                        nodeFullConcept.setIdentifier(resultSet.getString("identifier"));
-                        nodeFullConcept.setPermanentId(resultSet.getString("permalinkId"));
-                        nodeFullConcept.setNotation(resultSet.getString("notation"));
-
-                        // dates
-                        nodeFullConcept.setCreated(resultSet.getString("created"));
-                        nodeFullConcept.setModified(resultSet.getString("modified"));
-
-                        // users
-                        nodeFullConcept.setCreatorName(resultSet.getString("creator"));
-
-                        nodeFullConcept.setContributorName(getContributors(resultSet.getString("contributor")));
-
-                        // selected prefLabel (langue en cours)
-                        nodeFullConcept.setPrefLabel((getLabel(resultSet.getString("prefLabel"), idLang)));
-                        // selected altLabel
-                        nodeFullConcept.setAltLabels(getLabels(resultSet.getString("altLabel")));
-                        // selected hiddenLabel
-                        nodeFullConcept.setHiddenLabels(getLabels(resultSet.getString("hidenlabel")));
-
-                        // labels traductions
-                        nodeFullConcept.setPrefLabelsTraduction(getLabelsTraduction(resultSet.getString("prefLabel_trad")));
-                        nodeFullConcept.setAltLabelTraduction(getLabelsTraduction(resultSet.getString("altLabel_trad")));
-                        nodeFullConcept.setHiddenLabelTraduction(getLabelsTraduction(resultSet.getString("hiddenLabel_trad")));
-
-                        // notes
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("definition")));
-                        nodeFullConcept.setExamples(getNotes(resultSet.getString("example")));
-                        nodeFullConcept.setEditorialNotes(getNotes(resultSet.getString("editorialNote")));
-                        nodeFullConcept.setChangeNotes(getNotes(resultSet.getString("changeNote")));
-                        nodeFullConcept.setScopeNotes(getNotes(resultSet.getString("scopeNote")));
-                        nodeFullConcept.setNotes(getNotes(resultSet.getString("note")));
-                        nodeFullConcept.setHistoryNotes(getNotes(resultSet.getString("historyNote")));
-
-                        // relations 
-                        nodeFullConcept.setBroaders(getRelations(resultSet.getString("broader")));
-                        nodeFullConcept.setNarrowers(getRelations(resultSet.getString("narrower")));
-                        nodeFullConcept.setRelateds(getRelations(resultSet.getString("related")));
-
-                        // alignements
-                        nodeFullConcept.setExactMatchs(getAlignments(resultSet.getString("exactMatch")));
-                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("closeMatch")));
-                        nodeFullConcept.setBroadMatchs(getAlignments(resultSet.getString("broadMatch")));
-                        nodeFullConcept.setRelatedMatchs(getAlignments(resultSet.getString("relatedMatch")));
-                        nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
-
-                        // GPS
-                        nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
-
-                        // membres, les collections dont le concept est membre
-                        nodeFullConcept.setMembres(getFromIdLabel(resultSet.getString("membre")));
-
-                        // images 
-                        nodeFullConcept.setImages(getImages(resultSet.getString("images")));
-
-                        // replaces
-                        nodeFullConcept.setReplaces(getFromIdLabel(resultSet.getString("replaces")));
-                        //replaceBy
-                        nodeFullConcept.setReplacedBy(getFromIdLabel(resultSet.getString("replaced_by")));
-
-                        //Facettes
-                        nodeFullConcept.setFacets(getFromIdLabel(resultSet.getString("facets")));
-
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeFullConcept;
-    }    */
     
     /**
      * pemret de récupérer la liste des relations NT
      *
-     * @param ds
      * @param idTheso
      * @param idConcept
      * @param idLang
@@ -412,14 +297,11 @@ public class DaoResourceHelper {
      * @param offset
      * @return
      */
-    public List<ConceptRelation> getListNT(HikariDataSource ds, String idTheso, String idConcept, String idLang, int offset, int step) {
-        if (ds.isClosed()) {
-            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, "HikariDataSource is closed.");
-            return null;
-        }
+    public List<ConceptRelation> getListNT(String idTheso, String idConcept, String idLang, int offset, int step) {
+
         List<ConceptRelation> conceptRelations = null;
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM opentheso_get_next_nt('" + idTheso + "', '" + idConcept + "', '" + idLang + "'," + offset + "," + step + ");"
                 );
@@ -438,7 +320,6 @@ public class DaoResourceHelper {
     /**
      * pemret de récupérer un concept complet par langue
      *
-     * @param ds
      * @param idTheso
      * @param idConcept
      * @param idLang
@@ -446,14 +327,10 @@ public class DaoResourceHelper {
      * @param offset
      * @return
      */
-    public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang, int offset, int step) {
+    public NodeFullConcept getFullConcept(String idTheso, String idConcept, String idLang, int offset, int step) {
         NodeFullConcept nodeFullConcept = null;
-        if (ds.isClosed()) {
-            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, "HikariDataSource is closed.");
-            return null;
-        }
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "'," + offset + "," + step + ")"
                         + " as x(URI text, resourceType varchar, localUri text, identifier varchar, permalinkId varchar,"
@@ -840,5 +717,5 @@ public class DaoResourceHelper {
         return null;
     }
 
-    //private NodeFullConcept daoGetFullConcept(HikariDataSource ds, String IdTheso, List<String> idConcepts){
+    //private NodeFullConcept daoGetFullConcept(String IdTheso, List<String> idConcepts){
 }
