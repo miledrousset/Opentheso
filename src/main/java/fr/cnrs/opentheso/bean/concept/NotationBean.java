@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NotationBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
@@ -57,7 +57,7 @@ public class NotationBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         
         if(!notation.isEmpty()) {
-            if(conceptHelper.isNotationExist(connect.getPoolConnexion(),
+            if(conceptHelper.isNotationExist(
                     idTheso,
                     notation)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La notation existe déjà dans le thésaurus !!");
@@ -69,7 +69,7 @@ public class NotationBean implements Serializable {
             }
         }
         
-        if(!conceptHelper.updateNotation(connect.getPoolConnexion(),
+        if(!conceptHelper.updateNotation(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 idTheso,
                 notation.trim())) {

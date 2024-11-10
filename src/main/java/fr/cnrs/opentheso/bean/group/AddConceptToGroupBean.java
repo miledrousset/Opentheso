@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -29,14 +23,12 @@ import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-
 @Data
 @SessionScoped
 @Named(value = "addConceptToGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptToGroupBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -69,11 +61,7 @@ public class AddConceptToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptView.getSelectedLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(
-                    connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptView.getSelectedLang(),
-                    value);
+            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), value);
         }
         return liste;
     }
@@ -95,17 +83,17 @@ public class AddConceptToGroupBean implements Serializable {
         }
 
         // addConceptToGroup
-        if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(), selectedNodeAutoCompletionGroup.getIdGroup(),
+        if (!groupHelper.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElmentHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

@@ -17,7 +17,7 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -42,8 +42,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AddConcept implements Serializable {
     
-    @Autowired @Lazy
-    private Connect connect;
+    
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy
@@ -118,7 +117,7 @@ public class AddConcept implements Serializable {
         }
 
         if ((notation != null) && (!notation.isEmpty())) {
-            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+            if (conceptHelper.isNotationExist(idTheso, notation.trim())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (PrimeFaces.current().isAjaxRequest()) {
@@ -131,7 +130,7 @@ public class AddConcept implements Serializable {
 
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
-        if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), prefLabel.trim(), idTheso, idLang)) {
+        if (termHelper.isPrefLabelExist(prefLabel.trim(), idTheso, idLang)) {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un prefLabel existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -142,7 +141,7 @@ public class AddConcept implements Serializable {
             return;
         }
         // verification dans les altLabels
-        if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+        if (termHelper.isAltLabelExist(
                 prefLabel.trim(),
                 idTheso,
                 idLang)) {
@@ -200,7 +199,7 @@ public class AddConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
-            if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
+            if (conceptHelper.isIdExiste(idNewConcept, idTheso)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué, veuillez choisir un autre ou laisser vide !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -238,12 +237,7 @@ public class AddConcept implements Serializable {
             idConceptParent = idBTfacet;
         }
 
-        idNewConcept = conceptHelper.addConcept(
-                connect.getPoolConnexion(),
-                idConceptParent, relationType,
-                concept,
-                terme,
-                idUser);
+        idNewConcept = conceptHelper.addConcept(idConceptParent, relationType, concept, terme, idUser);
 
         if (idNewConcept == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
@@ -257,12 +251,12 @@ public class AddConcept implements Serializable {
         dcElement.setName(DCMIResource.CREATOR);
         dcElement.setValue(currentUser.getNodeUser().getName());
         dcElement.setLanguage(null);
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);
+        dcElementHelper.addDcElementConcept(dcElement, idNewConcept, idTheso);
         ///////////////
 
         if (isConceptUnderFacet) {
 
-            if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
+            if (!facetHelper.addConceptToFacet(idFacet, idTheso, idNewConcept)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le concept n'a pas été ajouté à la facette");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -348,8 +342,8 @@ public class AddConcept implements Serializable {
             }
         }
         
-        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
-        nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
+        typesRelationsNT = relationsHelper.getTypesRelationsNT();
+        nodeGroups = groupHelper.getListConceptGroup(
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 

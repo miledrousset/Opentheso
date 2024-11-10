@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.services.exports.csv;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
@@ -532,7 +532,7 @@ public class CsvWriteHelper {
      * @param delimiter
      * @return
      */
-    public byte[] writeCsvById(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups, char delimiter) {
+    public byte[] writeCsvById(String idTheso, String idLang, List<String> idGroups, char delimiter) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
@@ -550,14 +550,14 @@ public class CsvWriteHelper {
 
                 ArrayList<String> idConcepts = null;
                 if (idGroups == null || idGroups.isEmpty()) {
-                    idConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+                    idConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
                 } else {
                     if (idConcepts == null) {
                         idConcepts = new ArrayList<>();
                     }
                     ArrayList<String> idConceptsTemp;
                     for (String idGroup : idGroups) {
-                        idConceptsTemp = conceptHelper.getAllIdConceptOfThesaurusByGroup(ds, idTheso, idGroup);
+                        idConceptsTemp = conceptHelper.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
                         if (idConceptsTemp != null) {
                             idConcepts.addAll(idConceptsTemp);
                         }
@@ -576,7 +576,7 @@ public class CsvWriteHelper {
                 boolean first = true;
                 for (String idConcept : idConcepts) {
                     try {
-                        nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang, -1, -1);
+                        nodeConcept = conceptHelper.getConcept(idConcept, idTheso, idLang, -1, -1);
                         record.add(nodeConcept.getConcept().getIdConcept());
                         record.add(nodeConcept.getConcept().getIdArk());
                         record.add(nodeConcept.getConcept().getIdHandle());
@@ -821,7 +821,7 @@ public class CsvWriteHelper {
      * @param delimiter
      * @return
      */
-    public byte[] writeCsvByDeprecated(HikariDataSource ds, String idTheso, String idLang, char delimiter) {
+    public byte[] writeCsvByDeprecated(String idTheso, String idLang, char delimiter) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
@@ -837,7 +837,7 @@ public class CsvWriteHelper {
                 
                 csvFilePrinter.printRecord(header);
 
-                ArrayList<NodeDeprecated> nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(ds, idTheso, idLang);
+                ArrayList<NodeDeprecated> nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(idTheso, idLang);
                 if (nodeDeprecateds == null) {
                     return null;
                 }

@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CopyAndPasteBetweenThesoHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -29,7 +29,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CopyAndPasteBetweenTheso implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -96,21 +96,15 @@ public class CopyAndPasteBetweenTheso implements Serializable {
 
         // aprsè l'initialisation du conceptBean, cette variable est aussi initialisée
         // pour éviter cela, on construi un nouvel objet
-        nodeConceptDrag = conceptHelper.getConcept(
-                connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getTerm().getLang(), -1, -1);
+        nodeConceptDrag = conceptHelper.getConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getTerm().getLang(), -1, -1);
         isCopyOn = true;
         idThesoOrigin = selectedTheso.getCurrentIdTheso();
         if (nodeConceptDrag == null) {
             return;
         }
 
-        conceptsToCopy = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso()); 
+        conceptsToCopy = conceptHelper.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Copier "
                 + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ") Total = " + conceptsToCopy.size());
@@ -130,7 +124,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
 
         // on vérifie si les ids des concepts à copier n'existent pas déjà dans le thésaurus cible.
         for (String idConcept : conceptsToCopy) {
-            if(conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())) {
+            if(conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'identifiant " + idConcept + " existe déjà dans le thésaurus cible, c'est interdit !!! ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);            
                 return;                
@@ -189,7 +183,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
             return false;
         }
 
-        if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
+        if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     idThesoOrigin,
@@ -205,7 +199,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private boolean copyToRoot(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
         
-            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(connect.getPoolConnexion(),
+            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(
                     selectedTheso.getCurrentIdTheso(),
 
                     idThesoOrigin,

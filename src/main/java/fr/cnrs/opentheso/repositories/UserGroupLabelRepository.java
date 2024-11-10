@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,10 +16,13 @@ import java.util.List;
 @Service
 public class UserGroupLabelRepository {
 
-    public List<UserGroupLabel> getAllProjects(HikariDataSource ds) {
+    @Autowired
+    private DataSource dataSource;
+
+    public List<UserGroupLabel> getAllProjects() {
         List<UserGroupLabel> projects = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT label.*, lower(label.label_group) AS sorted_label_group FROM user_group_label label ORDER BY lower(label.label_group) ASC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -36,9 +40,9 @@ public class UserGroupLabelRepository {
         return projects;
     }
 
-    public List<UserGroupLabel> getProjectsByThesoStatus(HikariDataSource ds, boolean status) {
+    public List<UserGroupLabel> getProjectsByThesoStatus(boolean status) {
         List<UserGroupLabel> projects = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT grp.id_group, lower(label.label_group) AS sorted_label_group "
                         + "FROM thesaurus the, user_group_thesaurus grp, user_group_label label "
@@ -59,9 +63,9 @@ public class UserGroupLabelRepository {
         return projects;
     }
 
-    public List<UserGroupLabel> getProjectsByUserId(HikariDataSource ds, int userId) {
+    public List<UserGroupLabel> getProjectsByUserId(int userId) {
         List<UserGroupLabel> projects = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT lab "
                         + "FROM user_role_group grp, UserGroupLabel lab "

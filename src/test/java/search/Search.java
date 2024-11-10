@@ -1,12 +1,13 @@
 package search;
 
-import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
 
 /**
  *
@@ -20,14 +21,14 @@ public class Search {
     @Test
     public void exact() {
         ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();        
+        DataSource ds = connexionTest.getConnexionPool();
         SearchHelper searchHelper = new SearchHelper();
         ArrayList<NodeSearchMini> nodeSearchMinis;
 
         System.out.println("Avant  : " + LocalTime.now());
         for(int i=0; i<1000; i++){
-            nodeSearchMinis = searchHelper.searchExactMatch(ds, "amphore", "fr", "TH_1");
-            //nodeSearchMinis = searchHelper.searchFullTextElastic(ds, "amphore", "fr", "TH_1");
+            nodeSearchMinis = searchHelper.searchExactMatch("amphore", "fr", "TH_1");
+            //nodeSearchMinis = searchHelper.searchFullTextElastic("amphore", "fr", "TH_1");
         }
         System.out.println("Après  : " + LocalTime.now());
     }

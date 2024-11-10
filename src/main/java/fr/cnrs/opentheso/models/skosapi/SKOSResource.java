@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.models.skosapi;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 
@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.utils.StringUtils;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -341,12 +342,12 @@ public class SKOSResource {
      * @param idToIsTradDiff
      * @return
      */
-    public static Comparator<SKOSResource> sortForHiera(HikariDataSource hikariDataSource, boolean isTrad, String langCode,
+    public static Comparator<SKOSResource> sortForHiera(boolean isTrad, String langCode,
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
             HashMap<String, ArrayList<String>> idToMatch, HashMap<String, List<String>> idToGPS,
             HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
             HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
-        return new HieraComparator(hikariDataSource, isTrad, langCode, langCode2, idToNameHashMap,
+        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap,
                 idToChildId, idToDocumentation, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
     }
 
@@ -362,16 +363,16 @@ public class SKOSResource {
         HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
-        HikariDataSource hikariDataSource;
+        DataSource dataSource;
         HashMap<String, ArrayList<Integer>> idToIsTradDiff;
 
-        public HieraComparator(HikariDataSource hikariDataSource, boolean isTrad, String langCode, String langCode2,
+        public HieraComparator(boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
                 HashMap<String, List<String>> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
                 HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
 
-            this.hikariDataSource = hikariDataSource;
+            this.dataSource = dataSource;
             this.langCode = langCode;
             this.langCode2 = langCode2;
             this.idToNameHashMap = idToNameHashMap;

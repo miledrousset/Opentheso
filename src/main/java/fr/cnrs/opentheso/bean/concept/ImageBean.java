@@ -6,7 +6,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -35,7 +35,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ImageBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -89,7 +89,7 @@ public class ImageBean implements Serializable {
 
     public void prepareImageForEdit(){
         nodeImagesForEdit = new ArrayList<>();
-        nodeImagesForEdit = imagesHelper.getExternalImages(connect.getPoolConnexion(),
+        nodeImagesForEdit = imagesHelper.getExternalImages(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
     }
@@ -109,7 +109,7 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        if(!imagesHelper.addExternalImage(connect.getPoolConnexion(),
+        if(!imagesHelper.addExternalImage(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 name,
@@ -124,11 +124,11 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
 
@@ -158,7 +158,7 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        if(!imagesHelper.updateExternalImage(connect.getPoolConnexion(),
+        if(!imagesHelper.updateExternalImage(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeImage.getId(),
@@ -174,11 +174,11 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -203,7 +203,7 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        if(!imagesHelper.deleteExternalImage(connect.getPoolConnexion(),
+        if(!imagesHelper.deleteExternalImage(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeImage.getUri())) {
@@ -217,11 +217,11 @@ public class ImageBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);   
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        

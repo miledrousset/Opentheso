@@ -8,7 +8,7 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import jakarta.inject.Named;
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class GroupView implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private IndexSetting indexSetting;     
     @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
     @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
@@ -94,16 +94,15 @@ public class GroupView implements Serializable {
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
 
-        nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
         
-        nodeGroupTraductions = groupHelper.getGroupTraduction(connect.getPoolConnexion(), idGroup, idTheso, idLang);
-        nodeGroupType = groupHelper.getGroupType(
-                connect.getPoolConnexion(), nodeGroup.getConceptGroup().getIdtypecode());
+        nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
+        nodeGroupType = groupHelper.getGroupType(nodeGroup.getConceptGroup().getIdtypecode());
 
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
         setAllNotes(nodeNotes);
 
-        count = conceptHelper.getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso, idGroup);
+        count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();

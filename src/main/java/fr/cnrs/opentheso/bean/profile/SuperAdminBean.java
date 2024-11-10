@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
@@ -15,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -25,8 +25,8 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class SuperAdminBean implements Serializable {
 
-    @Autowired @Lazy 
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     @Autowired
     private UserHelper userHelper;
@@ -85,21 +85,21 @@ public class SuperAdminBean implements Serializable {
      * permet de récupérer la liste de tous les utilisateurs (Pour SuperAdmin)
      */
     private void listAllUsers(){
-        allUsers = userHelper.getAllUsers(connect.getPoolConnexion());
+        allUsers = userHelper.getAllUsers();
     }    
     
     /**
      * permet de récupérer la liste de tous les utilisateurs avec les roles pour chaque projet
      */
     private void listAllUsersProjectRole(){
-        String idLang = connect.getWorkLanguage();
+        String idLang = workLanguage;
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
         
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
-            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.getPoolConnexion(), idLang));
-            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.getPoolConnexion()));
+            nodeUserGroupUsers = userHelper.getAllGroupUser();
+            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup());
+            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin());
         } 
     }      
     
@@ -107,26 +107,18 @@ public class SuperAdminBean implements Serializable {
      * permet de retourner la liste de tous les projets
      */
     private void listAllProjects(){
-        allProjects = userHelper.getAllProject(connect.getPoolConnexion());
+        allProjects = userHelper.getAllProject();
     }
     
     private void listAllThesaurus(){
         allThesoProject = new ArrayList<>();
-        String idLang = connect.getWorkLanguage();
+        String idLang = workLanguage;
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
-        ArrayList<NodeUserGroupThesaurus> allThesoWithProject = userHelper.getAllGroupTheso(connect.getPoolConnexion(), idLang);
-        ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(connect.getPoolConnexion(), idLang);
+        ArrayList<NodeUserGroupThesaurus> allThesoWithProject = userHelper.getAllGroupTheso(idLang);
+        ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(idLang);
         allThesoProject.addAll(allThesoWithProject);
         allThesoProject.addAll(allThesoWithoutProject);
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
     }
 
     public CurrentUser getCurrentUser() {

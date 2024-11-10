@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
@@ -25,6 +24,7 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 
 
 @Service
@@ -34,18 +34,21 @@ public class ExportHelper {
     private final static String SUB_SEPERATEUR = "@@";
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
     private FacetHelper facetHelper;
 
     
-    public List<SKOSResource> getAllFacettes(HikariDataSource ds, String idTheso, String baseUrl, 
+    public List<SKOSResource> getAllFacettes(String idTheso, String baseUrl, 
             String originalUri, NodePreference nodePreference) throws Exception {
         
         List<SKOSResource> facettes = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * FROM opentheso_get_facettes('" + idTheso + "', '" + baseUrl + "') as (id_facet VARCHAR, "
                         + "lexicalValue VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
@@ -60,9 +63,9 @@ public class ExportHelper {
                         
                         sKOSResource.addRelation(resultSet.getString("id_facet"), resultSet.getString("uri_value"), SKOSProperty.SUPER_ORDINATE);
                         sKOSResource.setIdentifier(resultSet.getString("id_facet"));
-                        List<String> members = facetHelper.getAllMembersOfFacet(ds, resultSet.getString("id_facet"), idTheso);
+                        List<String> members = facetHelper.getAllMembersOfFacet(resultSet.getString("id_facet"), idTheso);
                         for (String idConcept : members) {
-                            NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
+                            NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
                             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(idTheso, originalUri, 
                                     idConcept, nodePreference, nodeUri),  SKOSProperty.MEMBER);
                         }
@@ -101,8 +104,7 @@ public class ExportHelper {
 
     /**
      * Nouvelle version pour récupérer un thésaurus entier en utilisant les 
-     * requêtes plpgsql 
-     * @param ds
+     * requêtes plpgsql
      * @param idTheso
      * @param baseUrl
      * @param idGroup
@@ -111,14 +113,14 @@ public class ExportHelper {
      * @return
      * @throws Exception 
      */
-    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
-            String baseUrl, String idGroup, String originalUri, NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
+    public List<SKOSResource> getAllConcepts(String idTheso, String baseUrl, String idGroup, String originalUri,
+                                             NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
         String note;
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.setQueryTimeout(3600);
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
@@ -309,23 +311,6 @@ public class ExportHelper {
                 + "replaces text, replaced_by text, facets text, externalResources text);";
     }
 
-    private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
-        String pathFromArray = "";
-        ArrayList<String> allPath = new ArrayList<>();
-        for (ArrayList<String> path : paths) {
-            for (String string1 : path) {
-                if (pathFromArray.isEmpty()) {
-                    pathFromArray = string1;
-                } else {
-                    pathFromArray = pathFromArray + SEPERATEUR + string1;
-                }
-            }
-            allPath.add(pathFromArray);
-            pathFromArray = "";
-        }
-        return allPath;
-    }
-
     private void addImages(SKOSResource resource, String textBrut) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] images = textBrut.split(SEPERATEUR);
@@ -456,9 +441,6 @@ public class ExportHelper {
     }
 
     private void getLabels(String labelBrut, SKOSResource sKOSResource, int type) throws SQLException {
-    /*    if("16238".equalsIgnoreCase(sKOSResource.getIdentifier())){
-            System.out.println("concept : " + sKOSResource.getIdentifier() + "  " + labelBrut);
-        }*/
         if (StringUtils.isNotEmpty(labelBrut)) {
             String[] tabs = labelBrut.split(SEPERATEUR);
 
@@ -484,8 +466,8 @@ public class ExportHelper {
         }
     }
     
-    private String getUriFromNodeUri(String idTheso, String originalUri, String idConcept, 
-                NodePreference nodePreference, NodeUri nodeUri) {
+    private String getUriFromNodeUri(String idTheso, String originalUri, String idConcept, NodePreference nodePreference,
+                                     NodeUri nodeUri) {
               
         if(nodePreference.isOriginalUriIsArk() && nodeUri.getIdArk()!= null && !StringUtils.isEmpty(nodeUri.getIdArk())) {
             return originalUri + '/' + nodeUri.getIdArk();

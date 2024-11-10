@@ -1,21 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.utils.MD5Password;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.time.LocalDate;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +24,6 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ModifyUSerBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
 
@@ -42,28 +34,8 @@ public class ModifyUSerBean implements Serializable {
     private String passWord1;
     private String passWord2;;
     private boolean hasKey;
-
-
-
     private LocalDate apiKeyExpireDate;
     private boolean keyNeverExpire;
-
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-
-
-
-    public void clear(){
-        nodeUser = null;
-        passWord1 = null;
-        passWord2 = null;
-
-    }       
-    
-    public ModifyUSerBean() {
-    }
 
     public void toggleHasKey(){
     }
@@ -79,7 +51,7 @@ public class ModifyUSerBean implements Serializable {
      * @param idUser
      */
     public void selectUser(int idUser) {
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
+        nodeUser = userHelper.getUser(idUser);
         passWord1 = null;
         passWord2 = null;
     }
@@ -111,7 +83,7 @@ public class ModifyUSerBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);
+        nodeUser = userHelper.getUser(id);
         hasKey = hasKey();
         apiKeyExpireDate = nodeUser.getApiKeyExpireDate();
         keyNeverExpire = nodeUser.isKeyNeverExpire();
@@ -128,7 +100,7 @@ public class ModifyUSerBean implements Serializable {
             return;
         }
         
-        if(!userHelper.deleteUser(connect.getPoolConnexion(), nodeUser.getIdUser())){
+        if(!userHelper.deleteUser(nodeUser.getIdUser())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de suppression de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -150,13 +122,7 @@ public class ModifyUSerBean implements Serializable {
             return;              
         }
 
-        if(!userHelper.updateUser(
-                connect.getPoolConnexion(),
-                nodeUser.getIdUser(),
-                nodeUser.getName(),
-                nodeUser.getMail(),
-                nodeUser.isActive(),
-                nodeUser.isAlertMail())){
+        if(!userHelper.updateUser(nodeUser.getIdUser(), nodeUser.getName(), nodeUser.getMail(), nodeUser.isActive(), nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -185,13 +151,7 @@ public class ModifyUSerBean implements Serializable {
         }
 
         nodeUser.setName(nodeUser.getName().trim());
-        if(!userHelper.updateUser(
-                connect.getPoolConnexion(),
-                nodeUser.getIdUser(),
-                nodeUser.getName(),
-                nodeUser.getMail(),
-                nodeUser.isActive(),
-                nodeUser.isAlertMail())){
+        if(!userHelper.updateUser(nodeUser.getIdUser(), nodeUser.getName(), nodeUser.getMail(), nodeUser.isActive(), nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -221,10 +181,7 @@ public class ModifyUSerBean implements Serializable {
             return;              
         }
 
-        if(!userHelper.updatePwd(
-                connect.getPoolConnexion(),
-                nodeUser.getIdUser(),
-                MD5Password.getEncodedPassword(passWord2))){
+        if(!userHelper.updatePwd(nodeUser.getIdUser(), MD5Password.getEncodedPassword(passWord2))){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -256,7 +213,7 @@ public class ModifyUSerBean implements Serializable {
         }
 
         // Mise à jour de l'utilisateur dans la base de données
-        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue, connect.getPoolConnexion());
+        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue);
     }
 
     public NodeUser getNodeUser() {

@@ -13,7 +13,6 @@ import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
 import java.io.BufferedReader;
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,8 +36,10 @@ import org.primefaces.event.FileUploadEvent;
 @Named
 @ViewScoped
 public class AtelierThesService implements Serializable {
-    
-    @Autowired @Lazy private Connect connect;
+
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
     @Autowired @Lazy private LanguageBean languageBean;
     @Autowired @Lazy private CurrentUser currentUser;
 
@@ -59,18 +61,18 @@ public class AtelierThesService implements Serializable {
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), thesoSelected.getId());
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(thesoSelected.getId());
         
         ArrayList<ConceptResultNode> list = new ArrayList<>();
         int limit = 5;
         for (List<String> data : datas) {
             if(data.get(position) == null || data.get(position).isEmpty()) continue;
-            ArrayList<NodeSearchMini> temp = searchHelper.searchFullText(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> temp = searchHelper.searchFullText(
                     data.get(position), languageBean.getIdLangue(), thesoSelected.getId(), limit);
             
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
-                    NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
+                    NodeConcept concept = conceptHelper.getConcept(nodeSearchMini.getIdConcept(), 
                             thesoSelected.getId(), languageBean.getIdLangue(), -1, -1);
 
                     ConceptResultNode conceptResultNode = new ConceptResultNode();
@@ -152,9 +154,9 @@ public class AtelierThesService implements Serializable {
 
         List<String> authorizedTheso;
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), true);
+            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(true);
         } else {
-            authorizedTheso = userHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
         }
         
         if (authorizedTheso == null) {
@@ -166,16 +168,16 @@ public class AtelierThesService implements Serializable {
         String preferredIdLangOfTheso;
         for (String idTheso1 : authorizedTheso) {
             
-            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
+            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(idTheso1);
             if (preferredIdLangOfTheso == null) {
-                preferredIdLangOfTheso = connect.getWorkLanguage().toLowerCase();
+                preferredIdLangOfTheso = workLanguage.toLowerCase();
             }
 
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
-            nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), 
+            nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(
                     idTheso1, preferredIdLangOfTheso));
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(idTheso1));
             nodeListTheso.add(nodeIdValue);
             
         }

@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -22,9 +21,12 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
+
+import javax.sql.DataSource;
 
 /**
  * @author miledrousset
@@ -34,8 +36,8 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired @Lazy
     private CurrentUser currentUser;
@@ -80,20 +82,13 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         if( (allId == null) || (allId.isEmpty())) return;
 
         for (String idConcept : allId) {
-            if (!groupHelper.deleteRelationConceptGroupConcept(
-                    connect.getPoolConnexion(),
-                    idGroup,
-                    idConcept,
-                    selectedTheso.getCurrentIdTheso(),
-                    idUser)) {
+            if (!groupHelper.deleteRelationConceptGroupConcept(idGroup, idConcept, selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression des concepts de la collection !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
@@ -117,12 +112,12 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         }
     }
 
-    public void deleteGroup(String idGroup, int idUser){
+    public void deleteGroup(String idGroup){
         FacesMessage msg;
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
+            Connection conn = dataSource.getConnection();
             conn.setAutoCommit(false);
-            if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso(), idUser)) {
+            if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso())) {
                 conn.rollback();
                 conn.close();
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
@@ -131,7 +126,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
             }
             conn.commit();
             conn.close();
-            if(!groupHelper.removeAllConceptsFromThisGroup(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso())){
+            if(!groupHelper.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             }

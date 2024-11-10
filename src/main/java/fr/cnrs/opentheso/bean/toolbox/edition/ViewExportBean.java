@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -10,7 +9,7 @@ import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import jakarta.inject.Named;
@@ -21,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.event.ToggleSelectEvent;
 
@@ -32,8 +32,10 @@ import org.primefaces.event.ToggleSelectEvent;
 @SessionScoped
 public class ViewExportBean implements Serializable {
 
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
     @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private ExportFileBean downloadBean;
     @Autowired @Lazy private LanguageBean languageBean;
 
@@ -122,7 +124,7 @@ public class ViewExportBean implements Serializable {
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+        nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
 
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
@@ -137,15 +139,14 @@ public class ViewExportBean implements Serializable {
 
         String idLang = selectedTheso.getCurrentLang();
         if (idLang == null || idLang.isEmpty()) {
-            idLang = connect.getWorkLanguage();
+            idLang = workLanguage;
         }
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);        
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), idLang);
 
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
-        groupList = groupHelper.getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
+        groupList = groupHelper.getListConceptGroup(nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;

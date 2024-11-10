@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -37,8 +31,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptAndChildToGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
@@ -84,7 +76,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(), value);
         }
         return liste;
@@ -105,16 +97,14 @@ public class AddConceptAndChildToGroupBean implements Serializable {
             return;
         }
 
-        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         if( (allId == null) || (allId.isEmpty())) return;
 
         // addConceptToGroup
         for (String idConcept : allId) {
-            if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(),
+            if (!groupHelper.addConceptGroupConcept(
                     selectedNodeAutoCompletionGroup.getIdGroup(),
                     idConcept,
                     selectedTheso.getCurrentIdTheso())) {
@@ -124,12 +114,12 @@ public class AddConceptAndChildToGroupBean implements Serializable {
             }
         }
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

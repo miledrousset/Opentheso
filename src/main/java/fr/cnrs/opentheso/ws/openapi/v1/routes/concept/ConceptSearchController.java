@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class ConceptSearchController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam(value = "group", required = false) String idGroup) {
 
-        var concepts = searchHelper.searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idThesaurus);
+        var concepts = searchHelper.searchConceptWSV2(input, lang, idGroup, idThesaurus);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(concepts);
     }
 
@@ -49,7 +49,7 @@ public class ConceptSearchController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                          @PathVariable("idLang") String idLang) {
 
-        var groups = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
+        var groups = groupHelper.getListRootConceptGroup(idThesaurus, idLang, true);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(groups);
     }
 }

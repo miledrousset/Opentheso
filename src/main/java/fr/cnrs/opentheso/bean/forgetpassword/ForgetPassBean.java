@@ -4,22 +4,20 @@ import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.Serializable;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 
 @Named(value = "forgetPassBean")
 @RequestScoped
 public class ForgetPassBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired
     private MailBean mailBean;
@@ -39,11 +37,11 @@ public class ForgetPassBean implements Serializable {
             return;
         }
 
-        if (userHelper.isUserMailExist(connect.getPoolConnexion(), sendTo)) {
+        if (userHelper.isUserMailExist(sendTo)) {
             String password = toolsHelper.getNewId(10, false, false);
             String passwordMD5 = MD5Password.getEncodedPassword(password);
-            String pseudo = userHelper.getNameUser(connect.getPoolConnexion(), sendTo);
-            int idUser = userHelper.getIdUserFromMail(connect.getPoolConnexion(), sendTo);
+            String pseudo = userHelper.getNameUser(sendTo);
+            int idUser = userHelper.getIdUserFromMail(sendTo);
             if (idUser == -1) {
                 printMessage("Absence des préférences pour le serveur Mail");
                 return;
@@ -57,7 +55,7 @@ public class ForgetPassBean implements Serializable {
                 printMessage("Erreur d'envoie de mail, veuillez contacter l'administrateur");
                 return;
             }
-            if (!userHelper.updatePwd(connect.getPoolConnexion(), idUser, passwordMD5)) {
+            if (!userHelper.updatePwd(idUser, passwordMD5)) {
                 printMessage("Erreur base de données");
             }
         } else {

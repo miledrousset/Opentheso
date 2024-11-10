@@ -13,7 +13,7 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -39,8 +39,6 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class TreeGroups implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
     @Autowired @Lazy
     private RightBodySetting rightBodySetting;
     @Autowired @Lazy
@@ -89,7 +87,7 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(
@@ -134,11 +132,8 @@ public class TreeGroups implements Serializable {
 
     private boolean addGroupsChild(TreeNode parent) {
 
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
-                connect.getPoolConnexion(),
-                ((TreeNodeData) parent.getData()).getNodeId(),
-                idTheso,
-                idLang, isSortByNotation());
+        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(((TreeNodeData) parent.getData()).getNodeId(),
+                idTheso, idLang, isSortByNotation());
         if (listeSubGroup == null) {
             parent.setType("group");
             return true;
@@ -167,10 +162,7 @@ public class TreeGroups implements Serializable {
     private boolean addConceptsChild(TreeNode parent) {
         TreeNodeData data;
 
-        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListConceptsOfGroup(
-                connect.getPoolConnexion(),
-                idTheso,
-                idLang,
+        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListConceptsOfGroup(idTheso, idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 selectedTheso.isSortByNotation());
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
@@ -211,8 +203,7 @@ public class TreeGroups implements Serializable {
 
     public void expandGroupToPath(String idGroup, String idTheso, String idLang) {
 
-        ArrayList<String> path = pathHelper.getPathOfGroup(
-                connect.getPoolConnexion(), idGroup, idTheso);
+        ArrayList<String> path = pathHelper.getPathOfGroup(idGroup, idTheso);
 
         if (root == null) {
             initialise(idTheso, idLang);
@@ -258,7 +249,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -293,7 +284,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -414,7 +405,7 @@ public class TreeGroups implements Serializable {
         if (selectedNode == null) {
             return false;
         }
-        return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
+        return groupHelper.isHaveSubGroup(
                 idTheso,
                 ((TreeNodeData) selectedNode.getData()).getNodeId());
     }

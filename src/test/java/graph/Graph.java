@@ -1,5 +1,6 @@
 package graph;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
@@ -55,7 +56,7 @@ public class Graph {
         
         initGraph();
         
-        getGraphByConcept(ds, idTheso, idConcept, idLang);
+        getGraphByConcept(idTheso, idConcept, idLang);
         
         String json = getJsonFromNodeGraphD3js();
     }
@@ -69,10 +70,10 @@ public class Graph {
         HikariDataSource ds = connexionTest.getConnexionPool();
         
         initGraph();
-        getGraphByTheso(ds, idTheso, idLang);
+        getGraphByTheso(idTheso, idLang);
         idTheso = "th14";
         idLang = "fr";        
-        getGraphByTheso(ds, idTheso, idLang);        
+        getGraphByTheso(idTheso, idLang);        
         
         String json = getJsonFromNodeGraphD3js();
     }    
@@ -84,22 +85,22 @@ public class Graph {
         nodeGraphD3js.setRelationships(new ArrayList<>()); 
     }
     
-    private void getGraphByTheso(HikariDataSource ds, String idTheso, String idLang){
+    private void getGraphByTheso(String idTheso, String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(idTheso);
         
         // récupérer les conceptScheme
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        ArrayList<NodeUri> nodeTTs = conceptHelper.getAllTopConcepts(ds, idTheso);
+        ArrayList<NodeUri> nodeTTs = conceptHelper.getAllTopConcepts(idTheso);
         nodeGraphD3js.getRelationships().addAll(getRelationshipOfTheso(nodeTTs, idTheso));        
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }
@@ -108,20 +109,20 @@ public class Graph {
     }     
     
     
-    private void getGraphByConcept(HikariDataSource ds, String idTheso, String idConcept,
+    private void getGraphByConcept(String idTheso, String idConcept,
                         String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
         
         // récupérer le noeud du thésaurus
         // récupérer les conceptScheme
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getIdsOfBranch2(ds, idTheso, idConcept);
+        List<String> listIdConcept = conceptHelper.getIdsOfBranch2(idTheso, idConcept);
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }
@@ -442,7 +443,7 @@ public class Graph {
 
         PathHelper pathHelper = new PathHelper();
 
-        List<String> paths = pathHelper.getGraphOfConcept(ds, idConcept, idTheso);
+        List<String> paths = pathHelper.getGraphOfConcept(idConcept, idTheso);
         for (String path : paths) {
             System.out.println(path);
         }

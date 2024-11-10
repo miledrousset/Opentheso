@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.services.alignements;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.bean.alignment.SearchSingleAllignementCallable;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.concurrent.Future;
 public class SearchAllignementByConceptCallable implements Callable<List<NodeAlignment>> {
 
     private final AlignementSource alignementSource;
-    private final HikariDataSource connection;
+    private final DataSource connection;
     private final List<String> allLangsTheso;
     private final List<String> thesaurusLangs;
     private final String idTheso;
@@ -42,7 +43,7 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
 
 
     public SearchAllignementByConceptCallable(AlignementSource alignementSource,
-                                              HikariDataSource connection, List<String> allLangsTheso,
+                                              DataSource connection, List<String> allLangsTheso,
                                               List<String> thesaurusLangs, String idTheso, NodeIdValue concept,
                                               String idCurrentLang, String nom, String prenom,
                                               NodeAlignment aligementLocal, String definitionLocal, String mode) {

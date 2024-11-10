@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.models.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -35,6 +34,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.util.Collections;
@@ -51,8 +51,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
 
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
     @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private IndexSetting indexSetting;
     @Autowired @Lazy private TreeGroups treeGroups;
     @Autowired @Lazy private TreeConcepts treeConcepts;
@@ -136,12 +138,6 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
-
-        if (!connect.isConnected()) {
-            System.err.println("Erreur de connexion BDD");
-            return;
-        }
-
         isNetworkAvailable = true;
         roleOnThesoBean.showListTheso(currentUser);
         sortByNotation = false;
@@ -197,7 +193,7 @@ public class SelectedTheso implements Serializable {
             return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
-            String idArk = thesaurusHelper.getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
+            String idArk = thesaurusHelper.getIdArkOfThesaurus(currentIdTheso);
             if(StringUtils.isEmpty(idArk)){
                 return baseUrl + "/?idt=" + currentIdTheso;
             } else {
@@ -207,7 +203,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private void thesoHaveActiveCorpus(){
-        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(connect.getPoolConnexion(), getSelectedIdTheso());
+        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
     }    
     
     /**
@@ -216,10 +212,7 @@ public class SelectedTheso implements Serializable {
      * @throws java.io.IOException
      */
     public void setSelectedTheso() throws IOException {
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
-        connect.setLocalUri(localUri);
-        
+
         thesoHaveActiveCorpus();
         
         viewEditorThesoHomeBean.reset();
@@ -309,12 +302,12 @@ public class SelectedTheso implements Serializable {
             currentUser.initAllTheso();
             projectIdSelected = ""+currentUser.getUserPermissions().getSelectedProject();
             selectedIdTheso = currentUser.getUserPermissions().getSelectedTheso();
-            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(connect.getPoolConnexion(), false);
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
-                projectsList = userGroupLabelRepository.getAllProjects(connect.getPoolConnexion());
+                projectsList = userGroupLabelRepository.getAllProjects();
             } else {
-                projectsList = userGroupLabelRepository.getProjectsByUserId(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {
@@ -325,7 +318,7 @@ public class SelectedTheso implements Serializable {
     public void setSelectedProject() {
         projectBean.setLangCodeSelected(languageBean.getIdLangue());
         if (CollectionUtils.isEmpty(projectBean.getAllLangs())) {
-            projectBean.setAllLangs(languageHelper.getAllLanguages(connect.getPoolConnexion()));
+            projectBean.setAllLangs(languageHelper.getAllLanguages());
         }
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();
@@ -371,9 +364,6 @@ public class SelectedTheso implements Serializable {
 
     
     public void setSelectedThesoForSearch() throws IOException {
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
-        connect.setLocalUri(localUri);
 
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -482,14 +472,11 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(),
-                selectedIdTheso,
-                languageBean.getIdLangue());
+        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedIdTheso, languageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;
-        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
+        thesoName = thesaurusHelper.getTitleOfThesaurus(
                 selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
@@ -531,7 +518,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private String getIdLang() {
-        String idLang = connect.getWorkLanguage();
+        String idLang = workLanguage;
         if (roleOnThesoBean.getNodePreference() != null) {
             idLang = roleOnThesoBean.getNodePreference().getSourceLang();
         }
@@ -578,7 +565,7 @@ public class SelectedTheso implements Serializable {
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang, currentUser);
             actionFromConceptToOn();
             initIdsFromUri();
-            thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), selectedIdTheso, selectedLang);
+            thesoName = thesaurusHelper.getTitleOfThesaurus(selectedIdTheso, selectedLang);
             return;
         }
 
@@ -619,7 +606,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private boolean isValidTheso(String idTheso) {
-        return !thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso);
+        return !thesaurusHelper.isThesoPrivate(idTheso);
     }
 
     public String getIdConceptFromUri() {
@@ -724,14 +711,6 @@ public class SelectedTheso implements Serializable {
 
     public void setLanguageBean(LanguageBean LanguageBean) {
         this.languageBean = LanguageBean;
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
     }
 
     public IndexSetting getIndexSetting() {

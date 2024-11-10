@@ -23,7 +23,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -59,8 +59,7 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
     @Autowired @Lazy
     private IndexSetting indexSetting;
     @Autowired @Lazy
@@ -246,7 +245,7 @@ public class ConceptView implements Serializable {
     }
     
     public String getFlagFromCodeLang(String idLang){
-        String flag = languageHelper.getFlagFromIdLang(connect.getPoolConnexion(), idLang);
+        String flag = languageHelper.getFlagFromIdLang(idLang);
         return FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestContextPath() + "/resources/img/flag/" + flag + ".png";        
     }
@@ -261,7 +260,7 @@ public class ConceptView implements Serializable {
     public String getLabelOfConceptType(String conceptType, String idTheso) {
 
         String idLang = getIdLangOfInterface();
-        return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
+        return relationsHelper.getLabelOfTypeConcept(
                 conceptType,
                 idTheso,
                 idLang);
@@ -283,7 +282,7 @@ public class ConceptView implements Serializable {
         if (StringUtils.isEmpty(idLang)) {
             idLang = languageBean.getIdLangue();
         }
-        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
@@ -299,8 +298,7 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang);
+            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, interfaceLang);
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -345,7 +343,7 @@ public class ConceptView implements Serializable {
     public void searchCorpus(String idThesaurus) {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idThesaurus);
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(idThesaurus);
         nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {
@@ -426,7 +424,7 @@ public class ConceptView implements Serializable {
         selectedLang = idLang;
         offset = 0;
 
-        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step+1);
+        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
@@ -435,8 +433,7 @@ public class ConceptView implements Serializable {
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface());
+            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, getIdLangOfInterface());
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -507,7 +504,7 @@ public class ConceptView implements Serializable {
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
 
-        List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
+        List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(idConcept, idTheso);
         if (nodeFacets == null)
             nodeFacets = new ArrayList<>();
         else
@@ -515,7 +512,7 @@ public class ConceptView implements Serializable {
         for (String facetId : facetIds) {
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(facetId);
-            nodeIdValue.setValue(facetHelper.getLabelOfFacet(connect.getPoolConnexion(), facetId, idTheso, idLang));
+            nodeIdValue.setValue(facetHelper.getLabelOfFacet(facetId, idTheso, idLang));
             nodeFacets.add(nodeIdValue);
         }
     }
@@ -534,7 +531,7 @@ public class ConceptView implements Serializable {
     }
 
     public void countTheTotalOfBranch(String idThesaurus) {
-        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(connect.getPoolConnexion(), idThesaurus,
+        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(idThesaurus,
                 nodeFullConcept.getIdentifier());
         this.countOfBranch = listIdsOfBranch.size();
     }
@@ -551,7 +548,7 @@ public class ConceptView implements Serializable {
 
     public void getNextNT(String idTheso, String idConcept, String idLang) {
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            List<ConceptRelation> conceptRelations = daoResourceHelper.getListNT(connect.getPoolConnexion(),
+            List<ConceptRelation> conceptRelations = daoResourceHelper.getListNT(
                     idTheso,
                     ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
                     idLang, offset, step + 1);
@@ -572,9 +569,9 @@ public class ConceptView implements Serializable {
      * #MR
      */
     private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
-        List<String> graphPaths = pathHelper.getGraphOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+        List<String> graphPaths = pathHelper.getGraphOfConcept(idConcept, idTheso);
         List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);
-        pathLabel2 = pathHelper.getPathWithLabel2(connect.getPoolConnexion(), paths, idTheso, idLang);
+        pathLabel2 = pathHelper.getPathWithLabel2(paths, idTheso, idLang);
     }    
     
     private void setRoles() {
@@ -894,7 +891,7 @@ public class ConceptView implements Serializable {
         gps.setIdConcept(nodeFullConcept.getIdentifier());
         gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
-        gpsHelper.saveNewGps(connect.getPoolConnexion(), gps);
+        gpsHelper.saveNewGps(gps);
         mapScripte = createMap(idThesaurus);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
@@ -907,16 +904,16 @@ public class ConceptView implements Serializable {
 
         if (StringUtils.isEmpty(gpsList)) {
             nodeFullConcept.setGps(null);
-            gpsHelper.removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
+            gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
         } else {
             List<Gps> gpsListTmps = readGps(gpsList, idThesaurus, nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
                 nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
                 gpsModeSelected = getGpsMode(gpsListTmps);
-                gpsHelper.removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
+                gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
                 for (Gps gps : gpsListTmps) {
-                    gpsHelper.saveNewGps(connect.getPoolConnexion(), gps);
+                    gpsHelper.saveNewGps(gps);
                 }
             } else {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");
