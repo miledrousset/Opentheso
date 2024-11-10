@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
+
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -41,6 +42,9 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Group", description = "4. Contient les actions en lien avec les groupes.")
 public class GroupThesoController {
+
+    @Autowired
+    private Connect connect;
 
     @Autowired
     private GroupHelper groupHelper;

@@ -6,11 +6,11 @@ import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
+
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -45,6 +45,8 @@ public class DiscussionService implements Serializable {
 
     @Autowired @Lazy
     private LanguageBean langueBean;
+
+    
 
     @Autowired @Lazy
     private LanguageBean languageBean;
@@ -96,13 +98,11 @@ public class DiscussionService implements Serializable {
     }
     
     private void setListUsersForMail(){
-        if (candidatBean.getCandidatSelected() != null) {
-            nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
-                    candidatBean.getCandidatSelected().getIdThesaurus());
-        } else {
-            nodeUsers = new ArrayList<>();
-        }
+        nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus());        
     }
+            
+            
 
     public void sendMessage() {
         if (candidatBean.getInitialCandidat() == null) {
@@ -142,18 +142,18 @@ public class DiscussionService implements Serializable {
                 + candidatBean.getCandidatSelected().getNomPref() + ", "
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
-        setListUsersForMail();
 
-        if(CollectionUtils.isNotEmpty(nodeUsers)) {
-            // Exécution asynchrone de la méthode setListUsersForMail
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(() -> {
+        // Exécution asynchrone de la méthode setListUsersForMail
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            setListUsersForMail();
+            if(CollectionUtils.isNotEmpty(nodeUsers)) {
                 nodeUsers.stream()
                         .filter(NodeUser::isAlertMail)
                         .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
-            });
-            executorService.shutdown();
-        }
+            }
+        });
+        executorService.shutdown();
 
     }
      

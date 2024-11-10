@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
@@ -42,6 +43,8 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -72,6 +75,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "alignmentBean")
 @SessionScoped
 public class AlignmentBean implements Serializable {
+
+    @Autowired
+    private Connect connect;
 
     @Autowired
     private ConceptView conceptView;

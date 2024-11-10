@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.ws.api;
 
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "Group", description = "Contient les actions en lien avec les groupes.")
 public class RestGroup {
+
+    @Autowired
+    private Connect connect;
 
     @Autowired
     private RestRDFHelper restRDFHelper;

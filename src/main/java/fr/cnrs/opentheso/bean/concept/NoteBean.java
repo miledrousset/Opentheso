@@ -212,10 +212,6 @@ public class NoteBean implements Serializable {
                 return;
             }
         }
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang(), currentUser);
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getIdentifier(), idUser);

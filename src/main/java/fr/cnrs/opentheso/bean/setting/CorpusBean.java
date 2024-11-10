@@ -2,8 +2,8 @@ package fr.cnrs.opentheso.bean.setting;
 
 import fr.cnrs.opentheso.repositories.CorpusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeCorpus;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -23,6 +23,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "corpusBean")
 @SessionScoped
 public class CorpusBean implements Serializable {
+
+    @Autowired
+    private Connect connect;
 
     @Autowired
     private SelectedTheso selectedTheso;
