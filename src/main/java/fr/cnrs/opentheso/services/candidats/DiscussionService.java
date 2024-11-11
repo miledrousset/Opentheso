@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -98,8 +99,12 @@ public class DiscussionService implements Serializable {
     }
     
     private void setListUsersForMail(){
-        nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getIdThesaurus());        
+        if (candidatBean.getCandidatSelected() != null) {
+            nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
+                    candidatBean.getCandidatSelected().getIdThesaurus());
+        } else {
+            nodeUsers = new ArrayList<>();
+        }
     }
             
             

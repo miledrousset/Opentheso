@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-
 import fr.cnrs.opentheso.ws.api.D3jsHelper;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.http.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +40,6 @@ public class ConceptThesoController {
 
     @Autowired
     private RestRDFHelper restRDFHelper;
-    
 
 
     @GetMapping(value = "/{idConcept}", produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
