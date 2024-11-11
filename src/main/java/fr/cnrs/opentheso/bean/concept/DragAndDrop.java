@@ -539,7 +539,6 @@ public class DragAndDrop implements Serializable {
         /// préparer le noeud à couper
         setBTsToCut();
 
-
         if (dropNode.getParent() == null) {
             // déplacement à la racine
             isDropToRoot = true;
@@ -628,12 +627,8 @@ public class DragAndDrop implements Serializable {
                 // si oui, on affiche une boite de dialogue pour choisir les branches à couper
                 ///choix de l'option pour deplacer la collection ou non
                 isGroupToCut = true;
-                PrimeFaces pf = PrimeFaces.current();
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("containerIndex:formLeftTab:idDragAndDrop");
-                    //      pf.ajax().update("containerIndex:formLeftTab:dragAndDropForm");
-                }
-                pf.executeScript("PF('dragAndDrop').show();");
+                PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDrop");
+                PrimeFaces.current().executeScript("PF('dragAndDrop').show();");
                 return;
             }
 
@@ -643,12 +638,8 @@ public class DragAndDrop implements Serializable {
                 drop();
             } else {
                 // si oui, on affiche une boite de dialogue pour choisir les branches à couper
-                PrimeFaces pf = PrimeFaces.current();
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("idDragAndDrop");
-                    //        pf.ajax().update("dragAndDropForm");
-                }
-                pf.executeScript("PF('dragAndDrop').show();");
+                PrimeFaces.current().ajax().update("idDragAndDrop");
+                PrimeFaces.current().executeScript("PF('dragAndDrop').show();");
             }
         }
     }
@@ -854,20 +845,16 @@ public class DragAndDrop implements Serializable {
         if(isGroupToCut) {
            addAndCutGroup();
         }
-        
+
         reloadConcept();
         reloadTree();
         
         if(isDropToRoot)
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                    nodeConceptDrag.getTerm().getLexicalValue()
-                            + " -> "
-                            + "Root");
+                    nodeConceptDrag.getTerm().getLexicalValue() + " -> " + "Root");
         else
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                nodeConceptDrag.getTerm().getLexicalValue()
-                        + " -> "
-                        + nodeConceptDrop.getTerm().getLexicalValue());
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
+                nodeConceptDrag.getTerm().getLexicalValue() + " -> " + nodeConceptDrop.getTerm().getLexicalValue());
                 
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
