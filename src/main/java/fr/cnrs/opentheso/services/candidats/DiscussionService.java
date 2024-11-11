@@ -97,7 +97,8 @@ public class DiscussionService implements Serializable {
     
     private void setListUsersForMail(){
         if (candidatBean.getCandidatSelected() != null) {
-            nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(), candidatBean.getCandidatSelected().getIdThesaurus());
+            nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
+                    candidatBean.getCandidatSelected().getIdThesaurus());
         } else {
             nodeUsers = new ArrayList<>();
         }
