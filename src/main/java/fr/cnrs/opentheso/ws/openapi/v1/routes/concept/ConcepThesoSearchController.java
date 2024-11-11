@@ -33,9 +33,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ConcepThesoSearchController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private GroupHelper groupHelper;
 
     @Autowired

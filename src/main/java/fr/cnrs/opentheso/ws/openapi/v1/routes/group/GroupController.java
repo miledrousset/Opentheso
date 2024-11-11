@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
-
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.MessageHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
@@ -36,9 +35,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Group", description = "Contient les actions en lien avec les groupes.")
 public class GroupController {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private RestRDFHelper restRDFHelper;

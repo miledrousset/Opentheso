@@ -38,9 +38,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 public class ConceptThesoController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private D3jsHelper d3jsHelper;
 
     @Autowired

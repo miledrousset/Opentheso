@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,8 +11,6 @@ import java.net.URISyntaxException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +27,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 @RequestMapping("/openapi/v1/redirect")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class RedirectController {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private RestRDFHelper restRDFHelper;

@@ -37,9 +37,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 public class ConceptAutocompleteController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private GroupHelper groupHelper;
 
     @Autowired

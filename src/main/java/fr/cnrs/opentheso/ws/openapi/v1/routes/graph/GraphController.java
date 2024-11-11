@@ -37,9 +37,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 public class GraphController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private GraphD3jsHelper graphD3jsHelper;
 
 
