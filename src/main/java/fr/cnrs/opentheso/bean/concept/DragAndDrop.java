@@ -26,6 +26,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.TreeDragDropEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -1213,25 +1214,19 @@ public class DragAndDrop implements Serializable {
             }
         }      
     }
-    
+
     private void reloadTree(){
-        PrimeFaces pf = PrimeFaces.current();
-        String lang = null;
-        if (conceptBean.getNodeConcept() != null) {
+
+        String lang = selectedTheso.getCurrentLang();
+        if (!StringUtils.isEmpty(conceptBean.getSelectedLang())) {
             lang = conceptBean.getSelectedLang();
         }
-        if (lang == null) {
-            lang = selectedTheso.getCurrentLang();
-        }
 
-        tree.initAndExpandTreeToPath(nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                lang);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");        
-        }
-        pf.executeScript("srollToSelected();");
+        tree.initAndExpandTreeToPath(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), lang);
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+        PrimeFaces.current().executeScript("srollToSelected();");
     }
 
     private void addAndCutGroup() {

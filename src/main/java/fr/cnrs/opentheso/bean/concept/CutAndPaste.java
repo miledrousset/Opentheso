@@ -16,6 +16,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -180,24 +181,19 @@ public class CutAndPaste implements Serializable {
             }
         }      
     }
-    
+
     private void reloadTree(){
-        PrimeFaces pf = PrimeFaces.current();
-        String lang;
-        if (conceptBean.getNodeConcept() != null) {
+
+        String lang = selectedTheso.getCurrentLang();
+        if (!StringUtils.isEmpty(conceptBean.getSelectedLang())) {
             lang = conceptBean.getSelectedLang();
-        } else {
-            lang = selectedTheso.getCurrentLang();
         }
 
-        tree.initAndExpandTreeToPath(nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                lang);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("formLeftTab:tabTree:tree");
-        }
-        pf.executeScript("srollToSelected();");
+        tree.initAndExpandTreeToPath(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), lang);
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+        PrimeFaces.current().executeScript("srollToSelected();");
     }
     
     /**
