@@ -33,9 +33,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 public class ThesaurusController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
 
 

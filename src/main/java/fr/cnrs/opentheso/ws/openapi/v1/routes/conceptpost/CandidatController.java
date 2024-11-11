@@ -31,9 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CandidatController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private CandidateHelper candidateHelper;
 
     @Autowired
