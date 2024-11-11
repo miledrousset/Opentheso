@@ -38,9 +38,6 @@ public class GraphQLServlet {
     @Autowired
     private DaoResourceHelper daoResourceHelper;
 
-    @Autowired
-    private Connect connect;
-
     private GraphQL graphQL;
     private final Gson gson = new Gson();
 

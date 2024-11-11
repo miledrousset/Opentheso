@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.UriInfo;
 
 
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -27,9 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class SelectTheso {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private PreferencesHelper preferencesHelper;

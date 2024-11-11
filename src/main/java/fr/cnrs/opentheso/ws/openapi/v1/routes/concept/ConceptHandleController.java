@@ -30,9 +30,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ConceptHandleController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
 

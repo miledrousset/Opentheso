@@ -11,12 +11,12 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.IOException;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -37,9 +37,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "searchBean")
 @SessionScoped
 public class SearchBean implements Serializable {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private SelectedTheso selectedTheso;

@@ -29,9 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PropositionsController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private ApiKeyHelper apiKeyHelper;
 
     @Autowired

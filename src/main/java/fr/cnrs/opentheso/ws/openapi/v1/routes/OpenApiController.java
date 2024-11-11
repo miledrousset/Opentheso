@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.*;
 public class OpenApiController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private ApiKeyHelper apiKeyHelper;
 
     @Autowired

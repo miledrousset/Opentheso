@@ -35,9 +35,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 public class ConceptArkController {
 
     @Autowired
-    private Connect connect;
-    
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
 
