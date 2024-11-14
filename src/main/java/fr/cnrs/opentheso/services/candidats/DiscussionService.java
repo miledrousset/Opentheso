@@ -146,18 +146,18 @@ public class DiscussionService implements Serializable {
                 + candidatBean.getCandidatSelected().getNomPref() + ", "
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
+        setListUsersForMail();
 
-        // Exécution asynchrone de la méthode setListUsersForMail
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
-            setListUsersForMail();
-            if(CollectionUtils.isNotEmpty(nodeUsers)) {
+        if(CollectionUtils.isNotEmpty(nodeUsers)) {
+            // Exécution asynchrone de la méthode setListUsersForMail
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(() -> {
                 nodeUsers.stream()
                         .filter(NodeUser::isAlertMail)
                         .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
-            }
-        });
-        executorService.shutdown();
+            });
+            executorService.shutdown();
+        }
 
     }
      
