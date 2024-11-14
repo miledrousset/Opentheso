@@ -425,7 +425,7 @@ public class CurrentUser implements Serializable {
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
         userPermissions.setListThesos(userHelper.getThesaurusOfProject(
-                connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser == null));
+                connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
@@ -509,7 +509,7 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
 
-        userPermissions.setListThesos(thesaurusHelper.getAllTheso(connect.getPoolConnexion(), false));
+        userPermissions.setListThesos(thesaurusHelper.getAllTheso(connect.getPoolConnexion(), nodeUser != null));
 
         // contrôle si le thésaurus actuel est dans la liste, sinon, on initialise le thésaurus à null
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
@@ -604,8 +604,6 @@ public class CurrentUser implements Serializable {
     /**
      * permet de savoir si l'utilisateur est admin au moins sur un projet pour
      * contôler la partie import et export
-     *
-     * @return
      */
     private void initAllAuthorizedProjectAsAdmin() {
         ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
