@@ -62,7 +62,7 @@ public class GraphController {
 
         if(idThesoConcepts == null) { return null;}
 
-        if(idThesoConcepts.size() == 2) {
+    /*    if(idThesoConcepts.size() == 2) {
             IdValuePair idValuePair = new IdValuePair();
             idValuePair.setIdTheso(idThesoConcepts.get(0));
             idValuePair.setIdConcept(idThesoConcepts.get(1));
@@ -72,8 +72,8 @@ public class GraphController {
             IdValuePair idValuePair = new IdValuePair();
             idValuePair.setIdTheso(idThesoConcepts.get(0));
             idValuePairs.add(idValuePair);
-        }
-   /*     for (String idThesoConcept : idThesoConcepts) {
+        }*/
+        for (String idThesoConcept : idThesoConcepts) {
             String[] elements = idThesoConcept.split(",");
 
             if(elements.length == 2){
@@ -87,7 +87,7 @@ public class GraphController {
                 idValuePair.setIdTheso(elements[0]);
                 idValuePairs.add(idValuePair);
             }            
-        }*/
+        }
 
         graphD3jsHelper.initGraph();        
 

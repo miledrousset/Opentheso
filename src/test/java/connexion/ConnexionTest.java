@@ -29,8 +29,8 @@ public class ConnexionTest {
         // Pactols2
         config.addDataSourceProperty("user", "opentheso");
         config.addDataSourceProperty("password", "opentheso");
-        config.addDataSourceProperty("databaseName", "opentheso");
-        config.addDataSourceProperty("portNumber", "5432");
+        config.addDataSourceProperty("databaseName", "mom");
+        config.addDataSourceProperty("portNumber", "5433");
         config.addDataSourceProperty("serverName", "localhost");
 
         HikariDataSource poolConnexion1 = new HikariDataSource(config);

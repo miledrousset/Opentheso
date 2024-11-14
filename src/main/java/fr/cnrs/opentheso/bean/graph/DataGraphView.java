@@ -87,9 +87,6 @@ public class DataGraphView implements Serializable {
     private String selectedIdTheso;
     private NodeSearchMini searchSelected;
 
-   /* public void initTest(String text){
-        System.out.println("url : " + text);
-    }*/
 
     private Properties getPrefOfNeo4j(){
 
