@@ -55,7 +55,8 @@ public class AlignmentManualBean implements Serializable {
     private String manualAlignmentSource;
     private String manualAlignmentUri;
     private int manualAlignmentType;
-    
+    private List<NodeAlignment> nodeAlignments;
+
     @PreDestroy
     public void destroy(){
         clear();
@@ -78,6 +79,8 @@ public class AlignmentManualBean implements Serializable {
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
+
+        nodeAlignments = alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(), conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
     }
 
     public void infos() {
@@ -110,6 +113,7 @@ public class AlignmentManualBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
         }
+        reset();
     }
 
     public void updateAlignement(){
@@ -321,4 +325,11 @@ public class AlignmentManualBean implements Serializable {
         this.manualAlignmentType = manualAlignmentType;
     }
 
+    public List<NodeAlignment> getNodeAlignments() {
+        return nodeAlignments;
+    }
+
+    public void setNodeAlignments(List<NodeAlignment> nodeAlignments) {
+        this.nodeAlignments = nodeAlignments;
+    }
 }

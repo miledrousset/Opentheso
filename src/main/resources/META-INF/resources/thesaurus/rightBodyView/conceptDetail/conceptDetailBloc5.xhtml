@@ -9,29 +9,38 @@
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 <!-- ligne Alignements -->
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="margin-left: 0px;">
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
-                                <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}"
-                                                actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
-                                                icon="fas fa-pen" update="containerIndex:idAddManualAlignment" />
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" >
+                                <h:panelGroup id="alignmentsActions" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.alignment')}" title="#{langueBean.getMsg('rightbody.concept.alignment')}"
+                                                  style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
+                                    <p:menuButton id="menuButtonAlignment" icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}"
-                                                action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
-                                                icon="fas fa-edit" update="containerIndex:idUpdateAlignment"
-                                                disabled="#{!conceptView.haveAlignment}"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}"
+                                                    actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
+                                                    icon="fas fa-pen" update="containerIndex:idAddManualAlignment" />
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}"
-                                                actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                                      conceptView.nodeFullConcept.identifier, conceptView.selectedLang)}"
-                                                oncomplete="PF('deleteAlignment').show();"
-                                                update="containerIndex:idDeleteAlignment"
-                                                icon="fas fa-minus" disabled="#{!conceptView.haveAlignment}" />
-                                </p:menuButton>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}"
+                                                    action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
+                                                    icon="fas fa-edit" update="containerIndex:idUpdateAlignment"
+                                                    />
+
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}"
+                                                    actionListener="#{alignmentManualBean.reset()}"
+                                                    oncomplete="PF('deleteAlignment').show();"
+                                                    update="containerIndex:idDeleteAlignment"
+                                                    icon="fas fa-minus"  />
+                                    </p:menuButton>
+                                </h:panelGroup>
                             </div>
-                        </h:panelGroup>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" >
 
                             <h:panelGroup rendered="#{!conceptView.haveAlignment}">

@@ -5,7 +5,7 @@
 
     <p:dialog id="idDeleteAlignment" header="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" widgetVar="deleteAlignment" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        <h:form id="deleteAlignment">
+        <h:form id="deleteAlignmentForm">
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
@@ -14,7 +14,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
-                <p:dataTable id="deleteAlignment" var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" size="small"
+                <p:dataTable id="deleteAlignmentData" var="alignment" value="#{alignmentManualBean.nodeAlignments}" size="small"
                              style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column width="90" headerText="#{langueBean.getMsg('candidat.url')}">
@@ -25,10 +25,10 @@
                     <p:column width="10" headerText="#{langueBean.getMsg('profile.action')}">
                         <p:commandButton style="color: #C63632" action="#{alignmentManualBean.deleteAlignment(alignment)}"
                                        icon="pi pi-trash" styleClass="rounded-button ui-button-outlined"
-                                       
-                                       
-                                       update="containerIndex:deleteAlignment containerIndex:formRightTab"
-                                       ajax="true" process="@form">
+                                       update="containerIndex:deleteAlignment containerIndex:formRightTab containerIndex:idDeleteAlignment"
+                                       ajax="true" process="@form"
+                                       oncomplete="PF('deleteAlignment').show();"
+                        >
                         </p:commandButton>
                     </p:column>                    
                 </p:dataTable>

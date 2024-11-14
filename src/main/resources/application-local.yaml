@@ -19,7 +19,7 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
  #   platform: postgres
-    url: jdbc:postgresql://localhost:5433/opentheso
+    url: jdbc:postgresql://localhost:5433/mom
     password: opentheso
     username: opentheso
     dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
