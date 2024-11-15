@@ -746,7 +746,7 @@ public class UserHelper {
                         + "FROM user_group_thesaurus, thesaurus the "
                         + "WHERE the.id_thesaurus = user_group_thesaurus.id_thesaurus "
                         + "AND user_group_thesaurus.id_group = '" + idProject + "' "
-                        + (isPrivate ? "AND the.private = " + !isPrivate : ""));
+                        + (isPrivate ? "" : "AND the.private = false"));
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         nodeIdTheso.add(resultSet.getString("id_thesaurus"));
