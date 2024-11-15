@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso</groupId>
     <artifactId>opentheso</artifactId>
-    <version>${project.version}</version>
+    <version>24.11.02</version>
     <packaging>jar</packaging>
     <name>opentheso</name>
 
@@ -407,7 +407,6 @@
     </dependencies>
 
     <properties>
-        <project.version>24.11.01</project.version>
         <java.version>17</java.version>
         <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>
