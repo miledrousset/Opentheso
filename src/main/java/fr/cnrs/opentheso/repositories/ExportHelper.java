@@ -120,6 +120,7 @@ public class ExportHelper {
         
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
+                stmt.setQueryTimeout(3600);
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
