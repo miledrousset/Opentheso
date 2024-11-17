@@ -80,7 +80,7 @@ public class AlignmentManualBean implements Serializable {
         manualAlignmentUri = "";
         manualAlignmentType = -1;
 
-        nodeAlignments = alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(), conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
+        nodeAlignments = alignmentHelper.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
     }
 
     public void infos() {

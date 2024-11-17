@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 
 import java.net.URI;
@@ -35,8 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -343,7 +340,6 @@ public class Rest_new {
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
                                     @RequestParam(value = "groups", required = false) String groups,
                                     @RequestParam(value = "match", required = false) String match,
-                                    @RequestParam(value = "format", required = false) String format,
                                     @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {
