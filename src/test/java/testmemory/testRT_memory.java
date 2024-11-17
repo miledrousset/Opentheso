@@ -65,7 +65,6 @@ public class testRT_memory {
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
      *
-     * @param ds
      * @param value
      * @param idTheso
      * @param idLang
