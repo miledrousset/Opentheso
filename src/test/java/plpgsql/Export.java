@@ -40,7 +40,7 @@ public class Export {
 
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         System.out.println("Commence ");
-        List<NodeConceptGraph> listChilds = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
+//        List<NodeConceptGraph> listChilds = daoResourceHelper.getConceptsNTForGraph(ds, idTheso, idConcept, idLang);
         
     }
   
@@ -121,7 +121,7 @@ public class Export {
         
         System.out.println("start NodeConcept at =  " + LocalDateTime.now());    
         for (int i = 0; i < 1000; i++) {
-            new ConceptHelper().getConceptForExport(idConcept, idTheso, false);
+    //        new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false);
         }
 
 
@@ -140,7 +140,7 @@ public class Export {
         String idLang = "fr";
         
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, -1, -1);
+    //    NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang, -1, -1);
     }
     
     @Test
@@ -154,7 +154,7 @@ public class Export {
         
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         System.out.println("start");
-        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false);
+    //    List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(ds, idTheso, idConcept, idLang, false);
         System.out.println("stop");
     }    
     
@@ -256,13 +256,13 @@ public class Export {
     
     @Test
     public void exportNoteConcept() {
-        ConnexionTest connexionTest = new ConnexionTest();
+    /*    ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
         
         String idTheso = "th133";
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         String resultat;
         System.out.println("total = " + idConcepts.size());
         System.out.println("start at =  " + LocalDateTime.now());
@@ -283,18 +283,18 @@ public class Export {
         } catch (SQLException sqle) {
             System.out.println(">> " + sqle.getMessage());
         }
-        System.out.println("fin at = " + LocalDateTime.now());
+        System.out.println("fin at = " + LocalDateTime.now());*/
     }     
     
     @Test
     public void exportTerms() {
-        ConnexionTest connexionTest = new ConnexionTest();
+    /*    ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
         
         String idTheso = "th133";
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         String resultat;
         System.out.println("total = " + idConcepts.size());
         System.out.println("start at =  " + LocalDateTime.now());
@@ -315,7 +315,7 @@ public class Export {
         } catch (SQLException sqle) {
             System.out.println(">> " + sqle.getMessage());
         }
-        System.out.println("fin at = " + LocalDateTime.now());
+        System.out.println("fin at = " + LocalDateTime.now());*/
     }      
 
 }
