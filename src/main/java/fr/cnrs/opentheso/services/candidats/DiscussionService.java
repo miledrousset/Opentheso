@@ -144,16 +144,31 @@ public class DiscussionService implements Serializable {
                 + ". Sachez qu’un nouveau message a été posté.";
         setListUsersForMail();
 
-        if(CollectionUtils.isNotEmpty(nodeUsers)) {
+    /* désactivé par Miled, ca ne fonctionne pas, l'objet mailBean est null quand on passe par le thread
+    if(CollectionUtils.isNotEmpty(nodeUsers)) {
             // Exécution asynchrone de la méthode setListUsersForMail
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
                 nodeUsers.stream()
-                        .filter(NodeUser::isAlertMail)
+                        //.filter(NodeUser::isAlertMail)
+                        .filter(user -> user != null && Boolean.FALSE.equals(user.isAlertMail())) // Vérification sécurisée
                         .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
             });
             executorService.shutdown();
+        }*/
+        if (CollectionUtils.isNotEmpty(nodeUsers)) {
+            nodeUsers.stream()
+                    .filter(user -> user != null && Boolean.TRUE.equals(user.isAlertMail())) // Vérifie si l'alerte est activée
+                    .forEach(user -> {
+                        try {
+                            mailBean.sendMail(user.getMail(), subject, message);
+                        } catch (Exception e) {
+                            System.err.println("Erreur lors de l'envoi du mail à : " + user.getMail());
+                            e.printStackTrace();
+                        }
+                    });
         }
+
 
     }
      

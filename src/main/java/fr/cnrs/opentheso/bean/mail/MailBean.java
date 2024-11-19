@@ -72,9 +72,6 @@ public class MailBean implements Serializable {
             transport.connect();
             transport.sendMessage(msg, msg.getRecipients(Message.RecipientType.TO));
             transport.close();
-            
-            var fm = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email envoyé avec succès");
-            FacesContext.getCurrentInstance().addMessage(null, fm);
             return true;
         } catch (MessagingException e) {
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_FATAL, "", e.toString());

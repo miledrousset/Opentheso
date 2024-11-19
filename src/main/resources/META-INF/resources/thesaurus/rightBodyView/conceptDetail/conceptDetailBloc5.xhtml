@@ -138,9 +138,11 @@
                                         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
                                             <!-- Uri du concept -->
                                             <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                            <h:link href="#{conceptView.nodeFullConcept.uri}" value="#{conceptView.nodeFullConcept.uri}"
-                                                    style="color: #164A78; font-size: 13px;" target="_blank">
-                                            </h:link>
+                                            <h:panelGroup rendered="#{not empty conceptView.nodeFullConcept.uri}">
+                                                <p:link href="#{conceptView.nodeFullConcept.uri}" value="#{conceptView.nodeFullConcept.uri}"
+                                                        style="color: #164A78; font-size: 13px;" target="_blank">
+                                                </p:link>
+                                            </h:panelGroup>
                                         </div>
                                     </h:panelGroup>
                                 </div>

@@ -70,7 +70,7 @@ public class Connect implements Serializable{
     }
 
     public String getLocalUri() {
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("host");
         return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";
     }
 
