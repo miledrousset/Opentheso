@@ -529,7 +529,12 @@ public class SelectedTheso implements Serializable {
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
     public void preRenderView() throws IOException {
+        if (idThesoFromUri == null) {
+            isFromUrl = false;
+            return;
+        }
 
+        isFromUrl = true;
         roleOnThesoBean.setPublicThesos(currentUser);
         loadProject();
 
