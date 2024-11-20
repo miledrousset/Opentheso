@@ -15,19 +15,10 @@ server:
       enabled: false
 
 spring:
-  main:
-    allow-bean-definition-overriding: true
   datasource:
- #   platform: postgres
     url: jdbc:postgresql://localhost:5433/mom
     password: opentheso
     username: opentheso
-    dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
-    maxPoolSize: 1000
-    minIdle: 1
-    idleTimeout: 30000
-    connectionTimeout: 30000
-    connectionTestQuery: SELECT 1
   jpa:
     show-sql: true
     generate-ddl: true
