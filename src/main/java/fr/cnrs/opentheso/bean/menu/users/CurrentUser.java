@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -394,13 +393,13 @@ public class CurrentUser implements Serializable {
         int idProject, idRole; 
         userPermissions.setSelectedTheso(idTheso);
         userPermissions.setPreferredLangOfSelectedTheso(preferencesHelper.getWorkLanguageOfTheso(selectedTheso.getCurrentIdTheso()));
-        userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));        
+        userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
         
         
         userPermissions.setListLangsOfSelectedTheso(thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
                 selectedTheso.getCurrentIdTheso(), userPermissions.getPreferredLangOfSelectedTheso()));
         
-        idProject = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());     
+        idProject = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());
         
         if(nodeUser != null) {
             if(nodeUser.isSuperAdmin()) {
@@ -508,7 +507,7 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
 
-        userPermissions.setListThesos(thesaurusHelper.getAllTheso(false));
+        userPermissions.setListThesos(thesaurusHelper.getAllTheso(nodeUser != null));
 
         // contrôle si le thésaurus actuel est dans la liste, sinon, on initialise le thésaurus à null
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){

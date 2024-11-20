@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
@@ -46,8 +45,6 @@ public class DiscussionService implements Serializable {
 
     @Autowired @Lazy
     private LanguageBean langueBean;
-
-    
 
     @Autowired @Lazy
     private LanguageBean languageBean;
@@ -106,8 +103,8 @@ public class DiscussionService implements Serializable {
             nodeUsers = new ArrayList<>();
         }
     }
-            
-            
+
+
 
     public void sendMessage() {
         if (candidatBean.getInitialCandidat() == null) {
@@ -148,20 +145,19 @@ public class DiscussionService implements Serializable {
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
 
-        // Exécution asynchrone de la méthode setListUsersForMail
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
-            setListUsersForMail();
-            if(CollectionUtils.isNotEmpty(nodeUsers)) {
-                nodeUsers.stream()
-                        .filter(NodeUser::isAlertMail)
-                        .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
-            }
-        });
-        executorService.shutdown();
-
+        if (CollectionUtils.isNotEmpty(nodeUsers)) {
+            nodeUsers.stream()
+                    .filter(user -> user != null && Boolean.TRUE.equals(user.isAlertMail())) // Vérifie si l'alerte est activée
+                    .forEach(user -> {
+                        try {
+                            mailBean.sendMail(user.getMail(), subject, message);
+                        } catch (Exception e) {
+                            System.err.println("Erreur lors de l'envoi du mail à : " + user.getMail());
+                            e.printStackTrace();
+                        }
+                    });
+        }
     }
-     
 
     public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(

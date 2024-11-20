@@ -175,7 +175,7 @@ public class CandidatDao {
         value = StringUtils.unaccentLowerString(value);
         
         StringBuffer request = new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
-                .append(" term.lexicalValue, con.id_concept,")
+                .append(" term.lexical_Value, con.id_concept,")
                 .append(" con.id_thesaurus, con.created,")
                 .append(" users.username, term.contributor")
 
@@ -197,8 +197,8 @@ public class CandidatDao {
                 .append(" AND candidat_status.id_status = ").append(etat)
                 .append(" AND term.lang = '").append(lang).append("' ")
                 .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                .append(" AND f_unaccent(lower(term.lexicalValue)) like '%").append(value).append("%'")
-                .append(" ORDER BY term.lexicalValue ASC");
+                .append(" AND f_unaccent(lower(term.lexical_Value)) like '%").append(value).append("%'")
+                .append(" ORDER BY term.lexical_Value ASC");
 
         return request.toString();
 
