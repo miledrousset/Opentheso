@@ -46,16 +46,14 @@
                     </div>
                 </div>
 
-                <div class="row" id="rowValue" style="background-color: #FFFFFF; height: 80px; margin-top: 2px; margin-left: 5px; margin-right: 5px; border: #FAFAFA">
+                <div class="row" id="rowValue">
                     <div class="col-12">
-                        <p:textEditor id="float-input" widgetVar="ChatCandidateEditor" value="#{candidatBean.message}" allowLinks="true" secure="false" height="80"
-                                      placeholder="#{langueBean.getMsg('candidat.write_here')}"
-                                       style="width: 100%; height: 100%; "/>                           
+                        <p:textEditor id="float-input" widgetVar="ChatCandidateEditor" value="#{candidatBean.message}" allowLinks="true"
+                                      secure="false" height="200" placeholder="#{langueBean.getMsg('candidat.write_here')}"/>
                     </div>
                 </div>
 
-                <div class="row" style="margin-top: 4.5rem; background-color: #FFFFFF; margin-bottom: 25px; border: #FAFAFA; margin-left: 15px; margin-right: 15px">
-                    
+                <div class="row" style="margin-top: 20px">
                     <div class="col-6" style="text-align: left">
                         <p:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" styleClass="ui-button-success"
                                          icon="fa-solid fa-user" update="idParticipantsList"
@@ -68,7 +66,6 @@
                                          update="tabViewCandidat:containerIndexCandidat:idDiscussion"
                                          actionListener="#{discussionService.sendMessage()}"/>
                     </div>
-
 
                     <div class="col-6" style="text-align: right">
                         <p:commandButton rendered="zzz" disabled="true"

@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.menu.connect;
 import java.io.Serializable;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,8 +71,14 @@ public class Connect implements Serializable{
     }
 
     public String getLocalUri() {
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";
+        var facesContext = FacesContext.getCurrentInstance();
+        var request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+
+        var protocol = request.isSecure() ? "https://" : "http://";
+        var host = request.getHeader("host");
+        var contextPath = request.getContextPath();
+
+        return protocol + host + contextPath + "/";
     }
 
     public String status(){

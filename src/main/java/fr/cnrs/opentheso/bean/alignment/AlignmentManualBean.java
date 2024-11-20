@@ -33,7 +33,6 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
 
-    
     @Autowired @Lazy private AlignmentBean alignmentBean;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -155,7 +154,7 @@ public class AlignmentManualBean implements Serializable {
 
         if(nodeAlignment == null) return;
 
-        if(!new AlignmentHelper().updateAlignment(
+        if(!alignmentHelper.updateAlignment(
                 nodeAlignment.getId_alignement(),
                 nodeAlignment.getConcept_target(),
                 nodeAlignment.getThesaurus_target(),
