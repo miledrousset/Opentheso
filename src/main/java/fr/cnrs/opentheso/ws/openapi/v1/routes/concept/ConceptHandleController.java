@@ -34,8 +34,8 @@ public class ConceptHandleController {
 
 
     @GetMapping(produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "${getConceptByHandle.summary}$",
-            description = "${getConceptByHandle.description}$",
+    @Operation(summary = "Permet de  récupérer les informations d'un concept à partir de son ID Handle",
+            description = "Ancienne version : `/api/{hdl1}.{hdl2}.{hdl3}/{naan}.{id}.{format}`\\n\\nPermet de  récupérer les informations d'un concept à partir de son ID Handle dans les formats JSON, JSON-LD, Turtle ou RDF/XML",
             tags = {"Concept"},
             responses = {
                 @ApiResponse(responseCode = "200",

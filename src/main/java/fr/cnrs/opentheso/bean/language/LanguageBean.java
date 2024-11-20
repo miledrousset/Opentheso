@@ -52,7 +52,9 @@ public class LanguageBean implements Serializable {
             pf.ajax().update("tabViewCandidat");
         }
     }
-
+    public String getIdLangue() {
+        return idLangue.toLowerCase();
+    }
     public String getMsg(String msg) {
         return getBundleLangue(currentBundle).getString(msg);
     }

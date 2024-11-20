@@ -144,6 +144,7 @@ public class DiscussionService implements Serializable {
                 + candidatBean.getCandidatSelected().getNomPref() + ", "
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
+        setListUsersForMail();
 
         if (CollectionUtils.isNotEmpty(nodeUsers)) {
             nodeUsers.stream()

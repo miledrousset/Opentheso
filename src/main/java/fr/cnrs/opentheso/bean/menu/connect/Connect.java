@@ -6,6 +6,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,6 @@ import javax.sql.DataSource;
 @Data
 @Configuration
 public class Connect implements Serializable{
-
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -62,7 +62,7 @@ public class Connect implements Serializable{
         dataSource.setJdbcUrl(databaseUrl);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setDriverClassName(dataSourceClassName);
+        dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setMaximumPoolSize(maxPoolSize);
         dataSource.setMinimumIdle(minIdle);
         dataSource.setIdleTimeout(idleTimeout);
@@ -73,7 +73,6 @@ public class Connect implements Serializable{
     public String getLocalUri() {
         var facesContext = FacesContext.getCurrentInstance();
         var request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-
         var protocol = request.isSecure() ? "https://" : "http://";
         var host = request.getHeader("host");
         var contextPath = request.getContextPath();

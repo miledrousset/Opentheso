@@ -143,17 +143,14 @@ public class DataGraphView implements Serializable {
         if (view == null) {
             return null;
         }
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        String opethesoUrl;
-        if(context.getRequestServerName().equals("localhost")){
-            opethesoUrl = "http://" + context.getRequestServerName()
-                    + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
-                    + context.getApplicationContextPath();
-        } else {
-            opethesoUrl = "https://" + context.getRequestServerName()
-                    + context.getApplicationContextPath();
-        }
+        var facesContext = FacesContext.getCurrentInstance();
+        var request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        var protocol = request.isSecure() ? "https://" : "http://";
+        var host = request.getHeader("host");
+        var contextPath = request.getContextPath();
+        String opethesoUrl = protocol + host + contextPath;
         final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
+
         // Utilisation de URIBuilder pour construire l'URL
         URIBuilder uriBuilder = new URIBuilder(baseDataURL);
         uriBuilder.addParameter("lang", "fr");
@@ -168,7 +165,7 @@ public class DataGraphView implements Serializable {
         String urlString = uriBuilder.build().toString();
 
         // Construit l'URL de redirection
-        URIBuilder redirectUrlBuilder = new URIBuilder(context.getRequestContextPath() + "/d3js/index.xhtml");
+        URIBuilder redirectUrlBuilder = new URIBuilder(opethesoUrl + "/d3js/index.xhtml");
 
         redirectUrlBuilder.addParameter("dataUrl", urlString);
 

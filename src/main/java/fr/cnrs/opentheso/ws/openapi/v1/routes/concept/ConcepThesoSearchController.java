@@ -125,8 +125,8 @@ public class ConcepThesoSearchController {
 
 
     @GetMapping(value = "/fullpath", produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${searchJsonForWidget.summary}$",
-            description = "${searchJsonForWidget.description}$",
+    @Operation(summary = "Permet d'obtenir le chemin complet d'un concept",
+            description = "Ancienne version : `/api/searchwidget?theso=<idTheso>&q=<input>&lang=<lang>`\\n\\nPermet d'obtenir le chemin complet d'un concept repésenté dans un fichier JSON",
             tags = {"Concept"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Fichier contenent le résultat de la recherche", content = {
@@ -137,12 +137,12 @@ public class ConcepThesoSearchController {
             })
     public ResponseEntity<Object> searchJsonForWidget(
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel chercher", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @RequestParam(value = "q", required = false) String q,
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Le nom du concept recherché.", example = "Lyon") @RequestParam(value = "q", required = false) String q,
             @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue dans laquelle on recherche", example = "fr") @RequestParam(value = "lang", required = false) String lang,
-            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @RequestParam(value = "group", required = false) String groupStrings,
-            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @RequestParam(value = "arkgroup", required = false) String arkgroupStrings,
-            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @RequestParam(value = "full", required = false) String fullString,
-            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.exactMatch.description}$") @RequestParam(value = "exactMatch", required = false) String exactMatchString
+            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "Groupe(s) dans lequel on effectue la recherche (Les groupes doivent être séparés par une virgule si il y en a plusieurs)") @RequestParam(value = "group", required = false) String groupStrings,
+            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "Groupe(s) ARK dans lequel on effectue la recherche (Les groupes doivent être séparés par une virgule si il y en a plusieurs)") @RequestParam(value = "arkgroup", required = false) String arkgroupStrings,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "`true` si l'on souhaite aussi  récupérer les synonymes (`altLabels`), `false` sinon") @RequestParam(value = "full", required = false) String fullString,
+            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "`true` si l'on veut une recherche exacte, `false` sinon") @RequestParam(value = "exactMatch", required = false) String exactMatchString
     ) {
         boolean full = fullString != null && fullString.equalsIgnoreCase("true");
         String[] groups = null;

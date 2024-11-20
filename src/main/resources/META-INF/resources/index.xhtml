@@ -9,6 +9,7 @@
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView()}"/>
         </f:metadata>
     </f:view>
 
