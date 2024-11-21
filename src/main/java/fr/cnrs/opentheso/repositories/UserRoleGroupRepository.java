@@ -1,11 +1,7 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.dto.GroupInfoDTO;
-import fr.cnrs.opentheso.entites.User;
-import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
-import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,20 +13,9 @@ import java.util.Optional;
 
 public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, Integer> {
 
-    void deleteByUserAndGroup(User user, UserGroupLabel group);
+    //@Query("SELECT urg FROM UserRoleGroup urg WHERE urg.user.id = :userId AND urg.group.id = :groupId AND urg.role.id < 3")
+    //Optional<UserRoleGroup> findByUserIdAndGroupIdAndRoleGreaterThan(@Param("userId") int userId, @Param("groupId") int groupId);
 
-    void deleteByGroup(UserGroupLabel group);
-
-    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(" +
-            "urg.role.id, r.name, urg.group.id, g.label, " +
-            "CASE WHEN urg.role.id = 2 THEN true ELSE false END, " +
-            "CASE WHEN urg.role.id = 3 THEN true ELSE false END, " +
-            "CASE WHEN urg.role.id = 4 THEN true ELSE false END) " +
-            "FROM UserRoleGroup urg " +
-            "JOIN urg.role r " +
-            "JOIN urg.group g " +
-            "WHERE urg.user.id = :idUser")
-    List<NodeUserRoleGroup> getUserRoleGroup(@Param("idUser") int idUser);
 
     @Query(value = "SELECT DISTINCT ugr.id_group AS idGroup, u.label_group AS labelGroup " +
             "FROM user_group_label u " +
@@ -47,23 +32,5 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
             "JOIN user_group_label u ON ur.id_group = u.id_group " +
             "WHERE ur.id_user = :idUser AND ur.id_group = :idGroup", nativeQuery = true)
     Optional<NodeUserRoleGroup> findUserRoleOnThisGroup(@Param("idUser") int idUser, @Param("idGroup") int idGroup);
-
-    Optional<UserRoleGroup> findByUserAndGroup(User user, UserGroupLabel group);
-
-    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupUser(u.id, u.username, g.id, g.label, r.id, r.name) " +
-            "FROM UserRoleGroup urg " +
-            "JOIN urg.user u " +
-            "JOIN urg.group g " +
-            "JOIN urg.role r " +
-            "ORDER BY LOWER(u.username)")
-    List<NodeUserGroupUser> getAllGroupUser();
-
-    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroup(ugl.id, ugl.label) " +
-            "FROM UserRoleGroup urg JOIN urg.group ugl " +
-            "WHERE urg.user.id = :idUser " +
-            "AND urg.role.id = 2 " +
-            "AND LOWER(ugl.label) LIKE LOWER(CONCAT('%', :projectName, '%')) " +
-            "ORDER BY ugl.label")
-    List<NodeUserGroup> findGroupByUserAndProject(@Param("idUser") int idUser, @Param("projectName") String projectName);
 
 }

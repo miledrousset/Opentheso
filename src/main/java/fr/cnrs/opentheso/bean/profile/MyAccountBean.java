@@ -14,14 +14,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.enterprise.context.SessionScoped;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +37,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "myAccountBean")
 public class MyAccountBean implements Serializable {
 
-    private CurrentUser currentUser;
-    private ApiKeyHelper apiKeyHelper;
-    private UserRepository userRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
+    private final CurrentUser currentUser;
+    private final ApiKeyHelper apiKeyHelper;
+    private final UserRepository userRepository;
+    private final UserRoleGroupRepository userRoleGroupRepository;
 
     private User user;
     private NodeUser nodeUser;
@@ -51,7 +49,6 @@ public class MyAccountBean implements Serializable {
     private List<NodeUserRoleGroup> allMyRoleProject;
 
 
-    @Inject
     public MyAccountBean(CurrentUser currentUser,
                          ApiKeyHelper apiKeyHelper,
                          UserRepository userRepository,

@@ -1,15 +1,16 @@
 package fr.cnrs.opentheso.entites;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 
@@ -19,7 +20,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "thesaurus_label", uniqueConstraints = {@UniqueConstraint(columnNames = {"idThesaurus", "lang"})})
-@IdClass(ThesaurusLabelId.class)
 public class ThesaurusLabel {
 
     @Id
