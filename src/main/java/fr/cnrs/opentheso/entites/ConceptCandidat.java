@@ -3,8 +3,12 @@ package fr.cnrs.opentheso.entites;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -16,8 +20,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 
 @Setter
@@ -25,16 +29,21 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "thesaurus")
+@Table(name = "concept_candidat")
 @EntityListeners(AuditingEntityListener.class)
-public class Thesaurus {
+public class ConceptCandidat implements Serializable {
 
     @Id
-    @Column(name = "id_thesaurus", nullable = false)
-    private String idThesaurus;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Column(name = "id_ark", nullable = false)
-    private String idArk;
+    @OneToOne
+    @JoinColumn(name = "id_concept", referencedColumnName = "id_concept", nullable = false)
+    private Concept concept;
+
+    @ManyToOne
+    @JoinColumn(name = "id_thesaurus", referencedColumnName = "id_thesaurus", nullable = false)
+    private Thesaurus thesaurus;
 
     @CreatedDate
     @Column(name = "created", nullable = false, updatable = false)
@@ -46,22 +55,13 @@ public class Thesaurus {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
 
-    @Column(name = "private", nullable = false)
-    private Boolean isPrivate = false;
+    @Column(name = "status", nullable = false)
+    private String status = "a";
 
-    @OneToMany(mappedBy = "thesaurus")
-    private List<Concept> concepts;
+    @Column(name = "admin_message")
+    private String adminMessage;
 
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptFacet> conceptFacets;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptCandidat> candidats;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroup> conceptGroups;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroupLabel> conceptGroupLabels;
+    @Column(name = "admin_id")
+    private Integer adminId;
 
 }
