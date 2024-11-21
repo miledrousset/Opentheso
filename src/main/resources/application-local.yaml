@@ -27,7 +27,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     enabled: true
     change-log: classpath:/changelog/db.changelog.xml
@@ -45,7 +44,6 @@ logging:
               BasicBinder: TRACE
 
 settings:
-  timeout: 79
   workLanguage: fr
 
 smpt:

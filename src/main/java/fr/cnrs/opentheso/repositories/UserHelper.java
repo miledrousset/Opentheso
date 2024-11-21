@@ -373,17 +373,6 @@ public class UserHelper {
         return projectId;
     }
 
-    public boolean isApiKeyExpired(NodeUser nodeUser){
-        if (nodeUser.getApiKeyExpireDate()==null){
-            return false;
-        }
-        if(LocalDate.now().isAfter(nodeUser.getApiKeyExpireDate())){
-            return true;
-        }else {
-            return false;
-        }
-    }
-
     /**
      * cette fonction permet de retourner le nom d'un groupe
      *
@@ -457,7 +446,7 @@ public class UserHelper {
         }
         return listGroup;
     }
-    
+
     /**
      * cette fonction permet de retourner la liste des projets d'un utilisateur
      *
@@ -506,7 +495,7 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return userGroupLabels;
-    }    
+    }
 
     /**
      * cette fonction permet de retourner tous les groupes existant au format
@@ -687,41 +676,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeIdTheso;
-    }
-
-    /**
-     * permet de retourner la liste des thésaurus pour un groupe pour un
-     * affichage IHM
-     *
-     * @param idGroup
-     * @param idLang
-     * @return
-     */
-    public Map<String, String> getThesaurusLabelsOfGroup(int idGroup, String idLang) {
-        Map<String, String> listThesos = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT distinct"
-                        + "  thesaurus_label.title,"
-                        + "  thesaurus_label.id_thesaurus"
-                        + " FROM "
-                        + "  user_group_thesaurus,"
-                        + "  thesaurus_label"
-                        + " WHERE "
-                        + "  user_group_thesaurus.id_thesaurus = thesaurus_label.id_thesaurus AND"
-                        + "  user_group_thesaurus.id_group = " + idGroup
-                        + " and thesaurus_label.lang = '" + idLang + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    listThesos = new HashMap<>();
-                    while (resultSet.next()) {
-                        listThesos.put(resultSet.getString("id_thesaurus"), resultSet.getString("title"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listThesos;
     }
 
     /**
@@ -1112,63 +1066,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }
-
-    /**
-     * permet de supprimer les roles d'un utilisateur sur les groupes cas où
-     * l'utilisateur passe en superAdmin, plus besoin de rôles
-     *
-     * @param conn
-     * @param idUser
-     * @return
-     */
-    public boolean deleteRolesOfUser(Connection conn, int idUser) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("delete from user_role_group where" + " id_user =" + idUser);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * cette fonction permet de retourner les utilisateurs avec role SuperAdmin
-     *
-     * @return
-     */
-    public ArrayList<NodeUserRole> getListOfSuperAdmin() {
-        ArrayList<NodeUserRole> nodeUserRoles = null;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  users.id_user,"
-                        + "  users.username,"
-                        + " users.active"
-                        + " FROM "
-                        + "  users"
-                        + " WHERE"
-                        + "  users.issuperadmin = true"
-                        + " ORDER BY"
-                        + "  LOWER(users.username)");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    nodeUserRoles = new ArrayList<>();
-                    while (resultSet.next()) {
-                        NodeUserRole nodeUserRole = new NodeUserRole();
-                        nodeUserRole.setIdUser(resultSet.getInt("id_user"));
-                        nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setIdRole(1);
-                        nodeUserRole.setRoleName("SuperAdmin");
-                        nodeUserRole.setActive(resultSet.getBoolean("active"));
-                        nodeUserRoles.add(nodeUserRole);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserRoles;
     }
 
     /**
@@ -1610,39 +1507,6 @@ public class UserHelper {
     }
 
     /**
-     * cette fonction permet de retourner la liste des utilisateurs qui
-     * n'appartiennent à aucun groupe donc aucun role défini
-     *
-     * @return
-     */
-    public ArrayList<NodeUserRole> getUsersWithoutGroup() {
-        ArrayList<NodeUserRole> listUser = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT users.id_user, users.username, users.active"
-                        + " FROM users where users.issuperadmin!=true and users.id_user not in "
-                        + "(select distinct id_user from user_role_group order by id_user)"
-                        + " ORDER BY LOWER(users.username)");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserRole nodeUserRole = new NodeUserRole();
-                        nodeUserRole.setIdUser(resultSet.getInt("id_user"));
-                        nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setActive(resultSet.getBoolean("active"));
-                        nodeUserRole.setIdRole(-1);
-                        nodeUserRole.setRoleName("");
-                        listUser.add(nodeUserRole);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listUser;
-    }
-
-    /**
      * cette fonction permet de retourner la liste des roles/thesos pour un un
      * utilisateur et un groupe pour les droits limités
      *
@@ -1916,8 +1780,8 @@ public class UserHelper {
      * @param idGroup
      * @return
      */
-    public NodeUserRoleGroup getUserRoleOnThisGroup(
-            int idUser, int idGroup) {
+    //TODO Firas Replace by findUserRoleOnThisGroup
+    public NodeUserRoleGroup getUserRoleOnThisGroup(int idUser, int idGroup) {
         NodeUserRoleGroup nodeUserRoleGroup = null;
 
         try (Connection conn = dataSource.getConnection()) {
@@ -2169,46 +2033,6 @@ public class UserHelper {
         return status;
     }
 
-    /**
-     * cette fonction permet de retourner le role de l'utilisateur sur ce groupe
-     *
-     * @param idUser
-     * @param idGroup
-     * @return
-     */
-    public NodeUserRoleGroup getUserRoleOnThisGroupForSuperAdmin(int idUser, int idGroup) {
-
-        NodeUserRoleGroup nodeUserRoleGroup = null;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  roles.id, "
-                        + "  roles.name, "
-                        + "  user_group_label.id_group, "
-                        + "  user_group_label.label_group"
-                        + " FROM "
-                        + "  public.roles, "
-                        + "  public.user_group_label"
-                        + " WHERE "
-                        + "  roles.id = " + idUser + " AND "
-                        + "  user_group_label.id_group = " + idGroup);
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeUserRoleGroup = new NodeUserRoleGroup();
-                        nodeUserRoleGroup.setIdRole(resultSet.getInt("id"));
-                        nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
-                        nodeUserRoleGroup.setGroupName(resultSet.getString("label_group"));
-                        nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserRoleGroup;
-    }
-
     public boolean isUserMailExist(String mail) {
 
         try (Connection conn = dataSource.getConnection()) {
@@ -2252,54 +2076,12 @@ public class UserHelper {
         return name;
     }
 
-    /**
-     * Cette fonction permet de récupérer l'Id de l'utilisateur d'après son
-     * Login et son passe
-     *
-     * @param login
-     * @param pwd
-     * @return
-     */
-    public boolean isUserExist(String login, String pwd) {
-        boolean existe = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '" + login + "' AND password='" + pwd + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        existe = true;
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return existe;
-    }
-
     public boolean updatePwd(int idUser, String newPwd) {
         boolean status = false;
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set password = '" + newPwd
-                        + "' WHERE id_user = " + idUser);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    public boolean updatePseudo(int idUser, String pseudo) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set username = '" + pseudo
-                        + "' WHERE id_user = " + idUser);
+                stmt.executeUpdate("UPDATE users set password = '" + newPwd + "' WHERE id_user = " + idUser);
                 status = true;
             }
         } catch (SQLException ex) {
@@ -2350,43 +2132,6 @@ public class UserHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE user_group_label set label_group = '" + newValue
                         + "' WHERE id_group = " + idProject);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    public boolean updateMail(int idUser, String newMail) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set mail = '" + newMail
-                        + "' WHERE id_user = " + idUser);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de mette à jour le status des alertes mail pour l'utilisateur
-     *
-     * @param idUser
-     * @param alertMail
-     * @return #MR
-     */
-    public boolean setAlertMailForUser(int idUser, boolean alertMail) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set alertmail = " + alertMail
-                        + " WHERE id_user = " + idUser);
                 status = true;
             }
         } catch (SQLException ex) {
@@ -2508,53 +2253,18 @@ public class UserHelper {
      * @param myIdRole
      * @return
      */
+    //TODO Replaced by roleRepository.findAllByIdGreaterThanEqual
     public ArrayList<NodeIdValue> getMyAuthorizedRoles(int myIdRole) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id, name from roles "
-                        + " where id >= " + myIdRole);
+                stmt.executeQuery("select id, name from roles where id >= " + myIdRole);
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(resultSet.getString("id"));
                         nodeIdValue.setValue(resultSet.getString("name"));
-                        nodeIdValues.add(nodeIdValue);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeIdValues;
-    }
-
-    /**
-     * Cette fonction permet de retourner la liste des projets dont
-     * l'utilisateur est admin ou SuperAdmin
-     *
-     * @param idUser
-     * @return
-     */
-    public ArrayList<NodeIdValue> getMyAuthorizedProjects(int idUser) {
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select user_group_label.id_group, user_group_label.label_group"
-                        + " from user_role_group, user_group_label"
-                        + " where "
-                        + " user_role_group.id_group = user_group_label.id_group"
-                        + " and"
-                        + " id_role <= 2"
-                        + " and"
-                        + " id_user = " + idUser);
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeIdValue nodeIdValue = new NodeIdValue();
-                        nodeIdValue.setId(resultSet.getString("id"));
-                        nodeIdValue.setId(resultSet.getString("name"));
                         nodeIdValues.add(nodeIdValue);
                     }
                 }

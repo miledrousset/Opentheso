@@ -4,7 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -17,7 +18,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
-import java.util.List;
 
 
 @Setter
@@ -25,16 +25,17 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "thesaurus")
+@Table(name = "users_historique")
 @EntityListeners(AuditingEntityListener.class)
-public class Thesaurus {
+public class UsersHistorique {
 
     @Id
-    @Column(name = "id_thesaurus", nullable = false)
-    private String idThesaurus;
+    @ManyToOne
+    @JoinColumn(name = "id_user", insertable = false, updatable = false)
+    private User user;
 
-    @Column(name = "id_ark", nullable = false)
-    private String idArk;
+    @Column(name = "username")
+    private String username;
 
     @CreatedDate
     @Column(name = "created", nullable = false, updatable = false)
@@ -46,22 +47,8 @@ public class Thesaurus {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
 
-    @Column(name = "private", nullable = false)
-    private Boolean isPrivate = false;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<Concept> concepts;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptFacet> conceptFacets;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptCandidat> candidats;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroup> conceptGroups;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroupLabel> conceptGroupLabels;
+    @Column(name = "delete")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date delete;
 
 }

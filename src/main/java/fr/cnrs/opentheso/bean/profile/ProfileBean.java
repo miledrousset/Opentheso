@@ -65,7 +65,7 @@ public class ProfileBean implements Serializable {
         // activation de la couleur par defaut
         resetColor();
         myAccountColor = "white";
-        myAccountBean.reset();
+        myAccountBean.loadDataPage();
     }
 
     public boolean isIsMyAccountActive() {
