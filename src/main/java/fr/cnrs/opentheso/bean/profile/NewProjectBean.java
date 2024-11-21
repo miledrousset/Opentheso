@@ -163,7 +163,7 @@ public class NewProjectBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Suppression OK :", nodeUserGroup.getGroupName()));
         currentUser.initUserPermissions();
-        myProjectBean.init();        
+        myProjectBean.init();
         init();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

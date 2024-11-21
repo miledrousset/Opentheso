@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
-import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
@@ -32,9 +31,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "menuBean")
 @SessionScoped
 public class MenuBean implements Serializable {
-
-    @Autowired @Lazy 
-    private SearchBean searchBean;
 
     @Autowired @Lazy 
     private SuperAdminBean superAdminBean;
@@ -158,7 +154,7 @@ public class MenuBean implements Serializable {
     public void redirectToMyProfilePage() throws IOException {
         activePageName = "myAccount";
         notificationPannelVisible = false;
-        myAccountBean.reset();
+        myAccountBean.loadDataPage();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
