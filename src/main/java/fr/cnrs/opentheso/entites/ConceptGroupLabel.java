@@ -3,8 +3,11 @@ package fr.cnrs.opentheso.entites;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -15,9 +18,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.util.Date;
-import java.util.List;
 
 
 @Setter
@@ -25,16 +26,16 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "thesaurus")
+@Table(name = "concept_group_label")
 @EntityListeners(AuditingEntityListener.class)
-public class Thesaurus {
+public class ConceptGroupLabel {
 
     @Id
-    @Column(name = "id_thesaurus", nullable = false)
-    private String idThesaurus;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Column(name = "id_ark", nullable = false)
-    private String idArk;
+    @Column(name = "lexicalvalue", nullable = false)
+    private String lexicalValue;
 
     @CreatedDate
     @Column(name = "created", nullable = false, updatable = false)
@@ -46,22 +47,14 @@ public class Thesaurus {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
 
-    @Column(name = "private", nullable = false)
-    private Boolean isPrivate = false;
+    @Column(name = "lang", nullable = false)
+    private String lang;
 
-    @OneToMany(mappedBy = "thesaurus")
-    private List<Concept> concepts;
+    @ManyToOne
+    @JoinColumn(name = "idthesaurus", referencedColumnName = "id_thesaurus", nullable = false)
+    private Thesaurus thesaurus;
 
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptFacet> conceptFacets;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptCandidat> candidats;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroup> conceptGroups;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroupLabel> conceptGroupLabels;
-
+    @ManyToOne
+    @JoinColumn(name = "idgroup", referencedColumnName = "idgroup", nullable = false)
+    private ConceptGroup conceptGroup;
 }

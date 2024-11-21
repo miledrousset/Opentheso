@@ -1,9 +1,15 @@
 package fr.cnrs.opentheso.models.users;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeUserRoleGroup {
 
     private int idRole;
