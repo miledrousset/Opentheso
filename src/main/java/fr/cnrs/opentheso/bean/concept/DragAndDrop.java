@@ -797,7 +797,7 @@ public class DragAndDrop implements Serializable {
                 } else {
                     nodesToConfirme.add(node);
                     // si oui, on affiche une boite de dialogue pour choisir les branches à couper
-                    PrimeFaces.current().ajax().update("idDragAndDropMultiple");
+                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDropMultiple");
                     PrimeFaces.current().executeScript("PF('dragAndDropMultiple').show();");
                 }
             }
