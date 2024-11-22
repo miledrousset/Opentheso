@@ -8,7 +8,7 @@ server:
   servlet:
     context-path: /opentheso
     session:
-      timeout: 125m
+      timeout: 240m
   error:
     path: /errorPages/error500.xhtml
     whitelabel:

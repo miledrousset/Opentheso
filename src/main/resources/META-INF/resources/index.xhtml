@@ -4,6 +4,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
+
     <f:view>
         <f:metadata>
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
@@ -44,17 +45,6 @@
 
         <h:outputStylesheet name="webjars/leaflet/1.8.0/leaflet.css"/>
         <h:outputScript name="webjars/leaflet/1.8.0/leaflet.js"/>
-
-        <style type="text/css">
-            .ui-growl {
-                right: 55px;
-                margin-top: -40px;
-                font-size: 12px;
-            }
-            body .ui-growl .ui-growl-item-container .ui-growl-item {
-                background-color: #ECF8F1;
-            }
-        </style>
     </h:head>
 
     <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
@@ -68,10 +58,6 @@
         </h:panelGroup>
 
         <ui:include src="dialog/new-version.xhtml" />
-
-        <p:idleMonitor timeout="#{connect.timeout}">
-            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
-        </p:idleMonitor>
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 

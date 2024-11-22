@@ -943,3 +943,12 @@ body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-token
 .toggle-btn:hover {
     background-color: #0056b3;
 }
+
+.ui-growl {
+    right: 55px;
+    margin-top: -40px;
+    font-size: 12px;
+}
+.ui-growl .ui-growl-item-container .ui-growl-item {
+    background-color: #ECF8F1;
+}

@@ -4,7 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <!-- create database if not exist -->
-    <include file="/changelog/database/createdb.xml"/>
 
     <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>

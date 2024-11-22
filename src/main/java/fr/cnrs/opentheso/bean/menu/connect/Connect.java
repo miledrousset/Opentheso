@@ -61,8 +61,4 @@ public class Connect implements Serializable{
         return "OK! Connected";
     }
 
-    public int getTimeout() {
-        return 10 * 60 * 1000;
-    }
-
 }
