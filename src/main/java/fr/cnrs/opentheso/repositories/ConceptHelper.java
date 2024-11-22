@@ -4632,7 +4632,7 @@ public class ConceptHelper {
     /**
      * Méthode temporaire le temps de centraliser toutes les commandes avec NodeFullConcept
      */
-    public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso) {
+    public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso, String idLang) {
         NodeConcept nodeConcept = new NodeConcept();
         // récupération des BT
         nodeConcept.setNodeBT(getBTFromNFC(nodeFullConcept.getBroaders()));
@@ -4649,7 +4649,7 @@ public class ConceptHelper {
         //récupération des notes
         nodeConcept.setNodeNotes(getNotesFromNFC(nodeFullConcept));
         //récupération des collections
-        nodeConcept.setNodeConceptGroup(getGroupFromNFC(nodeFullConcept, idTheso));
+        nodeConcept.setNodeConceptGroup(getGroupFromNFC(nodeFullConcept, idTheso, idLang));
         // récupération des alignements
         nodeConcept.setNodeAlignments(getAlignmentsFromNFC(nodeFullConcept, idTheso));
         // récupération des images
@@ -4756,14 +4756,14 @@ public class ConceptHelper {
                 .collect(Collectors.toList());
     }
 
-    private List<NodeGroup> getGroupFromNFC(NodeFullConcept nodeFullConcept, String idTheso) {
+    private List<NodeGroup> getGroupFromNFC(NodeFullConcept nodeFullConcept, String idTheso, String idLang) {
         List <ConceptIdLabel> conceptIdLabels = nodeFullConcept.getMembres();
         if(conceptIdLabels == null) return Collections.emptyList();
         return conceptIdLabels.stream()
                 .map(collection -> {
                     NodeGroup node = new NodeGroup();
                     node.setLexicalValue(collection.getLabel());
-                    node.setIdLang(nodeFullConcept.getPrefLabel().getIdLang());
+                    node.setIdLang(idLang);
                     ConceptGroup conceptGroup = new ConceptGroup();
                     conceptGroup.setIdgroup(collection.getIdentifier());
                     conceptGroup.setIdthesaurus(idTheso);

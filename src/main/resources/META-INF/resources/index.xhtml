@@ -69,10 +69,6 @@
 
         <ui:include src="dialog/new-version.xhtml" />
 
-        <p:idleMonitor timeout="#{connect.timeout}">
-            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
-        </p:idleMonitor>
-
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 
         <div id="wrapper" style="height: 100%">

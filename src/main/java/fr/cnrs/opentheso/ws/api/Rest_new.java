@@ -340,6 +340,7 @@ public class Rest_new {
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
                                     @RequestParam(value = "groups", required = false) String groups,
                                     @RequestParam(value = "match", required = false) String match,
+                                    @RequestParam(value = "format", required = false) String format,
                                     @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {
@@ -348,20 +349,24 @@ public class Rest_new {
         // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
 
         String [] groupList = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
-        String format;
-        switch (acceptHeader.toLowerCase()) {
-            case CustomMediaType.APPLICATION_JSON_LD:
-                format= "jsonld";
-                break;
-            case JSON_FORMAT:
-                format= "json";
-                break;
-            case CustomMediaType.APPLICATION_TURTLE:
-                format= "turtle";
-                break;
-            default:
-                format= "rdf";
-                break;
+        String formatFiltered;
+        if(StringUtils.isNotEmpty(format)) {
+            formatFiltered = format;
+        } else{
+            switch (acceptHeader.toLowerCase()) {
+                case CustomMediaType.APPLICATION_JSON_LD:
+                    formatFiltered= "jsonld";
+                    break;
+                case JSON_FORMAT:
+                    formatFiltered= "json";
+                    break;
+                case CustomMediaType.APPLICATION_TURTLE:
+                    formatFiltered= "turtle";
+                    break;
+                default:
+                    formatFiltered= "rdf";
+                    break;
+            }
         }
         if(StringUtils.isNotEmpty(groups)){
             groupList = groups.split(",");
@@ -377,8 +382,8 @@ public class Rest_new {
                 filter = "notation:";
             }
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(FORMAT_MAP.getOrDefault(format, JSON_FORMAT)))//CustomMediaType.APPLICATION_RDF_UTF_8))
-                    .body(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter, match));
+                    .contentType(MediaType.parseMediaType(FORMAT_MAP.getOrDefault(formatFiltered, JSON_FORMAT)))//CustomMediaType.APPLICATION_RDF_UTF_8))
+                    .body(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(formatFiltered, JSON_FORMAT), filter, match));
         }
     }
 

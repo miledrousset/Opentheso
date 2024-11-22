@@ -26,6 +26,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.TreeDragDropEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
 
+@Slf4j
 @Named(value = "dragAndDrop")
 @SessionScoped
 public class DragAndDrop implements Serializable {
@@ -90,7 +92,6 @@ public class DragAndDrop implements Serializable {
 
     private TreeNode dragNode;
     private TreeNode dropNode;
-
 
     public void clear(){
         if(nodeBTsToCut != null){
@@ -370,7 +371,7 @@ public class DragAndDrop implements Serializable {
                 isGroupToCut = true;
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("idDragAndDrop");
+                    pf.ajax().update("containerIndex:formLeftTab:idDragAndDrop");
                  //   pf.ajax().update("dragAndDropForm");
                     
                 }
@@ -386,7 +387,7 @@ public class DragAndDrop implements Serializable {
                 // si oui, on affiche une boite de dialogue pour choisir les branches à couper
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("idDragAndDrop");
+                    pf.ajax().update("containerIndex:formLeftTab:idDragAndDrop");
                //     pf.ajax().update("dragAndDropForm");
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
@@ -638,7 +639,7 @@ public class DragAndDrop implements Serializable {
                 drop();
             } else {
                 // si oui, on affiche une boite de dialogue pour choisir les branches à couper
-                PrimeFaces.current().ajax().update("idDragAndDrop");
+                PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDrop");
                 PrimeFaces.current().executeScript("PF('dragAndDrop').show();");
             }
         }

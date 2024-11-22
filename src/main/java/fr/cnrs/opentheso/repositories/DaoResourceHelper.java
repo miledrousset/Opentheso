@@ -581,7 +581,11 @@ public class DaoResourceHelper {
                     conceptRelation.setUri(element[0]);
                     conceptRelation.setRole(element[1]);
                     conceptRelation.setIdConcept(element[2]);
-                    conceptRelation.setLabel(element[3]);
+                    if(element.length > 3) {
+                        conceptRelation.setLabel(element[3]);
+                    } else {
+                        conceptRelation.setLabel("");
+                    }
                     conceptRelations.add(conceptRelation);
                 } catch (Exception e) {
                 }

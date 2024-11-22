@@ -8,7 +8,7 @@ server:
   servlet:
     context-path: /opentheso
     session:
-      timeout: 125m
+      timeout: 120m
   error:
     path: /errorPages/error500.xhtml
     whitelabel:
@@ -16,7 +16,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/mom
+    url: jdbc:postgresql://localhost:5433/opentheso
     password: opentheso
     username: opentheso
   jpa:
@@ -45,7 +45,6 @@ logging:
               BasicBinder: TRACE
 
 settings:
-  timeout: 79
   workLanguage: fr
 
 smpt:
