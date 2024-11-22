@@ -6,16 +6,18 @@
 package fr.cnrs.opentheso.bean.rightbody;
 
 import jakarta.inject.Named;
-import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  *
  * @author miledrousset
  */
 @Named(value = "rightBodySetting")
-@SessionScoped
+@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RightBodySetting implements Serializable {
     private boolean showConcept;
     private boolean showGroup;

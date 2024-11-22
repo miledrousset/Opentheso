@@ -27,9 +27,6 @@
                 display: none;
             }
         </style>
-        <p:idleMonitor timeout="#{connect.timeout}">
-            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
-        </p:idleMonitor>
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 

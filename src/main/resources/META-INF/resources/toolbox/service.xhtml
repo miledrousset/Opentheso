@@ -28,10 +28,6 @@
 
     <h:body id="page-top" onload="initMenu()">
 
-        <p:idleMonitor timeout="#{connect.timeout}">
-            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
-        </p:idleMonitor>
-
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsAdmin}" id="wrapper" style="height: 100%" >
