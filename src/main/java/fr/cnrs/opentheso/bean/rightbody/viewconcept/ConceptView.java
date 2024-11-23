@@ -286,7 +286,7 @@ public class ConceptView implements Serializable {
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         searchedForCorpus = false;
@@ -428,7 +428,7 @@ public class ConceptView implements Serializable {
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs

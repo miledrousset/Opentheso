@@ -129,4 +129,7 @@
     <changeSet id="24.11.07" author="Miled">
         <sqlFile path="../changelog/v24.11/24-11_07.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+    <changeSet id="24.11.08" author="Miled">
+        <sqlFile path="../changelog/v24.11/24-11_08.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>
