@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso</groupId>
     <artifactId>opentheso</artifactId>
-    <version>24.11.05</version>
+    <version>24.11.06</version>
     <packaging>jar</packaging>
     <name>opentheso</name>
 
