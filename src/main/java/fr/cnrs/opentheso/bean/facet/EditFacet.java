@@ -210,6 +210,7 @@ public class EditFacet implements Serializable {
             }
         }
     }
+
     private void clearNotes() {
         note = null;
         scopeNote = null;
@@ -218,6 +219,11 @@ public class EditFacet implements Serializable {
         editorialNote = null;
         example = null;
         historyNote = null;
+    }
+
+    public void initNewFacet(){
+        newFacetName = "";
+        definition = null;
     }
     
     public String getNoteSource(String noteSource) {

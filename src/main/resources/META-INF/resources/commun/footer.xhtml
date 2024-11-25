@@ -3,6 +3,14 @@
     xmlns:p="http://primefaces.org/ui"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
 
+    <p:idleMonitor timeout="#{sessionConfig.getSessionTimeoutInMilliseconds()}" onidle="handleSessionTimeout()" />
+    <h:outputScript>
+        function handleSessionTimeout() {
+            const basePath = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 1));
+            window.location.href = basePath + '/index.xhtml';
+        }
+    </h:outputScript>
+
     <footer class="sticky-footer bg-white" style="position:absolute; margin-top: 10px; width:100%;">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">
@@ -25,7 +33,6 @@
     <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="80"  closable="false" resizable="false" showHeader="false" position="top" 
               style="margin-top: 250px; border: none;">
         <p:graphicImage value="../resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
-    </p:dialog>  
-
+    </p:dialog>
 
 </ui:composition>
