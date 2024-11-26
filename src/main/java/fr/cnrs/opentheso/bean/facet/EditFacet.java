@@ -221,11 +221,6 @@ public class EditFacet implements Serializable {
         historyNote = null;
     }
 
-    public void initNewFacet(){
-        newFacetName = "";
-        definition = null;
-    }
-    
     public String getNoteSource(String noteSource) {
         if (StringUtils.isEmpty(noteSource))
             return "";
