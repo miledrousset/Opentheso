@@ -423,7 +423,7 @@ public class CurrentUser implements Serializable {
 
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userHelper.getGroupName(idProject));
-        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser == null));
+        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
