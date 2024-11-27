@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
+import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
 import fr.cnrs.opentheso.repositories.candidats.RelationDao;
@@ -367,13 +368,18 @@ public class CandidatBean implements Serializable {
     public void searchRejectCandByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue3)) {
             rejetCadidat = rejetCadidat.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue3) || candidat.getUser().contains(searchValue3))
+                    .filter(candidat -> checkCandidat(candidat))
                     .collect(Collectors.toList());
         } else {
             getRejectCandidatByThesoAndLangue();
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(rejetCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
+    private boolean checkCandidat(CandidatDto candidat) {
+        return (StringUtils.isNotEmpty(candidat.getNomPref()) && candidat.getNomPref().contains(searchValue3))
+                || (StringUtils.isNotEmpty(candidat.getUser()) && candidat.getUser().contains(searchValue3));
     }
 
     public void selectMyAcceptedCandidats() {
@@ -391,13 +397,18 @@ public class CandidatBean implements Serializable {
     public void searchAcceptedCandByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue2)) {
             acceptedCadidat = acceptedCadidat.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue2) || candidat.getUser().contains(searchValue2))
+                    .filter(candidat -> candidatCheck(candidat))
                     .collect(Collectors.toList());
         } else {
             getAcceptedCandidatByThesoAndLangue();
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(acceptedCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
+    private boolean candidatCheck(CandidatDto candidat) {
+        return (StringUtils.isNotEmpty(candidat.getNomPref()) && candidat.getNomPref().contains(searchValue2))
+                || (StringUtils.isNotEmpty(candidat.getUser()) && candidat.getUser().contains(searchValue2));
     }
 
     public void searchByTermeAndAuteur() {
