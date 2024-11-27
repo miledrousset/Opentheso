@@ -76,6 +76,8 @@ public class DataGraphView implements Serializable {
     private GraphObject selectedGraph;
 
     private int selectedViewId;
+    private String selectedViewName;
+
     private String newViewName;
     private String newViewDescription;
     private String newViewDataToAdd;
@@ -95,7 +97,7 @@ public class DataGraphView implements Serializable {
         props.setProperty("neo4j.databaseName", databaseNameNeo4j);
         return props;
     }
-    
+
     /**
      * permet de retourner la liste des concepts possibles pour ajouter une
      * relation NT (en ignorant les relations interdites) on ignore les concepts
@@ -119,6 +121,7 @@ public class DataGraphView implements Serializable {
 
     public void initNewViewDialog() {
         selectedViewId = -1;
+        selectedViewName = null;
         newViewName = null;
         newViewDescription = null;
         newViewDataToAdd = null;

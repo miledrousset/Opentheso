@@ -101,16 +101,17 @@
                                                 <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.DisplayWithD3')}"
                                                                  styleClass="ui-button-success"
                                                                  icon="fa fa-diagram-project"
-                                                                 style="margin-left: 0px;" ajax="false" process="@this"
+                                                                 style="margin-left: 0px;" ajax="true" process="@this"
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
-                                                                 onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}'); return false;" />
+                                                                 onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}', '#{graph_view.name}'); return false;" />
 
                                                 <script type="text/javascript">
-                                                    function openInNewTab(url) {
+                                                    function openInNewTab(url, name) {
                                                         if (url) {
-                                                            window.open(url, '_blank');
+                                                            const encodedName = encodeURIComponent(name); // Encodage sécurisé
+                                                            window.open(url + '&amp;title=' + encodedName, '_blank');
                                                         } else {
-                                                            alert('URL not found');
+                                                            alert('URL introuvable.');
                                                         }
                                                     }
                                                 </script>

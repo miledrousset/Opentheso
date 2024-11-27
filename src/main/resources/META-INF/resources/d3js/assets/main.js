@@ -3,9 +3,16 @@ let generatedGraph;
 
 const urlParams = new URLSearchParams(window.location.search)
 const dataUrl = urlParams.get("dataUrl")
+const title = urlParams.get("title");
 document.querySelector("#data-url").value = dataUrl.replace(/\s/, "")
-console.log(dataUrl)
+console.log('URL = ' + dataUrl)
+console.log('Titre =' + title)
 
+if (title) {
+    const decodedTitle = decodeURIComponent(title); // Décoder les caractères encodés
+    console.log(decodedTitle); // Afficher le titre
+    document.title = decodedTitle; // Définir le titre de la page
+}
 
 if(dataUrl !== undefined){
     const dataUrlParams = new URLSearchParams(dataUrl.split("?")[1])
