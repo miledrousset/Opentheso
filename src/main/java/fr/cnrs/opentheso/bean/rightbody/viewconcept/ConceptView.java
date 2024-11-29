@@ -189,8 +189,8 @@ public class ConceptView implements Serializable {
     }
 
     public void init() {
-        toggleSwitchAltLabelLang = false;
-        toggleSwitchNotesLang = false;
+        toggleSwitchAltLabelLang = true;
+        toggleSwitchNotesLang = true;
         nodeFullConcept = new NodeFullConcept();
         
         selectedLang = null;

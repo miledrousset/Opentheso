@@ -64,6 +64,30 @@
                                     <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <br/>
                                 </ui:repeat>
+
+                                <!-- Narrower -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.narrowMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.narrowMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Narrower -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.broadMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.broadMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Related -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.relatedMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.relatedMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <br/>
+                                </ui:repeat>
                             </h:panelGroup>
                         </div>
                     </div>
