@@ -3,18 +3,19 @@ package fr.cnrs.opentheso.models.skosapi;
 
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
+import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import fr.cnrs.opentheso.utils.StringUtils;
+
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,6 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        //psCoordinates = new ArrayList<>();
         gpsCoordinates = new ArrayList<>();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
@@ -319,7 +319,7 @@ public class SKOSResource {
      * @param resourceChecked
      * @return
      */
-    public static Comparator<SKOSResource> sortAlphabeticInLang(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<Integer>> idToIsTrad, ArrayList<String> resourceChecked) {
+    public static Comparator<SKOSResource> sortAlphabeticInLang(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<Integer>> idToIsTrad, List<String> resourceChecked) {
         return new AlphabeticComparator(isTrad, langCode, langCode2, idToNameHashMap, idToIsTrad, resourceChecked);
     }
 
@@ -346,9 +346,10 @@ public class SKOSResource {
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
             HashMap<String, ArrayList<String>> idToMatch, HashMap<String, List<String>> idToGPS,
             HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
-            HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
-        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap,
-                idToChildId, idToDocumentation, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
+            HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermHelper termHelper) {
+
+        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap, idToChildId, idToDocumentation,
+                idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff, termHelper);
     }
 
     private static class HieraComparator implements Comparator<SKOSResource> {
@@ -363,16 +364,16 @@ public class SKOSResource {
         HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
-        DataSource dataSource;
+        TermHelper termHelper;
         HashMap<String, ArrayList<Integer>> idToIsTradDiff;
 
         public HieraComparator(boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
                 HashMap<String, List<String>> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
-                HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+                HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermHelper termHelper) {
 
-            this.dataSource = dataSource;
+            this.termHelper = termHelper;
             this.langCode = langCode;
             this.langCode2 = langCode2;
             this.idToNameHashMap = idToNameHashMap;
@@ -608,8 +609,8 @@ public class SKOSResource {
             if (childs != null) {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
-                    String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4); 
-                    Term term = null;
+                    String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4);
+                    Term term = termHelper.getThisTerm(child, idTheso, langCode);
                     if (term != null) {
                         TermTemp termTemp = new TermTemp();
                         termTemp.idConcept = child;
@@ -658,10 +659,10 @@ public class SKOSResource {
         String langCode2;
         HashMap<String, String> idToNameHashMap;
         boolean isTrad;
-        HashMap<String, ArrayList<Integer>> idToIsTrad;
-        ArrayList<String> resourceChecked;
+        HashMap<String, List<Integer>> idToIsTrad;
+        List<String> resourceChecked;
 
-        public AlphabeticComparator(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<Integer>> idToIsTrad, ArrayList<String> resourceChecked) {
+        public AlphabeticComparator(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<Integer>> idToIsTrad, List<String> resourceChecked) {
             this.langCode = langCode;
             this.idToNameHashMap = idToNameHashMap;
             this.isTrad = isTrad;
@@ -755,7 +756,7 @@ public class SKOSResource {
                     lang2Pref--;
 
                     String key = getIdFromUri(resource.getUri());
-                    ArrayList<Integer> trad = idToIsTrad.get(key);
+                    List<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
                         newIsTrad.add(SKOSProperty.PREF_LABEL);
@@ -780,7 +781,7 @@ public class SKOSResource {
                     lang2Alt--;
 
                     String key = getIdFromUri(resource.getUri());
-                    ArrayList<Integer> trad = idToIsTrad.get(key);
+                    List<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
                         newIsTrad.add(SKOSProperty.ALT_LABEL);
@@ -806,7 +807,7 @@ public class SKOSResource {
                     lang2Doc--;
 
                     String key = getIdFromUri(resource.getUri());
-                    ArrayList<Integer> trad = idToIsTrad.get(key);
+                    List<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
                         newIsTrad.add(SKOSProperty.NOTE);
