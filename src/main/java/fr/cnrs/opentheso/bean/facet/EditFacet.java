@@ -146,6 +146,11 @@ public class EditFacet implements Serializable {
         definition = null;
     }
 
+    public void initNewFacet(){
+        newFacetName = "";
+        definition = null;
+    }
+
     public void initEditFacet(String facetId, String idTheso, String idLang) {
 
         facetSelected = facetHelper.getThisFacet(
@@ -216,11 +221,6 @@ public class EditFacet implements Serializable {
         historyNote = null;
     }
 
-    public void initNewFacet(){
-        newFacetName = "";
-        definition = null;
-    }
-    
     public String getNoteSource(String noteSource) {
         if (StringUtils.isEmpty(noteSource))
             return "";

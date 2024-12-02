@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.graph;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -12,13 +14,16 @@ import java.util.Optional;
 import java.util.Properties;
 
 import fr.cnrs.opentheso.models.graphs.GraphObject;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.graphs.GraphService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Named;
 import lombok.Data;
+import org.primefaces.component.chip.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -45,8 +50,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @SessionScoped
 public class DataGraphView implements Serializable {
 
-    
 
+    private final SelectedTheso selectedTheso;
     @Autowired @Lazy
     private GraphService graphService;
 
@@ -76,6 +81,8 @@ public class DataGraphView implements Serializable {
     private GraphObject selectedGraph;
 
     private int selectedViewId;
+    private String selectedViewName;
+
     private String newViewName;
     private String newViewDescription;
     private String newViewDataToAdd;
@@ -83,6 +90,15 @@ public class DataGraphView implements Serializable {
     
     private String selectedIdTheso;
     private NodeSearchMini searchSelected;
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @jakarta.inject.Inject
+    public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
 
 
     private Properties getPrefOfNeo4j(){
@@ -95,7 +111,7 @@ public class DataGraphView implements Serializable {
         props.setProperty("neo4j.databaseName", databaseNameNeo4j);
         return props;
     }
-    
+
     /**
      * permet de retourner la liste des concepts possibles pour ajouter une
      * relation NT (en ignorant les relations interdites) on ignore les concepts
@@ -119,10 +135,37 @@ public class DataGraphView implements Serializable {
 
     public void initNewViewDialog() {
         selectedViewId = -1;
+        selectedViewName = null;
         newViewName = null;
         newViewDescription = null;
         newViewDataToAdd = null;
         newViewExportedData = new ArrayList<>();
+    }
+
+    // pour afficher la valeur des identifiants de thésaurus et concept
+    public void onSelectTheso(AjaxBehaviorEvent e) {
+        String idTheso = ((Chip) e.getSource()).getLabel();
+        String idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+        String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    // pour afficher la valeur des identifiants de thésaurus et concept
+    public void onSelectThesoConcept(AjaxBehaviorEvent e) {
+        String idThesoConcept = ((Chip) e.getSource()).getLabel();
+        String[] idValue = idThesoConcept.split(",");
+
+        String idTheso = idValue[0].trim();
+        String idConcept = idValue[1].trim();
+
+        String idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+        String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        String nameOfConcept = conceptHelper.getLexicalValueOfConcept(idConcept,idTheso,idLang);
+        FacesMessage message1 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
+        FacesMessage message2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Concept", nameOfConcept);
+        FacesContext.getCurrentInstance().addMessage(null, message1);
+        FacesContext.getCurrentInstance().addMessage(null, message2);
     }
 
     public void initEditViewDialog(String id) {
@@ -247,7 +290,8 @@ public class DataGraphView implements Serializable {
         }
 
         ImmutablePair<String, String> tuple;
-        
+        if(StringUtils.isEmpty(selectedIdTheso))return;
+
         String idConcept;
         if(searchSelected == null || StringUtils.isEmpty(searchSelected.getIdConcept())) {
             idConcept = null;

@@ -16,9 +16,12 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
+import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
+@Data
 /**
  *
  * @author miledrousset
@@ -51,9 +54,20 @@ public class GroupView implements Serializable {
     private NodeNote definition;
     private NodeNote editorialNote;
     private NodeNote example;
-    private NodeNote historyNote;        
+    private NodeNote historyNote;
+
+    /// Notes du concept pour l'affichage du multilingue
+    private ArrayList<NodeNote> noteAllLang;
+    private ArrayList<NodeNote> scopeNoteAllLang;
+    private ArrayList<NodeNote> changeNoteAllLang;
+    private ArrayList<NodeNote> definitionAllLang;
+    private ArrayList<NodeNote> editorialNoteAllLang;
+    private ArrayList<NodeNote> exampleAllLang;
+    private ArrayList<NodeNote> historyNoteAllLang;
     
     private int count;
+
+    private boolean toggleSwitchNotesLang;
 
     @PreDestroy
     public void destroy(){
@@ -72,6 +86,7 @@ public class GroupView implements Serializable {
      * Creates a new instance of ConceptBean
      */
     public GroupView() {
+        toggleSwitchNotesLang = true;
     }
 
     public void init() {
@@ -99,14 +114,24 @@ public class GroupView implements Serializable {
         nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
         nodeGroupType = groupHelper.getGroupType(nodeGroup.getConceptGroup().getIdtypecode());
 
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
-        setAllNotes(nodeNotes);
+        setNotes(idTheso, idGroup, idLang);
 
         count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
     }
+
+    public void setNotes(String idTheso, String idGroup, String idLang) {
+        ArrayList<NodeNote> nodeNotes;
+        if (toggleSwitchNotesLang) {
+            nodeNotes = noteHelper.getListNotesAllLang(idGroup, idTheso);
+            setNotesForAllLang(nodeNotes);
+        } else {
+            nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
+            setAllNotes(nodeNotes);
+        }
+    };
     
     /////////////////////////////////
     /////////////////////////////////
@@ -141,6 +166,129 @@ public class GroupView implements Serializable {
             }
         }
     }
+
+    private void setNotesForAllLang(ArrayList<NodeNote> nodeNotes) {
+        clearNotesAllLang();
+        clearNotes();
+
+        if (CollectionUtils.isNotEmpty(nodeNotes)) {
+            // note
+            nodeNotes.stream()
+                    .filter(note1 -> "note".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(noteAllLang::add);
+
+            // scopeNote
+            nodeNotes.stream()
+                    .filter(note1 -> "scopeNote".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(scopeNoteAllLang::add);
+
+            // changeNote
+            nodeNotes.stream()
+                    .filter(note1 -> "changeNote".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(changeNoteAllLang::add);
+
+            // definition
+            nodeNotes.stream()
+                    .filter(note1 -> "definition".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(definitionAllLang::add);
+
+            // editorialNote
+            nodeNotes.stream()
+                    .filter(note1 -> "editorialNote".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(editorialNoteAllLang::add);
+
+            // example
+            nodeNotes.stream()
+                    .filter(note1 -> "example".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(exampleAllLang::add);
+
+            // historyNote
+            nodeNotes.stream()
+                    .filter(note1 -> "historyNote".equals(note1.getNoteTypeCode()))
+                    .map(note1 -> {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdNote(note1.getIdNote());
+                        nodeNote.setIdConcept(note1.getIdentifier());
+                        nodeNote.setNoteTypeCode(note1.getNoteTypeCode());
+                        nodeNote.setLexicalValue(note1.getLexicalValue());
+                        nodeNote.setLang(note1.getLang());
+                        nodeNote.setNoteSource(note1.getNoteSource());
+                        return nodeNote;
+                    })
+                    .forEach(historyNoteAllLang::add);
+        }
+
+    }
+    private void clearNotesAllLang() {
+        noteAllLang = new ArrayList<>();
+        scopeNoteAllLang = new ArrayList<>();
+        changeNoteAllLang = new ArrayList<>();
+        definitionAllLang = new ArrayList<>();
+        editorialNoteAllLang = new ArrayList<>();
+        exampleAllLang = new ArrayList<>();
+        historyNoteAllLang = new ArrayList<>();
+    }
+
     private void clearNotes() {
         note = null;
         scopeNote = null;
@@ -149,96 +297,5 @@ public class GroupView implements Serializable {
         editorialNote = null;
         example = null;
         historyNote = null;
-    }        
-
-    public NodeGroup getNodeGroup() {
-        return nodeGroup;
     }
-
-    public void setNodeGroup(NodeGroup nodeGroup) {
-        this.nodeGroup = nodeGroup;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public ArrayList<NodeGroupTraductions> getNodeGroupTraductions() {
-        return nodeGroupTraductions;
-    }
-
-    public void setNodeGroupTraductions(ArrayList<NodeGroupTraductions> nodeGroupTraductions) {
-        this.nodeGroupTraductions = nodeGroupTraductions;
-    }
-
-    public NodeGroupType getNodeGroupType() {
-        return nodeGroupType;
-    }
-
-    public void setNodeGroupType(NodeGroupType nodeGroupType) {
-        this.nodeGroupType = nodeGroupType;
-    }
-
-    public NodeNote getNote() {
-        return note;
-    }
-
-    public void setNote(NodeNote note) {
-        this.note = note;
-    }
-
-    public NodeNote getScopeNote() {
-        return scopeNote;
-    }
-
-    public void setScopeNote(NodeNote scopeNote) {
-        this.scopeNote = scopeNote;
-    }
-
-    public NodeNote getChangeNote() {
-        return changeNote;
-    }
-
-    public void setChangeNote(NodeNote changeNote) {
-        this.changeNote = changeNote;
-    }
-
-    public NodeNote getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(NodeNote definition) {
-        this.definition = definition;
-    }
-
-    public NodeNote getEditorialNote() {
-        return editorialNote;
-    }
-
-    public void setEditorialNote(NodeNote editorialNote) {
-        this.editorialNote = editorialNote;
-    }
-
-    public NodeNote getExample() {
-        return example;
-    }
-
-    public void setExample(NodeNote example) {
-        this.example = example;
-    }
-
-    public NodeNote getHistoryNote() {
-        return historyNote;
-    }
-
-    public void setHistoryNote(NodeNote historyNote) {
-        this.historyNote = historyNote;
-    }
-
- 
-   
 }

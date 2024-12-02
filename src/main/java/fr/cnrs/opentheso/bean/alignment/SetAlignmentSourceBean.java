@@ -18,12 +18,14 @@ import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Lazy;
 
+@Slf4j
 
 @Data
 @SessionScoped

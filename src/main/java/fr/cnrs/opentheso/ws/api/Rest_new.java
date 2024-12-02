@@ -4,17 +4,15 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
+//import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.repositories.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
@@ -70,6 +68,9 @@ public class Rest_new {
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
+    @Autowired
+    private LanguageHelper languageHelper;
+
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
 
@@ -80,6 +81,8 @@ public class Rest_new {
             "turtle", CustomMediaType.APPLICATION_TURTLE,
             "json", JSON_FORMAT
     );
+//    @Autowired
+//    private LanguageBean langueBean;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -97,6 +100,7 @@ public class Rest_new {
 
     @GetMapping("/ping")
     public String testWS(){
+ //       langueBean.getMsg("menu.thesaurus");
         return "pong";
     }
 
@@ -340,7 +344,7 @@ public class Rest_new {
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
                                     @RequestParam(value = "groups", required = false) String groups,
                                     @RequestParam(value = "match", required = false) String match,
-                                    @RequestParam(value = "format", required = false) String format,
+                                    @RequestParam(value = "format", required = false) String format, // ne pas supprimer; elle sert à filtrer le format du résultat pour OmekaS
                                     @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {

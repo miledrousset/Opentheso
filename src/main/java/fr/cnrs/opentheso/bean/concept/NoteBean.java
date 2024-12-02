@@ -212,16 +212,27 @@ public class NoteBean implements Serializable {
                 return;
             }
         }
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang(), currentUser);
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                selectedNodeNote.getIdentifier(), idUser);
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
+        if(isConceptNote) {
+            conceptBean.getConcept(
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang(), currentUser);
+            conceptHelper.updateDateOfConcept(
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedNodeNote.getIdentifier(), idUser);
+            dcElementHelper.addDcElementConcept(
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                    selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
+        }
+        if(isGroupNote) {
+            groupView.getGroup(
+                    selectedTheso.getCurrentIdTheso(),
+                    groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                    selectedTheso.getCurrentLang());
+        }
+        if(isFacetNote) {
+            editFacet.initEditFacet(nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        }
     }
 
     /**
@@ -256,7 +267,7 @@ public class NoteBean implements Serializable {
     /**
      * Nouvelle méthode pour modifier la note pour gérer le multilingue
      */
-    public void updateNoteNewVersion(NodeNote nodeNote, int idUser) {
+    private void updateNoteNewVersion(NodeNote nodeNote, int idUser) {
         FacesMessage msg;
         if(nodeNote.getLexicalValue().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne peut pas être vide !");
@@ -279,9 +290,21 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        if(isGroupNote) {
+            dcElementHelper.addDcElementConcept(
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                    groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+        }
+        if (isConceptNote){
+            dcElementHelper.addDcElementConcept(
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        }
+        if(isFacetNote){
+            dcElementHelper.addDcElementConcept(
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                    editFacet.getFacetSelected().getIdFacet(), selectedTheso.getCurrentIdTheso());
+        }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

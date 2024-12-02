@@ -6,7 +6,7 @@ server:
   port: 8099
   forward-headers-strategy: native
   servlet:
-    context-path: /opentheso
+    context-path: /
     session:
       timeout: 120m
   error:
