@@ -152,7 +152,6 @@ public class ImportFileBean implements Serializable {
     @Autowired
     private ImportRdf4jHelper importRdf4jHelper;
 
-
     private double progress = 0;
     private double progressStep = 0;
 
@@ -600,6 +599,51 @@ public class ImportFileBean implements Serializable {
             try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.readFileArk(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeIdValues = csvReadHelper.getNodeIdValues();
+                if (nodeIdValues != null) {
+                    if (nodeIdValues.isEmpty()) {
+                        haveError = true;
+                        error.append(System.getProperty("line.separator"));
+                        error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                        warning = "";
+                    } else {
+                        total = nodeIdValues.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+        }
+    }
+
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileIdentifierCsv(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+                if (!csvReadHelper.readFileIdentifier(reader)) {
                     error.append(csvReadHelper.getMessage());
                 }
 
@@ -2003,6 +2047,106 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+    }
+
+    // Récupérer les identifiants Ark d'après les identifiants des concepts
+    public StreamedContent getArkFromConceptId() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return null;
+        }
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return null;
+        }
+        if (importInProgress) {
+            return null;
+        }
+        initError();
+        loadDone = false;
+        String[] multipleIds1;
+        String multipleIds2;
+        for (NodeIdValue nodeIdValue : nodeIdValues) {
+            multipleIds2= "";
+            if (nodeIdValue == null) {
+                continue;
+            }
+            if (nodeIdValue.getId() == null || nodeIdValue.getId().isEmpty()) {
+                continue;
+            }
+            multipleIds1 = nodeIdValue.getId().split("##");
+            for (String multipleId : multipleIds1) {
+                if(StringUtils.isEmpty(multipleIds2)){
+                    multipleIds2 = conceptHelper.getIdArkOfConcept(multipleId, selectedTheso.getCurrentIdTheso());
+                } else
+                    multipleIds2 = multipleIds2 + "##" + conceptHelper.getIdArkOfConcept(multipleId, selectedTheso.getCurrentIdTheso());;
+            }
+            nodeIdValue.setValue(multipleIds2);
+        }
+        loadDone = false;
+
+        CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+        byte[] datas = csvWriteHelper.writeCsvResultProcess(nodeIdValues, "identifier", "ArkId");
+
+        try (ByteArrayInputStream returnedDatas = new ByteArrayInputStream(datas)) {
+            return DefaultStreamedContent.builder()
+                    .contentType("text/csv")
+                    .name("resultat.csv")
+                    .stream(() -> returnedDatas)
+                    .build();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+        return null;
+    }
+
+    // Récupérer les identifiants des concepts d'après les identifiants Ark
+    public StreamedContent getConceptIdFromArk() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return null;
+        }
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return null;
+        }
+        if (importInProgress) {
+            return null;
+        }
+        initError();
+        loadDone = false;
+        String[] multipleIds1;
+        String multipleIds2;
+        for (NodeIdValue nodeIdValue : nodeIdValues) {
+            multipleIds2= "";
+            if (nodeIdValue == null) {
+                continue;
+            }
+            if (nodeIdValue.getId() == null || nodeIdValue.getId().isEmpty()) {
+                continue;
+            }
+            multipleIds1 = nodeIdValue.getId().split("##");
+            for (String multipleId : multipleIds1) {
+                if(StringUtils.isEmpty(multipleIds2)){
+                    multipleIds2 = conceptHelper.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());
+                } else
+                    multipleIds2 = multipleIds2 + "##" + conceptHelper.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());;
+            }
+            nodeIdValue.setValue(multipleIds2);
+        }
+        loadDone = false;
+
+        CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+        byte[] datas = csvWriteHelper.writeCsvResultProcess(nodeIdValues, "identifier", "conceptId");
+
+        try (ByteArrayInputStream returnedDatas = new ByteArrayInputStream(datas)) {
+            return DefaultStreamedContent.builder()
+                    .contentType("text/csv")
+                    .name("resultat.csv")
+                    .stream(() -> returnedDatas)
+                    .build();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+        return null;
     }
 
     /**

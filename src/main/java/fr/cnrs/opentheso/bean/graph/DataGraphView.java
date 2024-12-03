@@ -200,7 +200,7 @@ public class DataGraphView implements Serializable {
 
         if (!view.getExportedData().isEmpty()) {
             view.getExportedData().forEach(data -> {
-                String idThesoConcept = data.getRight() == null ? data.getLeft() : data.getLeft() + "," + data.getRight();
+                String idThesoConcept = data.getRight() == null ? data.getLeft() : data.getLeft() + ":" + data.getRight();
                 uriBuilder.addParameter("idThesoConcept", idThesoConcept);
             });
         }
