@@ -14,7 +14,6 @@ import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
@@ -29,7 +28,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -44,9 +42,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
@@ -67,8 +63,9 @@ public class ExportFileBean implements Serializable {
     private CandidatBean candidatBean;
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
+
     @Autowired @Lazy
-    private ViewEditionBean viewEditionBean;
+    private WritePdfNewGen writePdfNewGen;
 
     @Autowired
     private FacetHelper facetHelper;
@@ -329,8 +326,8 @@ public class ExportFileBean implements Serializable {
                 pdfExportType = PdfExportType.HIERARCHIQUE;
             }
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdfNewGen().createPdfFile(skosxd,
-                    viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(), pdfExportType, uriHelper))) {
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
+                    viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(), pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent
                         .builder()
@@ -543,9 +540,9 @@ public class ExportFileBean implements Serializable {
                 pdfExportType = PdfExportType.HIERARCHIQUE;
             }
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdfNewGen().createPdfFile(skosxd,
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(),
-                    pdfExportType, uriHelper))) {
+                    pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
 
                 return DefaultStreamedContent

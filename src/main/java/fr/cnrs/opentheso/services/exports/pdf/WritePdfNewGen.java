@@ -10,26 +10,33 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.models.exports.UriHelper;
-
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
+@Service
 public class WritePdfNewGen {
 
-    private final ArrayList<Paragraph> paragraphList = new ArrayList<>();
-    private final ArrayList<Paragraph> paragraphTradList = new ArrayList<>();
+    @Autowired
+    private WriteHierachiquePDF writeHierachiquePDF;
+
+    @Autowired
+    private WriteAlphaPDF writeAlphaPDF;
 
 
-    public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLanguage1,
-                                String codeLanguage2, PdfExportType pdfExportType, UriHelper uriHelper) throws DocumentException, IOException {
+    public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLanguage1, String codeLanguage2,
+                                PdfExportType pdfExportType) throws DocumentException, IOException {
+
+        List<Paragraph> paragraphList = new ArrayList<>();
+        List<Paragraph> paragraphTradList = new ArrayList<>();
 
         Document document = new Document();
 
@@ -45,14 +52,13 @@ public class WritePdfNewGen {
 
             // Préparation des données
             if (pdfExportType == PdfExportType.ALPHABETIQUE) {
-                WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument, uriHelper);
-                writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
+                writeAlphaPDF.writeAlphabetiquePDF(xmlDocument, paragraphList, paragraphTradList, codeLanguage1, codeLanguage2, writePdfSettings);
             } else {
-                WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument, uriHelper);
-                writeHierachiquePDF.writeHierachiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
+                writeHierachiquePDF.writeHierachiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2,
+                        writePdfSettings, xmlDocument);
             }
 
-            createPdfFile(document, codeLanguage2);
+            createPdfFile(document, codeLanguage2, paragraphList, paragraphTradList);
 
             document.close();
             return output.toByteArray();
@@ -79,7 +85,8 @@ public class WritePdfNewGen {
                         + " - " + xmlDocument.getConceptScheme().getThesaurus().getTitle()));
     }
 
-    private void createPdfFile(Document document, String language2) throws DocumentException {
+    private void createPdfFile(Document document, String language2, List<Paragraph> paragraphList, List<Paragraph> paragraphTradList)
+            throws DocumentException {
         if (StringUtils.isBlank(language2)) {
             for (Paragraph paragraph : paragraphList) {
                 document.add(paragraph);
