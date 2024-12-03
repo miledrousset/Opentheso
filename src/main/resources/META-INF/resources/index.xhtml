@@ -40,11 +40,6 @@
             </title>
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
-        
-        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
-
-        <h:outputStylesheet name="webjars/leaflet/1.8.0/leaflet.css"/>
-        <h:outputScript name="webjars/leaflet/1.8.0/leaflet.js"/>
     </h:head>
 
     <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
@@ -61,7 +56,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup id="wrapper" style="height: 100%">
             <ui:include src="commun/menu.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
@@ -118,7 +113,7 @@
                 </h:form>
                 <ui:include src="commun/footer.xhtml" />
             </div>
-        </div>
+        </h:panelGroup>
 
         <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded" href="#page-top">

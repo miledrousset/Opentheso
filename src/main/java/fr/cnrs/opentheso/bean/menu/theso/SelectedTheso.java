@@ -528,7 +528,7 @@ public class SelectedTheso implements Serializable {
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
-    public void preRenderView() throws IOException {
+    public void preRenderView() {
         if (idThesoFromUri == null) {
             isFromUrl = false;
             return;
