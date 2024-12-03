@@ -53,25 +53,15 @@ public class GraphController {
             })
     public ResponseEntity<Object>  getGraph(
             @Parameter(name = "lang", example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue principale pour récupérer les concepts") @RequestParam("lang") String lang,
-            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, example = "th3,4" , description = "ID du thesaurus à récupérer et du concept (pour une branche), sinon pour un thésaurus complet, il faut juste l'id du thésaurus") @RequestParam("idThesoConcept") List<String> idThesoConcepts) {
+            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, example = "th3:4" ,
+                    description = "ID du thesaurus à récupérer et du concept (pour une branche), sinon pour un thésaurus complet, il faut juste l'id du thésaurus")
+                    @RequestParam("idThesoConcept") List<String> idThesoConcepts) {
        
         List<IdValuePair> idValuePairs = new ArrayList<>();
 
         if(idThesoConcepts == null) { return null;}
-
-    /*    if(idThesoConcepts.size() == 2) {
-            IdValuePair idValuePair = new IdValuePair();
-            idValuePair.setIdTheso(idThesoConcepts.get(0));
-            idValuePair.setIdConcept(idThesoConcepts.get(1));
-            idValuePairs.add(idValuePair);
-        }
-        if(idThesoConcepts.size() == 1) {
-            IdValuePair idValuePair = new IdValuePair();
-            idValuePair.setIdTheso(idThesoConcepts.get(0));
-            idValuePairs.add(idValuePair);
-        }*/
         for (String idThesoConcept : idThesoConcepts) {
-            String[] elements = idThesoConcept.split(",");
+            String[] elements = idThesoConcept.split(":");
 
             if(elements.length == 2){
                 IdValuePair idValuePair = new IdValuePair();

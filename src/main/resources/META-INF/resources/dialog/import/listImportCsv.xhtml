@@ -17,12 +17,13 @@
             </div>
 
             <p:scrollPanel mode="native">
-                <h:panelGrid columns="6" styleClass="customTable">
+                <h:panelGrid columns="7" styleClass="customTable">
                     <h:outputText value="URI" />
                     <h:outputText value="skos:prefLabel@fr" />
                     <h:outputText value="skos:prefLabel@en" />
                     <h:outputText value="skos:altLabel@fr" />
                     <h:outputText value="skos:definition@fr" />
+                    <h:outputText value="skos:facet" />
                     <h:outputText value="skos:broader" />
 
                     <h:outputText value="100" />
@@ -30,6 +31,7 @@
                     <h:outputText value="France_en" />
                     <h:outputText value="l'Hexagone" />
                     <h:outputText value="Pays de la liberté##fait partie de l'Europe" />
+                    <h:outputText value="F19" />
                     <h:outputText value="" />
 
                     <h:outputText value="101" />
@@ -37,6 +39,7 @@
                     <h:outputText value="Lyon_en" />
                     <h:outputText value="Lugdunum" />
                     <h:outputText value="Ville de la gastronomie" />
+                    <h:outputText value="F19##F10" />
                     <h:outputText value="100" />
 
                     <h:outputText value="102" />
@@ -44,6 +47,7 @@
                     <h:outputText value="Vaise_en" />
                     <h:outputText value="9 ème" />
                     <h:outputText value="Quartier du 69009" />
+                    <h:outputText value="" />
                     <h:outputText value="101" />
                 </h:panelGrid>
             </p:scrollPanel>
@@ -111,7 +115,7 @@
                             <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
                         </div>
                     </div>
-                    <div class="row" rendered="#{importFileBean.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                    <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                         <div class="col-12">
                             <h:outputText value="Total des concepts: " />
                             <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>

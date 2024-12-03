@@ -100,8 +100,30 @@
                                          update="idListArkCsv listArkCsvForm"
                                          process="@this" ajax="true"
                                          action="#{importFileBean.init()}"
-                                         style="font-size: 12px; color: #601e18" />                           
-                        
+                                         style="font-size: 12px; color: #601e18" />
+                        <br/>
+                        <!--Pour récupérer les idArk d'après un idIconcept -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.getArkFromConceptId')}"
+                                         title="#{langueBean.getMsg('actions.getArkFromConceptIdTooltip')}"
+                                         styleClass="ui-button-flat"
+                                         oncomplete="PF('getArkFromConceptId').show();"
+                                         update="idGetArkFromConceptId getArkFromConceptIdForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />
+                        <br/>
+                        <!--Pour récupérer les idConcepts d'après l'IdArk -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.getIdConceptFromArkId')}"
+                                         title="#{langueBean.getMsg('actions.getIdConceptFromArkIdTooltip')}"
+                                         styleClass="ui-button-flat"
+                                         oncomplete="PF('getIdConceptFromArkId').show();"
+                                         update="idGetIdConceptFromArkId getIdConceptFromArkIdForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />
+
                         <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
                         
                         <!--Pour importer des images -->
@@ -186,8 +208,8 @@
                                          update="idListDeprecateConceptsCsv listDeprecateConceptsCsvForm"
                                          process="@this" ajax="true"
                                          action="#{importFileBean.init()}"
-                                         style="font-size: 12px; color: #601e18" />                          
-                        
+                                         style="font-size: 12px; color: #601e18" />
+
                         <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
                         
                         <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
@@ -212,9 +234,11 @@
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />     
     <ui:include src="../dialog/import/listAltlabelCsv.xhtml" />      
     <ui:include src="../dialog/import/deleteListAltlabelCsv.xhtml" />      
-    <ui:include src="../dialog/import/listArkCsv.xhtml" />      
-    <ui:include src="../dialog/import/listImageCsv.xhtml" />      
-    <ui:include src="../dialog/import/listNotationCsv.xhtml" />  
+    <ui:include src="../dialog/import/listArkCsv.xhtml" />
+    <ui:include src="../dialog/import/getArkFromConceptId.xhtml" />
+    <ui:include src="../dialog/import/getIdConceptFromArkId.xhtml" />
+    <ui:include src="../dialog/import/listImageCsv.xhtml" />
+    <ui:include src="../dialog/import/listNotationCsv.xhtml" />
     <ui:include src="../dialog/import/listCollectionCsv.xhtml" />     
     <ui:include src="../dialog/import/listForMergeCsv.xhtml" />    
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
