@@ -211,6 +211,7 @@ public class NoteBean implements Serializable {
                 printErreur();
                 return;
             }
+            selectedNodeNote = noteHelper.getNodeNote(selectedNodeNote.getIdentifier(),selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode());
         }
         if(isConceptNote) {
             conceptBean.getConcept(
@@ -801,10 +802,12 @@ public class NoteBean implements Serializable {
 
         if(isFacetNote){
             deleteThisNoteFacet(nodeNote, idUser);
+            resetNotes(nodeNote.getIdentifier(), nodeNote.getLang());
             return;
         }
         if(isGroupNote){
             deleteThisNoteGroup(nodeNote, idUser);
+            resetNotes(nodeNote.getIdentifier(), nodeNote.getLang());
             return;
         }
 
@@ -817,6 +820,16 @@ public class NoteBean implements Serializable {
                 nodeNote.getLexicalValue(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        resetNotes(nodeNote.getIdentifier(), nodeNote.getLang());
+
+        if(isFacetNote){
+            updateFacetNote(nodeNote, idUser);
+            return;
+        }
+        if(isGroupNote){
+            updateGroupNote(nodeNote, idUser);
             return;
         }
 

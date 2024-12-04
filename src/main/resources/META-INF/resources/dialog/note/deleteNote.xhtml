@@ -30,8 +30,11 @@
                              style="margin-left: 10px; margin-right: 10px;"
                               lazy="false">
 
-                    <p:column width="95%" headerText="Valeur" style="margin-left: 10px;">
+                    <p:column width="85%" headerText="Valeur" style="margin-left: 10px;">
                         <h:outputText value="#{noteToDelete.lexicalValue}" escape="false" />
+                    </p:column>
+                    <p:column width="10%" headerText="lang" style="margin-left: 10px;">
+                        <img src="#{conceptView.getDrapeauImgLocal(noteToDelete.lang)}" width="25" height="20" style="margin-right: 5px" alt="#"/>
                     </p:column>
 
                     <p:column width="5%" style="color: black">
