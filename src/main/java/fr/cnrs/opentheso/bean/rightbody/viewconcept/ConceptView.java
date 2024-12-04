@@ -333,7 +333,6 @@ public class ConceptView implements Serializable {
                     PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
                     PrimeFaces.current().ajax().update("containerIndex:languageSelect");
                 }
-                //selectedTheso.actionFromConceptToOn();
             }
         }
         countOfBranch = 0;
