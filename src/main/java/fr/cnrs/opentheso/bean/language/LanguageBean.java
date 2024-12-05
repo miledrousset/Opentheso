@@ -51,6 +51,7 @@ public class LanguageBean implements Serializable {
             pf.ajax().update("menuBar");
             pf.ajax().update("tabViewCandidat");
         }
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
     public String getIdLangue() {
         return idLangue.toLowerCase();

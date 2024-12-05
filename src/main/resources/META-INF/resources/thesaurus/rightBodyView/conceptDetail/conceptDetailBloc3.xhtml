@@ -14,7 +14,7 @@
                                           style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')} / #{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.manage_note')}"
                                             actionListener="#{noteBean.resetForConcept(conceptView.nodeFullConcept.identifier, selectedTheso.currentLang)}" update="containerIndex:idAddNoteNew"
                                             oncomplete="PF('addNoteNew').show();" icon="fas fa-plus" />
                             </p:menuButton>
