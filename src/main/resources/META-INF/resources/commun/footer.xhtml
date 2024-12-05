@@ -34,4 +34,12 @@
         <p:graphicImage value="../resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
     </p:dialog>
 
+    <h:outputScript>
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                location.reload();
+            }
+        });
+    </h:outputScript>
+
 </ui:composition>
