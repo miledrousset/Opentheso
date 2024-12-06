@@ -30,8 +30,11 @@ public class StringUtils {
      */
     public static boolean urlValidator(String url)
     {
+        // Configurer des schémas acceptés (http et https)
+        String[] schemes = {"http", "https"};
         try {
-            UrlValidator defaultValidator = new UrlValidator();
+            // Configurer un UrlValidator permissif
+            UrlValidator defaultValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
             return defaultValidator.isValid(url);
         } catch (Exception e) {
             System.out.println("erruer : " + e.getMessage());

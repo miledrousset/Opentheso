@@ -157,6 +157,8 @@ public class ConceptView implements Serializable {
 
     private String creator;
     private String contributors;
+    @Autowired
+    private CurrentUser currentUser;
 
     @PreDestroy
     public void destroy() {
@@ -971,7 +973,20 @@ public class ConceptView implements Serializable {
         return gpsList;
     }
 
+    public String margeForNotes(){
+        if(currentUser.getNodeUser() != null){
+            return "0px";
+        } else {
+            return "-9px";
+        }
+    }
 
+    public String margeTranslateNotes(){
+        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUse_deepl_translation())
+            return "col-xl-2 col-lg-2 col-md-2 col-sm-2";
+        else
+            return "col-xl-1 col-lg-1 col-md-1 col-sm-1";
+    }
 
 
 }

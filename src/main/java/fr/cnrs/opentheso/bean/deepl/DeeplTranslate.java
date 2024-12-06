@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.deepl;
 import com.deepl.api.Language;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.DeeplHelper;
+import fr.cnrs.opentheso.repositories.LanguageHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 
@@ -54,6 +55,8 @@ public class DeeplTranslate implements Serializable {
 
     private List<Language> sourceLangs;
     private List<Language> targetLangs;
+    @Autowired
+    private LanguageHelper languageHelper;
 
     public void init() {
         String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
@@ -87,6 +90,29 @@ public class DeeplTranslate implements Serializable {
         retrieveExistingTranslatedText();
         this.fromLang = nodeNote1.getLang();
         fromLangLabel = getLanguage(fromLang);
+    }
+
+    public void initNoteToTranslateByLang(NodeNote nodeNote1, String nodeNoteType) {
+        if(nodeNoteType == null) {
+            init();
+            PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
+            return;
+        }
+        if(nodeNote1 == null) {
+            textToTranslate = null;
+            PrimeFaces.current().ajax().update("containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm");
+            PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
+            return;
+        }
+        textToTranslate = nodeNote1.getLexicalValue();
+        this.nodeNote = nodeNote1;
+
+        this.fromLang = nodeNote1.getLang();
+        fromLangLabel = getLanguage(fromLang);
+        if(fromLang.equalsIgnoreCase(languageHelper.normalizeIdLang(toLang))) {
+            toLang = "fr";
+        }
+        retrieveExistingTranslatedText();
     }
 
     private String getLanguage(String idLang) {
