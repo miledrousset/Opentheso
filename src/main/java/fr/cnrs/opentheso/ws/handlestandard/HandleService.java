@@ -70,6 +70,9 @@ public class HandleService {
             File f = new File(Thread.currentThread().getContextClassLoader().getResource(pathKey).getFile());
             FileInputStream fs = new FileInputStream(f);
             key = Util.getBytesFromInputStream(fs);
+            if (key == null || key.length == 0) {
+                throw new RuntimeException("Failed to load private key. Key is null or empty.");
+            }
         } catch (Throwable t) {
             System.err.println("Cannot read private key " + pathKey + ": " + t);
             System.exit(-1);
