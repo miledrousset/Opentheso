@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
@@ -40,8 +39,7 @@ public class RoleOnThesoBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired private LanguageBean languageBean;
     
     @Autowired 
     private UserHelper userHelper;
@@ -135,7 +133,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      * #MR
      */
-    public void initNodePref() {
+    public void initNodePref(SelectedTheso selectedTheso) {
         if (selectedTheso.getCurrentIdTheso() == null) {
             return;
         }
@@ -162,11 +160,11 @@ public class RoleOnThesoBean implements Serializable {
     /**
      * permet d'initialiser la liste des thésaurus suivant les droits
      */
-    public void showListTheso(CurrentUser currentUser) {
+    public void showListTheso(CurrentUser currentUser, SelectedTheso selectedTheso) {
         if (currentUser.getNodeUser() == null) {
-            setPublicThesos(currentUser);
+            setPublicThesos(currentUser, selectedTheso);
         } else {
-            setOwnerThesos(currentUser);
+            setOwnerThesos(currentUser, selectedTheso);
         }
     }
 
@@ -176,10 +174,10 @@ public class RoleOnThesoBean implements Serializable {
      * autorisés pour l'utilisateur en cours on récupère les id puis les
      * tradcutions (ceci permet de récupérer les thésaurus non traduits) #MR
      */
-    private void setOwnerThesos(CurrentUser currentUser) {
+    private void setOwnerThesos(CurrentUser currentUser, SelectedTheso selectedTheso) {
         if (currentUser.getNodeUser() == null) {
             this.listTheso = new ArrayList();
-            setUserRoleOnThisTheso(currentUser);
+            setUserRoleOnThisTheso(currentUser, selectedTheso);
             return;
         }
         
@@ -220,7 +218,7 @@ public class RoleOnThesoBean implements Serializable {
         if (authorizedTheso.isEmpty()) {
             setUserRoleGroup(currentUser);
         } else {
-            setUserRoleOnThisTheso(currentUser);
+            setUserRoleOnThisTheso(currentUser, selectedTheso);
         }
     }
 
@@ -228,7 +226,7 @@ public class RoleOnThesoBean implements Serializable {
      * Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
      * sinon, on nettoie l'interface et le thésaurus. 
      */
-    public void redirectAndCleanTheso(){
+    public void redirectAndCleanTheso(SelectedTheso selectedTheso){
         if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())){
             selectedTheso.setCurrentIdTheso(null);
             selectedTheso.setSelectedIdTheso(null);
@@ -365,11 +363,11 @@ public class RoleOnThesoBean implements Serializable {
      * tous les thésaurus sauf privés #MR
      *
      */
-    public void setPublicThesos(CurrentUser currentUser) {
+    public void setPublicThesos(CurrentUser currentUser, SelectedTheso selectedTheso) {
         currentUser.initAllTheso();
         authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(false);
         addAuthorizedThesoToHM();
-        setUserRoleOnThisTheso(currentUser);
+        setUserRoleOnThisTheso(currentUser, selectedTheso);
     }
 
     /**
@@ -379,7 +377,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      * #MR
      */
-    public void setUserRoleOnThisTheso(CurrentUser currentUser) {
+    public void setUserRoleOnThisTheso(CurrentUser currentUser, SelectedTheso selectedTheso) {
 
         isSuperAdmin = false;
         isAdminOnThisTheso = false;
@@ -475,7 +473,7 @@ public class RoleOnThesoBean implements Serializable {
      * permet de savoir si le thésaurus en cours n'est plus dans la liste des thésaurus autorisés
      * alors on nettoie initialise et on nettoie l'écran
      */
-    public void setAndClearThesoInAuthorizedList() throws IOException{
+    public void setAndClearThesoInAuthorizedList(SelectedTheso selectedTheso) throws IOException{
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
         if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())) {
             selectedTheso.setSelectedIdTheso(null);
@@ -524,14 +522,6 @@ public class RoleOnThesoBean implements Serializable {
 
     public void setLanguageBean(LanguageBean languageBean) {
         this.languageBean = languageBean;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
     }
 
     public List<ThesoModel> getListTheso() {

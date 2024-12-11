@@ -47,7 +47,7 @@
                              update="containerIndex messageIndex" styleClass="ui-button-success" 
                              oncomplete="PF('confirmDelete').hide();"
                              actionListener="#{deleteThesoBean.deleteTheso(currentUser)}"
-                             action="#{roleOnTheso.showListTheso(currentUser)}"/>
+                             action="#{roleOnTheso.showListTheso(currentUser, selectedTheso)}"/>
         </div> 
             </h:form>
     </p:dialog>     

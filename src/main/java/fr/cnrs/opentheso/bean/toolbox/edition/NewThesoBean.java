@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageHelper;
@@ -31,10 +32,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NewThesoBean implements Serializable {
 
-    
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private ViewEditionBean viewEditionBean;
+
+    @Autowired
+    private SelectedTheso selectedTheso;
 
     @Autowired
     private PreferencesHelper preferencesHelper;
@@ -161,7 +164,7 @@ public class NewThesoBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "thesaurus ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         viewEditionBean.init();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

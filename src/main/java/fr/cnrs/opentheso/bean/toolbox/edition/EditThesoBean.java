@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
@@ -38,6 +39,9 @@ public class EditThesoBean implements Serializable {
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private MenuBean menuBean;
     @Autowired @Lazy private ThesaurusMetadataAdd thesaurusMetadataAdd;
+
+    @Autowired
+    private SelectedTheso selectedTheso;
 
     @Autowired
     private PreferencesHelper preferencesHelper;
@@ -181,7 +185,7 @@ public class EditThesoBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le thésaurus est maintenant public");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init(nodeIdValueOfTheso);
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("toolBoxForm:idLangToModify");
@@ -253,7 +257,7 @@ public class EditThesoBean implements Serializable {
             return;
         }
 
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         String sourceLang = preferencesHelper.getWorkLanguageOfTheso(nodeIdValueOfTheso.getId());

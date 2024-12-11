@@ -1242,7 +1242,7 @@ public class ImportFileBean implements Serializable {
                 + thesaurusName + " (" + idNewTheso + ") est correctement importé !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         viewEditionBean.init();
     }
 
@@ -1358,7 +1358,7 @@ public class ImportFileBean implements Serializable {
 
             info = "Thesaurus correctly insert into data base";
             info = info + "\n" + csvImportHelper.getMessage();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1456,7 +1456,7 @@ public class ImportFileBean implements Serializable {
             }
         }
 
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         viewEditionBean.init();
 
         if (!StringUtils.isEmpty(csvImportHelper.getMessage())) {
@@ -1517,7 +1517,7 @@ public class ImportFileBean implements Serializable {
             uri = null;
             //total = 0;
             info = info + "\n" + "total = " + total + "\n" + csvImportHelper.getMessage();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1826,7 +1826,7 @@ public class ImportFileBean implements Serializable {
             //total = 0;
             info = info + "\n" + "total = " + total;
             error.append(csvImportHelper.getMessage());
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1931,7 +1931,7 @@ public class ImportFileBean implements Serializable {
             //total = 0;
             info = info + "\n" + "total = " + total;
             error.append(csvImportHelper.getMessage());
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -3159,7 +3159,7 @@ public class ImportFileBean implements Serializable {
 
             info = "Thesaurus correctly insert into data base";
             info = info + "\n" + importRdf4jHelper.getMessage().toString();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             viewEditionBean.init();
         } catch (SQLException e) {
             error.append(System.getProperty("line.separator"));
@@ -3220,7 +3220,7 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addLangsToThesaurus(idTheso);
         importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);
 
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         viewEditionBean.init();
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,

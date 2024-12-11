@@ -56,7 +56,7 @@
                 <p:commandButton value="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
                                  styleClass="ui-button-success"  oncomplete="PF('addLangToTheso').hide();"
                                  actionListener="#{editThesoBean.addNewLang()}" icon="pi pi-check" 
-                                 action="#{roleOnTheso.showListTheso(currentUser)}" />
+                                 action="#{roleOnTheso.showListTheso(currentUser, selectedTheso)}" />
             </div>
         </h:form>
     </p:dialog>     
