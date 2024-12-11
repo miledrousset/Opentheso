@@ -1,13 +1,8 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.DeprecateHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -108,6 +103,8 @@ public class EditConcept implements Serializable {
     
     private NodeConceptType nodeConceptTypeToDelete;
     private NodeConceptType nodeConceptTypeToAdd;
+    @Autowired
+    private GroupHelper groupHelper;
 
 
     public void clear() {
@@ -159,6 +156,14 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    public void removeAllConceptFromCollection(String idGroup){
+        groupHelper.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso());
+
+        selectedTheso.reloadGroups();
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tous les concepts ont été retirés de la collection.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
     /**
      * permet de changer les informations dans la table du type de concept
      * @param nodeConceptType
@@ -166,7 +171,7 @@ public class EditConcept implements Serializable {
      */
     public void applyChangeForConceptType(NodeConceptType nodeConceptType, int idUser){
         if(nodeConceptType == null || StringUtils.isEmpty(nodeConceptType.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélecion !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;
         }
@@ -186,7 +191,7 @@ public class EditConcept implements Serializable {
      */
     public void deleteCustomRelationship(){
         if(nodeConceptTypeToDelete == null || StringUtils.isEmpty(nodeConceptTypeToDelete.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélecion !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;            
         }
@@ -206,12 +211,12 @@ public class EditConcept implements Serializable {
      */
     public void addNewConceptType(){
         if(nodeConceptTypeToAdd == null || StringUtils.isEmpty(nodeConceptTypeToAdd.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélecion !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;            
         }    
         if(StringUtils.isEmpty( selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélecion !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;              
         }

@@ -243,7 +243,8 @@ public class HandleClient {
 
             SSLContext sslContext;
             sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+            //sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
             //URL url = new URL("https://cchum-isi-handle01.in2p3.fr:8001/api/handles/20.500.11942/opentheso443");
             // idHandle = 20.500.11942/opentheso443

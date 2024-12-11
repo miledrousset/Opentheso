@@ -7,31 +7,24 @@
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
             <div class="list-group-item list-group-item-action">
-                <div class="row" style="margin-left: 0px;">
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                        <h:panelGroup id="notesActions"
-                                      rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                          title="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                          style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
-                            <p:menuButton
-                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
-                                    icon="pi pi-cog"
-                                    style="background: none; border: none; color: #000; box-shadow: none;">
+                <div class="row" style="vertical-align: central; margin-left: 0px;">
+
+                    <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.all_note')}"
+                                      title="#{langueBean.getMsg('rightbody.concept.all_note')}"
+                                      style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
+                    </div>
+                    <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
+                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
+                            <p:menuButton icon="fas fa-cog" style="margin-top: -4px">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.manage_note')}"
                                             actionListener="#{noteBean.resetForConcept(conceptView.nodeFullConcept.identifier, selectedTheso.currentLang)}"
                                             update="containerIndex:idAddNoteNew"
                                             oncomplete="PF('addNoteNew').show();" icon="fas fa-plus"/>
                             </p:menuButton>
                         </h:panelGroup>
-                        <h:outputText rendered="#{(currentUser.nodeUser == null) and (conceptView.note == null and conceptView.changeNote == null and conceptView.definition == null
-                                                  and conceptView.editorialNote == null and conceptView.example == null and conceptView.historyNote == null
-                                                  and conceptView.scopeNote == null)}"
-                                      value="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                      style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-left: 10px;"/>
-
                     </div>
-                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 offset-xl-8 offset-lg-7 offset-md-6 offset-sm-6"
+                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1"
                          style="text-align: right; margin-top: 7px">
                         <p:inputSwitch id="commandOtherLang" value="#{conceptView.toggleSwitchNotesLang}"
                                        style="color: #f47b2a; margin-right: 10px">
@@ -43,9 +36,12 @@
                     </div>
                 </div>
             </div>
+            <p:spacer height="1px" width="98%" style="margin-left: 10px; margin-top: 5px;
+                          margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
+
+
 
             <h:panelGroup id="idConceptNotes" style="margin-top: 5px;">
-
                 <!-- Note -->
                 <h:panelGroup rendered="#{conceptView.isHaveNote()}">
                     <div class="list-group-item list-group-item-action">
@@ -63,17 +59,18 @@
                                             <div class="row">
                                                 <div class="#{conceptView.margeTranslateNotes()}" >
                                                     <!-- DeepL -->
-                                                    <p:commandLink actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
-                                                                   rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    <p:commandLink id="deeplNote"
+                                                            rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                            actionListener="#{deeplTranslate.init()}"
                                                                    action="#{deeplTranslate.initNoteToTranslateByLang(note, 'note')}"
                                                                    oncomplete="PF('deeplTranslate').show();"
                                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
                                                         <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
                                                     </p:commandLink>
+                                                    <p:tooltip for="deeplNote" value="#{langueBean.getMsg('deepl.translate')}" />
                                                     <!-- Drapeau -->
                                                     <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
                                                 </div>
-
                                                 <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
                                                     <!-- Note -->
                                                     <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
@@ -85,33 +82,30 @@
 
                                 <!-- une note -->
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-
-                                    <!-- DeepL -->
-                                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}">
-                                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                            <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                        value="#{langueBean.getMsg('deepl.translate')}"
-                                                        actionListener="#{deeplTranslate.init()}"
-                                                        oncomplete="PF('deeplTranslate').show();"
-                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                        action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'note')}"
-                                                        icon="fa-solid fa-language"/>
-                                        </p:menuButton>
-                                    </h:panelGroup>
-
-                                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
-                                        <!-- Drapeau -->
-                                        <img src="#{conceptView.getDrapeauImgLocal(conceptView.note.lang)}" width="20" height="15" style="margin-right: 7px;"/>
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'note')}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.note.lexicalValue}#{conceptView.getNoteSource(conceptView.note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
                                     </div>
-                                    <!-- Note -->
-                                    <h:outputText value="#{conceptView.note.lexicalValue}#{conceptView.getNoteSource(conceptView.note.noteSource)}" escape="false" style="font-size: 14px;"/>
                                 </h:panelGroup>
-
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
-
 
                 <!-- ChangeNote -->
                 <h:panelGroup rendered="#{conceptView.isHaveChangeNote()}">
@@ -124,156 +118,186 @@
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat var="note" value="#{conceptView.changeNoteAllLang}" varStatus="status">
-                                        <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15"
-                                             style="margin-right: 7px"/>
-                                        <h:outputText
-                                                value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                        <h:outputText value="(#{note.lang}) "
-                                                      style="font-size: 14px; font-weight: 300;"/>
-                                        <br/>
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'changeNote')}"
+                                                        oncomplete="PF('deeplTranslate').show();"
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
                                     </ui:repeat>
                                 </h:panelGroup>
 
+                                <!-- une note -->
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <p:menuButton icon="fas fa-cog"  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                    value="#{langueBean.getMsg('deepl.translate')}"
-                                                    actionListener="#{deeplTranslate.init()}"
-                                                    oncomplete="PF('deeplTranslate').show();"
-                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
                                                     action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'changeNote')}"
-                                                    icon="fa-solid fa-language"/>
-                                    </p:menuButton>
-                                    <img src="#{conceptView.getDrapeauImgLocal(conceptView.note.lang)}" width="20"
-                                         height="15" style="margin-right: 7px;"/>
-                                    <h:outputText
-                                            value="#{conceptView.changeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.changeNote.noteSource)}"
-                                            escape="false" style="font-size: 14px;"/>
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.changeNote.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.changeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.changeNote.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
                                 </h:panelGroup>
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
-
 
                 <!-- Definition -->
                 <h:panelGroup rendered="#{conceptView.isHaveDefinition()}">
                     <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}"
                                               title="#{langueBean.getMsg('rightbody.concept.definition')}"
-                                              style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <h:panelGroup
-                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                                    <p:menuButton icon="fas fa-cog"
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                    value="#{langueBean.getMsg('deepl.translate')}"
-                                                    actionListener="#{deeplTranslate.init()}"
-                                                    oncomplete="PF('deeplTranslate').show();"
-                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'definition')}"
-                                                    icon="fa-solid fa-language"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'definition')}"
-                                                    oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'definition')}"
-                                                    oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote"
-                                                    icon="fas fa-minus"/>
-                                    </p:menuButton>
-                                </h:panelGroup>
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
-                                    <ui:repeat var="def" value="#{conceptView.definitionAllLang}" varStatus="status">
-                                        <h:outputText value="(#{def.lang}) "
-                                                      style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText
-                                                value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                        <br/>
+                                    <ui:repeat var="note" value="#{conceptView.definitionAllLang}" varStatus="status">
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'definition')}"
+                                                        oncomplete="PF('deeplTranslate').show();"
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
                                     </ui:repeat>
                                 </h:panelGroup>
 
+                                <!-- une note -->
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText
-                                            value="#{conceptView.definition.lexicalValue}#{conceptView.getNoteSource(conceptView.definition.noteSource)}"
-                                            escape="false" style="font-size: 14px;"/>
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'definition')}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.definition.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.definition.lexicalValue}#{conceptView.getNoteSource(conceptView.definition.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
                                 </h:panelGroup>
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
-
                 <!-- EditorialNote -->
-                <h:panelGroup
-                        rendered="#{roleOnTheso.nodePreference.showEditorialNote or currentUser.nodeUser != null}">
-                    <h:panelGroup rendered="#{conceptView.isHaveEditorialNote()}">
-                        <div class="list-group-item list-group-item-action">
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
-                                     style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
-                                                  title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <p:menuButton
-                                            rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
-                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;">
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                    value="#{langueBean.getMsg('deepl.translate')}"
-                                                    actionListener="#{deeplTranslate.init()}"
-                                                    oncomplete="PF('deeplTranslate').show();"
-                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                <h:panelGroup rendered="#{conceptView.isHaveEditorialNote()}">
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                              title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
+                                <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
+                                    <ui:repeat var="note" value="#{conceptView.editorialNoteAllLang}" varStatus="status">
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'editorialNote')}"
+                                                        oncomplete="PF('deeplTranslate').show();"
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
+
+                                <!-- une note -->
+                                <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
                                                     action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
-                                                    icon="fa-solid fa-language"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
-                                                    oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
-                                                    actionListener="#{noteBean.reset()}" icon="fas fa-minus"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
-                                                    oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote"/>
-                                    </p:menuButton>
-
-                                    <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
-                                        <ui:repeat var="note" value="#{conceptView.editorialNoteAllLang}"
-                                                   varStatus="status">
-                                            <h:outputText value="(#{note.lang}) "
-                                                          style="font-size: 14px; font-weight: 300;"/>
-                                            <h:outputText
-                                                    value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}"
-                                                    escape="false" style="font-size: 14px;"/>
-                                            <br/>
-                                        </ui:repeat>
-                                    </h:panelGroup>
-
-                                    <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                        <h:outputText
-                                                value="#{conceptView.editorialNote.lexicalValue}#{conceptView.getNoteSource(conceptView.editorialNote.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                    </h:panelGroup>
-                                </div>
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.editorialNote.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.editorialNote.lexicalValue}#{conceptView.getNoteSource(conceptView.editorialNote.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
                             </div>
                         </div>
-                    </h:panelGroup>
+                    </div>
                 </h:panelGroup>
-
 
                 <!-- Example -->
                 <h:panelGroup rendered="#{conceptView.isHaveExampleNote()}">
@@ -283,48 +307,56 @@
                                  style="text-align: left; ">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.example_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.example_note')}"
-                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <h:panelGroup
-                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;">
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                    value="#{langueBean.getMsg('deepl.translate')}"
-                                                    actionListener="#{deeplTranslate.init()}"
-                                                    oncomplete="PF('deeplTranslate').show();"
-                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'example')}"
-                                                    icon="fa-solid fa-language"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'example')}"
-                                                    oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'example')}"
-                                                    oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
-                                    </p:menuButton>
-                                </h:panelGroup>
-
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
-                                    <ui:repeat var="def" value="#{conceptView.exampleAllLang}" varStatus="status">
-                                        <h:outputText value="(#{def.lang}) "
-                                                      style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText
-                                                value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                        <br/>
+                                    <ui:repeat var="note" value="#{conceptView.exampleAllLang}" varStatus="status">
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'example')}"
+                                                        oncomplete="PF('deeplTranslate').show();"
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
                                     </ui:repeat>
                                 </h:panelGroup>
 
+                                <!-- une note -->
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText
-                                            value="#{conceptView.example.lexicalValue}#{conceptView.getNoteSource(conceptView.example.noteSource)}"
-                                            escape="false" style="font-size: 14px;"/>
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'example')}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.example.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.example.lexicalValue}#{conceptView.getNoteSource(conceptView.example.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
                                 </h:panelGroup>
                             </div>
                         </div>
@@ -332,64 +364,68 @@
                 </h:panelGroup>
 
                 <!-- History -->
-                <h:panelGroup rendered="#{roleOnTheso.nodePreference.showHistoryNote or currentUser.nodeUser != null}">
-                    <h:panelGroup rendered="#{conceptView.isHaveHistoryNote()}">
-                        <div class="list-group-item list-group-item-action">
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
-                                     style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}"
-                                                  title="#{langueBean.getMsg('rightbody.concept.history_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <h:panelGroup
-                                            rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                      box-shadow: none; font-size: 12px;">
-                                            <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                        value="#{langueBean.getMsg('deepl.translate')}"
-                                                        actionListener="#{deeplTranslate.init()}"
+                <h:panelGroup rendered="#{conceptView.isHaveHistoryNote()}">
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                              title="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
+                                <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
+                                    <ui:repeat var="note" value="#{conceptView.historyNoteAllLang}" varStatus="status">
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'historyNote')}"
                                                         oncomplete="PF('deeplTranslate').show();"
-                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                        action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
-                                                        icon="fa-solid fa-language"/>
-                                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
-                                                        actionListener="#{noteBean.reset()}"
-                                                        action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
-                                                        oncomplete="PF('editNote').show();"
-                                                        update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
-                                                        actionListener="#{noteBean.reset()}"
-                                                        action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
-                                                        oncomplete="PF('deleteNote').show();"
-                                                        update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
-                                        </p:menuButton>
-                                    </h:panelGroup>
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
 
-                                    <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
-                                        <ui:repeat var="def" value="#{conceptView.historyNoteAllLang}"
-                                                   varStatus="status">
-                                            <h:outputText value="(#{def.lang}) "
-                                                          style="font-size: 14px; font-weight: 300;"/>
-                                            <h:outputText
-                                                    value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}"
-                                                    escape="false" style="font-size: 14px;"/>
-                                            <br/>
-                                        </ui:repeat>
-                                    </h:panelGroup>
-
-                                    <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                        <h:outputText
-                                                value="#{conceptView.historyNote.lexicalValue}#{conceptView.getNoteSource(conceptView.historyNote.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                    </h:panelGroup>
-                                </div>
+                                <!-- une note -->
+                                <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.historyNote.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.historyNote.lexicalValue}#{conceptView.getNoteSource(conceptView.historyNote.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
                             </div>
                         </div>
-                    </h:panelGroup>
+                    </div>
                 </h:panelGroup>
-
 
                 <!-- ScopeNote -->
                 <h:panelGroup rendered="#{conceptView.isHaveScopeNote()}">
@@ -399,52 +435,62 @@
                                  style="text-align: left; ">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
-                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton
-                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                              box-shadow: none; font-size: 12px;">
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
-                                                value="#{langueBean.getMsg('deepl.translate')}"
-                                                actionListener="#{deeplTranslate.init()}"
-                                                oncomplete="PF('deeplTranslate').show();"
-                                                update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
-                                                icon="fa-solid fa-language"/>
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
-                                                actionListener="#{noteBean.reset()}"
-                                                action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
-                                                oncomplete="PF('editNote').show();"
-                                                update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
-                                                actionListener="#{noteBean.reset()}"
-                                                action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
-                                                oncomplete="PF('deleteNote').show();"
-                                                update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
-                                </p:menuButton>
-
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: #{conceptView.margeForNotes()}">
+                                <!-- Notes multilingues -->
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
-                                    <ui:repeat var="def" value="#{conceptView.scopeNoteAllLang}" varStatus="status">
-                                        <h:outputText value="(#{def.lang}) "
-                                                      style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText
-                                                value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}"
-                                                escape="false" style="font-size: 14px;"/>
-                                        <br/>
+                                    <ui:repeat var="note" value="#{conceptView.scopeNoteAllLang}" varStatus="status">
+                                        <div class="row">
+                                            <div class="#{conceptView.margeTranslateNotes()}" >
+                                                <!-- DeepL -->
+                                                <p:commandLink
+                                                        rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                        actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                        action="#{deeplTranslate.initNoteToTranslateByLang(note, 'scopeNote')}"
+                                                        oncomplete="PF('deeplTranslate').show();"
+                                                        update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                    <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                                </p:commandLink>
+                                                <!-- Drapeau -->
+                                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                            </div>
+                                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                                <!-- Note -->
+                                                <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                                <h:outputText value=" (#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
+                                            </div>
+                                        </div>
                                     </ui:repeat>
                                 </h:panelGroup>
 
+                                <!-- une note -->
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText
-                                            value="#{conceptView.scopeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.scopeNote.noteSource)}"
-                                            escape="false" style="font-size: 14px;"/>
+                                    <div class="row">
+                                        <div class="#{conceptView.margeTranslateNotes()}" >
+                                            <!-- DeepL -->
+                                            <p:commandLink
+                                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager) and (roleOnTheso.nodePreference.use_deepl_translation)}"
+                                                    actionListener="#{deeplTranslate.init()}" title="#{langueBean.getMsg('deepl.translate')}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm">
+                                                <img src="/resources/img/deepl.png" height="25" style="margin-right: 7px" />
+                                            </p:commandLink>
+                                            <!-- Drapeau -->
+                                            <img src="#{conceptView.getDrapeauImgLocal(conceptView.scopeNote.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                                        </div>
+                                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                            <!-- Note -->
+                                            <h:outputText value="#{conceptView.scopeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.scopeNote.noteSource)}" escape="false" style="font-size: 14px;"/>
+                                        </div>
+                                    </div>
                                 </h:panelGroup>
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
+
             </h:panelGroup>
         </div>
     </div>

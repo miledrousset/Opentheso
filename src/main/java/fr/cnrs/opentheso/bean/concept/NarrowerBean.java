@@ -15,9 +15,11 @@ import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -33,10 +35,18 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NarrowerBean implements Serializable {
 
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired
+    @Lazy
+    private ConceptView conceptBean;
+    @Autowired
+    @Lazy
+    private SelectedTheso selectedTheso;
+    @Autowired
+    @Lazy
+    private Tree tree;
+    @Autowired
+    @Lazy
+    private CurrentUser currentUser;
 
     @Autowired
     private SearchHelper searchHelper;
@@ -56,14 +66,15 @@ public class NarrowerBean implements Serializable {
     private NodeSearchMini searchSelected;
     private List<NodeNT> nodeNTs;
     private List<NodeTypeRelation> typesRelationsNT;
+    private String selectedRelationRole;
+    private boolean applyToBranch;
 
-
-    public void clear(){
-        if(nodeNTs != null){
+    public void clear() {
+        if (nodeNTs != null) {
             nodeNTs.clear();
             nodeNTs = null;
         }
-        if(typesRelationsNT != null){
+        if (typesRelationsNT != null) {
             typesRelationsNT.clear();
             typesRelationsNT = null;
         }
@@ -73,74 +84,78 @@ public class NarrowerBean implements Serializable {
     public void reset() {
         nodeNTs = conceptBean.getNodeConcept().getNodeNT();
         searchSelected = null;
+        applyToBranch = false;
     }
-    
-    public void initForChangeRelations(){
+
+    public void initForChangeRelations() {
         typesRelationsNT = relationsHelper.getTypesRelationsNT();
-        nodeNTs = conceptBean.getNodeConcept().getNodeNT();        
+        nodeNTs = conceptBean.getNodeConcept().getNodeNT();
+        applyToBranch = false;
     }
-   
+
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Related !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
- 
+
     /**
-     * permet de retourner la liste des concepts possibles 
+     * permet de retourner la liste des concepts possibles
      * pour ajouter une relation NT
-     * (en ignorant les relations interdites) 
+     * (en ignorant les relations interdites)
      * on ignore les concepts de type TT
      * on ignore les concepts de type RT
+     *
      * @param value
-     * @return 
+     * @return
      */
     public List<NodeSearchMini> getAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null){
+        if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
             liste = searchHelper.searchAutoCompletionForRelation(value, conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), true);
         }
         return liste;
-    }    
-    
+    }
+
     /**
-     * permet d'ajouter un 
-     * @param idUser 
+     * permet d'ajouter un
+     *
+     * @param idUser
      */
     public void addNewNarrowerLink(int idUser) {
         FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();    
-        
-        if(searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
+        PrimeFaces pf = PrimeFaces.current();
+
+        if (searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         /// vérifier la cohérence de la relation
-        if(!validateActionHelper.isAddRelationNTValid(selectedTheso.getCurrentIdTheso(),
+        if (!validateActionHelper.isAddRelationNTValid(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), searchSelected.getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;    
+            return;
         }
 
-        if(!relationsHelper.addRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)){
+        if (!relationsHelper.addRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
-        if(conceptHelper.isTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())){
-            if(!conceptHelper.setNotTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())){
+        if (conceptHelper.isTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+            if (!conceptHelper.setNotTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en enlevant le concept du TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-        }        
+        }
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
@@ -158,56 +173,57 @@ public class NarrowerBean implements Serializable {
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
-        }    
-        
-        tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getSelectedLang());
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");            
-            pf.ajax().update("formLeftTab:tabTree:tree");
-        }  
+        }
 
-        PrimeFaces.current().executeScript("srollToSelected();");                                         
-        PrimeFaces.current().executeScript("PF('addNarrowerLink').hide();");         
+        tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getSelectedLang());
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("formLeftTab:tabTree:tree");
+        }
+
+        PrimeFaces.current().executeScript("srollToSelected();");
+        PrimeFaces.current().executeScript("PF('addNarrowerLink').hide();");
         reset();
     }
-    
+
     /**
      * permet de supprimer une relation NT au concept
+     *
      * @param nodeNT
-     * @param idUser 
+     * @param idUser
      */
-    public void deleteNarrowerLink(ConceptRelation nodeNT, int idUser){
+    public void deleteNarrowerLink(ConceptRelation nodeNT, int idUser) {
         FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();    
-        
-        if(nodeNT == null || nodeNT.getIdConcept() == null || nodeNT.getIdConcept().isEmpty()) {
+        PrimeFaces pf = PrimeFaces.current();
+
+        if (nodeNT == null || nodeNT.getIdConcept() == null || nodeNT.getIdConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        if(!relationsHelper.deleteRelationNT(
+        if (!relationsHelper.deleteRelationNT(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNT.getIdConcept(),
-                idUser)){
+                idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         // on vérifie si le concept qui a été enlevé n'a plus de BT, on le rend TopTerme
-        if(!relationsHelper.isConceptHaveRelationBT(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
-            if(!conceptHelper.setTopConcept(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
+        if (!relationsHelper.isConceptHaveRelationBT(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+            if (!conceptHelper.setTopConcept(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en passant le concept et TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         }
-        
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -215,13 +231,13 @@ public class NarrowerBean implements Serializable {
 
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);     
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
         dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
-        
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -229,28 +245,61 @@ public class NarrowerBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:listNarrowerLink");
-        }  
-        
-        tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getSelectedLang());
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");            
-            pf.ajax().update("formLeftTab:tabTree:tree");
-        }  
+        }
 
-        PrimeFaces.current().executeScript("srollToSelected();");                                         
-        PrimeFaces.current().executeScript("PF('deleteNarrowerLink').hide();");          
+        tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getSelectedLang());
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("formLeftTab:tabTree:tree");
+        }
+
+        PrimeFaces.current().executeScript("srollToSelected();");
+        PrimeFaces.current().executeScript("PF('deleteNarrowerLink').hide();");
     }
 
-    
-    public void updateRelation(ConceptRelation nodeNT, int idUser){
+
+    public void applyRelationToBranch(String idConceptParent, int idUser) {
         FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();            
+        PrimeFaces pf = PrimeFaces.current();
+
+        String inverseRelation = "BT";
+        switch (selectedRelationRole) {
+            case "NT":
+                inverseRelation = "BT";
+                break;
+            case "NTG":
+                inverseRelation = "BTG";
+                break;
+            case "NTP":
+                inverseRelation = "BTP";
+                break;
+            case "NTI":
+                inverseRelation = "BTI";
+                break;
+        }
+        applyRelationToBranch__(idConceptParent, selectedRelationRole, inverseRelation, idUser);
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation modifiée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        initForChangeRelations();
+    }
+    private void applyRelationToBranch__(String idConceptParent, String relation, String inverseRelation, int idUser) {
+        List<String> conceptsFils = conceptHelper.getListChildrenOfConcept(idConceptParent, selectedTheso.getCurrentIdTheso());
+        for (String idConcept : conceptsFils) {
+            relationsHelper.updateRelationNT(idConceptParent,
+                    idConcept, selectedTheso.getCurrentIdTheso(), relation, inverseRelation, idUser);
+            applyRelationToBranch__(idConcept, relation, inverseRelation, idUser);
+        }
+    }
+
+    public void updateRelation(ConceptRelation nodeNT, int idUser) {
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
 
         String inverseRelation = "BT";
         switch (nodeNT.getRole()) {
-            case "NT" :
+            case "NT":
                 inverseRelation = "BT";
                 break;
             case "NTG":
@@ -264,7 +313,7 @@ public class NarrowerBean implements Serializable {
                 break;
         }
 
-        if(!relationsHelper.updateRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        if (!relationsHelper.updateRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso(), nodeNT.getRole(), inverseRelation, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                     " erreur modifiant la relation pour le concept !");
@@ -278,14 +327,14 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
         conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
         dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////        
-        
+        ///////////////
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         initForChangeRelations();
@@ -294,6 +343,7 @@ public class NarrowerBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:changeRelationForm");
-        }  
+        }
     }
 }
+
