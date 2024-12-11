@@ -139,7 +139,7 @@ public class SelectedTheso implements Serializable {
     @PostConstruct
     public void initializing() {
         isNetworkAvailable = true;
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, this);
         sortByNotation = false;
 
         loadProject();
@@ -263,7 +263,7 @@ public class SelectedTheso implements Serializable {
         
         propositionBean.searchNewPropositions();
 
-        roleOnThesoBean.setUserRoleOnThisTheso(currentUser);
+        roleOnThesoBean.setUserRoleOnThisTheso(currentUser, this);
 
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
@@ -314,7 +314,7 @@ public class SelectedTheso implements Serializable {
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();
             currentUser.reloadAllThesoOfAllProject();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, this);
             if(StringUtils.isEmpty(selectedIdTheso))
                 indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
@@ -330,7 +330,7 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(currentUser);
+            roleOnThesoBean.setUserRoleOnThisTheso(currentUser, this);
 
             if (CollectionUtils.isNotEmpty(projectBean.getListeThesoOfProject())) {
                 if (projectBean.getListeThesoOfProject().stream()
@@ -400,7 +400,7 @@ public class SelectedTheso implements Serializable {
      */
     public void reloadSelectedTheso() throws IOException {
         loadProject();
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, this);
 
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -455,7 +455,7 @@ public class SelectedTheso implements Serializable {
     private void startNewTheso(String idLang) {
         currentIdTheso = selectedIdTheso;
         // setting des préférences du thésaurus sélectionné
-        roleOnThesoBean.initNodePref();
+        roleOnThesoBean.initNodePref(this);
         if (StringUtils.isEmpty(idLang)) {
             idLang = getIdLang();
         }

@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import org.primefaces.PrimeFaces;
@@ -41,6 +42,10 @@ public class SessionControl implements Serializable {
     @Autowired @Lazy private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private IndexSetting indexSetting;
+
+    @Autowired
+    private SelectedTheso selectedTheso;
+
     
     public void isTimeout() throws IOException {
 
@@ -54,10 +59,10 @@ public class SessionControl implements Serializable {
             treeGroups.reset();
             treeConcepts.reset();
             viewEditorThesoHomeBean.reset();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
             copyAndPasteBetweenTheso.reset();
             indexSetting.setIsThesoActive(true);
-            roleOnThesoBean.setAndClearThesoInAuthorizedList();
+            roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);
             PrimeFaces.current().ajax().update("containerIndex");
         }
 
