@@ -112,6 +112,8 @@ public class ConceptHelper {
     //identifierType  1=numericId ; 2=alphaNumericId
     private NodePreference nodePreference;
     private String message = "";
+    @Autowired
+    private HandleService handleService;
 
 
     /**
@@ -2966,6 +2968,7 @@ public class ConceptHelper {
             return false;
         }
         String privateUri;
+        log.info("Répertoire courant : " + System.getProperty("user.dir"));
 
         if (nodePreference.isUseHandleWithCertificat()) {
             privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
@@ -2978,22 +2981,27 @@ public class ConceptHelper {
             return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+            //HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            //hs.applyNodePreference(nodePreference);
+            if(!handleService.connectHandle()){
+                message = handleService.getMessage();
+                //System.out.println(handleService.getResponseMsg());
+                return false;
+            }
             privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
             String idHandle = getNewId(25, false, false);
-            idHandle = hs.getPrivatePrefix() + idHandle;
+            idHandle = handleService.getPrivatePrefix() + idHandle;
             try {
-                if (!hs.createHandle(idHandle, privateUri)) {
-                    message = hs.getMessage();
-                    System.out.println(hs.getResponseMsg());
+                if (!handleService.createHandle(idHandle, privateUri)) {
+                    message = handleService.getMessage();
+                    System.out.println(handleService.getResponseMsg());
                     return false;
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
-            idHandle = hs.getPrefix() + "/" + idHandle;
+            idHandle = handleService.getPrefix() + "/" + idHandle;
             if (!updateHandleIdOfConcept(conn, idConcept,
                     idThesaurus, idHandle)) {
                 return false;
@@ -3020,22 +3028,22 @@ public class ConceptHelper {
             return updateHandleIdOfConcept(idConcept, idThesaurus, idHandle);
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+         //   HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
             String idHandle = getNewId(25, false, false);
-            idHandle = hs.getPrivatePrefix() + idHandle;
+            idHandle = handleService.getPrivatePrefix() + idHandle;
             try {
-                if (!hs.createHandle(idHandle, privateUri)) {
-                    message = hs.getMessage();
-                    System.out.println(hs.getResponseMsg());
+                if (!handleService.createHandle(idHandle, privateUri)) {
+                    message = handleService.getMessage();
+                    System.out.println(handleService.getResponseMsg());
                     return false;
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
-            idHandle = hs.getPrefix() + "/" + idHandle;
+            idHandle = handleService.getPrefix() + "/" + idHandle;
             if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
                 return false;
             }
@@ -3076,24 +3084,24 @@ public class ConceptHelper {
             return true;
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+          //  HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
 
             for (String idConcept : idConcepts) {
                 privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
                 String idHandle = getNewId(25, false, false);
-                idHandle = hs.getPrivatePrefix() + idHandle;
+                idHandle = handleService.getPrivatePrefix() + idHandle;
                 try {
-                    if (!hs.createHandle(idHandle, privateUri)) {
-                        message = hs.getMessage();
-                        System.out.println(hs.getResponseMsg());
+                    if (!handleService.createHandle(idHandle, privateUri)) {
+                        message = handleService.getMessage();
+                        System.out.println(handleService.getResponseMsg());
                         return false;
                     }
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
-                idHandle = hs.getPrefix() + "/" + idHandle;
+                idHandle = handleService.getPrefix() + "/" + idHandle;
                 if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
                     return false;
                 }
@@ -3123,11 +3131,11 @@ public class ConceptHelper {
         } else {
             // cas de Handle Standard 
 
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+           /// HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             try {
-                hs.deleteHandle(idHandle);
+                handleService.deleteHandle(idHandle);
             } catch (Exception ex) {
                 System.out.println(ex.toString());
             }
@@ -3161,12 +3169,12 @@ public class ConceptHelper {
             message = handleHelper.getMessage();
             return true;
         } else {
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+           // HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             for (String idHandle : tabIdHandle) {
                 try {
-                    hs.deleteHandle(idHandle);
+                    handleService.deleteHandle(idHandle);
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }

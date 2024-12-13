@@ -29,7 +29,7 @@ public class ManageHandle {
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences("th24");        
         
         
-        HandleService hs = HandleService.getInstance();
+        HandleService hs = new HandleService();//HandleService.getInstance();
         hs.applyNodePreference(nodePreference);
         hs.connectHandle();
         try {
@@ -53,7 +53,7 @@ public class ManageHandle {
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences("th24");        
         
         
-        HandleService hs = HandleService.getInstance();
+        HandleService hs = new HandleService();//HandleService.getInstance();
         hs.applyNodePreference(nodePreference);
         hs.connectHandle();
 

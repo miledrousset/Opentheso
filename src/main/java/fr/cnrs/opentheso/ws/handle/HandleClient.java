@@ -31,6 +31,9 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
@@ -42,7 +45,15 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author miled.rousset
  */
+@Service
 public class HandleClient {
+    @Value("${certificats.cacerts2}")
+    private String cacerts2Path;
+
+    @Value("${certificats.key}")
+    private String keyPath;
+
+
     private String message = "";
     /**
      * Permet de récupérer l'identifiant Handle d'une resource sous forme de données en Json
@@ -231,13 +242,13 @@ public class HandleClient {
             KeyStore clientStore = KeyStore.getInstance("PKCS12");
             //"motdepasse" = le mot de passe saisie pour la génération des certificats.
         //    clientStore.load(new FileInputStream("key.p12"), "motdepasse".toCharArray());
-            clientStore.load(this.getClass().getResourceAsStream(pathKey), pass.toCharArray());
+            clientStore.load(this.getClass().getResourceAsStream(keyPath/*pathKey*/), pass.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(clientStore, pass.toCharArray());
             
             KeyStore trustStore = KeyStore.getInstance("JKS");
 //            trustStore.load(new FileInputStream("cacerts2"), pass.toCharArray());
-            trustStore.load(this.getClass().getResourceAsStream(pathCert), pass.toCharArray());
+            trustStore.load(this.getClass().getResourceAsStream(cacerts2Path/*pathCert*/), pass.toCharArray());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
 
@@ -337,13 +348,13 @@ public class HandleClient {
             KeyStore clientStore = KeyStore.getInstance("PKCS12");
             //"motdepasse" = le mot de passe saisie pour la génération des certificats.
         //    clientStore.load(new FileInputStream("key.p12"), "motdepasse".toCharArray());
-            clientStore.load(this.getClass().getResourceAsStream(pathKey), pass.toCharArray());
+            clientStore.load(this.getClass().getResourceAsStream(keyPath/*pathKey*/), pass.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(clientStore, pass.toCharArray());
             
             KeyStore trustStore = KeyStore.getInstance("JKS");
 //            trustStore.load(new FileInputStream("cacerts2"), pass.toCharArray());
-            trustStore.load(this.getClass().getResourceAsStream(pathCert), pass.toCharArray());
+            trustStore.load(this.getClass().getResourceAsStream(cacerts2Path/*pathCert*/), pass.toCharArray());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
 

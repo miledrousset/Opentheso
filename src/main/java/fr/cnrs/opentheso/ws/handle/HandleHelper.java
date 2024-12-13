@@ -14,6 +14,8 @@ public class HandleHelper {
 
     @Autowired
     private ToolsHelper toolsHelper;
+    @Autowired
+    private HandleClient handleClient;
 
     private String message;
     
@@ -30,13 +32,12 @@ public class HandleHelper {
             return null;
         }
 
-        HandleClient handleClient = new HandleClient();
         String newId = getNewHandleId(nodePreference);
         newId = nodePreference.getPrefixIdHandle() + "/"
                 + nodePreference.getPrivatePrefixHandle() + newId;
 
         String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
-        String idHandle = handleClient.putHandle(
+        String idHandle = handleClient.putHandle2(
                 nodePreference.getPassHandle(),
                 nodePreference.getPathKeyHandle(),
                 nodePreference.getPathCertHandle(),
@@ -58,7 +59,6 @@ public class HandleHelper {
 
         boolean duplicateId = true;
         String idHandle = null;
-        HandleClient handleClient = new HandleClient();
 
         while (duplicateId) {
             idHandle = toolsHelper.getNewId(10, false, false);
@@ -91,7 +91,6 @@ public class HandleHelper {
             return false;
         }
 
-        HandleClient handleClient = new HandleClient();
         boolean status = handleClient.deleteHandle(
                 nodePreference.getPassHandle(),
                 nodePreference.getPathKeyHandle(),
@@ -118,7 +117,7 @@ public class HandleHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        HandleClient handleClient = new HandleClient();
+
         boolean status;
         boolean first = true;
 

@@ -16,7 +16,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/humanum
+    url: jdbc:postgresql://localhost:5433/opentheso
     password: opentheso
     username: opentheso
   jpa:
@@ -46,6 +46,11 @@ logging:
 
 settings:
   workLanguage: fr
+
+certificats:
+  admpriv: ./certificats/admpriv.bin
+  cacerts2: /certificats/cacerts2
+  key: ./certificats/key.p12
 
 smpt:
   protocol: smtp

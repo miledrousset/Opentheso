@@ -52,6 +52,7 @@ public class EditConcept implements Serializable {
     @Autowired @Lazy private Tree tree;
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private HandleService handleService;
 
     @Autowired
     private DeprecateHelper deprecateHelper;
@@ -951,13 +952,17 @@ public class EditConcept implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
         } else {
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(roleOnThesoBean.getNodePreference());
-            hs.connectHandle(); 
+     //       HandleService hs = new HandleService();
+            handleService.applyNodePreference(roleOnThesoBean.getNodePreference());
+            if(!handleService.connectHandle()){
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
             try {
-                hs.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
+                handleService.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
             } catch (Exception ex) {
-                System.out.println(ex.toString());
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
             }    
             conceptHelper.updateHandleIdOfConcept(
                     conceptView.getNodeConcept().getConcept().getIdConcept(),
