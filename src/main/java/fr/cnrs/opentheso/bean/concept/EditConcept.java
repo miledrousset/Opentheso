@@ -916,8 +916,6 @@ public class EditConcept implements Serializable {
         String message = "Permet de supprimer un identifiant Handle, il sera définitivement supprimé !!";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
@@ -957,12 +955,14 @@ public class EditConcept implements Serializable {
             if(!handleService.connectHandle()){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
             }
             try {
                 handleService.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
             } catch (Exception ex) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
             }    
             conceptHelper.updateHandleIdOfConcept(
                     conceptView.getNodeConcept().getConcept().getIdConcept(),

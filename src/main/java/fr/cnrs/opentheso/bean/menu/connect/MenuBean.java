@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
+import fr.cnrs.opentheso.bean.toolbox.edition.FlagBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.statistique.StatistiqueBean;
 import java.io.IOException;
@@ -52,6 +53,9 @@ public class MenuBean implements Serializable {
     
     @Autowired @Lazy
     private ViewEditionBean viewEditionBean;
+
+    @Autowired @Lazy
+    private FlagBean flagBean;
     
     @Autowired @Lazy
     private AtelierThesBean atelierThesBean;
@@ -212,6 +216,14 @@ public class MenuBean implements Serializable {
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/edition.xhtml");
+    }
+
+    public void redirectToFlagPage() throws IOException {
+        activePageName = "flag";
+        notificationPannelVisible = false;
+        flagBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/toolbox/flag.xhtml");
     }
     
     public void redirectToAtelierPage() throws IOException {

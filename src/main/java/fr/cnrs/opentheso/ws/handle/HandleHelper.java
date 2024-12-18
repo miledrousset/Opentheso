@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Data
 @Service
 public class HandleHelper {
@@ -36,8 +37,10 @@ public class HandleHelper {
         newId = nodePreference.getPrefixIdHandle() + "/"
                 + nodePreference.getPrivatePrefixHandle() + newId;
 
+        log.info("avant l'appel à HandleClient");
         String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
-        String idHandle = handleClient.putHandle2(
+        log.info("avant le put ");
+        String idHandle = handleClient.putHandle(
                 nodePreference.getPassHandle(),
                 nodePreference.getPathKeyHandle(),
                 nodePreference.getPathCertHandle(),

@@ -2968,9 +2968,7 @@ public class ConceptHelper {
             return false;
         }
         String privateUri;
-        log.info("Répertoire courant : " + System.getProperty("user.dir"));
-
-        if (nodePreference.isUseHandleWithCertificat()) {
+            if (nodePreference.isUseHandleWithCertificat()) {
             privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
 
             String idHandle = handleHelper.addIdHandle(privateUri, nodePreference);
@@ -2981,12 +2979,9 @@ public class ConceptHelper {
             return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
         } else {
             // cas de Handle Standard
-            //HandleService hs = HandleService.getInstance();
             handleService.applyNodePreference(nodePreference);
-            //hs.applyNodePreference(nodePreference);
             if(!handleService.connectHandle()){
                 message = handleService.getMessage();
-                //System.out.println(handleService.getResponseMsg());
                 return false;
             }
             privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
@@ -2999,7 +2994,8 @@ public class ConceptHelper {
                     return false;
                 }
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+                message = ex.getMessage();
+                log.info(ex.getMessage());
             }
             idHandle = handleService.getPrefix() + "/" + idHandle;
             if (!updateHandleIdOfConcept(conn, idConcept,
@@ -3086,7 +3082,9 @@ public class ConceptHelper {
             // cas de Handle Standard
           //  HandleService hs = HandleService.getInstance();
             handleService.applyNodePreference(nodePreference);
-            handleService.connectHandle();
+            if(!handleService.connectHandle()){
+                return false;
+            }
 
             for (String idConcept : idConcepts) {
                 privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;

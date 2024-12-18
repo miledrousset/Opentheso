@@ -287,16 +287,18 @@ public class ConceptView implements Serializable {
         nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
 
+        // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference() == null){
+            roleOnThesoBean.initNodePref(idTheso);
+        }
         // méthode temporaire le temps de migrer vers NodeFullConcept
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         searchedForCorpus = false;
 
-        // permet de récupérer les qualificatifs
-        if(roleOnThesoBean.getNodePreference() == null){
-            roleOnThesoBean.initNodePref(idTheso);
-        }
+
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
@@ -429,6 +431,7 @@ public class ConceptView implements Serializable {
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 

@@ -423,15 +423,11 @@ public class Rest_new {
                                               @RequestParam(required = false, value = "group") String groupValue,
                                               @RequestParam(required = false, value = "arkgroup") String arkGroupValue ,
                                               @RequestParam(required = false, value = "format") String format,
-                                              @RequestParam(value = "q") String value,
+                                              @RequestParam(value = "q", required = false) String value,
                                               @RequestParam(required = false, value = "match") boolean match) {
         // format = full (on renvoie les altLabel en plus)
         if (StringUtils.isEmpty(idTheso)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id du Thesaurus est obligatoire"));
-        }
-
-        if (StringUtils.isEmpty(value)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("La question est vide"));
         }
 
         String[] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)

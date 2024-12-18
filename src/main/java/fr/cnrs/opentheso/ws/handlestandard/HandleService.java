@@ -69,13 +69,9 @@ public class HandleService {
     }    
     
     public boolean connectHandle(){
-        
         byte[] key = null;
         try {
-            log.info("Répertoire courant avant connexion : " + System.getProperty("user.dir"));
-          //  File f = new File(Thread.currentThread().getContextClassLoader().getResource(admprivPath).getFile());
-            File f= new File("/Users/miledrousset/NetBeansProjects22/Opentheso/certificats/admpriv.bin" );
-
+            File f= new File(admprivPath);
             FileInputStream fs = new FileInputStream(f);
             key = Util.getBytesFromInputStream(fs);
             if (key == null || key.length == 0) {
@@ -83,8 +79,7 @@ public class HandleService {
             }
         } catch (Throwable t) {
             message = "Cannot read private key " + admprivPath + ": " + t;
-            System.err.println("Cannot read private key " + admprivPath + ": " + t);
-            //System.exit(-1);
+            log.info("Cannot read private key " + admprivPath + ": " + t);
             return false;
         }
 
@@ -104,8 +99,7 @@ public class HandleService {
             key = Util.decrypt(key, secKey);
             privkey = Util.getPrivateKeyFromBytes(key, 0);
         } catch (Throwable t) {
-            System.err.println("Can't load private key in " + admprivPath + ": " + t);
-       //     System.exit(-1);
+            log.info("Can't load private key in " + admprivPath + ": " + t);
             return false;
         }
 
@@ -125,7 +119,7 @@ public class HandleService {
                     true, true, true, true, true, true);
 
         } catch (Throwable t) {
-            System.err.println("\nError: " + t);
+            log.info("\nError: " + t);
         }
         return true;
     }
@@ -163,12 +157,12 @@ public class HandleService {
         // response codes, including RC_ERROR, RC_INVALID_ADMIN, and
         // RC_INSUFFICIENT_PERMISSIONS.
         if (response.responseCode == AbstractMessage.RC_SUCCESS) {
-            System.out.println("\nGot Response: \n" + response);
+            //System.out.println("\nGot Response: \n" + response);
             message = response.toString();
             this.setResponseMsg(response.responseCode);
             return true;
         } else {
-            System.out.println("\nGot Error: \n" + response);
+            //System.out.println("\nGot Error: \n" + response);
             message = response.toString();
             this.setResponseMsg(response.responseCode);
         }

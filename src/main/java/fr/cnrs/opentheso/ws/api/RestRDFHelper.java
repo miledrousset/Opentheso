@@ -1048,7 +1048,7 @@ public class RestRDFHelper {
      */
     private String findDatasForWidget__(String value, String idTheso, String lang, String[] groups, String format, boolean match) {
 
-        if (value == null || idTheso == null) {
+        if (idTheso == null) {
             return null;
         }
 
@@ -1058,12 +1058,15 @@ public class RestRDFHelper {
         }
 
         // recherche de toutes les valeurs
-        value = value.trim();
-        // si la valeur est entourée de ("), on fait alors une recherche exacte
-        if(StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
-            value = value.replaceAll("\"", "");
-            match = true;
-        }
+        if(StringUtils.isNotEmpty(value)) {
+            value = value.trim();
+            // si la valeur est entourée de ("), on fait alors une recherche exacte
+            if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
+                value = value.replaceAll("\"", "");
+                match = true;
+            }
+        } else
+            value = "";
 
         ArrayList<String> nodeIds;
         if(match) {

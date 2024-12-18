@@ -118,6 +118,11 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" 
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.edition')}</p:commandLink>
+
+                            <p:commandLink rendered="#{currentUser.hasRoleAsSuperAdmin}"
+                                           class="collapse-item" actionListener="#{menuBean.redirectToFlagPage()}"
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('toolbox.manageFlags')}</p:commandLink>
+
                             <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}"
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.thesaurusWorkshop')}</p:commandLink>

@@ -48,9 +48,9 @@ settings:
   workLanguage: fr
 
 certificats:
-  admpriv: ./certificats/admpriv.bin
-  cacerts2: /certificats/cacerts2
-  key: ./certificats/key.p12
+  admpriv: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/admpriv.bin
+  cacerts2: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/cacerts2
+  key: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/key.p12
 
 smpt:
   protocol: smtp

@@ -120,4 +120,28 @@ public class LanguageHelper {
         return language;
     }
 
+    /**
+     * Permet de retourner un ArrayList d'Objet Languages_iso639 de toute la table
+     * Language_iso639 c'est la liste des langues ISO639 / ou null si rien
+     *
+     * @return Objet Class Thesaurus
+     */
+    public boolean updateLanguage(Languages_iso639 languagesIso639) {
+        try ( Connection conn = dataSource.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE languages_iso639" +
+                        " SET " +
+                        "    iso639_2 = '" + languagesIso639.getId_iso639_2() + "'," +
+                        "    english_name = '" + languagesIso639.getEnglish_name() + "'," +
+                        "    french_name = '" + languagesIso639.getFrench_name() + "'," +
+                        "    code_pays = '" + languagesIso639.getCodePays() + "'" +
+                        " WHERE iso639_1 = '" + languagesIso639.getId_iso639_1()  + "';");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating element : " , sqle);
+        }
+        return false;
+    }
+
 }
