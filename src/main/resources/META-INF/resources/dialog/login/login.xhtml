@@ -68,6 +68,7 @@
 
         <div class="formLogin">
             <h:form class="login-form">
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 <!--
                 <div style="height: auto; margin-top: -40px; margin-bottom: 7px; text-align: right; vertical-align: central">
                     <p:outputLabel value="LDAP" styleClass="formLogin-label" />
