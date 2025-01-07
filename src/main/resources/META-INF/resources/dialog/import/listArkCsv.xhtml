@@ -44,7 +44,7 @@
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
                 <!-- choix du l'identifiant Ark ou Id ou Handle -->
                 <div class="row">
-                    <div class="col-5" offset="5">
+                    <div class="col-5" >
                         <h:outputText value="L'identifiant est de type:" style="color: #000" />
                     </div>
                     <div class="col-7">
@@ -58,7 +58,7 @@
 
                 <!-- délimiteur CSV -->
                 <div class="row">
-                    <div class="col-5" offset="5">
+                    <div class="col-5" >
                         <h:outputText value="Délimiteur Csv :" style="color: #000"  />
                     </div>
                     <div class="col-7">
@@ -74,12 +74,13 @@
                 </div>             
 
                 <div class="row">
-                    <div class="col-5" offset="5">
+                    <div class="col-5 " >
                         <h:outputText value="Remplacer les Id Ark ? " style="color: #000"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
-                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" />
-                       
+                        <p:toggleSwitch  value="#{importFileBean.clearBefore}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax  />
+                        </p:toggleSwitch>
                     </div>                
                 </div>   
 

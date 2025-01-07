@@ -343,14 +343,14 @@ public class Graph {
         
         
         if(nodeFullConcept.getExactMatchs()!= null){
-            for (String exactMatch : nodeFullConcept.getExactMatchs()) {
+            for (ConceptIdLabel exactMatch : nodeFullConcept.getExactMatchs()) {
                 Relationship relationship = new Relationship();
                 
                 relationship.setStart(nodeFullConcept.getUri());
-                relationship.setEnd(exactMatch);
+                relationship.setEnd(exactMatch.getUri());
                 relationship.setRelation("skos__exactMatch");
                 relationships.add(relationship);
-                nodeGraphD3js.addNewNode(getDatasOfExternalLink(exactMatch));
+                nodeGraphD3js.addNewNode(getDatasOfExternalLink(exactMatch.getUri()));
             }
         }  
         

@@ -321,61 +321,54 @@ public class HandleClient {
      * @return l'id du Handle
      */
     public String putHandle(String pass,
-            String pathKey, String pathCert, 
-            String urlHandle, String idHandle,
-            String jsonData) {
+                            String pathKey, String pathCert,
+                            String urlHandle, String idHandle,
+                            String jsonData) {
 
         String output;
         String xmlRecord = "";
 
         try {
+            // Désactiver les tickets de session
+            System.setProperty("jdk.tls.client.enableSessionTicketExtension", "false");
+
             log.info("avant la clé PKCS12");
             KeyStore clientStore = KeyStore.getInstance("PKCS12");
-            // Utilisez un FileInputStream pour lire un fichier externe.
+
             log.info("avant la clé KeyPath");
-            try (FileInputStream fis = new FileInputStream(keyPath)) {
+            try (FileInputStream fis = new FileInputStream(pathKey)) {
                 clientStore.load(fis, pass.toCharArray());
                 log.info("après la lecture de KeyPath");
-            } catch (MalformedURLException ex){
-                log.info("Catch de KeyPath");
+            } catch (MalformedURLException ex) {
+                log.info("Catch de KeyPath", ex);
             }
 
-           // clientStore.load(this.getClass().getResourceAsStream(keyPath/*pathKey*/), pass.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(clientStore, pass.toCharArray());
 
             log.info("avant la lecture de JKS");
             KeyStore trustStore = KeyStore.getInstance("JKS");
 
-            try (FileInputStream fis = new FileInputStream(cacerts2Path)) {
-                log.info("avant la lecture de cacerts2Path");
+            try (FileInputStream fis = new FileInputStream(pathCert)) {
+                log.info("avant la lecture de pathCert");
                 trustStore.load(fis, pass.toCharArray());
-                log.info("après la lecture de cacerts2Path");
-            } catch (MalformedURLException ex){
-                log.info("Catch de cacerts2Path");
+                log.info("après la lecture de pathCert");
+            } catch (MalformedURLException ex) {
+                log.info("Catch de pathCert", ex);
             }
 
-            log.info("avant TrustManagerFactory");
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
 
-            log.info("avant init TrustManagerFactory");
-
-            SSLContext sslContext;
-
             log.info("avant init TLS");
-            sslContext = SSLContext.getInstance("TLS");
-            log.info("après init TLS");
-
-            //sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+            // Utilisation explicite de TLS 1.3
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-            log.info("après init sslContext");
+            log.info("après init TLSv1.3");
 
-            //URL url = new URL("https://cchum-isi-handle01.in2p3.fr:8001/api/handles/20.500.11942/opentheso443");
-            // idHandle = 20.500.11942/opentheso443
             URL url = new URL(urlHandle + idHandle);
-            log.info("après new URL ");
-            
+            log.info("après new URL");
+
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             log.info("après new URL openConnection");
 
@@ -386,81 +379,47 @@ public class HandleClient {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Handle clientCert=\"true\"");
 
-            log.info("avant HostnameVerifier");
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    log.info("après HostnameVerifier");
-                    return true;
-                }
+            conn.setHostnameVerifier((hostname, session) -> {
+                log.info("HostnameVerifier appelé pour le hostname: " + hostname);
+                return true;
             });
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
-            log.info("avant la connexion de Handle ");
-            OutputStream os = conn.getOutputStream();
-            log.info("après la connexion de Handle ");
 
-            OutputStreamWriter out = new OutputStreamWriter(os);
-            out.write(jsonData);
-            out.flush();
-            log.info("au niveau du flush des json de Handle ");
+            log.info("avant la connexion de Handle");
+            try (OutputStream os = conn.getOutputStream();
+                 OutputStreamWriter out = new OutputStreamWriter(os)) {
+                out.write(jsonData);
+                out.flush();
+                log.info("au niveau du flush des json de Handle");
+            }
 
             int status = conn.getResponseCode();
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            // status = 201 = création réussie
-            log.info("valeur du status de Handle : " + status );
+            log.info("valeur du status de Handle : " + status);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((output = br.readLine()) != null) {
-                xmlRecord += output;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+                while ((output = br.readLine()) != null) {
+                    xmlRecord += output;
+                }
             }
-            byte[] bytes = xmlRecord.getBytes();
-            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
 
-            log.info("xmlRecord de Handle : " + xmlRecord );
+            xmlRecord = new String(xmlRecord.getBytes(), Charset.forName("UTF-8"));
+            log.info("xmlRecord de Handle : " + xmlRecord);
 
-            br.close();
-            os.close();
             conn.disconnect();
-            message = message + "\n" + xmlRecord;
-            message = message + "\n" + "status de la réponse : " + status;
-            if(status == 200 || status == 201) {
-                message = "Création du Handle réussie";
-                return getIdHandle(xmlRecord); 
-            }
-            if(status == 100) {
-                message = "Handle n'existe pas";
+            if (status == 200 || status == 201) {
+                log.info("Création du Handle réussie");
+                return getIdHandle(xmlRecord);
+            } else if (status == 100) {
+                log.info("Handle n'existe pas");
                 return null;
             }
-        } catch (UnsupportedEncodingException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();
-        } catch (KeyStoreException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();
-        } catch (NoSuchAlgorithmException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        } catch (CertificateException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        } catch (UnrecoverableKeyException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        } catch (KeyManagementException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        } catch (MalformedURLException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        } catch (IOException ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
+
         } catch (Exception ex) {
-            Log.info("Erreur Handle : ", ex.getMessage());
-            message = message + ex.getMessage();            
-        }        
+            log.info("Erreur Handle : ", ex);
+        }
         return null;
     }
 

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso</groupId>
     <artifactId>opentheso</artifactId>
-    <version>24.12.6</version>
+    <version>25.01.01</version>
     <packaging>jar</packaging>
     <name>opentheso</name>
 
@@ -118,10 +118,15 @@
             <version>${tomcat-embed-jasper.version}</version>
         </dependency>
 
-        <dependency>
+    <!--    <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>all-themes</artifactId>
             <version>${primefaces-themes.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.primefaces.extensions</groupId>
+            <artifactId>primefaces-extensions</artifactId>
+            <version>${primefaces-extensions}</version>
         </dependency>
 
         <dependency>
@@ -410,7 +415,9 @@
         <xmlunit-core.version>2.10.0</xmlunit-core.version>
         <postgresql.version>42.7.2</postgresql.version>
         <jsf-api.version>2.2.20</jsf-api.version>
-        <primefaces-themes.version>1.0.10</primefaces-themes.version>
+<!--        <primefaces-themes.version>1.0.10</primefaces-themes.version> -->
+
+        <primefaces-extensions>14.0.2</primefaces-extensions>
         <cdi-api.version>2.0.SP1</cdi-api.version>
         <liquibase.version>4.29.0</liquibase.version>
         <gson.version>2.11.0</gson.version>

@@ -97,7 +97,8 @@
 
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <!-- Gestion Ark -->
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
                             disabled="false"
                             actionListener="#{editConcept.infosArk()}"

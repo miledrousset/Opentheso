@@ -17,17 +17,22 @@
                 </h:outputText >
             </div>
         </div>
-        
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button"
+
+        <p:spacer/>
+
+        <div class="row">
+            <div class="col-12" style="text-align: right">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                 styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                  style="margin-right: 10px"
                                  oncomplete="PF('generateArk').hide();" />
-                
-                <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-success"
-                                 update="containerIndex messageIndex" 
+
+                <p:commandButton value="#{langueBean.getMsg('service.generate')}"
+                                 styleClass="ui-button-success" icon="pi pi-check"
+                                 update="containerIndex messageIndex"
                                  actionListener="#{editConcept.generateArk()}" oncomplete="PF('generateArk').hide();"/>
             </div>
-        </f:facet>
+        </div>
+
     </p:dialog> 
 </ui:fragment>

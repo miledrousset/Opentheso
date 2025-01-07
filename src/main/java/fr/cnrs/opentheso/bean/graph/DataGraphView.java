@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.graph;
 
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -24,6 +25,8 @@ import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Named;
 import lombok.Data;
 import org.primefaces.component.chip.Chip;
+import org.primefaces.extensions.event.ClipboardErrorEvent;
+import org.primefaces.extensions.event.ClipboardSuccessEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -94,6 +97,8 @@ public class DataGraphView implements Serializable {
     private ThesaurusHelper thesaurusHelper;
     @Autowired
     private ConceptHelper conceptHelper;
+    @Autowired
+    private LanguageBean langueBean;
 
     @jakarta.inject.Inject
     public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
@@ -352,6 +357,19 @@ public class DataGraphView implements Serializable {
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces.current().ajax().update("messageIndex");
+    }
+
+
+    public void successListener(final ClipboardSuccessEvent successEvent) {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                langueBean.getMsg("copied"));
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void errorListener(final ClipboardErrorEvent errorEvent) {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                "Component id: " + errorEvent.getComponent().getId() + " Action: " + errorEvent.getAction());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
 }

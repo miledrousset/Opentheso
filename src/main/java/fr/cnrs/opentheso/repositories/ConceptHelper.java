@@ -4731,11 +4731,11 @@ public class ConceptHelper {
     }
 
     private List<NodeAlignment> getAlignmentsFromNFC(NodeFullConcept nodeFullConcept, String idTheso) {
-        List<String> exactMatchs = nodeFullConcept.getExactMatchs();
-        List<String> broadMatchs = nodeFullConcept.getBroadMatchs();
-        List<String> narrowMatchs = nodeFullConcept.getNarrowMatchs();
-        List<String> relatedMatchs = nodeFullConcept.getRelatedMatchs();
-        List<String> closeMatchs = nodeFullConcept.getCloseMatchs();
+        List<ConceptIdLabel> exactMatchs = nodeFullConcept.getExactMatchs();
+        List<ConceptIdLabel> broadMatchs = nodeFullConcept.getBroadMatchs();
+        List<ConceptIdLabel> narrowMatchs = nodeFullConcept.getNarrowMatchs();
+        List<ConceptIdLabel> relatedMatchs = nodeFullConcept.getRelatedMatchs();
+        List<ConceptIdLabel> closeMatchs = nodeFullConcept.getCloseMatchs();
         return Stream.of(
                         createAlignmentNodes(exactMatchs, idTheso, nodeFullConcept.getIdentifier(), 1, "exactMatch"),
                         createAlignmentNodes(broadMatchs, idTheso, nodeFullConcept.getIdentifier(), 3, "broadMatch"),
@@ -4747,12 +4747,12 @@ public class ConceptHelper {
                 .collect(Collectors.toList());
     }
 
-    private List<NodeAlignment> createAlignmentNodes(List<String> matches, String idTheso, String idConcept, int alignmentType, String alignmentLabelType) {
+    private List<NodeAlignment> createAlignmentNodes(List<ConceptIdLabel> matches, String idTheso, String idConcept, int alignmentType, String alignmentLabelType) {
         if(matches == null) return Collections.emptyList();
         return matches.stream()
                 .map(conceptLabel -> {
                     NodeAlignment node = new NodeAlignment();
-                    node.setUri_target(conceptLabel);
+                    node.setUri_target(conceptLabel.getUri());
                     node.setInternal_id_thesaurus(idTheso);
                     node.setInternal_id_concept(idConcept);
                     node.setAlignement_id_type(alignmentType);

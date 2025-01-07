@@ -62,11 +62,11 @@ public class NodeFullConcept {
     private List<ConceptNote> historyNotes;
 
     // alignements
-    private List<String> exactMatchs;
-    private List<String> closeMatchs;
-    private List<String> broadMatchs;
-    private List<String> relatedMatchs;
-    private List<String> narrowMatchs;
+    private List<ConceptIdLabel> exactMatchs;
+    private List<ConceptIdLabel> closeMatchs;
+    private List<ConceptIdLabel> broadMatchs;
+    private List<ConceptIdLabel> relatedMatchs;
+    private List<ConceptIdLabel> narrowMatchs;
 
     // coordonnées GPS
     private List<ResourceGPS> gps;
