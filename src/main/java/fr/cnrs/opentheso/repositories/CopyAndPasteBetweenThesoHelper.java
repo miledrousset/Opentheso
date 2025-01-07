@@ -1,11 +1,14 @@
 package fr.cnrs.opentheso.repositories;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +44,6 @@ public class CopyAndPasteBetweenThesoHelper {
     @Autowired
     private PreferencesHelper preferencesHelper;
 
-
     public boolean pasteBranchLikeNT(String currentIdTheso, String currentIdConcept, String fromIdTheso,
                                      String fromIdConcept, String identifierType, int idUser, NodePreference nodePreference) {
 
@@ -55,6 +57,14 @@ public class CopyAndPasteBetweenThesoHelper {
         // import des concepts dans le thésaurus actuel
         if (!addBranch(sKOSXmlDocument, nodePreference, currentIdTheso, idUser, identifierType)) {
             return false;
+        }
+        // suppression des anciens idArk si l'option est cochée
+        if("ark".equalsIgnoreCase(identifierType)){
+            for(SKOSResource skosResource : sKOSXmlDocument.getConceptList()){
+                if(StringUtils.isNotEmpty(skosResource.getArkId())) {
+                    conceptHelper.updateArkIdOfConcept(skosResource.getIdentifier(), fromIdTheso, "");
+                }
+            }
         }
 
         // relier le concept copié au concept cible
@@ -139,11 +149,24 @@ public class CopyAndPasteBetweenThesoHelper {
 
         importRdf4jHelper.setPrefixHandle("");
         importRdf4jHelper.setNodePreference(nodePreference);
+        ArrayList<String> idConcepts = new ArrayList<>();
 
         importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
         try {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 importRdf4jHelper.addConceptV2(sKOSResource, idTheso);
+                if("ark".equalsIgnoreCase(identifierType)){
+                    if(!StringUtils.isEmpty(sKOSResource.getArkId())) {
+                        idConcepts.add(sKOSResource.getIdentifier());
+                    }
+                }
+            }
+            // mise à jour des IdArk après une copie entre thésaurus
+            if("ark".equalsIgnoreCase(identifierType)){
+                if(CollectionUtils.isNotEmpty(idConcepts)) {
+                    conceptHelper.setNodePreference(nodePreference);
+                    conceptHelper.generateArkId(idTheso, idConcepts, nodePreference.getSourceLang());
+                }
             }
             return true;
         } catch (Exception e) {

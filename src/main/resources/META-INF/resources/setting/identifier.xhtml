@@ -28,10 +28,6 @@
 
     <h:body id="page-top" onload="initMenu()">
 
-        <p:idleMonitor timeout="#{connect.timeout}">
-            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
-        </p:idleMonitor>
-
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsAdmin}" id="wrapper" style="height: 100%" >
@@ -395,7 +391,7 @@
                                                                               title="#{langueBean.getMsg('identifier.handlePathToKeyTooltip')}"/>
                                                             </div>
                                                             <div class="col-8">
-                                                                <h:outputText value="/certificat/admpriv.bin" style="width: 100%; color: #C34A2C; font-weight: bold" 
+                                                                <h:outputText value="./certificats/admpriv.bin" style="width: 100%; color: #C34A2C; font-weight: bold"
                                                                               title="#{langueBean.getMsg('identifier.handlePathToKeyTooltip')}"/>
                                                             </div>
                                                         </div>

@@ -187,9 +187,75 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
-    
-    
+    }
+
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileIdentifier(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader()
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL
+                try {
+                    value = record.get("identifier");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileConceptId(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader()
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL
+                try {
+                    value = record.get("localid");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
     
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -900,6 +966,9 @@ public class CsvReadHelper {
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
 
+                // on récupère l'appartenance du concept à une facette
+                conceptObject = getMemberOfFacet(conceptObject, record);
+
                 conceptObjects.add(conceptObject);
                 uri1 = null;
             }
@@ -1462,6 +1531,35 @@ public class CsvReadHelper {
      * @param record
      * @return
      */
+    private ConceptObject getMemberOfFacet(ConceptObject conceptObject, CSVRecord record) {
+
+        String value;
+        String values[];
+        // skos:member
+        if (record.isMapped("skos:facet")) {
+            try {
+                value = record.get("skos:facet");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if (!value1.isEmpty()) {
+                        conceptObject.memberOfFacets.add(value1.trim());
+                    }
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }
+        }
+        return conceptObject;
+    }
+
+
+    /**
+     * permet de charger tous les alignements d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
     private ConceptObject getArkId(ConceptObject conceptObject, CSVRecord record) {
         try {
             String arkId = record.get("arkId");
@@ -1784,7 +1882,7 @@ public class CsvReadHelper {
         for (String idLang2 : langs) {
             // prefLabel
             try {
-                value = record.get("skos:prefLabel@" + idLang2.trim());
+                value = record.get("skos:preflabel@" + idLang2.trim());
                 if(readEmptyData) {
                     label = new Label();
                     label.setLabel(value);
@@ -1799,7 +1897,7 @@ public class CsvReadHelper {
                     }
                 }
             } catch (Exception e) {
-                //System.err.println("");
+                System.err.println("");
             }
 
             // altLabel
@@ -1822,7 +1920,7 @@ public class CsvReadHelper {
                     }
                 }
             } catch (Exception e) {
-                //System.err.println("");
+                System.err.println("");
             }
 
             // hiddenLabel
@@ -2143,6 +2241,9 @@ public class CsvReadHelper {
 
         private ArrayList<NodeImage> images;
         private ArrayList<String> externalResources;
+
+        // l'appartenance du concept à une facette
+        private ArrayList<String> memberOfFacets;
         
         // dates 
         //dct:created, dct:modified
@@ -2183,7 +2284,7 @@ public class CsvReadHelper {
             replacedBy = new ArrayList<>();
             images = new ArrayList<>();
             externalResources = new ArrayList<>();
-                    
+            memberOfFacets = new ArrayList<>();
             conceptType = null;
         }
 
@@ -2251,6 +2352,10 @@ public class CsvReadHelper {
             if (alignments != null) {
                 alignments.clear();
             }
+            if (memberOfFacets != null) {
+                memberOfFacets.clear();
+            }
+
             conceptType = null;
             gps = null;
         }

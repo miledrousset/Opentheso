@@ -5,14 +5,7 @@
  */
 package fr.cnrs.opentheso.ws.handle;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +24,11 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.atlas.logging.Log;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
@@ -42,7 +40,110 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author miled.rousset
  */
+@Slf4j
+@Service
 public class HandleClient {
+    @Value("${certificats.cacerts2}")
+    private String cacerts2Path;
+
+    @Value("${certificats.key}")
+    private String keyPath;
+
+
+    // Méthode pour créer et configurer SSLContext avec les certificats client et serveur
+    private SSLContext createSSLContext(String pass) throws Exception {
+        log.info("PAsse par la création de SSLContext");
+        KeyStore clientStore = KeyStore.getInstance("PKCS12");
+        try (FileInputStream fis = new FileInputStream(keyPath)) {
+            clientStore.load(fis, pass.toCharArray());
+        }
+
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(clientStore, pass.toCharArray());
+
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        try (FileInputStream fis = new FileInputStream(cacerts2Path)) {
+            trustStore.load(fis, pass.toCharArray());
+        }
+
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(trustStore);
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+
+    public String putHandle2(String pass, String pathKey, String pathCert,
+                             String urlHandle, String idHandle, String jsonData) {
+
+        String output;
+        String xmlRecord = "";
+
+        try {
+            // Création du SSLContext avec les certificats client et serveur
+            SSLContext sslContext = createSSLContext(pass);  // Appel de la méthode createSSLContext
+
+            // URL de destination
+            URL url = new URL(urlHandle + idHandle);
+
+            // Connexion HTTPS
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setSSLSocketFactory(sslContext.getSocketFactory());  // Utilisation du SSLContext
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Handle clientCert=\"true\"");
+
+            // Définir le HostnameVerifier pour la vérification du certificat du serveur
+            conn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    // Vous pouvez ajouter une logique de vérification de l'hôte ici si nécessaire
+                    return true;  // A remplacer par une vérification stricte en production
+                }
+            });
+
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            // Envoi des données JSON
+            OutputStream os = conn.getOutputStream();
+            OutputStreamWriter out = new OutputStreamWriter(os);
+            out.write(jsonData);
+            out.flush();
+
+            // Lire la réponse du serveur
+            int status = conn.getResponseCode();
+            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((output = br.readLine()) != null) {
+                xmlRecord += output;
+            }
+
+            byte[] bytes = xmlRecord.getBytes();
+            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
+
+            br.close();
+            os.close();
+            conn.disconnect();
+
+            // Gestion de la réponse
+            if (status == 200 || status == 201) {
+                return getIdHandle(xmlRecord);
+            }
+            if (status == 100) {
+                return null;
+            }
+
+        } catch (Exception ex) {
+            // Gérer toutes les exceptions ici
+            Log.info("Erreur Handle : ", ex.getMessage());
+        }
+        return null;
+    }
+
+
     private String message = "";
     /**
      * Permet de récupérer l'identifiant Handle d'une resource sous forme de données en Json
@@ -220,214 +321,168 @@ public class HandleClient {
      * @return l'id du Handle
      */
     public String putHandle(String pass,
-            String pathKey, String pathCert, 
-            String urlHandle, String idHandle,
-            String jsonData) {
+                            String pathKey, String pathCert,
+                            String urlHandle, String idHandle,
+                            String jsonData) {
 
         String output;
         String xmlRecord = "";
 
         try {
+            // Désactiver les tickets de session
+            System.setProperty("jdk.tls.client.enableSessionTicketExtension", "false");
+
+            log.info("avant la clé PKCS12");
             KeyStore clientStore = KeyStore.getInstance("PKCS12");
-            //"motdepasse" = le mot de passe saisie pour la génération des certificats.
-        //    clientStore.load(new FileInputStream("key.p12"), "motdepasse".toCharArray());
-            clientStore.load(this.getClass().getResourceAsStream(pathKey), pass.toCharArray());
+
+            log.info("avant la clé KeyPath");
+            try (FileInputStream fis = new FileInputStream(pathKey)) {
+                clientStore.load(fis, pass.toCharArray());
+                log.info("après la lecture de KeyPath");
+            } catch (MalformedURLException ex) {
+                log.info("Catch de KeyPath", ex);
+            }
+
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(clientStore, pass.toCharArray());
-            
+
+            log.info("avant la lecture de JKS");
             KeyStore trustStore = KeyStore.getInstance("JKS");
-//            trustStore.load(new FileInputStream("cacerts2"), pass.toCharArray());
-            trustStore.load(this.getClass().getResourceAsStream(pathCert), pass.toCharArray());
+
+            try (FileInputStream fis = new FileInputStream(pathCert)) {
+                log.info("avant la lecture de pathCert");
+                trustStore.load(fis, pass.toCharArray());
+                log.info("après la lecture de pathCert");
+            } catch (MalformedURLException ex) {
+                log.info("Catch de pathCert", ex);
+            }
+
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
 
-            SSLContext sslContext;
-            sslContext = SSLContext.getInstance("TLS");
+            log.info("avant init TLS");
+            // Utilisation explicite de TLS 1.3
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+            log.info("après init TLSv1.3");
 
-            //URL url = new URL("https://cchum-isi-handle01.in2p3.fr:8001/api/handles/20.500.11942/opentheso443");
-            // idHandle = 20.500.11942/opentheso443
             URL url = new URL(urlHandle + idHandle);
-            
+            log.info("après new URL");
+
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            log.info("après new URL openConnection");
+
             conn.setSSLSocketFactory(sslContext.getSocketFactory());
+            log.info("après sslContext.getSocketFactory()");
+
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Handle clientCert=\"true\"");
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
+
+            conn.setHostnameVerifier((hostname, session) -> {
+                log.info("HostnameVerifier appelé pour le hostname: " + hostname);
+                return true;
             });
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
-            OutputStream os = conn.getOutputStream();
-
-            OutputStreamWriter out = new OutputStreamWriter(os);
-            out.write(jsonData);
-            out.flush();
+            log.info("avant la connexion de Handle");
+            try (OutputStream os = conn.getOutputStream();
+                 OutputStreamWriter out = new OutputStreamWriter(os)) {
+                out.write(jsonData);
+                out.flush();
+                log.info("au niveau du flush des json de Handle");
+            }
 
             int status = conn.getResponseCode();
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            // status = 201 = création réussie
+            log.info("valeur du status de Handle : " + status);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((output = br.readLine()) != null) {
-                xmlRecord += output;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+                while ((output = br.readLine()) != null) {
+                    xmlRecord += output;
+                }
             }
-            byte[] bytes = xmlRecord.getBytes();
-            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
-            br.close();
-            os.close();
+
+            xmlRecord = new String(xmlRecord.getBytes(), Charset.forName("UTF-8"));
+            log.info("xmlRecord de Handle : " + xmlRecord);
+
             conn.disconnect();
-            message = message + "\n" + xmlRecord;
-            message = message + "\n" + "status de la réponse : " + status;
-            if(status == 200 || status == 201) {
-                message = "Création du Handle réussie";
-                return getIdHandle(xmlRecord); 
-            }
-            if(status == 100) {
-                message = "Handle n'existe pas";
+            if (status == 200 || status == 201) {
+                log.info("Création du Handle réussie");
+                return getIdHandle(xmlRecord);
+            } else if (status == 100) {
+                log.info("Handle n'existe pas");
                 return null;
             }
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();
-        } catch (KeyStoreException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (CertificateException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (UnrecoverableKeyException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (IOException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
+
         } catch (Exception ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        }        
+            log.info("Erreur Handle : ", ex);
+        }
         return null;
     }
-    
-    public String putHandle2(String pass,
-            String pathKey, String pathCert, 
-            String urlHandle, String idHandle,
-            String jsonData) {
 
-        String output;
+    public String makeHttpsRequest(String method, String urlHandle, String idHandle,
+                                   String jsonData, SSLContext sslContext) {
+        String output = "";
         String xmlRecord = "";
-
+        log.info("Passe par makeHttpsRequest");
         try {
-            KeyStore clientStore = KeyStore.getInstance("PKCS12");
-            //"motdepasse" = le mot de passe saisie pour la génération des certificats.
-        //    clientStore.load(new FileInputStream("key.p12"), "motdepasse".toCharArray());
-            clientStore.load(this.getClass().getResourceAsStream(pathKey), pass.toCharArray());
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(clientStore, pass.toCharArray());
-            
-            KeyStore trustStore = KeyStore.getInstance("JKS");
-//            trustStore.load(new FileInputStream("cacerts2"), pass.toCharArray());
-            trustStore.load(this.getClass().getResourceAsStream(pathCert), pass.toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-            SSLContext sslContext;
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-
-            //URL url = new URL("https://cchum-isi-handle01.in2p3.fr:8001/api/handles/20.500.11942/opentheso443");
-            // idHandle = 20.500.11942/opentheso443
+            // Création de l'URL et de la connexion HTTPS
             URL url = new URL(urlHandle + idHandle);
-            
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+            // Configurer la connexion SSL
             conn.setSSLSocketFactory(sslContext.getSocketFactory());
-            conn.setRequestMethod("PUT");
+            conn.setRequestMethod(method);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Handle clientCert=\"true\"");
+
+            // Pour des raisons de test, désactivation de la vérification du nom d'hôte
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
+                public boolean verify(String hostname, SSLSession session) {
+                    return true; // Accepte tous les hôtes
                 }
             });
+
+            // Configuration des flux pour envoyer et recevoir les données
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
-            OutputStream os = conn.getOutputStream();
+            // Écriture des données JSON dans le flux de sortie
+            try (OutputStream os = conn.getOutputStream();
+                 OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"))) {
+                out.write(jsonData);
+                out.flush();
+            }
 
-            OutputStreamWriter out = new OutputStreamWriter(os);
-            out.write(jsonData);
-            out.flush();
-
+            // Lecture de la réponse de la requête
             int status = conn.getResponseCode();
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            // status = 201 = création réussie
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            // Construire la réponse XML
             while ((output = br.readLine()) != null) {
                 xmlRecord += output;
             }
-            byte[] bytes = xmlRecord.getBytes();
+            byte[] bytes = xmlRecord.getBytes(Charset.forName("UTF-8"));
             xmlRecord = new String(bytes, Charset.forName("UTF-8"));
+
             br.close();
-            os.close();
             conn.disconnect();
-            message = message + "\n" + xmlRecord;
-            message = message + "\n" + "status de la réponse : " + status;
-            if(status == 200 || status == 201) {
-                message = "Création du Handle réussie";
-                return getIdHandle(xmlRecord); 
-            }
-            if(status == 100) {
-                message = "Handle n'existe pas";
-                return null;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();
-        } catch (KeyStoreException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (CertificateException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (UnrecoverableKeyException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        } catch (IOException ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
+
+            return xmlRecord; // Renvoie la réponse reçue
         } catch (Exception ex) {
-            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
-            message = message + ex.getMessage();            
-        }        
-        return null;
-    }    
+            // Gestion des erreurs
+            Log.info("Erreur lors de la requête HTTPS : ", ex.getMessage());
+            return null;
+        }
+    }
+
+
     
     
     /**

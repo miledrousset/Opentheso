@@ -100,7 +100,7 @@
             </div>
 
             <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
-                <div class="row" rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
+                <div class="row">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
                         <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}" var="group" lazy="false">
                             <p:column headerText="id" width="100">
@@ -128,8 +128,8 @@
                                  styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
                                  style="margin-right: 10px"
                                  oncomplete="PF('dragAndDrop').hide();"
-                                 actionListener="#{dragAndDrop.rollBackAfterErrorOrCancelDragDrop()}" 
-                                 update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop" process="@this" ajax="true"/>
+                                 action="#{dragAndDrop.rollBackAfterErrorOrCancelDragDrop()}"
+                                 update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"
                                  styleClass="ui-button-success" icon="pi pi-check"

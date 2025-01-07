@@ -139,7 +139,7 @@ public class SelectedTheso implements Serializable {
     @PostConstruct
     public void initializing() {
         isNetworkAvailable = true;
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, this);
         sortByNotation = false;
 
         loadProject();
@@ -154,11 +154,6 @@ public class SelectedTheso implements Serializable {
         currentIdTheso = null;
         thesoName = null;
         localUri = null;
-    }
-
-    private void initIdsFromUri() {
-        idConceptFromUri = null;
-        idThesoFromUri = null;
     }
 
     /**
@@ -201,10 +196,6 @@ public class SelectedTheso implements Serializable {
             }
         }
     }
-
-    private void thesoHaveActiveCorpus(){
-        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
-    }    
     
     /**
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
@@ -213,7 +204,7 @@ public class SelectedTheso implements Serializable {
      */
     public void setSelectedTheso() throws IOException {
 
-        thesoHaveActiveCorpus();
+        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -272,7 +263,7 @@ public class SelectedTheso implements Serializable {
         
         propositionBean.searchNewPropositions();
 
-        roleOnThesoBean.setUserRoleOnThisTheso(currentUser);
+        roleOnThesoBean.setUserRoleOnThisTheso(currentUser, this);
 
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
@@ -323,7 +314,7 @@ public class SelectedTheso implements Serializable {
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();
             currentUser.reloadAllThesoOfAllProject();
-            roleOnThesoBean.showListTheso(currentUser);
+            roleOnThesoBean.showListTheso(currentUser, this);
             if(StringUtils.isEmpty(selectedIdTheso))
                 indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
@@ -339,7 +330,7 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(currentUser);
+            roleOnThesoBean.setUserRoleOnThisTheso(currentUser, this);
 
             if (CollectionUtils.isNotEmpty(projectBean.getListeThesoOfProject())) {
                 if (projectBean.getListeThesoOfProject().stream()
@@ -409,7 +400,7 @@ public class SelectedTheso implements Serializable {
      */
     public void reloadSelectedTheso() throws IOException {
         loadProject();
-        roleOnThesoBean.showListTheso(currentUser);
+        roleOnThesoBean.showListTheso(currentUser, this);
 
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -464,7 +455,7 @@ public class SelectedTheso implements Serializable {
     private void startNewTheso(String idLang) {
         currentIdTheso = selectedIdTheso;
         // setting des préférences du thésaurus sélectionné
-        roleOnThesoBean.initNodePref();
+        roleOnThesoBean.initNodePref(this);
         if (StringUtils.isEmpty(idLang)) {
             idLang = getIdLang();
         }
@@ -528,48 +519,44 @@ public class SelectedTheso implements Serializable {
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
-    public void preRenderView() throws IOException {
-        if (idThesoFromUri == null) {
+    public void preRenderView() {
+        if (StringUtils.isEmpty(idThesoFromUri)) {
             isFromUrl = false;
             return;
         }
 
         isFromUrl = true;
-        roleOnThesoBean.setPublicThesos(currentUser);
-        loadProject();
-
-        if (idThesoFromUri == null) {
+        if (StringUtils.isEmpty(idThesoFromUri)) {
             isFromUrl = false;
             return;
         }
 
         isFromUrl = true;
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
-            if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
-                //test si c'est une collection 
-                if (idGroupFromUri == null || idGroupFromUri.isEmpty()) {
-                    initIdsFromUri();
-                    return;
-                } else {
+            if (StringUtils.isEmpty(idConceptFromUri)) {
+                //test si c'est une collection
+                idConceptFromUri = null;
+                idThesoFromUri = null;
+                if (StringUtils.isNotEmpty(idGroupFromUri)) {
                     // sélectionner le groupe ou collection
                     treeGroups.selectThisGroup(idGroupFromUri.trim());
-                    initIdsFromUri();
                     return;
                 }
 
             }
-            if (currentLang == null) {
+            if (StringUtils.isEmpty(currentLang)) {
                 String idLang = getIdLang();
-                if (idLang == null || idLang.isEmpty()) {
+                if (StringUtils.isEmpty(idLang)) {
                     return;
                 }
                 currentLang = idLang;
                 selectedLang = idLang;
             }
-            thesoHaveActiveCorpus();
+            haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang, currentUser);
-            actionFromConceptToOn();
-            initIdsFromUri();
+            isActionFromConcept = true;
+            idConceptFromUri = null;
+            idThesoFromUri = null;
             thesoName = thesaurusHelper.getTitleOfThesaurus(selectedIdTheso, selectedLang);
             return;
         }
@@ -584,20 +571,18 @@ public class SelectedTheso implements Serializable {
                 startNewTheso(roleOnThesoBean.getNodePreference().getSourceLang());//currentLang);
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
-                rightBodySetting.setIndex("0");  
-                thesoHaveActiveCorpus();
+                rightBodySetting.setIndex("0");
+                haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang, currentUser);
-                    actionFromConceptToOn();
+                    isActionFromConcept = true;
                     
                 } else {
                     //cas d'appel pour une collection
-                    if(idGroupFromUri != null && !idGroupFromUri.isEmpty()) {
+                    if(StringUtils.isNotEmpty(idGroupFromUri)) {
                         treeGroups.selectThisGroup(idGroupFromUri.trim());
-                        rightBodySetting.setIndex("1");                        
-                        initIdsFromUri();
-                     //   return;
+                        rightBodySetting.setIndex("1");
                     } else 
                         indexSetting.setIsHomeSelected(true);
                 }
@@ -605,9 +590,10 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
-        thesoHaveActiveCorpus();
+        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
         currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
-        initIdsFromUri();
+        idConceptFromUri = null;
+        idThesoFromUri = null;
     }
 
     private boolean isValidTheso(String idTheso) {

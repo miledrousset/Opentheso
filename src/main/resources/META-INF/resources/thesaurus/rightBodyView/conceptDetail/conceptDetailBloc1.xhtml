@@ -1,7 +1,8 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions">
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; margin: 20px; ">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px;">
             <!-- ligne PrefLabel -->
@@ -20,7 +21,7 @@
                                             actionListener="#{editConcept.reset(conceptView.nodeFullConcept.prefLabel.label)}"
                                             oncomplete="PF('renameConcept').show();" update="containerIndex:idRenameConcept" icon="fas fa-edit" />
                             </p:menuButton>
-                        </h:panelGroup>                        
+                        </h:panelGroup>
 
                         <h:outputText rendered="#{!conceptView.nodeFullConcept.deprecated}"
                                       id="textPrefLabel" value="#{conceptView.nodeFullConcept.prefLabel.label}"
@@ -34,7 +35,7 @@
                                       letter-spacing: .2px; color: #C63632; font-weight: bold; font-style: italic; text-shadow: none; text-decoration:line-through" />                        
 
                         <h:outputText value=" (#{conceptView.nodeFullConcept.prefLabel.idLang})" style="font-size: 1rem; font-weight: 300; "/>
-                        
+
                         <!-- Cas des concepts de type spécifiques comme Qualifier, Place ... -->
                         <p:tag rendered="#{!conceptView.nodeFullConcept.customRelation and !conceptView.nodeFullConcept.deprecated}" styleClass="mr-2" 
                                severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300;" rounded="true"
@@ -42,7 +43,17 @@
                                          conceptView.nodeFullConcept.conceptType,
                                                 selectedTheso.currentIdTheso)} ">
                         </p:tag>
-                        
+
+                        <!-- Pour copier l'URL pour partage -->
+                        <p:commandButton id="btnAjaxCopyConcept" icon="fa-solid fa-copy" styleClass="rounded-button ui-button-flat" style="color: #f47b2a; background-color: transparent;"
+                                         onclick="return false;" />
+                        <pe:clipboard id="clipAjax" trigger="btnAjaxCopyConcept" action="copy" text="#{conceptView.nodeFullConcept.prefLabel.label}" >
+                            <p:ajax event="success" listener="#{dataGraphView.successListener}" update="messageIndex"/>
+                            <p:ajax event="error" listener="#{dataGraphView.errorListener}" update="messageIndex" />
+                        </pe:clipboard>
+                        <p:tooltip for="btnAjaxCopyConcept" value="#{langueBean.getMsg('copy')}" />
+
+
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
                         <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
 

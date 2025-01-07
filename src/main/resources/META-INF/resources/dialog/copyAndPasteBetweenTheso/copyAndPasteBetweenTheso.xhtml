@@ -45,19 +45,32 @@
                     <f:selectItem itemLabel="Non" itemValue="sans" />
                     <f:selectItem itemLabel="Ark" itemValue="ark" />
                     <f:selectItem itemLabel="Handle" itemValue="handle" />
-                </p:selectOneMenu>                
+                </p:selectOneMenu>
             </div>
-        </div>      
+        </div>
+        <p:spacer/>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('copyAndPasteBetweenTheso').hide();" update="containerIndex"/>
-                
-                <p:commandButton class="btn btn-primary" title="Confirmer" update="containerIndex messageIndex" 
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="Attention : si vous récupérez l'identifiant Ark, l'id Ark de l'ancien concept sera supprimé et le nouveau concept récupèrera cet Ark id" style="color: #8A3B05"/>
+            </div>
+        </div>
+
+
+
+        <p:spacer/>
+        <div class="row">
+            <div class="col-12" style="text-align: right">
+                <p:commandButton
+                        value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                        style="margin-right: 10px"
+                        oncomplete="PF('copyAndPasteBetweenTheso').hide();" update="containerIndex"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                 update="containerIndex messageIndex"
                                  actionListener="#{copyAndPasteBetweenTheso.paste()}"
                                  oncomplete="PF('copyAndPasteBetweenTheso').hide();"/>
             </div>
-        </f:facet>
-    </p:dialog>  
+        </div>
+    </p:dialog>
 </ui:composition>

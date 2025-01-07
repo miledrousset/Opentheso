@@ -1,7 +1,8 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions">
 
     <h:panelGroup rendered="#{(currentUser.nodeUser != null) 
                               or (conceptView.haveAlignment)}">
@@ -41,8 +42,10 @@
 
 
                     <div class="row" style="margin-left: 0px;">
-                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" >
+                        <div class="col-xl-2 col-lg-2 col-md-1 col-sm-0 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+                        </div>
 
+                        <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12" >
                             <h:panelGroup rendered="#{!conceptView.haveAlignment}">
                                 <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}"
                                               style="font-size: 12px; color: grey; font-style: italic " />
@@ -53,7 +56,8 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
 
@@ -61,7 +65,35 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Narrower -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.narrowMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.narrowMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Narrower -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.broadMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.broadMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Related -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.relatedMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.relatedMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
                             </h:panelGroup>
@@ -159,6 +191,14 @@
                                                     </div>
                                                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
                                                         <h:outputText value="#{conceptView.nodeFullConcept.permanentId}" style="font-size: 12px;"/>
+                                                        <!-- Pour copier l'URL pour partage -->
+                                                        <p:commandButton id="btnAjaxCopyArk" icon="fa-solid fa-copy" styleClass="rounded-button ui-button-flat" style="color: #f47b2a; background-color: transparent;"
+                                                                         onclick="return false;" />
+                                                        <pe:clipboard id="clipAjaxArk" trigger="btnAjaxCopyArk" action="copy" text="#{conceptView.nodeFullConcept.permanentId}" >
+                                                            <p:ajax event="success" listener="#{dataGraphView.successListener}" update="messageIndex"/>
+                                                            <p:ajax event="error" listener="#{dataGraphView.errorListener}" update="messageIndex" />
+                                                        </pe:clipboard>
+                                                        <p:tooltip for="btnAjaxCopyArk" value="#{langueBean.getMsg('copy')}" />
                                                     </div>
                                                 </div>
                                             </h:panelGroup>

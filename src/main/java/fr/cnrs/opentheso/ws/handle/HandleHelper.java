@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Data
 @Service
 public class HandleHelper {
 
     @Autowired
     private ToolsHelper toolsHelper;
+    @Autowired
+    private HandleClient handleClient;
 
     private String message;
     
@@ -30,12 +33,13 @@ public class HandleHelper {
             return null;
         }
 
-        HandleClient handleClient = new HandleClient();
         String newId = getNewHandleId(nodePreference);
         newId = nodePreference.getPrefixIdHandle() + "/"
                 + nodePreference.getPrivatePrefixHandle() + newId;
 
+        log.info("avant l'appel à HandleClient");
         String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
+        log.info("avant le put ");
         String idHandle = handleClient.putHandle(
                 nodePreference.getPassHandle(),
                 nodePreference.getPathKeyHandle(),
@@ -58,7 +62,6 @@ public class HandleHelper {
 
         boolean duplicateId = true;
         String idHandle = null;
-        HandleClient handleClient = new HandleClient();
 
         while (duplicateId) {
             idHandle = toolsHelper.getNewId(10, false, false);
@@ -91,7 +94,6 @@ public class HandleHelper {
             return false;
         }
 
-        HandleClient handleClient = new HandleClient();
         boolean status = handleClient.deleteHandle(
                 nodePreference.getPassHandle(),
                 nodePreference.getPathKeyHandle(),
@@ -118,7 +120,7 @@ public class HandleHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        HandleClient handleClient = new HandleClient();
+
         boolean status;
         boolean first = true;
 

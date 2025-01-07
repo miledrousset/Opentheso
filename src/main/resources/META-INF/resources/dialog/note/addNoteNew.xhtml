@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddNoteNew" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNoteNew"
+    <p:dialog id="idAddNoteNew" header="#{langueBean.getMsg('rightbody.concept.manage_note')}" widgetVar="addNoteNew"
               width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >
 
         <h:form id="addNoteNEwForm" >
@@ -71,16 +71,28 @@
                 </div>
             </h:panelGroup>
 
-            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
-                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
-                                 actionListener="PF('addNoteNew').hide();" update="containerIndex:idAddNoteNew"/>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-2">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" icon="fas fa-trash"
+                                     update="containerIndex:formRightTab listNoteTypes groupNoteEditor messageIndex"
+                                     styleClass="ui-button-danger-private"
+                                     ajax="true" process="@form"
+                                     title="#{langueBean.getMsg('rightbody.concept.delete_thisnote')}"
+                                     actionListener="#{noteBean.deleteNote(noteBean.selectedNodeNote, currentUser.nodeUser.idUser)}"/>
+                </div>
 
-                <p:commandButton id="addNoteNewBtn" value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check"
-                                 update="containerIndex:formRightTab listNoteTypes groupNoteEditor messageIndex" styleClass="ui-button-success"
-                                 ajax="true" process="@form"
-                                 actionListener="#{noteBean.addAndUpdateNote(currentUser.nodeUser.idUser)}"/>
+                <div class="col-2 offset-5" >
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     actionListener="PF('addNoteNew').hide();" update="containerIndex:idAddNoteNew"/>
+                </div>
+                <div class="col-2" >
+                    <p:commandButton id="addNoteNewBtn" value="#{langueBean.getMsg('candidat.save')}" icon="pi pi-save"
+                                     update="containerIndex:formRightTab listNoteTypes groupNoteEditor messageIndex" styleClass="ui-button-success"
+                                     ajax="true" process="@form"
+                                     actionListener="#{noteBean.addAndUpdateNote(currentUser.nodeUser.idUser)}"/>
+                </div>
             </div>
         </h:form>
     </p:dialog>

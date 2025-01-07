@@ -6,21 +6,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ExternalResourcesHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -84,6 +74,9 @@ public class CsvImportHelper {
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
 
     @Autowired
     private ExternalResourcesHelper externalResourcesHelper;
@@ -230,8 +223,12 @@ public class CsvImportHelper {
 
                     // géolocalisation
                     addGeoLocalisation(idTheso, conceptObject);
-                    
-                    
+
+                    // appartenance à une facette
+                    addConceptToFacet(idTheso, conceptObject);
+
+                    // ajout à une collection
+                    addConceptToCollection(idTheso, conceptObject);
 
                     first = false;
                 }
@@ -1034,6 +1031,26 @@ public class CsvImportHelper {
             }
         }
 
+        return true;
+    }
+
+    private boolean addConceptToFacet(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
+        if (CollectionUtils.isEmpty(conceptObject.getMemberOfFacets())) {
+            return true;
+        }
+        for(String idFacet : conceptObject.getMemberOfFacets()) {
+            facetHelper.addConceptToFacet(idFacet, idTheso, conceptObject.getIdConcept());
+        }
+        return true;
+    }
+
+    private boolean addConceptToCollection(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
+        if (CollectionUtils.isEmpty(conceptObject.getMembers())) {
+            return true;
+        }
+        for(String idGroup : conceptObject.getMembers()) {
+            groupHelper.addConceptGroupConcept(idGroup,  conceptObject.getIdConcept(), idTheso);
+        }
         return true;
     }
 

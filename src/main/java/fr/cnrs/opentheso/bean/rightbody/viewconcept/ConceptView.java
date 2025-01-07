@@ -157,6 +157,8 @@ public class ConceptView implements Serializable {
 
     private String creator;
     private String contributors;
+    @Autowired
+    private CurrentUser currentUser;
 
     @PreDestroy
     public void destroy() {
@@ -189,8 +191,8 @@ public class ConceptView implements Serializable {
     }
 
     public void init() {
-        toggleSwitchAltLabelLang = false;
-        toggleSwitchNotesLang = false;
+        toggleSwitchAltLabelLang = true;
+        toggleSwitchNotesLang = true;
         nodeFullConcept = new NodeFullConcept();
         
         selectedLang = null;
@@ -285,16 +287,18 @@ public class ConceptView implements Serializable {
         nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
 
-        // méthode temporaire le temps de migrer vers NodeFullConcept
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
-        if (nodeConcept == null) return;
-
-        searchedForCorpus = false;
-
         // permet de récupérer les qualificatifs
         if(roleOnThesoBean.getNodePreference() == null){
             roleOnThesoBean.initNodePref(idTheso);
         }
+        // méthode temporaire le temps de migrer vers NodeFullConcept
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
+        if (nodeConcept == null) return;
+
+        searchedForCorpus = false;
+
+
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
@@ -333,7 +337,6 @@ public class ConceptView implements Serializable {
                     PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
                     PrimeFaces.current().ajax().update("containerIndex:languageSelect");
                 }
-                //selectedTheso.actionFromConceptToOn();
             }
         }
         countOfBranch = 0;
@@ -428,7 +431,8 @@ public class ConceptView implements Serializable {
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs
@@ -972,7 +976,20 @@ public class ConceptView implements Serializable {
         return gpsList;
     }
 
+    public String margeForNotes(){
+        if(currentUser.getNodeUser() != null){
+            return "0px";
+        } else {
+            return "-9px";
+        }
+    }
 
+    public String margeTranslateNotes(){
+        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUse_deepl_translation())
+            return "col-xl-2 col-lg-2 col-md-2 col-sm-2";
+        else
+            return "col-xl-1 col-lg-1 col-md-1 col-sm-1";
+    }
 
 
 }

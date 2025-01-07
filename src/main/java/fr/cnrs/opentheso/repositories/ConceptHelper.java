@@ -112,6 +112,8 @@ public class ConceptHelper {
     //identifierType  1=numericId ; 2=alphaNumericId
     private NodePreference nodePreference;
     private String message = "";
+    @Autowired
+    private HandleService handleService;
 
 
     /**
@@ -2966,8 +2968,7 @@ public class ConceptHelper {
             return false;
         }
         String privateUri;
-
-        if (nodePreference.isUseHandleWithCertificat()) {
+            if (nodePreference.isUseHandleWithCertificat()) {
             privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
 
             String idHandle = handleHelper.addIdHandle(privateUri, nodePreference);
@@ -2978,22 +2979,25 @@ public class ConceptHelper {
             return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+            handleService.applyNodePreference(nodePreference);
+            if(!handleService.connectHandle()){
+                message = handleService.getMessage();
+                return false;
+            }
             privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
             String idHandle = getNewId(25, false, false);
-            idHandle = hs.getPrivatePrefix() + idHandle;
+            idHandle = handleService.getPrivatePrefix() + idHandle;
             try {
-                if (!hs.createHandle(idHandle, privateUri)) {
-                    message = hs.getMessage();
-                    System.out.println(hs.getResponseMsg());
+                if (!handleService.createHandle(idHandle, privateUri)) {
+                    message = handleService.getMessage();
+                    System.out.println(handleService.getResponseMsg());
                     return false;
                 }
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+                message = ex.getMessage();
+                log.info(ex.getMessage());
             }
-            idHandle = hs.getPrefix() + "/" + idHandle;
+            idHandle = handleService.getPrefix() + "/" + idHandle;
             if (!updateHandleIdOfConcept(conn, idConcept,
                     idThesaurus, idHandle)) {
                 return false;
@@ -3020,22 +3024,22 @@ public class ConceptHelper {
             return updateHandleIdOfConcept(idConcept, idThesaurus, idHandle);
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+         //   HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
             String idHandle = getNewId(25, false, false);
-            idHandle = hs.getPrivatePrefix() + idHandle;
+            idHandle = handleService.getPrivatePrefix() + idHandle;
             try {
-                if (!hs.createHandle(idHandle, privateUri)) {
-                    message = hs.getMessage();
-                    System.out.println(hs.getResponseMsg());
+                if (!handleService.createHandle(idHandle, privateUri)) {
+                    message = handleService.getMessage();
+                    System.out.println(handleService.getResponseMsg());
                     return false;
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
-            idHandle = hs.getPrefix() + "/" + idHandle;
+            idHandle = handleService.getPrefix() + "/" + idHandle;
             if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
                 return false;
             }
@@ -3076,24 +3080,26 @@ public class ConceptHelper {
             return true;
         } else {
             // cas de Handle Standard
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+          //  HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            if(!handleService.connectHandle()){
+                return false;
+            }
 
             for (String idConcept : idConcepts) {
                 privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
                 String idHandle = getNewId(25, false, false);
-                idHandle = hs.getPrivatePrefix() + idHandle;
+                idHandle = handleService.getPrivatePrefix() + idHandle;
                 try {
-                    if (!hs.createHandle(idHandle, privateUri)) {
-                        message = hs.getMessage();
-                        System.out.println(hs.getResponseMsg());
+                    if (!handleService.createHandle(idHandle, privateUri)) {
+                        message = handleService.getMessage();
+                        System.out.println(handleService.getResponseMsg());
                         return false;
                     }
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
-                idHandle = hs.getPrefix() + "/" + idHandle;
+                idHandle = handleService.getPrefix() + "/" + idHandle;
                 if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
                     return false;
                 }
@@ -3123,11 +3129,11 @@ public class ConceptHelper {
         } else {
             // cas de Handle Standard 
 
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+           /// HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             try {
-                hs.deleteHandle(idHandle);
+                handleService.deleteHandle(idHandle);
             } catch (Exception ex) {
                 System.out.println(ex.toString());
             }
@@ -3161,12 +3167,12 @@ public class ConceptHelper {
             message = handleHelper.getMessage();
             return true;
         } else {
-            HandleService hs = HandleService.getInstance();
-            hs.applyNodePreference(nodePreference);
-            hs.connectHandle();
+           // HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(nodePreference);
+            handleService.connectHandle();
             for (String idHandle : tabIdHandle) {
                 try {
-                    hs.deleteHandle(idHandle);
+                    handleService.deleteHandle(idHandle);
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }
@@ -4632,7 +4638,7 @@ public class ConceptHelper {
     /**
      * Méthode temporaire le temps de centraliser toutes les commandes avec NodeFullConcept
      */
-    public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso) {
+    public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso, String idLang) {
         NodeConcept nodeConcept = new NodeConcept();
         // récupération des BT
         nodeConcept.setNodeBT(getBTFromNFC(nodeFullConcept.getBroaders()));
@@ -4649,7 +4655,7 @@ public class ConceptHelper {
         //récupération des notes
         nodeConcept.setNodeNotes(getNotesFromNFC(nodeFullConcept));
         //récupération des collections
-        nodeConcept.setNodeConceptGroup(getGroupFromNFC(nodeFullConcept, idTheso));
+        nodeConcept.setNodeConceptGroup(getGroupFromNFC(nodeFullConcept, idTheso, idLang));
         // récupération des alignements
         nodeConcept.setNodeAlignments(getAlignmentsFromNFC(nodeFullConcept, idTheso));
         // récupération des images
@@ -4725,11 +4731,11 @@ public class ConceptHelper {
     }
 
     private List<NodeAlignment> getAlignmentsFromNFC(NodeFullConcept nodeFullConcept, String idTheso) {
-        List<String> exactMatchs = nodeFullConcept.getExactMatchs();
-        List<String> broadMatchs = nodeFullConcept.getBroadMatchs();
-        List<String> narrowMatchs = nodeFullConcept.getNarrowMatchs();
-        List<String> relatedMatchs = nodeFullConcept.getRelatedMatchs();
-        List<String> closeMatchs = nodeFullConcept.getCloseMatchs();
+        List<ConceptIdLabel> exactMatchs = nodeFullConcept.getExactMatchs();
+        List<ConceptIdLabel> broadMatchs = nodeFullConcept.getBroadMatchs();
+        List<ConceptIdLabel> narrowMatchs = nodeFullConcept.getNarrowMatchs();
+        List<ConceptIdLabel> relatedMatchs = nodeFullConcept.getRelatedMatchs();
+        List<ConceptIdLabel> closeMatchs = nodeFullConcept.getCloseMatchs();
         return Stream.of(
                         createAlignmentNodes(exactMatchs, idTheso, nodeFullConcept.getIdentifier(), 1, "exactMatch"),
                         createAlignmentNodes(broadMatchs, idTheso, nodeFullConcept.getIdentifier(), 3, "broadMatch"),
@@ -4741,12 +4747,12 @@ public class ConceptHelper {
                 .collect(Collectors.toList());
     }
 
-    private List<NodeAlignment> createAlignmentNodes(List<String> matches, String idTheso, String idConcept, int alignmentType, String alignmentLabelType) {
+    private List<NodeAlignment> createAlignmentNodes(List<ConceptIdLabel> matches, String idTheso, String idConcept, int alignmentType, String alignmentLabelType) {
         if(matches == null) return Collections.emptyList();
         return matches.stream()
                 .map(conceptLabel -> {
                     NodeAlignment node = new NodeAlignment();
-                    node.setUri_target(conceptLabel);
+                    node.setUri_target(conceptLabel.getUri());
                     node.setInternal_id_thesaurus(idTheso);
                     node.setInternal_id_concept(idConcept);
                     node.setAlignement_id_type(alignmentType);
@@ -4756,14 +4762,14 @@ public class ConceptHelper {
                 .collect(Collectors.toList());
     }
 
-    private List<NodeGroup> getGroupFromNFC(NodeFullConcept nodeFullConcept, String idTheso) {
+    private List<NodeGroup> getGroupFromNFC(NodeFullConcept nodeFullConcept, String idTheso, String idLang) {
         List <ConceptIdLabel> conceptIdLabels = nodeFullConcept.getMembres();
         if(conceptIdLabels == null) return Collections.emptyList();
         return conceptIdLabels.stream()
                 .map(collection -> {
                     NodeGroup node = new NodeGroup();
                     node.setLexicalValue(collection.getLabel());
-                    node.setIdLang(nodeFullConcept.getPrefLabel().getIdLang());
+                    node.setIdLang(idLang);
                     ConceptGroup conceptGroup = new ConceptGroup();
                     conceptGroup.setIdgroup(collection.getIdentifier());
                     conceptGroup.setIdthesaurus(idTheso);

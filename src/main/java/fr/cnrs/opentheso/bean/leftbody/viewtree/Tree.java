@@ -276,10 +276,12 @@ public class Tree implements Serializable {
             }
         }*/
         initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        expandTreeToPath(
-                ((TreeNodeData) getSelectedNode().getData()).getNodeId(),
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+        if(getSelectedNode() != null) {
+            expandTreeToPath(
+                    ((TreeNodeData) getSelectedNode().getData()).getNodeId(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang());
+        }
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
             PrimeFaces.current().ajax().update("containerIndex:languageSelect");

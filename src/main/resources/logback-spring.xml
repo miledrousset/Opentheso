@@ -41,19 +41,24 @@
 
     <!-- Définir le niveau de log pour les environnements -->
 
+    <!-- Configurer le niveau de log global -->
+    <root level="INFO">  <!-- Changer de DEBUG à INFO ou ERROR selon vos besoins -->
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- Configurer les logs pour les profils -->
     <springProfile name="local">
-        <root level="ERROR, INFO, DEBUG, WARN">
-            <!-- Les logs sont toujours affichés dans la console -->
+        <root level="INFO">
             <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
         </root>
     </springProfile>
 
+    <!-- Configurer les logs pour le profil 'prod' -->
     <springProfile name="prod">
-        <root level="ERROR, INFO, WARN">
-            <!-- Les logs sont toujours affichés dans la console -->
+        <root level="ERROR">
             <appender-ref ref="CONSOLE" />
-
-            <!-- Si un fichier de log est précisé, les logs iront aussi dans le fichier -->
             <appender-ref ref="FILE" />
         </root>
     </springProfile>

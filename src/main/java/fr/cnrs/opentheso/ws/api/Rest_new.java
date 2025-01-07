@@ -4,17 +4,15 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
+//import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.repositories.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
@@ -70,6 +68,9 @@ public class Rest_new {
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
+    @Autowired
+    private LanguageHelper languageHelper;
+
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
 
@@ -80,6 +81,8 @@ public class Rest_new {
             "turtle", CustomMediaType.APPLICATION_TURTLE,
             "json", JSON_FORMAT
     );
+//    @Autowired
+//    private LanguageBean langueBean;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -97,6 +100,7 @@ public class Rest_new {
 
     @GetMapping("/ping")
     public String testWS(){
+ //       langueBean.getMsg("menu.thesaurus");
         return "pong";
     }
 
@@ -340,6 +344,7 @@ public class Rest_new {
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
                                     @RequestParam(value = "groups", required = false) String groups,
                                     @RequestParam(value = "match", required = false) String match,
+                                    @RequestParam(value = "format", required = false) String format, // ne pas supprimer; elle sert à filtrer le format du résultat pour OmekaS
                                     @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {
@@ -348,20 +353,24 @@ public class Rest_new {
         // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
 
         String [] groupList = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
-        String format;
-        switch (acceptHeader.toLowerCase()) {
-            case CustomMediaType.APPLICATION_JSON_LD:
-                format= "jsonld";
-                break;
-            case JSON_FORMAT:
-                format= "json";
-                break;
-            case CustomMediaType.APPLICATION_TURTLE:
-                format= "turtle";
-                break;
-            default:
-                format= "rdf";
-                break;
+        String formatFiltered;
+        if(StringUtils.isNotEmpty(format)) {
+            formatFiltered = format;
+        } else{
+            switch (acceptHeader.toLowerCase()) {
+                case CustomMediaType.APPLICATION_JSON_LD:
+                    formatFiltered= "jsonld";
+                    break;
+                case JSON_FORMAT:
+                    formatFiltered= "json";
+                    break;
+                case CustomMediaType.APPLICATION_TURTLE:
+                    formatFiltered= "turtle";
+                    break;
+                default:
+                    formatFiltered= "rdf";
+                    break;
+            }
         }
         if(StringUtils.isNotEmpty(groups)){
             groupList = groups.split(",");
@@ -377,8 +386,8 @@ public class Rest_new {
                 filter = "notation:";
             }
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(FORMAT_MAP.getOrDefault(format, JSON_FORMAT)))//CustomMediaType.APPLICATION_RDF_UTF_8))
-                    .body(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter, match));
+                    .contentType(MediaType.parseMediaType(FORMAT_MAP.getOrDefault(formatFiltered, JSON_FORMAT)))//CustomMediaType.APPLICATION_RDF_UTF_8))
+                    .body(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(formatFiltered, JSON_FORMAT), filter, match));
         }
     }
 
@@ -414,15 +423,11 @@ public class Rest_new {
                                               @RequestParam(required = false, value = "group") String groupValue,
                                               @RequestParam(required = false, value = "arkgroup") String arkGroupValue ,
                                               @RequestParam(required = false, value = "format") String format,
-                                              @RequestParam(value = "q") String value,
+                                              @RequestParam(value = "q", required = false) String value,
                                               @RequestParam(required = false, value = "match") boolean match) {
         // format = full (on renvoie les altLabel en plus)
         if (StringUtils.isEmpty(idTheso)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id du Thesaurus est obligatoire"));
-        }
-
-        if (StringUtils.isEmpty(value)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("La question est vide"));
         }
 
         String[] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)

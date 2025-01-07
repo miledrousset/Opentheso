@@ -121,7 +121,7 @@ public class CurrentUser implements Serializable {
         resetPermissionsAfterLogout();
         
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
-        roleOnThesoBean.setAndClearThesoInAuthorizedList();
+        roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);
         indexSetting.setIsThesoActive(true);
         rightBodySetting.setIndex("0");
 
@@ -131,7 +131,7 @@ public class CurrentUser implements Serializable {
         selectedTheso.setSelectedProject();
 
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
-            roleOnThesoBean.setPublicThesos(this);
+            roleOnThesoBean.setPublicThesos(this, selectedTheso);
             if(StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())){
                 if (!thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
                     indexSetting.setSelectedTheso(true);
@@ -157,7 +157,7 @@ public class CurrentUser implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this);
+            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
 
             if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())
                     && thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
@@ -261,7 +261,7 @@ public class CurrentUser implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this);
+            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
             projectBean.init();
         }
 
@@ -423,7 +423,7 @@ public class CurrentUser implements Serializable {
 
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userHelper.getGroupName(idProject));
-        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser == null));
+        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
@@ -572,12 +572,12 @@ public class CurrentUser implements Serializable {
         if (nodeUser == null) {
             return;
         }
-        roleOnThesoBean.showListTheso(this);
+        roleOnThesoBean.showListTheso(this, selectedTheso);
         initAllAuthorizedProjectAsAdmin();
 
         /// Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
         // sinon, on nettoie l'interface et le thésaurus. 
-        roleOnThesoBean.redirectAndCleanTheso();
+        roleOnThesoBean.redirectAndCleanTheso(selectedTheso);
     }
 
     /**

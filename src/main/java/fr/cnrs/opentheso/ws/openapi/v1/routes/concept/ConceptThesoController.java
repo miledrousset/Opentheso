@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import fr.cnrs.opentheso.ws.api.D3jsHelper;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 @Slf4j
 @RestController
 @RequestMapping("/openapi/v1/concept/{idTheso}")
-@CrossOrigin(methods = { RequestMethod.GET })
+@CrossOrigin(methods = {RequestMethod.GET})
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptThesoController {
 
@@ -41,28 +43,30 @@ public class ConceptThesoController {
     @Autowired
     private RestRDFHelper restRDFHelper;
 
+    private static final String JSON_FORMAT = "application/json";
+    private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
 
     @GetMapping(value = "/{idConcept}", produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "Récupère un concept d'après son ID et le  récupérer dans un format spécifié",
             description = "Ancienne version : `/api/<idThesaurus>.<idConcept>.<format>`<br/>Permet de  récupérer un concept dans un thesaurus donné d'après son ID en spécifiant l'un des formats possibles :<br>- JSON<br>- JSON-LD<br>- RDF",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "Skos décrivant le concept ayant l'ID correspondant", content = {
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-            @Content(mediaType = APPLICATION_JSON_UTF_8),
-            @Content(mediaType = APPLICATION_RDF_UTF_8)
-        }),
-                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
-                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+                    @ApiResponse(responseCode = "200", description = "Skos décrivant le concept ayant l'ID correspondant", content = {
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = APPLICATION_RDF_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getSkosFromidConcept(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
-                                         @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
-                                         @RequestHeader(value = "accept", required = false) String acceptHeader) {
+                                                       @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
+                                                       @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         // code qui permet de déctecter si le header vient d'un navigateur wab ou d'un client REST
         List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
-        if(mediaTypes.size() > 1) {
+        if (mediaTypes.size() > 1) {
             acceptHeader = "application/json";
         }
         var datas = restRDFHelper.exportConceptFromId(idConcept, idThesaurus, removeCharset(acceptHeader));
@@ -74,11 +78,11 @@ public class ConceptThesoController {
             summary = "Récupère les labels d'un concept",
             description = "Ancienne version : `/api/{idTheso}.{idConcept}.labels`<br/>Permet de  récupérer les labels d'un concept d'un thesaurus donné d'après son ID.",
             responses = {
-                @ApiResponse(responseCode = "200", description = "JSON contenant les labels du concept ayant l'ID correspondant", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)
-        }),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
-                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+                    @ApiResponse(responseCode = "200", description = "JSON contenant les labels du concept ayant l'ID correspondant", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -99,10 +103,10 @@ public class ConceptThesoController {
             description = "Ancienne version : `/api/graph?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>s dans un format permettant l'affichage du graph D3js",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
-        }),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
+                    @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
             }
     )
     public ResponseEntity<Object> getDatasForGraph(
@@ -121,10 +125,10 @@ public class ConceptThesoController {
             description = "Ancienne version : `/api/graph?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>Données dans un format permettant l'affichage du graph D3js",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
-        }),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
+                    @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
             }
     )
     public ResponseEntity<Object> getDatasForGraphForThisTheso(
@@ -133,7 +137,7 @@ public class ConceptThesoController {
 
         var datas = d3jsHelper.findDatasForGraph__(null, idThesaurus, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
-    }    
+    }
 
 
     @GetMapping(value = "/{idConcept}/expansion", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_RDF_UTF_8, APPLICATION_TURTLE_UTF_8})
@@ -141,14 +145,14 @@ public class ConceptThesoController {
             summary = "Récupère une branche d'expansion d'un concept",
             description = "Ancienne version : `/api/expansion/concept?theso=<idTheso>&id=<idConcept>&way=<top|down>`<br/>Permet de récupérer une branche d'expansion d'un concept d'un thésaurus donné d'après son ID. Soit en partant d'un concept pour trouver la racine, soit pour récupérer toute une branche à partir de la racine",
             responses = {
-                @ApiResponse(responseCode = "200", description = "Fichier contenant la branche du concept", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8),
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-            @Content(mediaType = APPLICATION_RDF_UTF_8),
-            @Content(mediaType = APPLICATION_TURTLE_UTF_8)}),
-                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
-                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+                    @ApiResponse(responseCode = "200", description = "Fichier contenant la branche du concept", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = APPLICATION_RDF_UTF_8),
+                            @Content(mediaType = APPLICATION_TURTLE_UTF_8)}),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -156,10 +160,38 @@ public class ConceptThesoController {
             @Parameter(name = "idTheso", description = "ID du thésaurus dans lequel récupérer le concept", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true, example = "3") @PathVariable("idConcept") String idConcept,
             @Parameter(name = "way", description = "Sens de l'expansion, `top` si l'on veut trouver la racine, `down` si l'on veut récupèrer toute la branche à partir de la racine", required = true, schema = @Schema(type = "string", allowableValues = {"top", "down"})) @RequestParam("way") String way,
-            @RequestHeader(value = "accept", required = false) String acceptHeader) {
-        
-        var datas = getBranchOfConcepts(idConcept, idTheso, way, removeCharset(acceptHeader));
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
+            @RequestHeader(value = "accept", required = false) String acceptHeader,
+            @RequestParam(value = "format", required = false) String format
+    ) {
+
+        if (StringUtils.isNotEmpty(format)) {
+            switch (format) {
+                case "rdf": {
+                    return ResponseEntity.ok()
+                            .header("Access-Control-Allow-Origin", "*")
+                            .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
+                            .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_RDF));
+                }
+                case "jsonld":
+                    return ResponseEntity.ok()
+                            .header("Access-Control-Allow-Origin", "*")
+                            .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
+                            .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_JSON_LD));
+                case "turtle":
+                    return ResponseEntity.ok()
+                            .header("Access-Control-Allow-Origin", "*")
+                            .contentType(MediaType.TEXT_PLAIN)
+                            .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_TURTLE));
+                default:
+                    return ResponseEntity.ok()
+                            .header("Access-Control-Allow-Origin", "*")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(getBranchOfConcepts(idConcept, idTheso, way, JSON_FORMAT));
+            }
+        } else {
+            var datas = getBranchOfConcepts(idConcept, idTheso, way, removeCharset(acceptHeader));
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
+        }
     }
 
     private String getBranchOfConcepts(String idConcept, String idTheso, String way, String format) {
@@ -174,16 +206,17 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/{idConcept}/narrower/{lang}", produces = APPLICATION_JSON_UTF_8)
     @Operation(
-            summary = "Permet de  récupérer la liste des termes spécifiques NT",
+            summary = "Permet de  récupérer la liste des termes spécifiques NT", //langueBean.getMsg("rest.getListNT"),//"
             description = "Ancienne version : `/api/narrower?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>Permet de  récupérer la liste des termes spécifiques NT d'un concept d'un thesaurus donné d'après son ID",
             responses = {
-                @ApiResponse(responseCode = "200", description = "Liste des termes spécifiques NT", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
-                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+                    @ApiResponse(responseCode = "200", description = "Liste des termes spécifiques NT", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8)}),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
+
     public ResponseEntity<Object> getNarrower(
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true, example = "3") @PathVariable("idConcept") String idConcept,
@@ -199,13 +232,13 @@ public class ConceptThesoController {
             summary = "Permet de  récupérer la liste des concepts modifiés depuis une date donnée",
             description = "Ancienne version : `/api/getchangesfrom?theso=<idTheso>&date=<date>&format=<format>`<br/>Permet de  récupérer la liste des concepts modifiés depuis une date donnée",
             responses = {
-                @ApiResponse(responseCode = "200", description = "Liste des concepts modifiés depuis une date donnée", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8),
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-            @Content(mediaType = APPLICATION_RDF_UTF_8),
-            @Content(mediaType = APPLICATION_TURTLE_UTF_8)
-        }),
-                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+                    @ApiResponse(responseCode = "200", description = "Liste des concepts modifiés depuis une date donnée", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = APPLICATION_RDF_UTF_8),
+                            @Content(mediaType = APPLICATION_TURTLE_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -224,11 +257,11 @@ public class ConceptThesoController {
             description = "Ancienne version : `/api/ontome/linkedConcept?theso=<idTheso>&class=<cidocClass>`<br>\\n\\nOpentheso permet de relier des classes Cidoc-CRM via la plateforme Ontome, le lien se fait grâce à une relation réciproque construite de cette manière :\\nDans Opentheso, si un concept de haut niveau correspond à une classe du Cidoc-CRM, on peut alors ajouter un alignement `exactMach` entre la classe Cidoc-CRM et le concept<br>\\nExemple :<br>\\nLe concept « Lieu géographique » (Geographical place) a un `exactMatch` avec « https://ontome.net/class/363 ».<br>Cette fonctionnalité récupérer tous les concepts du thésaurus qui ont une relation `exactMatch` avec les classes Cidoc",
             tags = {"Concept", "Ontome"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les concepts", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)
-        }),
-                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+                    @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les concepts", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> getAllLinkedConceptsWithOntome(
             @Parameter(name = "idTheso", description = "Thésaurus dans lequel les concepts sont", required = true, example = "th3") @PathVariable("idTheso") String idTheso,

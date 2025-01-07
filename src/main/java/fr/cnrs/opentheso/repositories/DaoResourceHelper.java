@@ -403,11 +403,11 @@ public class DaoResourceHelper {
                         nodeFullConcept.setRelateds(getRelations(resultSet.getString("related")));
 
                         // alignements
-                        nodeFullConcept.setExactMatchs(getAlignments(resultSet.getString("exactMatch")));
-                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("closeMatch")));
-                        nodeFullConcept.setBroadMatchs(getAlignments(resultSet.getString("broadMatch")));
-                        nodeFullConcept.setRelatedMatchs(getAlignments(resultSet.getString("relatedMatch")));
-                        nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
+                        nodeFullConcept.setExactMatchs(getFromIdLabel(resultSet.getString("exactMatch")));
+                        nodeFullConcept.setCloseMatchs(getFromIdLabel(resultSet.getString("closeMatch")));
+                        nodeFullConcept.setBroadMatchs(getFromIdLabel(resultSet.getString("broadMatch")));
+                        nodeFullConcept.setRelatedMatchs(getFromIdLabel(resultSet.getString("relatedMatch")));
+                        nodeFullConcept.setNarrowMatchs(getFromIdLabel(resultSet.getString("narrowMatch")));
 
                         // externalResources
                         nodeFullConcept.setExternalResources(getFromIdLabel(resultSet.getString("externalResources")));
@@ -581,7 +581,11 @@ public class DaoResourceHelper {
                     conceptRelation.setUri(element[0]);
                     conceptRelation.setRole(element[1]);
                     conceptRelation.setIdConcept(element[2]);
-                    conceptRelation.setLabel(element[3]);
+                    if(element.length > 3) {
+                        conceptRelation.setLabel(element[3]);
+                    } else {
+                        conceptRelation.setLabel("");
+                    }
                     conceptRelations.add(conceptRelation);
                 } catch (Exception e) {
                 }

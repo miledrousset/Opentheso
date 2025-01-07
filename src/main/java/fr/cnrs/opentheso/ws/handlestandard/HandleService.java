@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.PrivateKey;
+
+import lombok.extern.slf4j.Slf4j;
 import net.handle.hdllib.AbstractMessage;
 import net.handle.hdllib.AbstractResponse;
 import net.handle.hdllib.AdminRecord;
@@ -15,9 +17,20 @@ import net.handle.hdllib.HandleResolver;
 import net.handle.hdllib.HandleValue;
 import net.handle.hdllib.PublicKeyAuthenticationInfo;
 import net.handle.hdllib.Util;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-
+@Slf4j
+@Service
 public class HandleService {
+    @Value("${certificats.admpriv}")
+    private String admprivPath;
+
+    @Value("${certificats.cacerts2}")
+    private String cacerts2Path;
+
+    @Value("${certificats.key}")
+    private String keyPath;
 
     private int responseMsg;
     private String pathKey;
@@ -37,16 +50,8 @@ public class HandleService {
     private String message;
 
 
-    public static HandleService getInstance() {
-        return hs;
-    }
-    
-    static {
-        hs = new HandleService();
-
-    }
-
-    private HandleService() {  
+    // Utilisez le constructeur par défaut (géré automatiquement par Spring)
+    public HandleService() {
     }
 
     public void applyNodePreference(NodePreference nodePreference){
@@ -55,7 +60,7 @@ public class HandleService {
         prefix = nodePreference.getPrefixIdHandle(); // exp : 20.500.11859
         privatePrefix = nodePreference.getPrivatePrefixHandle();
         
-        pathKey = ("certificat/admpriv.bin");
+        pathKey = admprivPath;//("certificats/admpriv.bin");
         try {
             index = nodePreference.getIndexHandle(); // exp : 300
         } catch (Exception e) {
@@ -63,16 +68,19 @@ public class HandleService {
         adminHandle = nodePreference.getAdminHandle(); // exp : 0.NA/20.500.11859
     }    
     
-    public void connectHandle(){
-        
+    public boolean connectHandle(){
         byte[] key = null;
         try {
-            File f = new File(Thread.currentThread().getContextClassLoader().getResource(pathKey).getFile());
+            File f= new File(admprivPath);
             FileInputStream fs = new FileInputStream(f);
             key = Util.getBytesFromInputStream(fs);
+            if (key == null || key.length == 0) {
+                throw new RuntimeException("Failed to load private key. Key is null or empty.");
+            }
         } catch (Throwable t) {
-            System.err.println("Cannot read private key " + pathKey + ": " + t);
-            System.exit(-1);
+            message = "Cannot read private key " + admprivPath + ": " + t;
+            log.info("Cannot read private key " + admprivPath + ": " + t);
+            return false;
         }
 
         // A HandleResolver object is used not just for resolution, but for
@@ -91,8 +99,8 @@ public class HandleService {
             key = Util.decrypt(key, secKey);
             privkey = Util.getPrivateKeyFromBytes(key, 0);
         } catch (Throwable t) {
-            System.err.println("Can't load private key in " + pathKey + ": " + t);
-            System.exit(-1);
+            log.info("Can't load private key in " + admprivPath + ": " + t);
+            return false;
         }
 
         try {
@@ -111,8 +119,9 @@ public class HandleService {
                     true, true, true, true, true, true);
 
         } catch (Throwable t) {
-            System.err.println("\nError: " + t);
+            log.info("\nError: " + t);
         }
+        return true;
     }
 
     /**
@@ -148,12 +157,12 @@ public class HandleService {
         // response codes, including RC_ERROR, RC_INVALID_ADMIN, and
         // RC_INSUFFICIENT_PERMISSIONS.
         if (response.responseCode == AbstractMessage.RC_SUCCESS) {
-            System.out.println("\nGot Response: \n" + response);
+            //System.out.println("\nGot Response: \n" + response);
             message = response.toString();
             this.setResponseMsg(response.responseCode);
             return true;
         } else {
-            System.out.println("\nGot Error: \n" + response);
+            //System.out.println("\nGot Error: \n" + response);
             message = response.toString();
             this.setResponseMsg(response.responseCode);
         }

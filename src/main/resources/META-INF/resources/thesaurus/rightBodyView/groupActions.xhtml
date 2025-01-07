@@ -23,10 +23,34 @@
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
                             icon="fas fa-plus" />
 
-
+                <p:menuitem rendered="#{currentUser.hasRoleAsManager}"
+                            disabled="false" id="removeConceptFromGroup"
+                            ajax="true" process="@this"
+                            oncomplete="PF('confirmRemoveConceptFromCollection').show();"
+                            update="messageIndex"
+                            value="#{langueBean.getMsg('collection.removeAllConceptFromCollection')}"
+                            icon="fas fa-plus" >
+                </p:menuitem>
 
             </p:menuButton>
             <p:tooltip for="newArkIdGroup" value="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}" />
         </div>
     </div>
+    <p:confirmDialog widgetVar="confirmRemoveConceptFromCollection" header="#{langueBean.getMsg('collection.removeAllConceptFromCollection')} ?"
+                     global="true" showEffect="fade" hideEffect="explode" position="top" style="margin-top: 50px">
+        <div class="row">
+            <div class="col-5 offset-1">
+                <p:commandButton value="#{langueBean.getMsg('no')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" style="width: 100%"
+                                 oncomplete="PF('confirmRemoveConceptFromCollection').hide();"/>
+            </div>
+            <div class="col-5 offset-1">
+                <p:commandButton value="#{langueBean.getMsg('yes')}" styleClass="ui-button-success" icon="pi pi-check" style="width: 100%"
+                                 actionListener="#{editConcept.removeAllConceptFromCollection(groupView.nodeGroup.conceptGroup.idgroup)}"
+                                 update="messageIndex"
+                                 ajax="true" process="@form"
+                                 oncomplete="PF('confirmRemoveConceptFromCollection').hide();"/>
+            </div>
+        </div>
+
+    </p:confirmDialog>
 </ui:fragment>

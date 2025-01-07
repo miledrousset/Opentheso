@@ -396,7 +396,7 @@ public class SearchHelper {
         
         String limit = " limit 100";
         if(StringUtils.isEmpty(value)){
-            limit = " limit 500";
+            limit = " limit 5000";
         }
         
         String multiValuesPT = "";

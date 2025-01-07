@@ -64,7 +64,7 @@
 
                 <!-- délimiteur CSV -->
                 <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
+                    <div class="col-5">
                         <h:outputText value="Délimiteur Csv :" style="color: #000; font-size: 12px"  />
                     </div>
                     <div class="col-7">
@@ -80,11 +80,13 @@
                 </div>             
 
                 <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
+                    <div class="col-5">
                         <h:outputText value="Remplacer les notations existantes ? " style="color: #000; font-size: 12px"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
-                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px; font-size: 12px;" />
+                        <p:toggleSwitch  value="#{importFileBean.clearBefore}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax  />
+                        </p:toggleSwitch>
                     </div>                
                 </div>   
 
