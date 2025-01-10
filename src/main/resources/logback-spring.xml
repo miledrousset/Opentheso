@@ -47,6 +47,11 @@
         <appender-ref ref="FILE" />
     </root>
 
+    <root level="ERROR">  <!-- Changer de DEBUG à INFO ou ERROR selon vos besoins -->
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
     <!-- Configurer les logs pour les profils -->
     <springProfile name="local">
         <root level="INFO">

@@ -320,11 +320,26 @@
             <version>${rdf4j.version}</version>
         </dependency>
 
+        <!-- Ajout de GraphQL par Miled -->
+
+        <!-- GraphQL Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-graphql</artifactId>
+        </dependency>
+        <!-- GraphQL Tools : Fournit des outils pour mapper facilement les objets Java à des schémas GraphQL (via fichiers .graphqls). -->
         <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
-            <version>${graphql-java.version}</version>
+            <version>22.1</version> <!-- Vérifiez la dernière version compatible -->
         </dependency>
+
+
+
+
+
+
+
 
         <dependency>
             <groupId>org.jsoup</groupId>
