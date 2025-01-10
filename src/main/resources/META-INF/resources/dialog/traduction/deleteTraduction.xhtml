@@ -46,6 +46,7 @@
                                  style="margin-right: 10px" update="containerIndex:idDeleteTraduction"
                                  actionListener="PF('deleteTraduction').hide();"/>
             </div>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 </ui:fragment>

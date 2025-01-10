@@ -68,7 +68,6 @@
 
         <div class="formLogin">
             <h:form class="login-form">
-                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 <!--
                 <div style="height: auto; margin-top: -40px; margin-bottom: 7px; text-align: right; vertical-align: central">
                     <p:outputLabel value="LDAP" styleClass="formLogin-label" />
@@ -86,6 +85,7 @@
                     <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"
                                    value="#{langueBean.getMsg('menu.forgotten_pass')}" style="font-size: 12px;"/>
                 </p>
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </div>
     </p:dialog>   

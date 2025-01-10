@@ -136,6 +136,7 @@
                     </p:column>                    
                 </p:dataTable>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>    
 
@@ -186,7 +187,8 @@
                                  oncomplete="PF('addTraductionProp').hide();" icon="pi pi-check"
                                  actionListener="#{traductionBean.addNewTraductionProposition()}" />
             </div>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>
 
     <p:dialog id="idDeleteTraductionProp" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" 
@@ -229,6 +231,7 @@
                     </p:column>                    
                 </p:dataTable>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

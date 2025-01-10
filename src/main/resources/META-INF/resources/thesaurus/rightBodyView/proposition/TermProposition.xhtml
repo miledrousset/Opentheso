@@ -213,7 +213,8 @@
                                  styleClass="ui-button-success" ajax="true" process="@form" 
                                  actionListener="#{propositionBean.updateNomConcept()}"  />
             </div>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>
 
 
@@ -275,6 +276,7 @@
                                  oncomplete="PF('addSynonymProp').hide();"
                                  action="#{synonymBean.addPropSynonym()}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 
@@ -323,6 +325,7 @@
                     </p:column>                    
                 </p:dataTable>
             </div>       
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 
@@ -367,6 +370,7 @@
                     </p:column>                    
                 </p:dataTable>
             </div>
-        </h:form>            
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+</h:form>
     </p:dialog>
 </ui:fragment>

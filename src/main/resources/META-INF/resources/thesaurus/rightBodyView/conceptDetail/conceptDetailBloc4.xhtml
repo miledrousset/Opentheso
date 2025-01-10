@@ -194,6 +194,7 @@
                                                 <h:outputScript>
                                                     #{conceptView.getMapScripte()};
                                                 </h:outputScript>
+                                                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                                             </h:form>
                                         </div>
                                     </h:panelGroup>

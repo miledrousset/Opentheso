@@ -110,6 +110,7 @@
                                  actionListener="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
                                                    selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

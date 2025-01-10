@@ -62,6 +62,7 @@
                     <p:tooltip value="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}" showDelay="1000" />
                 </p:commandButton>
             </div> 
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

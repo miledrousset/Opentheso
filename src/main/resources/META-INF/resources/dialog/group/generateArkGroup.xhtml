@@ -32,6 +32,7 @@
                                  actionListener="#{addGroupBean.generateArkGroup(groupView.nodeGroup.conceptGroup.idgroup, groupView.nodeGroup.lexicalValue, selectedTheso.currentIdTheso)}" 
                                  oncomplete="PF('generateArkGroup').hide();"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 </ui:fragment>

@@ -55,6 +55,7 @@
                                  oncomplete="PF('newNote').hide();"
                                  action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -52,6 +52,7 @@
                                      oncomplete="PF('deleteNote').hide();" />
                 </div>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 </ui:fragment>

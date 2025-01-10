@@ -97,7 +97,7 @@
                                  actionListener="#{narrowerBean.applyRelationToBranch(conceptView.nodeConcept.concept.idConcept, currentUser.nodeUser.idUser)}" />
             </h:panelGroup>
         </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
-
     </p:dialog>
 </ui:fragment>

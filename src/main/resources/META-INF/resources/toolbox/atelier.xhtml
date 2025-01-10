@@ -154,8 +154,8 @@
                                                                 </ui:repeat>
                                                             </h:panelGroup>
                                                         </p:scrollPanel>
+                                                        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                                                     </h:form>
-
                                                     <h:panelGrid columns="2" style="margin-top: 15px" cellpadding="5" rendered="#{atelierThesBean.titles.size() > 0}">
                                                         <p:outputLabel for="@next" value="Colone à comparer :" style="margin-right: 10px; color: #000" />
                                                         <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
@@ -163,11 +163,8 @@
                                                                            itemLabel="#{titre}" itemValue="#{titre}"/>
                                                         </p:selectOneMenu> 
                                                     </h:panelGrid>
-
                                                 </p:panel>
-
                                             </p:panel>
-
                                         </p:tab>
 
                                         <p:tab id="thesaurus" title="Les thésaurus" titleStyleClass="tabCostum">
@@ -300,6 +297,7 @@
                         </div>
                     </div>
                     <ui:include src="../commun/footer.xhtml" /> 
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
 
                 <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   

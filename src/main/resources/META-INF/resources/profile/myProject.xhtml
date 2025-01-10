@@ -283,7 +283,8 @@
                     </div> 
 
                     <ui:include src="../commun/footer.xhtml" /> 
-                </h:form>  
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+                </h:form>
 
                 <ui:include src="../dialog/profile/newUserForProject.xhtml" />
 

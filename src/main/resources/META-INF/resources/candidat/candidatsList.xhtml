@@ -169,7 +169,8 @@
                     </div>
                 </div>
             </h:panelGroup>  
-        </h:form>        
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:panel>
 
     <p:panel visible="#{candidatBean.isExportViewActivate()}" style="padding-left: 20px; padding-right: 20px; margin-bottom: 30px">
@@ -223,7 +224,8 @@
                     </p:commandButton>
                 </div>
             </div>
-        </h:form>
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+</h:form>
     </p:panel>
 
     <p:panel id="viewImportSkosForm" rendered="#{candidatBean.isImportViewActivate()}" style="color: #000">
@@ -306,6 +308,7 @@
                                      actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
                 </div> 
             </div>
-        </h:form>          
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+</h:form>
     </p:panel>
 </ui:fragment>

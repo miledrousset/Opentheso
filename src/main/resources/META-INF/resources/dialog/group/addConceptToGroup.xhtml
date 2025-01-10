@@ -54,6 +54,7 @@
                                  oncomplete="PF('addConceptToGroup').hide();"
                                  actionListener="#{addConceptToGroupBean.addConceptToGroup(currentUser.nodeUser.idUser)}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 </ui:fragment>
