@@ -196,8 +196,6 @@ public class SynonymBean implements Serializable {
     public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
-        TermHelper termHelper = new TermHelper();
-
         if (nodeEMLocal == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
