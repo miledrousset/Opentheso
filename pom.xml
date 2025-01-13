@@ -320,8 +320,8 @@
             <version>${rdf4j.version}</version>
         </dependency>
 
-        <!-- Ajout de GraphQL par Miled -->
 
+        <!-- Ajout de GraphQL par Miled -->
         <!-- GraphQL Spring Boot Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -333,7 +333,6 @@
             <artifactId>graphql-java</artifactId>
             <version>22.1</version> <!-- Vérifiez la dernière version compatible -->
         </dependency>
-
 
 
 
