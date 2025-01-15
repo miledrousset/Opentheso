@@ -5,10 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -2094,9 +2091,23 @@ public class SearchHelper {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        String preparedValuePT;
+        String preparedValueNPT;
+        String orderByPT;
+        String orderByNPT;
+        Set<String> supportedLangs = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
+        if(supportedLangs.contains(idLang.toLowerCase())){
+            preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+            preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+            orderByPT = "order by term.lexical_value <-> '" + value + "' limit 50";
+            orderByNPT = "order by non_preferred_term.lexical_value <-> '" + value + "' limit 50";
+        } else {
+            preparedValuePT = " AND similarity(unaccent(lower(term.lexical_value)), unaccent(lower('" + value + "'))) > 0.2";
+            preparedValueNPT = " AND similarity(unaccent(lower(non_preferred_term.lexical_value)), unaccent(lower('" + value + "'))) > 0.2";
+            orderByPT = " ORDER BY similarity(unaccent(lower(term.lexical_value)), unaccent(lower('" + value + "'))) DESC limit 50;";
+            orderByNPT = " ORDER BY similarity(unaccent(lower(non_preferred_term.lexical_value)), unaccent(lower('" + value + "'))) DESC limit 50;";
+        }
 
-        String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
-        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
 
         String lang;
         String langSynonyme;
@@ -2121,7 +2132,8 @@ public class SearchHelper {
                         + " and term.id_thesaurus = '" + idThesaurus + "'"
                         + lang
                         + " and concept.status != 'CA'"
-                        + " order by term.lexical_value <-> '" + value + "' limit 50");
+                        + orderByPT
+                );
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -2161,7 +2173,8 @@ public class SearchHelper {
                         + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                         + langSynonyme
                         + " and concept.status != 'CA'"
-                        + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 50");
+                        + orderByNPT
+                );
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -2227,8 +2240,24 @@ public class SearchHelper {
         ArrayList<String> listIds = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
-        String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
-        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
+        String preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+        String orderByPT;
+        String orderByNPT;
+
+        Set<String> supportedLangs = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
+        if(supportedLangs.contains(idLang.toLowerCase())){
+            preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+            preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
+            orderByPT = "order by term.lexical_value <-> '" + value + "' limit 50";
+            orderByNPT = "order by non_preferred_term.lexical_value <-> '" + value + "' limit 50";
+        } else {
+            preparedValuePT = " AND similarity(unaccent(lower(term.lexical_value)), unaccent(lower('" + value + "'))) > 0.2";
+            preparedValueNPT = " AND similarity(unaccent(lower(non_preferred_term.lexical_value)), unaccent(lower('" + value + "'))) > 0.2";
+            orderByPT = " ORDER BY similarity(unaccent(lower(term.lexical_value)), unaccent(lower('" + value + "'))) DESC limit 50;";
+            orderByNPT = " ORDER BY similarity(unaccent(lower(non_preferred_term.lexical_value)), unaccent(lower('" + value + "'))) DESC limit 50;";
+        }
+
 
         String lang;
         String langSynonyme;
@@ -2253,8 +2282,7 @@ public class SearchHelper {
                         + " and term.id_thesaurus = '" + idThesaurus + "'"
                         + lang
                         + " and concept.status != 'CA'"
-                        + " order by term.lexical_value <-> '" + value + "' limit 50");
-
+                        + orderByPT);
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         if (!listIds.contains(resultSet.getString("id_concept"))) {
@@ -2282,8 +2310,7 @@ public class SearchHelper {
                         + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                         + langSynonyme
                         + " and concept.status != 'CA'"
-                        + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 50");
-
+                        + orderByNPT);
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         if (!listIds.contains(resultSet.getString("id_concept"))) {

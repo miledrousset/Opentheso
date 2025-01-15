@@ -1,16 +1,25 @@
 type Query {
+    """Récupérer un concept donné."""
     getNodeFullConcept(
+        """Identifiant du thésaurus."""
         idTheso: String!,
+        """Identifiant du concept."""
         idConcept: String!,
+        """La langue."""
         idLang: String!
     ): NodeFullConcept
 
+    """Recherche un concept dans un thésaurus donné."""
     searchConcept(
+        """Identifiant du thésaurus."""
         idTheso: String!,
+        """La valeur à rechercher."""
         value: String!,
-        idLang: String!
+        """les id des collections, exemple : ["g10", "g20", "g3"]"""
+        idGroups: [String!],
+        """La langue."""
+        idLang: String
     ): [NodeFullConcept]
-
 }
 
 type NodeFullConcept {

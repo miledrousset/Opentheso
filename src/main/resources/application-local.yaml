@@ -13,10 +13,9 @@ server:
     path: /errorPages/error500.xhtml
     whitelabel:
       enabled: false
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/opentheso
+    url: jdbc:postgresql://localhost:5433/pactols
     password: opentheso
     username: opentheso
   jpa:

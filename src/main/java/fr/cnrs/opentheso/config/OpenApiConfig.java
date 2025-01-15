@@ -20,6 +20,7 @@ import java.util.List;
 
 
 @Configuration
+
 @OpenAPIDefinition(
         info = @Info(title = "Opentheso ", version = "v1"),
         security = @SecurityRequirement(name = "apiKey")
@@ -41,9 +42,9 @@ public class OpenApiConfig {
                 .build();
     }
 
-    @Bean
-    public OpenAPI openAPI(ServletContext servletContext) {
-        Server server = new Server().url(servletContext.getContextPath());
-        return new OpenAPI().servers(List.of(server));
-    }
+//    @Bean
+//    public OpenAPI openAPI(ServletContext servletContext) {
+//        Server server = new Server().url(servletContext.getContextPath());
+//        return new OpenAPI().servers(List.of(server));
+//    }
 }
