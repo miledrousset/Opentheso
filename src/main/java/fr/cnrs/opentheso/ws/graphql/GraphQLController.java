@@ -37,7 +37,12 @@ public class GraphQLController {
             @Argument String idLang) {
         ArrayList<String> listIds;
         if(CollectionUtils.isNotEmpty(idGroups)) {
-            String[] stringArray = idGroups.toArray(new String[0]);
+            String[] stringArray;
+            if(idGroups.size() == 1 && StringUtils.isBlank(idGroups.get(0))) {
+                stringArray = null;
+            } else {
+                stringArray = idGroups.toArray(new String[0]);
+            }
             listIds = searchHelper.searchAutoCompletionWSForWidget(value, idLang, stringArray, idTheso);
         } else {
             listIds = searchHelper.searchFullTextElasticId(value, idLang, idTheso);
