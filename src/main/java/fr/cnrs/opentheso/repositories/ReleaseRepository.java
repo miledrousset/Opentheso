@@ -29,10 +29,11 @@ public class ReleaseRepository {
 
 
     public void saveRelease(Release release) {
+        fr.cnrs.opentheso.utils.StringUtils stringUtils = new fr.cnrs.opentheso.utils.StringUtils();
         try ( Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into releases (version, url, date, description) values ('"
-                        + release.getVersion() + "', '" + release.getUrl() + "', " + release.getDate() + ", '" + release.getDescription() + "')");
+                        + release.getVersion() + "', '" + release.getUrl() + "', '" + release.getDate() + "', '" + stringUtils.convertString(release.getDescription()) + "')");
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);

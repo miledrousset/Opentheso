@@ -1,0 +1,95 @@
+type Query {
+    """Récupérer un concept donné."""
+    getNodeFullConcept(
+        """Identifiant du thésaurus."""
+        idTheso: String!,
+        """Identifiant du concept."""
+        idConcept: String!,
+        """La langue."""
+        idLang: String!
+    ): NodeFullConcept
+
+    """Recherche un concept dans un thésaurus donné."""
+    searchConcept(
+        """Identifiant du thésaurus."""
+        idTheso: String!,
+        """La valeur à rechercher."""
+        value: String!,
+        """les id des collections, exemple : ["g10", "g20", "g3"]"""
+        idGroups: [String!],
+        """La langue."""
+        idLang: String
+    ): [NodeFullConcept]
+}
+
+type NodeFullConcept {
+    uri: String
+    identifier: String
+    permanentId: String
+    notation: String
+    resourceStatus: Int
+    conceptType: String
+    created: String
+    modified: String
+    creatorName: String
+    prefLabel: ConceptLabel
+    altLabels: [ConceptLabel]
+    hiddenLabels: [ConceptLabel]
+    prefLabelsTraduction: [ConceptLabel]
+    altLabelTraduction: [ConceptLabel]
+    hiddenLabelTraduction: [ConceptLabel]
+    narrowers: [ConceptRelation]
+    broaders: [ConceptRelation]
+    relateds: [ConceptRelation]
+    notes: [ConceptNote]
+    definitions: [ConceptNote]
+    examples: [ConceptNote]
+    editorialNotes: [ConceptNote]
+    changeNotes: [ConceptNote]
+    scopeNotes: [ConceptNote]
+    historyNotes: [ConceptNote]
+    exactMatchs: [ConceptIdLabel]
+    closeMatchs: [ConceptIdLabel]
+    broadMatchs: [ConceptIdLabel]
+    relatedMatchs: [ConceptIdLabel]
+    narrowMatchs: [ConceptIdLabel]
+
+    gps: [ResourceGPS]
+    externalResources: [ConceptIdLabel]
+    images: [ConceptImage]
+    membres: [ConceptIdLabel]
+    replacedBy: [ConceptIdLabel]
+    replaces: [ConceptIdLabel]
+    facets: [ConceptIdLabel]
+}
+
+type ConceptLabel {
+    label: String
+    idLang: String
+}
+type ConceptRelation {
+    Uri: String
+    label: String
+    idConcept: String
+    role: String
+}
+type ConceptNote {
+    idLang: String
+    label: String
+    noteSource: String
+}
+type ConceptIdLabel {
+    uri: String
+    identifier: String
+    label: String
+}
+type ResourceGPS {
+    latitude: Float
+    longitude: Float
+}
+type ConceptImage {
+    imageName: String
+    copyRight: String
+    creator: String
+    uri: String
+}

@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idModifyUser" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form>
             <div class="row">
                 <!-- Nom Pseudo -->
@@ -49,7 +49,7 @@
                                      icon="fa-regular fa-floppy-disk"
                                      styleClass="ui-button-success"
                                      actionListener="#{modifyUSerBean.updateUser()}"
-                                     oncomplete="PF('modifyUser').hide();" />
+                                     />
                 </div>
             </div>
             <p:separator title="-" />
@@ -77,12 +77,60 @@
                 <div class="col-12" style="text-align: right" >
                     <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex:tabViewRoles messageIndex"
                                      icon="fa-regular fa-floppy-disk"
-                                     styleClass="ui-button-success" oncomplete="PF('modifyUser').hide();"
+                                     styleClass="ui-button-success"
                                      actionListener="#{modifyUSerBean.updatePassword()}">
                         <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
                     </p:commandButton>
                 </div>
             </div>
+
+            <!-- Clé d'API -->
+            <p:separator title="-" />
+            <h:panelGroup id="userKey">
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5" >
+                        <h:outputText value="#{langueBean.getMsg('profile.apiKeyAuthorize')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:toggleSwitch value="#{modifyUSerBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                            <p:ajax listener="#{modifyUSerBean.toggleHasKey()}" update="userKey"/>
+                        </p:toggleSwitch>
+                    </div>
+                </div>
+                <h:panelGroup rendered="#{modifyUSerBean.hasKey}" >
+                    <div class="row" style="margin-top: 5px;">
+                        <div class="col-5" >
+                            <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
+                        </div>
+                        <div class="col-7">
+                            <p:toggleSwitch value="#{modifyUSerBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                                <p:ajax listener="#{modifyUSerBean.toggleKeyNeverExpire()}" update="userKey"/>
+                            </p:toggleSwitch>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 5px;">
+                        <div class="col-5" >
+                            <h:outputText value="#{langueBean.getMsg('profile.apiKeyExpireDate')} : " />
+                        </div>
+                        <div class="col-7">
+                            <p:datePicker value="#{modifyUSerBean.apiKeyExpireDate}" disabled="#{modifyUSerBean.nodeUser.keyNeverExpire}"></p:datePicker>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-12" style="text-align: right" >
+                        <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
+                                         icon="fa-regular fa-floppy-disk"
+                                         styleClass="ui-button-success"
+                                         actionListener="#{modifyUSerBean.updateApiKey()}">
+                            <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
+                        </p:commandButton>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+
+
         </h:form>
     </p:dialog>   
 </ui:fragment>

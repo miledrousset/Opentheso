@@ -2598,7 +2598,7 @@ public class UserHelper {
      * @param keyNeverExpire
      * @param apiKeyExpireDate
      */
-    public void updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate) {
+    public boolean updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate) {
         String sql = "UPDATE users SET key_never_expire = ?, key_expires_at = ? WHERE id_user = ?";
 
         try (Connection conn = dataSource.getConnection();
@@ -2613,9 +2613,11 @@ public class UserHelper {
             pstmt.setInt(3, userId);
 
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
 }

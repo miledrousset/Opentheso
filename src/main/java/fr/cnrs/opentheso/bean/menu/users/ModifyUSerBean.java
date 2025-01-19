@@ -52,6 +52,7 @@ public class ModifyUSerBean implements Serializable {
      */
     public void selectUser(int idUser) {
         nodeUser = userHelper.getUser(idUser);
+        setUserStringId(""+idUser);
         passWord1 = null;
         passWord2 = null;
     }
@@ -213,7 +214,14 @@ public class ModifyUSerBean implements Serializable {
         }
 
         // Mise à jour de l'utilisateur dans la base de données
-        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue);
+        FacesMessage msg;
+        if(userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Clé mise à jour avec succès !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de mise à jour !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
     }
 
     public NodeUser getNodeUser() {
