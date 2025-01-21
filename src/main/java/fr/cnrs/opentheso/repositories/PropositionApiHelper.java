@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
 import fr.cnrs.opentheso.models.propositions.PropositionDetailDao;
-import fr.cnrs.opentheso.repositories.candidats.RelationDao;
 import fr.cnrs.opentheso.repositories.propositions.PropositionDetailHelper;
 import fr.cnrs.opentheso.repositories.propositions.PropositionHelper;
 import fr.cnrs.opentheso.models.propositions.PropositionActionEnum;
@@ -41,9 +40,6 @@ public class PropositionApiHelper {
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
-    private RelationDao relationDao;
-
-    @Autowired
     private PropositionHelper propositionHelper;
 
 
@@ -76,8 +72,6 @@ public class PropositionApiHelper {
                 noteManagement(propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
             }
         }
-
-        relationDao.addRelationBT(proposition.getConceptID(), proposition.getConceptGenericId(), proposition.getIdTheso());
     }
 
     private Integer saveProposition(PropositionFromApi proposition, String thesaurusLang, NodeUser user) {
