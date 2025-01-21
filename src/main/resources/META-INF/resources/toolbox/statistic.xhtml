@@ -412,12 +412,13 @@
                                     <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateModification}"/>
                                 </div>
                             </div>
+                            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                         </h:form>
                     </p:dialog>
-
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
             </div>
-                    <ui:include src="../dialog/login/logout.xhtml" />
+            <ui:include src="../dialog/login/logout.xhtml" />
         </h:panelGroup>
     </h:body>
 </html>

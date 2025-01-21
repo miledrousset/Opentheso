@@ -68,6 +68,7 @@
                                  oncomplete="PF('addTopConcept').show();"
                                  actionListener="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>
 </ui:fragment>

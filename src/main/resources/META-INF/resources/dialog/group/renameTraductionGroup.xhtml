@@ -45,6 +45,7 @@
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('renameTraductionGroup').hide();" update="containerIndex:idRenameTraductionGroup"/>       
             </div>            
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog> 
 </ui:fragment>

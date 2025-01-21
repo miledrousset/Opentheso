@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.config;
 
 import com.sun.faces.config.ConfigureListener;
-import jakarta.faces.webapp.FacesServlet;
 import jakarta.servlet.ServletContext;
+import jakarta.faces.webapp.FacesServlet;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.MessageSource;
@@ -13,7 +14,7 @@ import org.springframework.web.context.ServletContextAware;
 
 
 @Configuration
-public class JsfConfiguration  implements ServletContextAware {
+public class PrimeFacesConfig implements ServletContextAware {
 
 
     @Override
@@ -32,8 +33,8 @@ public class JsfConfiguration  implements ServletContextAware {
     }
 
     @Bean
-    public ServletRegistrationBean<jakarta.faces.webapp.FacesServlet> facesServletRegistration() {
-        ServletRegistrationBean<jakarta.faces.webapp.FacesServlet> registrationBean = new ServletRegistrationBean<>(new FacesServlet(), "*.xhtml");
+    public ServletRegistrationBean<FacesServlet> facesServletRegistration() {
+        ServletRegistrationBean<FacesServlet> registrationBean = new ServletRegistrationBean<>(new FacesServlet(), "*.xhtml");
         registrationBean.setLoadOnStartup(1);
         return registrationBean;
     }
@@ -51,5 +52,13 @@ public class JsfConfiguration  implements ServletContextAware {
         messageSource.setDefaultEncoding("UTF-8"); // Support des caractères spéciaux
         messageSource.setCacheSeconds(3600); // Cache les fichiers pendant 1 heure
         return messageSource;
+    }
+
+    @Bean
+    public ServletContextInitializer servletContextInitializer() {
+        return servletContext -> {
+            // Activation de la protection CSRF de PrimeFaces
+            servletContext.setInitParameter("primefaces.CSRF", "true");
+        };
     }
 }

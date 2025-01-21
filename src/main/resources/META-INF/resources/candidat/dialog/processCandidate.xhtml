@@ -44,6 +44,7 @@
                                  update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

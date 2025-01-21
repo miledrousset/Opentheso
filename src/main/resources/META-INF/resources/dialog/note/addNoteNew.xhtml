@@ -94,6 +94,7 @@
                                      actionListener="#{noteBean.addAndUpdateNote(currentUser.nodeUser.idUser)}"/>
                 </div>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

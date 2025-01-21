@@ -123,6 +123,7 @@
                     </div>
 
                     <ui:include src="../commun/footer.xhtml" />
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
             </div>
         </h:panelGroup>
@@ -266,6 +267,7 @@
                                      update="messageIndex containerIndex" 
                                      action="#{newUSerBean.addNewUserBySuperAdmin()}" />
                 </div>
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </p:dialog> 
         
@@ -297,6 +299,7 @@
                                      update="messageIndex containerIndex" 
                                      action="#{modifyUSerBean.deleteUser()}" />
                 </div>
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </p:dialog>         
         
@@ -418,7 +421,7 @@
                         </div>
                     </div>
                 </h:panelGroup>
-
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </p:dialog>           
         

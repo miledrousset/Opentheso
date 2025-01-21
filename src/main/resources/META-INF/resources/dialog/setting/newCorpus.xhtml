@@ -96,6 +96,7 @@
                                  update="containerIndex messageIndex"
                                  actionListener="#{corpusBean.addNewCorpus()}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>  
 </ui:fragment>

@@ -66,6 +66,7 @@
                     <p:tooltip value="Ajouter l'utilisateur au projet" showDelay="1000" />
                 </p:commandButton>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -48,7 +48,8 @@
                              oncomplete="PF('confirmDelete').hide();"
                              actionListener="#{deleteThesoBean.deleteTheso(currentUser)}"
                              action="#{roleOnTheso.showListTheso(currentUser, selectedTheso)}"/>
-        </div> 
-            </h:form>
+        </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>     
 </ui:fragment>

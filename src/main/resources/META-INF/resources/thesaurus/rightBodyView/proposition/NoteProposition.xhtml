@@ -565,6 +565,7 @@
                                  styleClass="ui-button-success" oncomplete="PF('addNoteProp').hide();"
                                  actionListener="#{noteBean.addNewNoteProp()}"/>
             </div>   
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 
@@ -601,7 +602,8 @@
                     </p:commandLink>
                 </p:column>                    
             </p:dataTable>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>
 
 
@@ -629,6 +631,7 @@
                     </p:commandLink>
                 </p:column>                    
             </p:dataTable>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 

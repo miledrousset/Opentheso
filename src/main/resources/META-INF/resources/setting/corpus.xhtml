@@ -127,6 +127,7 @@
                     <ui:include src="../dialog/setting/confirmDeleteCorpus.xhtml" />
 
                     <ui:include src="../commun/footer.xhtml" />
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
                 <ui:include src="../dialog/setting/newCorpus.xhtml" />
                 <ui:include src="../dialog/login/logout.xhtml" />
