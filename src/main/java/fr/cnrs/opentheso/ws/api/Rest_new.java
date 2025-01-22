@@ -4,14 +4,16 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
-//import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.repositories.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
@@ -68,9 +70,6 @@ public class Rest_new {
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
-    @Autowired
-    private LanguageHelper languageHelper;
-
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
 
@@ -81,8 +80,6 @@ public class Rest_new {
             "turtle", CustomMediaType.APPLICATION_TURTLE,
             "json", JSON_FORMAT
     );
-//    @Autowired
-//    private LanguageBean langueBean;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -97,12 +94,6 @@ public class Rest_new {
      */
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
-
-    @GetMapping("/ping")
-    public String testWS(){
- //       langueBean.getMsg("menu.thesaurus");
-        return "pong";
-    }
 
     @GetMapping(value = "/{naan}/{idArk}.rdf", produces = CustomMediaType.APPLICATION_RDF)
     public ResponseEntity<String> getSkosFromArk(@PathVariable("naan") String naan,

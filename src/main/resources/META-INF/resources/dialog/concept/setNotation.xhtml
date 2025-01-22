@@ -43,6 +43,7 @@
                                  oncomplete="PF('setNotation').hide();"
                                  actionListener="#{notationBean.updateNotation(selectedTheso.currentIdTheso)}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>  
 </ui:fragment>

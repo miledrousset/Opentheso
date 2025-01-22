@@ -50,6 +50,7 @@
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{externalResources.addNewExternalResource(currentUser.nodeUser.idUser)}"/>
             </div>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>   
 </ui:fragment>

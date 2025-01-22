@@ -24,6 +24,7 @@
                 <p:commandButton class="btn btn-primary" title="Envoyer" oncomplete="PF('participantsList').hide();" ajax="true"
                                  update="tabViewCandidat messageIndex" actionListener="#{discussionService.sendInvitation()}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

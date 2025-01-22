@@ -89,6 +89,7 @@
                                  actionListener="#{alignmentBean.addAlignementSelected()}"
                                  icon="pi pi-check" ajax="true" process="@this"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

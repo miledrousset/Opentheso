@@ -213,7 +213,8 @@
                         </h:panelGroup>
                 </ui:repeat>                
             </ui:repeat>
-        </h:form>
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+</h:form>
     </div>
 
     <ui:include src="../../../dialog/concept/approveConcept.xhtml" />

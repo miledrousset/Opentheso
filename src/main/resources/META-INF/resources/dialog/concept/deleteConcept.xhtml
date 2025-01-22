@@ -42,6 +42,7 @@
                                  oncomplete="PF('deleteConcept').hide();" icon="pi pi-check"
                                  actionListener="#{editConcept.deleteConcept(selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

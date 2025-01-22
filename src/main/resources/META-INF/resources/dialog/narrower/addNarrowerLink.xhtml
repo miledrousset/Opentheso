@@ -53,6 +53,7 @@
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{narrowerBean.addNewNarrowerLink(currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

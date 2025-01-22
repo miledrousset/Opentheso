@@ -53,6 +53,7 @@
                                  oncomplete="PF('addBroaderLink').hide();"
                                  actionListener="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

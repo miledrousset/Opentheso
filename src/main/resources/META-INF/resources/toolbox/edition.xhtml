@@ -78,6 +78,7 @@
                         </p:panel>
                     </div>
                     <ui:include src="../commun/footer.xhtml" />
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
                 <ui:include src="../toolbox/edition/addLangToTheso.xhtml" />
                 <ui:include src="../toolbox/edition/confirmDelete.xhtml" />     

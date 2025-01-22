@@ -65,6 +65,7 @@
                                  styleClass="ui-button-success" icon="pi pi-check"
                                  actionListener="#{setAlignmentSourceBean.addAlignmentSource(currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>
