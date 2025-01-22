@@ -86,6 +86,7 @@
                                  oncomplete="PF('moveToAnotherTheso').hide();" ajax="true" process="@form"
                                  action="#{moveConcept.moveConcept()}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

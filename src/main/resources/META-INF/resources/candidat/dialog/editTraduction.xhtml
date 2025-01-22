@@ -36,6 +36,7 @@
                                  oncomplete="PF('editTraduction').hide();" update="tabViewCandidat messageIndex"
                                  actionListener="#{traductionService.updateTraduction()}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

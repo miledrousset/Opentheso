@@ -129,6 +129,7 @@
                                      actionListener="#{importFileBean.addArkList()}" />
                 </div> 
             </h:panelGroup>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog> 
 </ui:fragment>

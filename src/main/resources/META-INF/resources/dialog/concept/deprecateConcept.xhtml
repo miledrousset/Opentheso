@@ -30,6 +30,7 @@
                                                    selectedTheso.currentIdTheso,
                                                    currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

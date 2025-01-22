@@ -87,6 +87,7 @@
 
                     <ui:include src="../dialog/profile/moveThesoToAnotherProjectSA.xhtml" />
                     <ui:include src="../commun/footer.xhtml" />
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
             </div>
             <ui:include src="../dialog/login/logout.xhtml" />

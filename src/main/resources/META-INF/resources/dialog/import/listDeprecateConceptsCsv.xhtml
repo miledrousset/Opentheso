@@ -131,7 +131,8 @@
                                      actionListener="#{importFileBean.deprecateConcepts(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
                 </div> 
             </h:panelGroup>
-        </h:form>
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+</h:form>
  
     </p:dialog> 
 </ui:fragment>

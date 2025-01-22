@@ -114,6 +114,7 @@
                             </h:panelGroup>
                         </div>
                     </p:panel>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
                 <ui:include src="commun/footer.xhtml" />
             </div>

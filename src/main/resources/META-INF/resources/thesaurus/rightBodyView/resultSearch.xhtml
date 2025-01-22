@@ -97,8 +97,8 @@
                     </h:panelGroup>
                 </div>
             </ui:repeat>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:scrollPanel>
-
     <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="pi pi-arrow-up" />
 </ui:fragment>

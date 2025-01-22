@@ -13,7 +13,6 @@ server:
     path: /errorPages/error500.xhtml
     whitelabel:
       enabled: false
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/opentheso
@@ -31,7 +30,14 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/changelog/db.changelog.xml
-
+  graphql:
+    path: /graphql # Chemin de l'API GraphQL
+    graphiql:
+      enabled: true # Active l'interface graphiql pour tester les requêtes
+      path: /graphiql # Chemin de l'interface graphiql
+    schema:
+      printer:
+        enabled: false # Active l'impression du schéma au démarrage dans les logs
 
 settings:
   workLanguage: fr

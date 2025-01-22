@@ -64,6 +64,7 @@
                 <h:inputHidden id="id_concept" value="#{tree.idConceptSelected}" />
                 <h:inputHidden id="langue" value="#{selectedTheso.currentLang}" />
                 <h:inputHidden id="base_url" value="#{connect.localUri}" />
+                <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
             <script type="text/javascript">
                 var idTheso = document.getElementById("formId:id_theso").value;

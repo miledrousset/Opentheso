@@ -31,7 +31,7 @@
                 <p:commandButton rendered="#{editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
                                  styleClass="ui-button-secondary button" style="margin-right: 10px"
                                  actionListener="#{editConcept.setDuplicate(false)}" 
-                                 update="containerIndex:idRenameConcept" 
+                                 update="containerIndex:idRenameConcept"
                                  oncomplete="PF('renameConcept').show();"
                                  icon="fas fa-undo-alt" ajax="true" process="@form"/>
 
@@ -57,6 +57,7 @@
                                  action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

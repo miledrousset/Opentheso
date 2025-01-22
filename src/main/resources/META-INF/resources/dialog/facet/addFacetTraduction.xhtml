@@ -54,6 +54,7 @@
                                  ajax="true" process="@form"
                                  actionListener="#{editFacet.addNewTraduction()}"/>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

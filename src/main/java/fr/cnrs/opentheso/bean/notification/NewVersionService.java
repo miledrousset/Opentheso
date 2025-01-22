@@ -95,7 +95,7 @@ public class NewVersionService implements Serializable {
             log.info("All releases are saved in DB !");
             return null;
         } else {
-            log.info("Not of first project running ! seaching of latest release");
+            log.info("Not of first project running ! searching of latest release");
             TagDto tag = tags.stream().findFirst().get();
             log.info("Latest tag version {}", tag.getName());
             Optional<Release> oldRelease = releasesSaved.stream()

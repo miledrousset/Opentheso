@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -11,13 +13,15 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Candidate {
+public class Candidate implements Serializable {
 
     private List<Element> terme;
 
     private String thesoId;
 
     private String collectionId;
+
+    private String conceptGenericId;
 
     private List<Element> definition;
 

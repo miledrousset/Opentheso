@@ -136,8 +136,8 @@
                                  oncomplete="PF('dragAndDrop').hide();"
                                  actionListener="#{dragAndDrop.drop()}" style="color: white;" process="@this" ajax="true"/>
             </div>
-
-        </h:form>        
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
 
         <style type="text/css">
             .from {

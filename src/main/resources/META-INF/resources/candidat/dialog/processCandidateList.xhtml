@@ -39,6 +39,7 @@
                                  oncomplete="PF('processCandidateList').hide();" process="@this" 
                                  actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

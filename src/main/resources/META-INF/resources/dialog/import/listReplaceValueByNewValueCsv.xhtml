@@ -145,7 +145,7 @@
                                      actionListener="#{importFileBean.replaceValueByNewValue(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
                 </div> 
             </h:panelGroup>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
- 
     </p:dialog> 
 </ui:fragment>

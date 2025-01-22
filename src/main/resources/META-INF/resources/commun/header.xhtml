@@ -69,6 +69,20 @@
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
+
+            <h:panelGroup style="margin-top: 25px; margin-right: 10px" id="openAPIAction"  >
+                <p:link id="linkOpenApi" href="#{request.contextPath}/swagger-ui/index.html" target="_blank" style="text-decoration: none;">
+                    <img src="#{request.contextPath}/resources/img/openapi2.png" style="height:20px; margin-right: 10px;" alt="Swagger UI"/>
+                </p:link>
+                <p:tooltip value="OpenApi" for="linkOpenApi" />
+
+                <p:link id="linkGraphQL" href="#{request.contextPath}/graphiql" target="_blank" style="text-decoration: none;">
+                    <img src="#{request.contextPath}/resources/img/graphql.png" style="height:20px; margin-right: 10px;" alt="Swagger QL"/>
+                </p:link>
+                <p:tooltip value="GraphQL" for="linkGraphQL" />
+            </h:panelGroup>
+
+
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                 style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
                 <p:commandLink rendered="#{newVersionBean.newVersionFound()}" onclick="PF('newVersionNotificationPanel').show()"

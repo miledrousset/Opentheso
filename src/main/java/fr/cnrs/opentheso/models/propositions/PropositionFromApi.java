@@ -18,7 +18,6 @@ public class PropositionFromApi implements Serializable {
     private String IdTheso;
     private String conceptID;
     private String commentaire;
-
     private List<SynonymPropBean> synonymsProp;
     private List<TraductionPropBean> traductionsProp;
     private List<NotePropBean> definitions, notes;

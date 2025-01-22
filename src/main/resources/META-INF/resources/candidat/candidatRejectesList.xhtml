@@ -28,6 +28,7 @@
                 </p:commandButton>                    
             </p:toolbarGroup>
         </p:toolbar>
+        <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
     </h:form>
 
     <p:dataTable var="candidat" value="#{candidatBean.rejetCadidat}" paginator="true" rows="15"

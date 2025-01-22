@@ -9,8 +9,8 @@
         
         <addPrimaryKey columnNames="id_concept,id_thesaurus,name,value"
                        constraintName="concept_dcterms_pkey"
-                       tableName="concept_dcterms" /> 
-               
+                       tableName="concept_dcterms" />
+
         <dropNotNullConstraint
             tableName="concept_dcterms"
             columnName="language"

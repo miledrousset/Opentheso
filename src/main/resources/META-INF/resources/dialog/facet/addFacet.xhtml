@@ -55,6 +55,7 @@
                                      icon="pi pi-check" ajax="true" process="@form" />
                 </div>
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

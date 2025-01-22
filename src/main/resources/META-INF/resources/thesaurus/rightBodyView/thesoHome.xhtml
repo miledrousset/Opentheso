@@ -60,7 +60,8 @@
 
                             <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                <p:link href="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
+                                <p:link
+                                        href="#{not empty selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) ? selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) : '#'}"
                                         value="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
                                         style="color: #164A78; font-size: 13px;color: #F47B2A;" />
                             </h:panelGroup>

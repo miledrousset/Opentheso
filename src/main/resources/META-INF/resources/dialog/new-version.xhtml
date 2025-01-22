@@ -21,6 +21,7 @@
                     </td>
                 </tr>
             </table>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:sidebar>
 
@@ -58,6 +59,7 @@
                         action="#{newVersionBean.viewDescription()}"
                         onclick="setTimeout('document.getElementById(\'' + this.id + '\').disabled=true;', 50);" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>
 </ui:fragment>

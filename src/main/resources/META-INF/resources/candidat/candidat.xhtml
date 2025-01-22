@@ -40,6 +40,7 @@
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                 </h:form>
 
                 <div class="container-fluid">
@@ -76,6 +77,7 @@
                                                     </div>
                                                 </div>
                                             </h:panelGroup>
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
                                         </h:form>
                                     </h:panelGroup>
                                 </p:tab>

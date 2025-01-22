@@ -114,6 +114,7 @@
                                  oncomplete="PF('manageView').hide();"
                                  update="idManageView"/>
             </div>
-        </h:form>            
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+        </h:form>
     </p:dialog>   
 </ui:fragment>

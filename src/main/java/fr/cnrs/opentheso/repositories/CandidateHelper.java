@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import fr.cnrs.opentheso.repositories.candidats.RelationDao;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ public class CandidateHelper {
 
     @Autowired
     private ConceptHelper conceptHelper;
+
+    @Autowired
+    private RelationDao relationDao;
 
 
     /**
@@ -88,15 +92,19 @@ public class CandidateHelper {
                 }
             }
 
+            if (StringUtils.isNotEmpty(candidate.getConceptGenericId())) {
+                relationDao.addRelationBT(idConcept, candidate.getConceptGenericId(), candidate.getThesoId());
+            }
+
             insertPreferredTerm(conn, candidate.getThesoId(), idTerm, idConcept);
 
             insertCandidat(conn, idConcept, candidate.getThesoId(), userId);
 
             conn.commit();
+            return true;
         }catch (SQLException e) {
-
+            return false;
         }
-        return true;
     }
 
 

@@ -28,6 +28,7 @@
                                  update="messageIndex containerIndex"                            
                                  action="#{newProjectBean.addNewProject()}" />
             </div>
+            <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
     </p:dialog>   
 </ui:fragment>

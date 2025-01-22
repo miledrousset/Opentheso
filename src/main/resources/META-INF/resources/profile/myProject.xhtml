@@ -180,8 +180,9 @@
                                                                 </p:column>
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_user')}" style="text-align: center">
-                                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
+                                                                    <p:commandButton
                                                                                      actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
+
                                                                                      icon="pi pi-user-edit" update="idModifyUser"
                                                                                      oncomplete="PF('modifyUser').show()" process="@this"
                                                                                      styleClass="edit-button rounded-button" />
@@ -283,7 +284,8 @@
                     </div> 
 
                     <ui:include src="../commun/footer.xhtml" /> 
-                </h:form>  
+                    <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
+                </h:form>
 
                 <ui:include src="../dialog/profile/newUserForProject.xhtml" />
 
