@@ -27,12 +27,15 @@ import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.services.IpAddressService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -46,7 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
-
+@Slf4j
 @SessionScoped
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
@@ -82,6 +85,8 @@ public class SelectedTheso implements Serializable {
 
     @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
+
+    @Autowired private IpAddressService ipAddressService;
 
     private List<UserGroupLabel> projects;
 
@@ -212,6 +217,7 @@ public class SelectedTheso implements Serializable {
             isUriRequest = false;
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
+        //    logTheso();
             return;
         }
 
@@ -239,6 +245,7 @@ public class SelectedTheso implements Serializable {
             }
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
+        //    logTheso();
             return;
         }
 
@@ -250,6 +257,7 @@ public class SelectedTheso implements Serializable {
 
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
+        //    logTheso();
             return;
         }
 
@@ -274,6 +282,7 @@ public class SelectedTheso implements Serializable {
         searchBean.setNodeConceptSearchs(new ArrayList<>());
         indexSetting.setProjectSelected(false);
         menuBean.redirectToThesaurus();
+    //    logTheso();
     }
 
     public void redirectToTheso() throws IOException{
@@ -352,7 +361,12 @@ public class SelectedTheso implements Serializable {
             projectBean.init();
         }
     }
-
+/*    private void logTheso(){
+        String ipAddress = ipAddressService.getClientIpAddress();
+        if(StringUtils.isNotEmpty(selectedIdTheso)) {
+            log.info("thesaurus: {} ({}) {}", thesoName, selectedIdTheso, ", IP: " + ipAddress);
+        }
+    }*/
     
     public void setSelectedThesoForSearch() throws IOException {
 

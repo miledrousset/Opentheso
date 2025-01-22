@@ -29,16 +29,22 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.services.IpAddressService;
+import jakarta.faces.context.ExternalContext;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -56,6 +62,7 @@ import org.primefaces.model.ResponsiveOption;
  */
 @Data
 @SessionScoped
+@Slf4j
 @Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
@@ -99,6 +106,8 @@ public class ConceptView implements Serializable {
 
     @Autowired
     private SelectedTheso selectedTheso;
+
+    @Autowired private IpAddressService ipAddressService;
 
     private NodeConcept nodeConcept;
     
@@ -287,6 +296,8 @@ public class ConceptView implements Serializable {
         nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
 
+        logConcept();
+
         // permet de récupérer les qualificatifs
         if(roleOnThesoBean.getNodePreference() == null){
             roleOnThesoBean.initNodePref(idTheso);
@@ -429,6 +440,7 @@ public class ConceptView implements Serializable {
 
         nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
+        logConcept();
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
@@ -463,6 +475,11 @@ public class ConceptView implements Serializable {
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
         countOfBranch = 0;
+    }
+
+    private void logConcept(){
+        String ipAddress = ipAddressService.getClientIpAddress();
+        log.info("Concept: {}({}), Thesaurus: {}({}), IP: {}", nodeFullConcept.getPrefLabel().getLabel(), nodeFullConcept.getPrefLabel().getId(), selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 
     /**
