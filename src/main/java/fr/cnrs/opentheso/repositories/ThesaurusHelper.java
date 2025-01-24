@@ -48,7 +48,7 @@ public class ThesaurusHelper {
       //  arkId = StringUtils.replaceOnce(arkId, "-", "");
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_thesaurus from thesaurus REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
+                stmt.executeQuery("select id_thesaurus from thesaurus WHERE REPLACE(thesaurus.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idThesaurus = resultSet.getString("id_thesaurus");
@@ -267,6 +267,7 @@ public class ThesaurusHelper {
                         if (resultSet.getString("lang") != null) {
                             thesaurus = new Thesaurus();
                             thesaurus.setId_thesaurus(idThesaurus);
+                            thesaurus.setId_ark(resultSet.getString("id_ark"));
                             thesaurus.setContributor(resultSet.getString("contributor"));
                             thesaurus.setCoverage(resultSet.getString("coverage"));
                             thesaurus.setCreator(resultSet.getString("creator"));
@@ -339,6 +340,7 @@ public class ThesaurusHelper {
             }
         }
         nodeThesaurus.setIdThesaurus(idThesaurus);
+        nodeThesaurus.setIdArk(getIdArkOfThesaurus(idThesaurus));
         nodeThesaurus.setListThesaurusTraduction(thesaurusTraductionsList);
         return nodeThesaurus;
     }
@@ -392,6 +394,23 @@ public class ThesaurusHelper {
             log.error("Error while getting idArk of Thesaurus : " + idThesaurus, sqle);
         }
         return ark;
+    }
+
+    /**
+     * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie une chaine vide
+     * @param idThesaurus
+     * @return
+     */
+    public boolean updateIdArkOfThesaurus(String idThesaurus, String idArk) {
+        try ( Connection conn = dataSource.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update thesaurus set id_ark = '" + idArk + "' where id_thesaurus = '" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting idArk of Thesaurus : " + idThesaurus, sqle);
+        }
+        return false;
     }
 
     /**

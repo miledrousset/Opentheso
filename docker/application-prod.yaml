@@ -1,0 +1,79 @@
+#######################
+# Server Configuration
+#######################
+
+server:
+  port: 8099
+  forward-headers-strategy: native
+  servlet:
+    context-path: /
+    session:
+      timeout: 120m
+  error:
+    path: /errorPages/error500.xhtml
+    whitelabel:
+      enabled: false
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5431/opentheso
+    password: opentheso
+    username: opentheso
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: true
+    change-log: classpath:/changelog/db.changelog.xml
+  graphql:
+    path: /graphql # Chemin de l'API GraphQL
+    graphiql:
+      enabled: true # Active l'interface graphiql pour tester les requêtes
+      path: /graphiql # Chemin de l'interface graphiql
+    schema:
+      printer:
+        enabled: false # Active l'impression du schéma au démarrage dans les logs
+
+settings:
+  workLanguage: fr
+
+certificats:
+  admpriv: ./certificats/admpriv.bin
+  cacerts2: ./certificats/cacerts2
+  key: ./certificats/key.p12
+
+smpt:
+  protocol: smtp
+  hostname: smtprelay.mondomaine.fr
+  portNumber: 25
+  authorization: false
+  mailFrom: opentheso@mondomaine.fr
+  transportMail: smtp
+
+neo4j:
+  serverName: localhost
+  serverPort: 7687
+  databaseName: neo4j
+  user: neo4j
+  password: neo4j1234
+
+ldap:
+  security:
+    authentication: simple
+  server:
+    url: ldapr3.mondomaine.fr
+  initial:
+    context:
+      factory: com.sun.jndi.ldap.LdapCtxFactory
+  key:
+    store:
+      password: changeit
+      path: /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts
+    trust:
+      password: changeit
+      path: /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts

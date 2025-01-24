@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.status.NodeStatus;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
@@ -114,6 +115,10 @@ public class ConceptHelper {
     private String message = "";
     @Autowired
     private HandleService handleService;
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+    @Autowired
+    private PreferencesHelper preferencesHelper;
 
 
     /**
@@ -1885,6 +1890,70 @@ public class ConceptHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * Cette fonction regenère un identifiant Ark pour un concept donné
+     *
+     * @param idTheso
+     * @return
+     */
+    public String generateArkIdForTheso(String idTheso) {
+        if(nodePreference == null)
+            nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+
+        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        if (nodePreference.isUseArk()) {
+            ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+            if (!arkHelper2.login()) {
+                message = "Erreur de connexion !!";
+                return null;
+            }
+            NodeMetaData nodeMetaData;
+            String privateUri;
+            if (nodePreference == null) {
+                message = ("Erreur: Veuillez paramétrer les préférences pour ce thésaurus !!");
+                return null;
+            }
+            if (!nodePreference.isUseArk()) {
+                message = "Erreur: Veuillez activer Ark dans les préférences !!";
+                return null;
+            }
+            nodeMetaData = initNodeMetaData();
+            if (nodeMetaData == null) {
+                message = "Erreur: pas de méta-données";
+                return null;
+            }
+            nodeMetaData.setTitle(nodeThesaurus.getIdThesaurus());
+            nodeMetaData.setSource(nodePreference.getPreferredName());
+            nodeMetaData.setCreator("");
+            privateUri = "?idt=" + idTheso;
+            if (StringUtils.isEmpty(nodeThesaurus.getIdArk())) {
+                if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
+                    message = arkHelper2.getMessage();
+                    message = arkHelper2.getMessage() + "  idTheso = " + nodeThesaurus.getIdThesaurus();
+                    log.info("La création Ark a échoué ici : " + nodeThesaurus.getIdThesaurus());
+                    return null;
+                }
+                if (!thesaurusHelper.updateIdArkOfThesaurus(idTheso, arkHelper2.getIdArk())) {
+                    return null;
+                }
+                return nodeThesaurus.getIdArk();
+            }
+            return arkHelper2.getIdArk();
+        }
+        if (nodePreference.isUseArkLocal()) {
+            String idArk = nodeThesaurus.getIdArk();
+            if (StringUtils.isEmpty(idArk)) {
+                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+                if (!thesaurusHelper.updateIdArkOfThesaurus(idTheso, idArk)) {
+                    return null;
+                }
+            }
+            return idArk;
+        }
+        return null;
     }
 
     /**

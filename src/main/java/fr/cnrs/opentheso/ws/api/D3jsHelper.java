@@ -35,7 +35,7 @@ public class D3jsHelper {
     private int count = 0;
     private NodePreference nodePreference;
 
-    public String findDatasForGraph__(String idConcept, String idTheso, String idLang) {
+    public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
 
         if(StringUtils.isEmpty(idTheso)) {
             return null;
@@ -61,9 +61,11 @@ public class D3jsHelper {
         if(nodeConceptGraphs_childs == null || nodeConceptGraphs_childs.isEmpty())
             return null;
 
-        /// limitation des frères à 2000
-        if(nodeConceptGraphs_childs.size() > 2000) {
-            nodeConceptGraphs_childs = nodeConceptGraphs_childs.subList(0, 2001);
+        if(limit) {
+            /// limitation des frères à 2000
+            if (nodeConceptGraphs_childs.size() > 2000) {
+                nodeConceptGraphs_childs = nodeConceptGraphs_childs.subList(0, 2001);
+            }
         }
         
         NodeJsonD3js nodeJsonD3js = new NodeJsonD3js();

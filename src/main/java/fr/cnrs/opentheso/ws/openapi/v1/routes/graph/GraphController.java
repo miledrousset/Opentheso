@@ -55,8 +55,11 @@ public class GraphController {
             @Parameter(name = "lang", example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue principale pour récupérer les concepts") @RequestParam("lang") String lang,
             @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, example = "th3:4" ,
                     description = "ID du thesaurus à récupérer et du concept (pour une branche), sinon pour un thésaurus complet, il faut juste l'id du thésaurus")
-                    @RequestParam("idThesoConcept") List<String> idThesoConcepts) {
-       
+                    @RequestParam("idThesoConcept") List<String> idThesoConcepts,
+            @Parameter(name = "limit", example = "true", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "pour limiter ou non le nombre de concepts à récupérer")
+            @RequestParam(value = "limit", required = false, defaultValue = "false") Boolean limit
+    ) {
+
         List<IdValuePair> idValuePairs = new ArrayList<>();
 
         if(idThesoConcepts == null) { return null;}
@@ -80,7 +83,7 @@ public class GraphController {
 
         for (IdValuePair idValuePair : idValuePairs) {
             if(StringUtils.isEmpty(idValuePair.getIdConcept())){
-                graphD3jsHelper.getGraphByTheso(idValuePair.getIdTheso(), lang);
+                graphD3jsHelper.getGraphByTheso(idValuePair.getIdTheso(), lang, limit);
             } else {
                 graphD3jsHelper.getGraphByConcept(idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
             }

@@ -3,10 +3,7 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -23,6 +20,7 @@ import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -31,6 +29,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "editThesoBean")
 @SessionScoped
 public class EditThesoBean implements Serializable {
@@ -64,6 +63,9 @@ public class EditThesoBean implements Serializable {
     private String selectedLang;
     private NodeIdValue nodeIdValueOfTheso;
     private String preferredLang;
+    private String arkIdOfTheso;
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     @PreDestroy
     public void destroy(){
@@ -82,7 +84,8 @@ public class EditThesoBean implements Serializable {
         title = null;
         selectedLang = null;        
         nodeIdValueOfTheso = null;
-        preferredLang = null;        
+        preferredLang = null;
+        arkIdOfTheso = null;
     }      
     
     /**
@@ -96,6 +99,7 @@ public class EditThesoBean implements Serializable {
         nodeIdValueOfTheso = new NodeIdValue();
 
         this.nodeIdValueOfTheso.setId(idTheso);
+        arkIdOfTheso = thesaurusHelper.getIdArkOfThesaurus(idTheso);
 
         // toutes les langues Iso
         allLangs = languageHelper.getAllLanguages();
@@ -142,6 +146,11 @@ public class EditThesoBean implements Serializable {
         selectedLang = null;
         title = "";
         preferredLang = null;
+    }
+
+    public void generateArkId(){
+        arkIdOfTheso = conceptHelper.generateArkIdForTheso(nodeIdValueOfTheso.getId());
+        if(arkIdOfTheso == null){ arkIdOfTheso = ""; }
     }
 
     public void changeSourceLang(){
@@ -294,66 +303,6 @@ public class EditThesoBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init(nodeIdValueOfTheso);
        
-    }
-
-    public NodeIdValue getNodeIdValueOfTheso() {
-        return nodeIdValueOfTheso;
-    }
-
-    public void setNodeIdValueOfTheso(NodeIdValue nodeIdValueOfTheso) {
-        this.nodeIdValueOfTheso = nodeIdValueOfTheso;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ArrayList<Languages_iso639> getAllLangs() {
-        return allLangs;
-    }
-
-    public void setAllLangs(ArrayList<Languages_iso639> allLangs) {
-        this.allLangs = allLangs;
-    }
-
-    public String getSelectedLang() {
-        return selectedLang;
-    }
-
-    public void setSelectedLang(String selectedLang) {
-        this.selectedLang = selectedLang;
-    }
-
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
-        return languagesOfTheso;
-    }
-
-    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
-        this.languagesOfTheso = languagesOfTheso;
-    }
-
-    public boolean isIsPrivateTheso() {
-        return isPrivateTheso;
-    }
-
-    public void setIsPrivateTheso(boolean isPrivateTheso) {
-        this.isPrivateTheso = isPrivateTheso;
-    }
-
-    public String getPreferredLang() {
-        return preferredLang;
-    }
-
-    public void setPreferredLang(String preferredLang) {
-        this.preferredLang = preferredLang;
-    }
-
-    public NodeLangTheso getLangSelected() {
-        return langSelected;
     }
 
     public void setLangSelected(NodeLangTheso langSelected) {
