@@ -34,6 +34,8 @@
         <p:graphicImage value="../resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
     </p:dialog>
 
+<!-- déscativer par Miled (pose problème pour le travail en alignement et récupération d'images)
+    quand on quitte la fenêtre pour réchercher une image et on revient, on perd la boite de dialogue)
     <h:outputScript>
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "visible") {
@@ -41,5 +43,6 @@
             }
         });
     </h:outputScript>
+-->
 
 </ui:composition>

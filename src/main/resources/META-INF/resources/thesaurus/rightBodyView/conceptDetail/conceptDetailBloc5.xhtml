@@ -57,7 +57,8 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{not empty align.uri ? align.uri : '#'}"
+                                            value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
@@ -66,7 +67,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{not empty align.uri ? align.uri : '#'}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
@@ -75,7 +76,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.narrowMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.narrowMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{not empty align.uri ? align.uri : '#'}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
@@ -84,7 +85,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.broadMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.broadMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{not empty align.uri ? align.uri : '#'}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
@@ -93,7 +94,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.relatedMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.relatedMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link href="#{align.uri}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{not empty align.uri ? align.uri : '#'}" value="#{align.uri}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <h:outputText rendered="#{align.label != ''}" value=" (#{align.label})"  style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
@@ -172,7 +173,9 @@
                                             <!-- Uri du concept -->
                                             <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                             <h:panelGroup rendered="#{not empty conceptView.nodeFullConcept.uri}">
-                                                <p:link href="#{conceptView.nodeFullConcept.uri}" value="#{conceptView.nodeFullConcept.uri}"
+                                                <p:link
+                                                        href="#{not empty conceptView.nodeFullConcept.uri ? conceptView.nodeFullConcept.uri : '#'}"
+                                                        value="#{conceptView.nodeFullConcept.uri}"
                                                         style="color: #164A78; font-size: 13px;" target="_blank">
                                                 </p:link>
                                             </h:panelGroup>
