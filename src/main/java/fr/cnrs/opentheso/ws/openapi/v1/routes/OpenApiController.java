@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import fr.cnrs.opentheso.repositories.UserHelper;
 
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
@@ -64,7 +65,7 @@ public class OpenApiController {
     )
     public ResponseEntity<Object> testAuth(@RequestHeader(value = "API-KEY") String apiKey)  {
 
-        var keyState = apiKeyHelper.checkApiKey(apiKey);
+        var keyState = apiKeyHelper.checkApiKey(MD5Password.getEncodedPassword(apiKey));
         if (keyState != ApiKeyState.VALID) {
             return errorResponse(keyState);
         }

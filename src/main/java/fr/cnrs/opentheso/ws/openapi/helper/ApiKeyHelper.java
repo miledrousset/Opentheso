@@ -50,12 +50,11 @@ public class ApiKeyHelper {
      * @throws SQLException Appelé quand il y a eu une erreur dans l'exécution de la commande SQL
      */
     public boolean saveApiKey(String apiKey, int idUser) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("UPDATE users SET apikey = ? WHERE id_user = ?");
+        try (var connection = dataSource.getConnection()) {
+            var stmt = connection.prepareStatement("UPDATE users SET apikey = ?, key_never_expire = true WHERE id_user = ?");
             stmt.setString(1, apiKey);
             stmt.setInt(2, idUser);
-            int result = stmt.executeUpdate();
-            return result > 0;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException sqle) {
             return false;
         }
@@ -126,7 +125,7 @@ public class ApiKeyHelper {
 
         try (Connection connection = dataSource.getConnection()) {
             try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire  FROM users WHERE apikey =?")){
-                stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+                stmt.setString(1, apiKey);
                 ResultSet result = stmt.executeQuery();
                 if (!result.next()) {return ApiKeyState.INVALID;}
                 if (!result.getBoolean("key_never_expire")) {
