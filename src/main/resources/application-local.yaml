@@ -15,7 +15,7 @@ server:
       enabled: false
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/opentheso
+    url: jdbc:postgresql://localhost:5433/mom
     password: opentheso
     username: opentheso
   jpa:

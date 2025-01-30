@@ -2,36 +2,36 @@ package fr.cnrs.opentheso.models.concept;
 
 import java.text.Normalizer;
 import java.util.List;
+
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Cette Classe permet de gérer les noeuds de Concept dans l'arbre.
- * 
+ *
  * @author miled.rousset
  */
-  
+
 @Data
 public class NodeConceptGraph implements Comparable {
-	private String prefLabel;
-	private String idConcept;
-        private String idThesaurus;
-        private String idLang;
-        private String statusConcept;
-	private boolean haveChildren = false;
-        private boolean isGroup =false;
-        private boolean isSubGroup = false;
-        private boolean isTopTerm =false;
-        private boolean isTerm =false;
-        private boolean isFacet = false;
-        private boolean isDeprecated = false;
-        
-        private String uri;
-        private List<String> definitions;
-        private List<String> altLabels;
-        
-        
-        
+    private String prefLabel;
+    private String idConcept;
+    private String idThesaurus;
+    private String idLang;
+    private String statusConcept;
+    private boolean haveChildren = false;
+    private boolean isGroup = false;
+    private boolean isSubGroup = false;
+    private boolean isTopTerm = false;
+    private boolean isTerm = false;
+    private boolean isFacet = false;
+    private boolean isDeprecated = false;
+
+    private String uri;
+    private List<String> definitions;
+    private List<String> altLabels;
+    private List<String> images;
+
     public NodeConceptGraph() {
         this.prefLabel = "";
     }
@@ -39,10 +39,10 @@ public class NodeConceptGraph implements Comparable {
     @Override
     public int compareTo(Object o) {
         String str1, str2;
-        if(StringUtils.isEmpty(this.prefLabel)) return 0;
+        if (StringUtils.isEmpty(this.prefLabel)) return 0;
         str1 = Normalizer.normalize(this.prefLabel, Normalizer.Form.NFD);
         str1 = str1.replaceAll("[^\\p{ASCII}]", "");
-        str2 = Normalizer.normalize(((NodeConceptGraph)o).prefLabel, Normalizer.Form.NFD);
+        str2 = Normalizer.normalize(((NodeConceptGraph) o).prefLabel, Normalizer.Form.NFD);
         str2 = str2.replaceAll("[^\\p{ASCII}]", "");
         return naturalCompare(str1, str2, true);
         //return str1.toUpperCase().compareTo(str2.toUpperCase());
@@ -92,10 +92,10 @@ public class NodeConceptGraph implements Comparable {
             else if (bLength > aLength && b.charAt(aLength) >= '0' && b.charAt(aLength) <= '9') // as number
                 return -1;  // b has bigger size, thus a is smaller
             else if (lastNumericCompare == 0)
-              return aLength - bLength;
+                return aLength - bLength;
             else
                 return lastNumericCompare;
         else
             return aLength - bLength;
-    }    
+    }
 }

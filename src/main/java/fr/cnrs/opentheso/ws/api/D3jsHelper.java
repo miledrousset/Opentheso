@@ -11,11 +11,12 @@ import java.util.List;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Service
 public class D3jsHelper {
 
@@ -36,7 +37,7 @@ public class D3jsHelper {
     private NodePreference nodePreference;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
-
+        count = 0;
         if(StringUtils.isEmpty(idTheso)) {
             return null;
         }
@@ -69,13 +70,13 @@ public class D3jsHelper {
         }
         
         NodeJsonD3js nodeJsonD3js = new NodeJsonD3js();
-        nodeJsonD3js.setNodeDatas(getRootNode(idTheso, idLang, idConcept, nodeConceptGraphs_childs));            
+        nodeJsonD3js.setNodeDatas(getRootNode(idTheso, idLang, idConcept, nodeConceptGraphs_childs, limit));
 
         return getJsonFromNodeJsonD3js(nodeJsonD3js);
     }
 
     private NodeDatas getRootNode(String idTheso, String idLang,
-            String idTopConcept,  List<NodeConceptGraph> nodeConceptGraphs_childs){
+            String idTopConcept,  List<NodeConceptGraph> nodeConceptGraphs_childs, boolean limit) {
         
         NodeDatas nodeDatas;
         if(StringUtils.isEmpty(idTopConcept)){
@@ -92,32 +93,46 @@ public class D3jsHelper {
 
         // boucle récursive pour récupérer les fils
         for (NodeConceptGraph nodeConceptGraph : nodeConceptGraphs_childs) {
-            childrens.add(getNode(nodeConceptGraph, idTheso, idLang));
+            childrens.add(getNode(nodeConceptGraph, idTheso, idLang, limit));
         }
         nodeDatas.setChildrens(childrens);
+    //    log.info("" + countNodes(nodeDatas));
         return nodeDatas;
     }
 
-    private NodeDatas getNode(NodeConceptGraph nodeConceptGraph, String idTheso, String idLang){
+    // ne pas supprimer, elle sert à controler les données du graphe pour le debug
+    private int countNodes(NodeDatas nodeDatas) {
+        int count = 1; // Compte ce noeud lui-même
+        if (nodeDatas.getChildrens() != null) {
+            for (NodeDatas child : nodeDatas.getChildrens()) {
+                count += countNodes(child); // Ajoute le nombre de noeuds des enfants
+            }
+        }
+        return count;
+    }
+
+    private NodeDatas getNode(NodeConceptGraph nodeConceptGraph, String idTheso, String idLang, boolean limit){
         NodeDatas nodeDatas = getNodeDatas(nodeConceptGraph);
         count++;
         //Children
+        if(count > 2000 && limit == true) return nodeDatas;
+
         List<NodeDatas> childrens = new ArrayList<>();
-        if(count < 3000) {
             List<NodeConceptGraph> nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
             
             if(nodeConceptGraphs_childs != null && !nodeConceptGraphs_childs.isEmpty()) {            
                 /// limitation des frères à 2000
-                if(nodeConceptGraphs_childs.size() > 2000) {
-                    nodeConceptGraphs_childs = nodeConceptGraphs_childs.subList(0, 2001);
-                }            
+                if(limit) {
+                    if (nodeConceptGraphs_childs.size() > 2000) {
+                        nodeConceptGraphs_childs = nodeConceptGraphs_childs.subList(0, 2001);
+                    }
+                }
                 for (NodeConceptGraph nodeConceptGraph1 : nodeConceptGraphs_childs) {
-                    childrens.add(getNode(nodeConceptGraph1, idTheso, idLang));
-                    count++;
+                    if(count > 2000 && limit == true) return nodeDatas;
+                    childrens.add(getNode(nodeConceptGraph1, idTheso, idLang, limit));
                     nodeDatas.setChildrens(childrens);
                 }
             }
-        }
         return nodeDatas;
     }
 
@@ -132,6 +147,19 @@ public class D3jsHelper {
         } else {
             nodeRoot.add("definition", nodeJsonD3js.getNodeDatas().getDefinition().toString());
         }
+
+        if(nodeJsonD3js.getNodeDatas().getImage() == null){
+            nodeRoot.add("image", "");
+        } else {
+            // Construire un tableau JSON pour les images
+            JsonArrayBuilder imageArrayBuilder = Json.createArrayBuilder();
+            for (String imageLink : nodeJsonD3js.getNodeDatas().getImage()) {
+                imageArrayBuilder.add(imageLink);
+            }
+            // Ajouter le tableau JSON au nœud racine
+            nodeRoot.add("image", imageArrayBuilder.build());
+        }
+
 
         if(nodeJsonD3js.getNodeDatas().getSynonym() == null){
             nodeRoot.add("synonym", "");
@@ -183,8 +211,19 @@ public class D3jsHelper {
             }
             nodeChild.add("definition", jsonArrayBuilderDefinition.build());              
         }
-        
-        
+
+        if(nodeData.getImage() == null){
+            nodeChild.add("image", "");
+        } else {
+            // Construire un tableau JSON pour les images
+            JsonArrayBuilder imageArrayBuilder = Json.createArrayBuilder();
+            for (String imageLink : nodeData.getImage()) {
+                imageArrayBuilder.add(imageLink);
+            }
+            // Ajouter le tableau JSON au nœud racine
+            nodeChild.add("image", imageArrayBuilder.build());
+        }
+
         JsonArrayBuilder jsonArrayBuilderChilds = Json.createArrayBuilder();
         if(nodeData.getChildrens() != null && !nodeData.getChildrens().isEmpty()){
             for (NodeDatas nodeDataChild : nodeData.getChildrens()) {
@@ -208,7 +247,7 @@ public class D3jsHelper {
         nodeDatas.setUrl(nodeConceptGraph.getUri());
         nodeDatas.setDefinition(nodeConceptGraph.getDefinitions());
         nodeDatas.setSynonym(nodeConceptGraph.getAltLabels());
-        
+        nodeDatas.setImage(nodeConceptGraph.getImages());
         if(nodeConceptGraph.isHaveChildren()){
             nodeDatas.setType("type2");
         } else
