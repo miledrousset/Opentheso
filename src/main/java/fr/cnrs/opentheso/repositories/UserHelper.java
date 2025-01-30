@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUserComplet;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
@@ -225,8 +226,7 @@ public class UserHelper {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '"
-                        + login + "' AND password='" + pwd + "'");
+                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '" + login + "' AND password='" + pwd + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idUser = resultSet.getInt("id_user");
@@ -291,6 +291,51 @@ public class UserHelper {
         return idUser;
     }
 
+    public NodeUser getUserByApiKey(String apiKey) {
+        NodeUser nodeUser = null;
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT"
+                        + "  users.id_user,"
+                        + "  users.username,"
+                        + "  users.active,"
+                        + "  users.mail,"
+                        + "  users.passtomodify,"
+                        + "  users.alertmail,"
+                        + "  users.issuperadmin,"
+                        + "  users.apiKey,"
+                        + "users.key_never_expire,"
+                        + "users.key_expires_at,"
+                        + "users.isservice_account,"
+                        + "users.key_description"
+                        + " FROM users"
+                        + " WHERE apikey ilike '" + apiKey + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeUser = new NodeUser();
+                        nodeUser.setIdUser(resultSet.getInt("id_user"));
+                        nodeUser.setName(resultSet.getString("username"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
+                        nodeUser.setMail(resultSet.getString("mail"));
+                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
+                        nodeUser.setPassToModify(resultSet.getBoolean("passtomodify"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setApiKey(resultSet.getString("apiKey"));
+                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
+                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
+                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
+                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
+
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUser;
+    }
+
     /**
      * cette fonction permet de retourner les informations de l'utilisateur
      *
@@ -333,6 +378,39 @@ public class UserHelper {
                         nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
                         nodeUser.setKeyDescription(resultSet.getString("key_description"));
 
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUser;
+    }
+
+    /**
+     * cette fonction permet de retourner les informations de l'utilisateur à partir de son login et password
+     */
+    public NodeUserComplet getUserByLoginAndPassword(String login, String password) {
+        NodeUserComplet nodeUser = null;
+        try (var conn = dataSource.getConnection()) {
+            try (var stmt = conn.createStatement()) {
+                stmt.executeQuery(String.format("SELECT * FROM users WHERE users.username = '%s' AND users.password = '%s'", login, password));
+                try (var resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeUser = new NodeUserComplet();
+                        nodeUser.setIdUser(resultSet.getInt("id_user"));
+                        nodeUser.setName(resultSet.getString("username"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
+                        nodeUser.setMail(resultSet.getString("mail"));
+                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
+                        nodeUser.setPassToModify(resultSet.getBoolean("passtomodify"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setApiKey(resultSet.getString("apiKey"));
+                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
+                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
+                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
+                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
                     }
                 }
             }
@@ -1180,38 +1258,31 @@ public class UserHelper {
      * @return
      */
     public boolean updateUserRoleOnGroup(int idUser, int idRole, int idGroup) {
-        boolean status = false;
-        boolean isSuperAdmin = false;
-
-        if (idRole == 1) {
-            isSuperAdmin = true;
-        }
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
             /// si le role devient SuperAdmin, alors on supprime les roles sur les groupes
-            if (isSuperAdmin) {
+            if (idRole == 1) {
                 if (!deleteRoleOnGroup(idUser, idGroup)) {
                     conn.rollback();
                     return false;
                 }
             } else {
-                if (!updateUserRoleOnGroupRollBack(conn,
-                        idUser, idRole, idGroup)) {
+                if (!updateUserRoleOnGroupRollBack(conn, idUser, idRole, idGroup)) {
                     conn.rollback();
                     return false;
                 }
             }
-            if (!setIsSuperAdmin(conn, idUser, isSuperAdmin)) {
+            if (!setIsSuperAdmin(conn, idUser, (idRole == 1))) {
                 conn.rollback();
                 return false;
             }
             conn.commit();
-            status = true;
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return status;
     }
 
     private boolean updateUserRoleOnGroupRollBack(Connection conn,
@@ -1386,8 +1457,7 @@ public class UserHelper {
                 return false;
             }
             for (String idTheso : idThesos) {
-                if (!addUserRoleOnTheso_(conn,
-                        idUser, idRole, idTheso, idProject)) {
+                if (!addUserRoleOnTheso_(conn, idUser, idRole, idTheso, idProject)) {
                     conn.rollback();
                     return false;
                 }
@@ -1519,10 +1589,8 @@ public class UserHelper {
         boolean status = false;
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("delete from users where"
-                        + " id_user =" + idUser);
-                stmt.executeUpdate("delete from user_role_group where"
-                        + " id_user = " + idUser);
+                stmt.executeUpdate("delete from users where id_user =" + idUser);
+                stmt.executeUpdate("delete from user_role_group where id_user = " + idUser);
                 status = true;
             }
         } catch (SQLException ex) {
