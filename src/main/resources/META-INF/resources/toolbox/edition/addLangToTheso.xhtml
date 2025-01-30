@@ -4,24 +4,24 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddLangToTheso" header="Ajouter une langue au thésaurus" widgetVar="addLangToTheso" 
+    <p:dialog id="idAddLangToTheso" header="#{langueBean.getMsg('toolbox.addLanguageToTheso')}" widgetVar="addLangToTheso"
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
             <!-- Nom du thésaurus -->
             <div class="row">
                 <div class="col-5">
-                    <h:outputText value="Label du thésaurus: "/>
+                    <h:outputText value="#{langueBean.getMsg('statistique.thesaurus.name')}:"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText placeholder="Nom du thésaurus" value="#{editThesoBean.title}" style="width: 100%"/>
+                    <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{editThesoBean.title}" style="width: 100%"/>
                 </div>
             </div>
 
             <!-- Langue par defaut -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="Langue à ajouter: "/>
+                    <h:outputText value="#{langueBean.getMsg('editTheso.langToAdd')}:"/>
                 </div>
                 <div class="col-7">
                     <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable()}">

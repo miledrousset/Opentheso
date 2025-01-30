@@ -53,7 +53,7 @@ public class GraphD3jsHelper {
         nodeGraphD3js.setRelationships(new ArrayList<>()); 
     }
     
-    public void getGraphByTheso(String idTheso, String idLang){
+    public void getGraphByTheso(String idTheso, String idLang, boolean limit){
 
         nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
 
@@ -81,9 +81,8 @@ public class GraphD3jsHelper {
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
-    }     
-    
-    
+    }
+
     public void getGraphByConcept(String idTheso, String idConcept, String idLang){
         
         nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);

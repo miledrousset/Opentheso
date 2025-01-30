@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
@@ -1000,10 +1003,11 @@ public class Rest_new {
      */
     @GetMapping(value = "/graph", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
     public ResponseEntity<Object> getDatasForGraph(@RequestParam(value = "theso") String idTheso,
-                                           @RequestParam(value = "id") String idConcept,
-                                           @RequestParam(value = "lang") String idLang) {
+             @RequestParam(value = "id") String idConcept,
+             @RequestParam(value = "lang") String idLang, @Parameter(name = "limit", example = "true", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "pour limiter ou non le nombre de concepts à récupérer") @RequestParam(value = "limit", required = false, defaultValue = "false") Boolean limit)
+    {
 
-        var datas = d3jsHelper.findDatasForGraph__(idConcept, idTheso, idLang);
+        var datas = d3jsHelper.findDatasForGraph__(idConcept, idTheso, idLang, limit);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
