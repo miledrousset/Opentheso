@@ -291,6 +291,53 @@ public class UserHelper {
         return idUser;
     }
 
+    public List<NodeUser> searchUserByCriteria(String mail, String username) {
+        mail = StringUtils.isEmpty(mail) ? "" : mail;
+        username = StringUtils.isEmpty(username) ? "" : username;
+        List<NodeUser> userList = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT"
+                        + "  users.id_user,"
+                        + "  users.username,"
+                        + "  users.active,"
+                        + "  users.mail,"
+                        + "  users.passtomodify,"
+                        + "  users.alertmail,"
+                        + "  users.issuperadmin,"
+                        + "  users.apiKey,"
+                        + "users.key_never_expire,"
+                        + "users.key_expires_at,"
+                        + "users.isservice_account,"
+                        + "users.key_description"
+                        + " FROM users"
+                        + " WHERE mail like '%" + mail + "%'"
+                        + " AND username like '%" + username + "%'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        var nodeUser = new NodeUser();
+                        nodeUser.setIdUser(resultSet.getInt("id_user"));
+                        nodeUser.setName(resultSet.getString("username"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
+                        nodeUser.setMail(resultSet.getString("mail"));
+                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
+                        nodeUser.setPassToModify(resultSet.getBoolean("passtomodify"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setApiKey(resultSet.getString("apiKey"));
+                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
+                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
+                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
+                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
+                        userList.add(nodeUser);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userList;
+    }
+
     public NodeUser getUserByApiKey(String apiKey) {
         NodeUser nodeUser = null;
         try (Connection conn = dataSource.getConnection()) {

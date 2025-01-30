@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.users;
 
 import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUserResource;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
@@ -12,11 +13,14 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -127,6 +131,19 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.OK).body("");
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+        }
+    }
+
+    @GetMapping
+    @Operation(summary = "Rechercher des utilisateurs")
+    public ResponseEntity searchUser(@RequestHeader(value = "API-KEY") String apiKey,
+                                     @ParameterObject NodeUserResource userResource) {
+
+        if (getUser(apiKey).isSuperAdmin()) {
+            var users = userHelper.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
+            return ResponseEntity.status(HttpStatus.OK).body(users);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
