@@ -8,5 +8,6 @@ import java.io.Serializable;
 public class NodeUserResource implements Serializable {
 
     private String mail;
+    private String username;
 
 }

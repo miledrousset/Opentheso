@@ -142,11 +142,8 @@ public class UserController {
                                      @ParameterObject NodeUserResource userResource) {
 
         if (getUser(apiKey).isSuperAdmin()) {
-            if (StringUtils.isNotEmpty(userResource.getMail())) {
-                return ResponseEntity.status(HttpStatus.OK).body(userHelper.searchUserByCriteria(userResource.getMail()));
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(userHelper.getAllUsers());
-            }
+            var users = userHelper.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
+            return ResponseEntity.status(HttpStatus.OK).body(users);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }

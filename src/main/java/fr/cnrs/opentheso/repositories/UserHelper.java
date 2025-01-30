@@ -291,7 +291,9 @@ public class UserHelper {
         return idUser;
     }
 
-    public List<NodeUser> searchUserByCriteria(String mail) {
+    public List<NodeUser> searchUserByCriteria(String mail, String username) {
+        mail = StringUtils.isEmpty(mail) ? "" : mail;
+        username = StringUtils.isEmpty(username) ? "" : username;
         List<NodeUser> userList = new ArrayList<>();
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -309,7 +311,8 @@ public class UserHelper {
                         + "users.isservice_account,"
                         + "users.key_description"
                         + " FROM users"
-                        + " WHERE mail like '%" + mail + "%'");
+                        + " WHERE mail like '%" + mail + "%'"
+                        + " AND username like '%" + username + "%'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         var nodeUser = new NodeUser();
