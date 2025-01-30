@@ -69,6 +69,18 @@
                     </div>
                 </div>
 
+                <!-- Modifier l'Identifiant du thésaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="#{langueBean.getMsg('toolbox.modifyThesaurusId')}" />
+                    </div>
+                    <div class="col-1" >
+                        <p:commandButton value="#{langueBean.getMsg('candidat.edit')}"
+                                         actionListener="#{editThesoBean.reset()}"
+                                         update="idChangeIdOfTheso"
+                                         oncomplete="PF('changeIdOfTheso').show();" process="@this"/>
+                    </div>
+                </div>
             </div>
 
             

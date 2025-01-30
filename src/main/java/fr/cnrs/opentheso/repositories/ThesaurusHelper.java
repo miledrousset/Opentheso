@@ -746,7 +746,21 @@ public class ThesaurusHelper {
                         + "delete from concept_dcterms where id_thesaurus = '" + idThesaurus + "';" 
                         + "delete from thesaurus_dcterms where id_thesaurus = '" + idThesaurus + "';"   
         
-                        + "delete from preferences where id_thesaurus = '" + idThesaurus + "';");
+                        + "delete from preferences where id_thesaurus = '" + idThesaurus + "';"
+
+
+                        + "delete from user_role_only_on where id_theso = '" + idThesaurus + "';"
+                        + "delete from user_group_thesaurus where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from thesohomepage where idtheso = '" + idThesaurus + "';"
+                        + "delete from routine_mail where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from proposition_modification where id_theso = '" + idThesaurus + "';"
+                        + "delete from graph_view_exported_concept_branch where top_concept_thesaurus_id = '" + idThesaurus + "';"
+                        + "delete from concept_type where id_theso = '" + idThesaurus + "';"
+                        + "delete from candidat_vote where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from candidat_status where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from candidat_messages where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from alignement_preferences where id_thesaurus = '" + idThesaurus + "';"
+                );
                 state = true;
             }
         } catch (SQLException ex) {
@@ -754,6 +768,75 @@ public class ThesaurusHelper {
                     .getName()).log(Level.SEVERE, null, ex);
         }
         return state;
+    }
+
+    /**
+     * Permet de changer l'Id du thésaurus
+     */
+    public boolean changeIdOfThesaurus(String oldIdTheso, String newIdTheso) {
+        if(isThesaurusExiste(newIdTheso)) { return false; }
+        newIdTheso = StringUtils.convertString(newIdTheso);
+        try ( Connection conn = dataSource.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update thesaurus set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update thesaurus_label set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update thesaurus_array set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update node_label set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_historique set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update preferred_term set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update non_preferred_term set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update non_preferred_term_historique set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update term set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update term_historique set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_group set idthesaurus = '" + newIdTheso + "' where idthesaurus = '" + oldIdTheso + "';"
+                        + "update concept_group_historique set idthesaurus = '" + newIdTheso + "' where idthesaurus = '" + oldIdTheso + "';"
+                        + "update concept_group_label set idthesaurus = '" + newIdTheso + "' where idthesaurus = '" + oldIdTheso + "';"
+                        + "update concept_group_label_historique set idthesaurus = '" + newIdTheso + "' where idthesaurus = '" + oldIdTheso + "';"
+                        + "update note set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update note_historique set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update permuted set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update hierarchical_relationship set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update hierarchical_relationship_historique set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_candidat set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_term_candidat set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update term_candidat set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update alignement set internal_id_thesaurus = '" + newIdTheso + "' where internal_id_thesaurus = '" + oldIdTheso + "';"
+                        + "update proposition set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_replacedby set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update gps set id_theso = '" + newIdTheso + "' where id_theso = '" + oldIdTheso + "';"
+                        + "update thesaurus_alignement_source set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_group_concept set idthesaurus = '" + newIdTheso + "' where idthesaurus = '" + oldIdTheso + "';"
+                        + "update relation_group set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update concept_facet set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update external_resources set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update external_images set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update corpus_link set id_theso = '" + newIdTheso + "' where id_theso = '" + oldIdTheso + "';"
+
+                        + "update concept_dcterms set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update thesaurus_dcterms set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update preferences set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update preferences set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+
+                        + "update user_role_only_on set id_theso = '" + newIdTheso + "' where id_theso = '" + oldIdTheso + "';"
+                        + "update user_group_thesaurus set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update thesohomepage set idtheso = '" + newIdTheso + "' where idtheso = '" + oldIdTheso + "';"
+                        + "update routine_mail set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update proposition_modification set id_theso = '" + newIdTheso + "' where id_theso = '" + oldIdTheso + "';"
+                        + "update graph_view_exported_concept_branch set top_concept_thesaurus_id = '" + newIdTheso + "' where top_concept_thesaurus_id = '" + oldIdTheso + "';"
+                        + "update concept_type set id_theso = '" + newIdTheso + "' where id_theso = '" + oldIdTheso + "';"
+                        + "update candidat_vote set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update candidat_status set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update candidat_messages set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                        + "update alignement_preferences set id_thesaurus = '" + newIdTheso + "' where id_thesaurus = '" + oldIdTheso + "';"
+                );
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ThesaurusHelper.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     /**

@@ -64,6 +64,8 @@ public class EditThesoBean implements Serializable {
     private NodeIdValue nodeIdValueOfTheso;
     private String preferredLang;
     private String arkIdOfTheso;
+    private String newIdOfTheso;
+
     @Autowired
     private ConceptHelper conceptHelper;
 
@@ -142,15 +144,27 @@ public class EditThesoBean implements Serializable {
         thesaurusMetadataAdd.init(nodeIdValueOfTheso.getId());        
     }
 
-    private void reset() {
+    public void reset() {
         selectedLang = null;
         title = "";
         preferredLang = null;
+        newIdOfTheso = "";
     }
 
     public void generateArkId(){
         arkIdOfTheso = conceptHelper.generateArkIdForTheso(nodeIdValueOfTheso.getId());
         if(arkIdOfTheso == null){ arkIdOfTheso = ""; }
+    }
+
+    public void modifyIdOfThesaurus(String oldId, String newId) {
+        FacesMessage msg;
+        if(!thesaurusHelper.changeIdOfThesaurus(oldId, newId)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'identifiant !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le changement d'identifiant a réussi, veuillez recharger les thésaurus");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public void changeSourceLang(){
