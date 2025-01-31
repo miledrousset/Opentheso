@@ -1005,7 +1005,11 @@ public class ExportRdf4jHelperNew {
                 uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                 return uri;
             } else {
-                uri = getPath() + "/?idc=" + nodeUri.getIdConcept().trim()
+                String uriBase = getPath();
+                if (uriBase.endsWith("/")) {
+                    uriBase = uriBase.substring(0, uriBase.length() - 1);
+                }
+                uri = uriBase + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
                 return uri;
             }
@@ -1059,6 +1063,9 @@ public class ExportRdf4jHelperNew {
      * @return
      */
     private String getPath(){
+        if(StringUtils.isNotEmpty(nodePreference.getCheminSite())){
+            return nodePreference.getCheminSite();
+        }
         if(FacesContext.getCurrentInstance() == null) {
             return nodePreference.getOriginalUri();
         }
