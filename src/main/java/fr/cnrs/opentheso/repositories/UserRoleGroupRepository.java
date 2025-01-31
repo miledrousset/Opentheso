@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.dto.GroupInfoDTO;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
+import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,5 +33,13 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
             "JOIN user_group_label u ON ur.id_group = u.id_group " +
             "WHERE ur.id_user = :idUser AND ur.id_group = :idGroup", nativeQuery = true)
     Optional<NodeUserRoleGroup> findUserRoleOnThisGroup(@Param("idUser") int idUser, @Param("idGroup") int idGroup);
+
+    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupUser(u.id, u.username, g.id, g.label, r.id, r.name) " +
+            "FROM UserRoleGroup urg " +
+            "JOIN urg.user u " +
+            "JOIN urg.group g " +
+            "JOIN urg.role r " +
+            "ORDER BY LOWER(u.username)")
+    List<NodeUserGroupUser> getAllGroupUser();
 
 }

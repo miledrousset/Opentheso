@@ -1,18 +1,20 @@
 package fr.cnrs.opentheso.models.users;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Permet de gérer les utilisateurs avec les groupes pour les superAdmin
- * @author miled.rousset
- */
+
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeUserGroupUser {
 
-    private String idUser;
+    private int idUser;
     private String userName;
     private int idGroup;
     private String groupName;
     private int idRole;
     private String roleName;
+
 }
