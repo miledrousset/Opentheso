@@ -11,57 +11,51 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
-@SessionScoped
-@NoArgsConstructor
 @Named(value = "superAdminBean")
+@SessionScoped
 public class SuperAdminBean implements Serializable {
 
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
+    @Autowired
     private UserRoleGroupRepository userRoleGroupRepository;
+
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
     private ThesaurusRepository thesaurusRepository;
+
+    @Autowired
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
+
+    @Autowired
     private UserGroupLabelRepository2 userGroupLabelRepository;
+    
+    @Autowired
     private CurrentUser currentUser;
+    
+    @Autowired
     private SelectedTheso selectedTheso;
 
     private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
     private List<UserGroupLabel> allProjects;
     private List<NodeUserGroupThesaurus> allThesoProject;
-    private String workLanguage;
 
-
-    @Inject
-    public SuperAdminBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                          UserRoleGroupRepository userRoleGroupRepository,
-                          UserRepository userRepository,
-                          ThesaurusRepository thesaurusRepository,
-                          UserGroupThesaurusRepository userGroupThesaurusRepository,
-                          UserGroupLabelRepository2 userGroupLabelRepository,
-                          CurrentUser currentUser,
-                          SelectedTheso selectedTheso) {
-
-        this.workLanguage = workLanguage;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userRepository = userRepository;
-        this.thesaurusRepository = thesaurusRepository;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.currentUser = currentUser;
-        this.selectedTheso = selectedTheso;
-    }
 
     public void init() {
 
