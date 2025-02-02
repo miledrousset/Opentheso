@@ -7,15 +7,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(UserRoleGroupId.class) // Indique la classe pour la clé composite
+@IdClass(UserRoleGroupId.class)
 @Table(name = "user_role_group")
 public class UserRoleGroup {
 

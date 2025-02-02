@@ -86,11 +86,4 @@ public class UserRoleGroupService {
         user.setIsSuperAdmin(isSuperAdmin);
         userRepository.save(user);
     }
-
-    public void deleteRoleByIdGroup(int groupId) {
-        var group = userGroupLabelRepository.findById(groupId);
-        if (group.isPresent()) {
-            userRoleGroupRepository.deleteByGroup(group.get());
-        }
-    }
 }

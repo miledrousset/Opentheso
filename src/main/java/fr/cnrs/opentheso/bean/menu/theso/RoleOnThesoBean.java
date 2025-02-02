@@ -7,13 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.RoleRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
-import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
-import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
@@ -48,12 +42,6 @@ public class RoleOnThesoBean implements Serializable {
     private String workLanguage;
 
     @Autowired
-    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
-
-    @Autowired
-    private final UserRepository userRepository;
-
-    @Autowired
     private LanguageBean languageBean;
 
     @Autowired
@@ -73,15 +61,6 @@ public class RoleOnThesoBean implements Serializable {
 
     @Autowired
     private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private ThesaurusRepository thesoRepository;
-
-    @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
 
     //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
     private List<ThesoModel> listTheso;    
@@ -120,7 +99,7 @@ public class RoleOnThesoBean implements Serializable {
         nodeUserRoleGroup = null;
         nodePreference = null;
         thesoInfos = null;
-
+       
         if(listTheso != null){
             listTheso.clear();
             listTheso = null;
@@ -220,10 +199,8 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
 
-            var user = userRepository.findById(currentUser.getNodeUser().getIdUser());
             // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            List<String> listThesoTemp = userRoleOnlyOnRepository.findAllByUserOrderByTheso(user.get()).stream()
-                    .map(element -> element.getIdTheso()).toList();
+            List<String> listThesoTemp = userHelper.getListThesoLimitedRoleByUser(currentUser.getNodeUser().getIdUser());
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedTheso.contains(idThesoTemp)) {
                     authorizedTheso.add(idThesoTemp);
@@ -428,17 +405,15 @@ public class RoleOnThesoBean implements Serializable {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1, currentUser); // cas de superadmin, on a accès à tous les groupes
             setRole();
         } else {
+
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup, currentUser);
         }
 
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            var user = userRepository.findById(currentUser.getNodeUser().getIdUser()).get();
-            var group = userGroupLabelRepository2.findById(idGroup).get();
-            var thesaurus = thesoRepository.findById(selectedTheso.getCurrentIdTheso()).get();
-            var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
-            nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
+            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(
+                    currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
             if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
                 setRole();
             } else
@@ -477,8 +452,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     private NodeUserRoleGroup getUserRoleOnThisGroup(int idGroup, CurrentUser currentUser) {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            var role = roleRepository.findById(1).get();
-            return NodeUserRoleGroup.builder().idRole(role.getId()).roleName(role.getName()).build();
+            return userHelper.getUserRoleForSuperAdmin();
         }
         if (idGroup == -1) {
             return null;

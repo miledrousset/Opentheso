@@ -1,68 +1,77 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
-
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.primefaces.PrimeFaces;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.primefaces.PrimeFaces;
 
-@Data
-@SessionScoped
-@NoArgsConstructor
+
 @Named(value = "moveThesoToProjectBean")
+@SessionScoped
 public class MoveThesoToProjectBean implements Serializable {
+    
+    @Autowired @Lazy private MyProjectBean myProjectBean;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private SuperAdminBean superAdminBean;
 
-    private MyProjectBean myProjectBean;
-    private CurrentUser currentUser;
-    private SuperAdminBean superAdminBean;
+    @Autowired
     private UserGroupLabelRepository2 userGroupLabelRepository;
+
+    @Autowired
     private UserRoleGroupRepository userRoleGroupRepository;
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+
+    @Autowired
+    private UserHelper userHelper;
     
     private NodeIdValue selectedThesoToMove;
+    private String currentProject;
     private NodeUserGroup newProject;
-
-
-    @Inject
-    public MoveThesoToProjectBean(MyProjectBean myProjectBean,
-                                  CurrentUser currentUser,
-                                  SuperAdminBean superAdminBean,
-                                  UserGroupLabelRepository2 userGroupLabelRepository,
-                                  UserRoleGroupRepository userRoleGroupRepository,
-                                  UserGroupThesaurusRepository userGroupThesaurusRepository) {
-
-        this.myProjectBean = myProjectBean;
-        this.currentUser = currentUser;
-        this.superAdminBean = superAdminBean;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        selectedThesoToMove = null;
+        currentProject = null;
+        newProject = null;      
+    }      
+            
+    public MoveThesoToProjectBean() {
     }
-
-    public void setTheso(NodeIdValue selectedThesoToMove) {
+    
+    
+    /**
+     * permet d'initialiser les variables 
+     *
+     * @param selectedThesoToMove
+     * @param currentProject
+     */
+    public void setTheso(NodeIdValue selectedThesoToMove, String currentProject) {
         this.selectedThesoToMove = selectedThesoToMove;
+        this.currentProject = currentProject;
         newProject = null; 
     }   
     
-    public void setThesoSuperAdmin(String idTheso, String thesoName) {
+    public void setThesoSuperAdmin(String idTheso, String thesoName, String currentProject) {
         selectedThesoToMove = new NodeIdValue();
         selectedThesoToMove.setId(idTheso);
         selectedThesoToMove.setValue(thesoName);
+
+        this.currentProject = currentProject;
         newProject = null; 
     }       
     
@@ -76,32 +85,80 @@ public class MoveThesoToProjectBean implements Serializable {
         }
     }        
 
-    public void moveThesoToProject(boolean isSuerpAdmin){
-
-        if(ObjectUtils.isEmpty(newProject)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun projet sélectioné !!!");
+    public void moveThesoToProject(){
+        FacesMessage msg;
+        
+        if(newProject== null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
 
-        userGroupThesaurusRepository.deleteByIdThesaurus(selectedThesoToMove.getId());
-        userGroupThesaurusRepository.save(UserGroupThesaurus.builder()
-                .idGroup(newProject.getIdGroup())
-                .idThesaurus(selectedThesoToMove.getId())
-                .build());
-
-        showMessage(FacesMessage.SEVERITY_INFO, "Projet déplacé avec succès !!!");
-        if (isSuerpAdmin) {
-            superAdminBean.init();
-        } else {
-            myProjectBean.init();
+        if(!userHelper.moveThesoToGroup(selectedThesoToMove.getId(), newProject.getIdGroup())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de déplacement !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
         }
-        PrimeFaces.current().ajax().update("containerIndex:contenu");
+        
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet déplacé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        myProjectBean.init();
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:contenu");
+        }
+    }
+    
+    public void moveThesoToProjectSA(){
+        FacesMessage msg;
+        
+        if(newProject== null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }
+
+        if(!userHelper.moveThesoToGroup(selectedThesoToMove.getId(), newProject.getIdGroup() )){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de déplacement !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+               
+             
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet déplacé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        superAdminBean.init();
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
+    }      
+    
+
+    public NodeUserGroup getNewProject() {
+        return newProject;
     }
 
-    private void showMessage(FacesMessage.Severity type, String message) {
-        var msg = new FacesMessage(type, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
+    public void setNewProject(NodeUserGroup newProject) {
+        this.newProject = newProject;
     }
+
+
+
+    public NodeIdValue getSelectedThesoToMove() {
+        return selectedThesoToMove;
+    }
+
+    public void setSelectedThesoToMove(NodeIdValue selectedThesoToMove) {
+        this.selectedThesoToMove = selectedThesoToMove;
+    }
+    
+
+    
     
 }

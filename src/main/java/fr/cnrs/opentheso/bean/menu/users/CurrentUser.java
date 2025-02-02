@@ -1,9 +1,7 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
-import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -11,7 +9,6 @@ import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
-import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
@@ -31,7 +28,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -85,14 +81,7 @@ public class CurrentUser implements Serializable {
     private UserGroupLabelRepository userGroupLabelRepository;
 
     @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
-
-
-    @Autowired
     private UserHelper userHelper;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -210,27 +199,28 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        Optional<User> user;
+        int idUser;
         if (ldapEnable) {
             if (!ldapService.authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }
-            user = userRepository.findAllByUsername(username);
+            idUser = userHelper.getIdUserFromPseudo(username);
         } else {
-            user = userRepository.findByUsernameAndPassword(username, MD5Password.getEncodedPassword(password));
+            idUser = userHelper.getIdUser(username, MD5Password.getEncodedPassword(password));
         }
 
-        if (user.isEmpty()) {
+        if (idUser == -1) {
             showErrorMessage("User or password wrong, please try again");
             return;
         }
 
         // on récupère le compte de l'utilisatreur
-        nodeUser = new NodeUser(user.get().getId(), user.get().getUsername(), user.get().getMail(), user.get().getActive(),
-                user.get().getAlertMail(), user.get().getIsSuperAdmin(), user.get().getPassToModify(),
-                user.get().getApiKey(), user.get().getKeyNeverExpire(), user.get().getKeyExpiresAt(),
-                user.get().getIsServiceAccount(), user.get().getKeyDescription());
+        nodeUser = userHelper.getUser(idUser);
+        if (nodeUser == null) {
+            showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
+            return;
+        }
 
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -242,6 +232,8 @@ public class CurrentUser implements Serializable {
         setInfos();
         //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
 
+        
+        
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
@@ -419,29 +411,13 @@ public class CurrentUser implements Serializable {
             } else {
                 idRole = userHelper.getRoleOnThisTheso(nodeUser.getIdUser(), idProject, idTheso);
                 userPermissions.setRole(idRole);
-                userPermissions.setRoleName(getRoleName(idRole));
+                userPermissions.setRoleName(userHelper.getRoleName(idRole));
             }
         }
         
         userPermissions.setProjectOfselectedTheso(idProject);
-
-        userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository2.findById(idProject).get().getLabel());
-    }
-
-    private String getRoleName(int idRole) {
-        switch (idRole) {
-            case 1:
-                return "superAdmin";
-            case 2:
-                return "admin";
-            case 3:
-                return "manager";
-            case 4:
-                return "contributor";
-            default:
-                return "";
-        }
-    }
+        userPermissions.setProjectOfselectedThesoName(userHelper.getGroupName(idProject));
+    }    
     
     public void initUserPermissionsForThisProject(int idProject){
         if(userPermissions == null){
@@ -449,7 +425,7 @@ public class CurrentUser implements Serializable {
         }
 
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+        userPermissions.setSelectedProjectName(userHelper.getGroupName(idProject));
         userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {

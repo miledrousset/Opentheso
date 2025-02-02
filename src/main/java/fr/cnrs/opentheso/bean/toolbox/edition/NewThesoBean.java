@@ -2,14 +2,12 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
-import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -63,9 +61,6 @@ public class NewThesoBean implements Serializable {
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
 
     private String title;
     private ArrayList<Languages_iso639> allLangs;
@@ -135,8 +130,11 @@ public class NewThesoBean implements Serializable {
         }
         // ajouter le thésaurus dans le group de l'utilisateur
         if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-            var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(idNewTheso).idGroup(idProject).build();
-            userGroupThesaurusRepository.save(userGroupThesaurus);
+            if (!userHelper.addThesoToGroup(idNewTheso, idProject)) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
         }
 
         // écriture des préférences en utilisant le thésaurus en cours pour duppliquer les infos
