@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentImport;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
@@ -22,7 +23,6 @@ import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DcElementHelper;
@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
@@ -61,10 +62,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.AjaxBehaviorEvent;
@@ -152,6 +151,9 @@ public class ImportFileBean implements Serializable {
     @Autowired
     private ImportRdf4jHelper importRdf4jHelper;
 
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository2;
+
     private double progress = 0;
     private double progressStep = 0;
 
@@ -194,7 +196,7 @@ public class ImportFileBean implements Serializable {
     private StringBuffer error = new StringBuffer();
     private String warning = "";
 
-    private ArrayList<NodeUserGroup> nodeUserProjects;
+    private List<UserGroupLabel> nodeUserProjects;
     private String selectedUserProject;
 
     private ArrayList<Languages_iso639> allLangs;
@@ -215,49 +217,6 @@ public class ImportFileBean implements Serializable {
 
     private String selectedSearchType;
 
-    @PreDestroy
-    public void destroy() {
-        clearMemory();
-    }
-
-    private void clearMemory() {
-        if (conceptObjects != null) {
-            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
-                conceptObject.clear();
-            }
-            conceptObjects.clear();
-        }
-        conceptObjects = null;
-
-        if (langs != null) {
-            langs.clear();
-        }
-        langs = null;
-
-        if (allLangs != null) {
-            allLangs.clear();
-        }
-        allLangs = null;
-        if (nodeUserProjects != null) {
-            nodeUserProjects.clear();
-        }
-        nodeUserProjects = null;
-        if (sKOSXmlDocument != null) {
-            sKOSXmlDocument.clear();
-        }
-        sKOSXmlDocument = null;
-        if (nodeAlignmentImports != null) {
-            nodeAlignmentImports.clear();
-        }
-        nodeAlignmentImports = null;
-        if (nodeNotes != null) {
-            nodeNotes.clear();
-        }
-        nodeNotes = null;
-        fileName = null;
-        selectedConcept = null;
-        alignmentSource = null;
-    }
 
     public void init() {
         selectedSearchType = "exactWord"; // containsExactWord, startWith, elastic
@@ -312,11 +271,11 @@ public class ImportFileBean implements Serializable {
 
         selectedUserProject = "";
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserProjects = userHelper.getAllProject();
+            nodeUserProjects = userGroupLabelRepository2.findAll();
         } else {
-            nodeUserProjects = userHelper.getProjectsOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
-            for (NodeUserGroup nodeUserProject : nodeUserProjects) {
-                selectedUserProject = "" + nodeUserProject.getIdGroup();
+            nodeUserProjects = userGroupLabelRepository2.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
+            for (UserGroupLabel nodeUserProject : nodeUserProjects) {
+                selectedUserProject = "" + nodeUserProject.getId();
             }
         }
     }
@@ -3309,7 +3268,6 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('pbAjax').cancel();");
             pf.ajax().update("messageIndex");
         }
-        clearMemory();
     }
 
     public void cancel(ActionEvent event) {
@@ -3525,11 +3483,11 @@ public class ImportFileBean implements Serializable {
         this.choiceDelimiter = choiceDelimiter;
     }
 
-    public ArrayList<NodeUserGroup> getNodeUserProjects() {
+    public List<UserGroupLabel> getNodeUserProjects() {
         return nodeUserProjects;
     }
 
-    public void setNodeUserProjects(ArrayList<NodeUserGroup> nodeUserProjects) {
+    public void setNodeUserProjects(List<UserGroupLabel> nodeUserProjects) {
         this.nodeUserProjects = nodeUserProjects;
     }
 

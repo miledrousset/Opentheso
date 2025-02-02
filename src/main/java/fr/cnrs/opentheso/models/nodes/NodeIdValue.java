@@ -22,7 +22,7 @@ public class NodeIdValue implements Comparable, Serializable{
 
     private String id;
     private String value;
-    private boolean Status;
+    private boolean status;
     private String notation;
     private Integer nbrConcepts;
     private List<NodeAlignment> alignements;

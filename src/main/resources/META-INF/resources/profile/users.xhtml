@@ -63,7 +63,7 @@
                                             </div>
                                             <div class="col-1 offset-7">
                                                 <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
-                                                                 action="#{newUSerBean.initForSuperAdmin()}"
+                                                                 action="#{newUserBean.initForSuperAdmin()}"
                                                                  oncomplete="PF('addNewUser2').show();"
 
                                                                  icon="fa fa-user-plus" update="idAddNewUser2 addNewUser2Form addNewUser2Form:userRoleDef"
@@ -92,7 +92,7 @@
                                     
                                     <p:column width="10" headerText="#{langueBean.getMsg('profile.action')}">
                                         <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
-                                                         action="#{modifyUSerBean.setUserStringId(listUserRole.idUser)}"
+                                                         action="#{modifyUserBean.setUserStringId(listUserRole.idUser)}"
                                                          oncomplete="PF('modifyUser2').show();"
 
                                                          icon="pi pi-user-edit" styleClass="rounded-button ui-button-outlined" 
@@ -102,7 +102,7 @@
                                         </p:commandButton>
 
                                         <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
-                                                         action="#{modifyUSerBean.setUserStringId(listUserRole.idUser)}"
+                                                         action="#{modifyUserBean.setUserStringId(listUserRole.idUser)}"
                                                          oncomplete="PF('deleteUser2').show();"
 
                                                          icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
@@ -142,7 +142,7 @@
                     </div>
 
                     <div class="col-7">
-                        <p:inputText value="#{newUSerBean.nodeUser.name}" style="width: 100%" />
+                        <p:inputText value="#{newUserBean.nodeUser.name}" style="width: 100%" />
                     </div>                    
                 </div>
 
@@ -152,7 +152,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.email')} * "/>
                     </div>
                     <div class="col-7">
-                        <p:inputText value="#{newUSerBean.nodeUser.mail}" style="width: 100%" autocomplete="off">
+                        <p:inputText value="#{newUserBean.nodeUser.mail}" style="width: 100%" autocomplete="off">
                             <f:validator validatorId="custom.emailValidator" />
                         </p:inputText>
                     </div>   
@@ -164,7 +164,7 @@
                         <h:outputText value="#{langueBean.getMsg('menu.password')} * " />
                     </div>
                     <div class="col-7">
-                        <p:password value="#{newUSerBean.passWord1}" style="width: 100%" autocomplete="off"/>
+                        <p:password value="#{newUserBean.passWord1}" style="width: 100%" autocomplete="off"/>
                     </div>
                 </div>
 
@@ -173,7 +173,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} * " />
                     </div>
                     <div class="col-7">
-                        <p:password value="#{newUSerBean.passWord2}" style="width: 100%" autocomplete="off"/>
+                        <p:password value="#{newUserBean.passWord2}" style="width: 100%" autocomplete="off"/>
                     </div>
                 </div>            
 
@@ -183,12 +183,10 @@
                         <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
+                        <p:toggleSwitch id="isAlertMail" value="#{newUserBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
                     </div>
                     <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
                 </div>
-                
-                
                 
                 <h:panelGroup id="userRoleDef">
                     <div class="row" style="margin-top: 5px;">
@@ -196,28 +194,28 @@
                             <h:outputText value="#{langueBean.getMsg('profile.role')} " /> 
                         </div>
                         <div class="col-7">                       
-                            <p:selectOneMenu value="#{newUSerBean.selectedRole}"
+                            <p:selectOneMenu value="#{newUserBean.selectedRole}"
                                              styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                              style="width: 100%; background: none;  box-shadow: none; "
                                              panelStyle="border: none; box-shadow: none; max-width: 300px">
                                 <p:ajax event="change"   update="addNewUser2Form:userRoleDef"  />
                                 <f:selectItem itemLabel="..." itemValue=""/>
-                                <f:selectItems value="#{newUSerBean.nodeAllRoles}" var="allRole" itemLabel="#{allRole.roleName}" itemValue="#{allRole.idRole}"/>
+                                <f:selectItems value="#{newUserBean.nodeAllRoles}" var="allRole" itemLabel="#{allRole.name}" itemValue="#{allRole.id}"/>
                             </p:selectOneMenu>
                         </div> 
                     </div>                
-                    <h:panelGroup rendered="#{(newUSerBean.selectedRole != '1') and (newUSerBean.selectedRole != '') and (newUSerBean.selectedRole != null)}">                
+                    <h:panelGroup rendered="#{(newUserBean.selectedRole != '1') and (newUserBean.selectedRole != '') and (newUserBean.selectedRole != null)}">
                         <div class="row" style="margin-top: 5px;">
                             <div class="col-5" style="text-align: right">
                                 <h:outputText value="#{langueBean.getMsg('profile.project')} "  style="font-size: 12px;"/>
                             </div>
                             <div class="col-7">
-                                <p:selectOneMenu value="#{newUSerBean.selectedProject}"
+                                <p:selectOneMenu value="#{newUserBean.selectedProject}"
                                                  styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                  style="width: 100%; background: none;  box-shadow: none; "
                                                  panelStyle="border: none; box-shadow: none; max-width: 300px">
-                                    <p:ajax event="change" listener="#{newUSerBean.toogleLimitTheso()}" update="addNewUser2Form:userRoleDef"/>
-                                    <f:selectItems value="#{newUSerBean.nodeAllProjects}" var="allProject" itemLabel="#{allProject.groupName}" itemValue="#{allProject.idGroup}"/>
+                                    <p:ajax event="change" listener="#{newUserBean.toogleLimitTheso()}" update="addNewUser2Form:userRoleDef"/>
+                                    <f:selectItems value="#{newUserBean.nodeAllProjects}" var="allProject" itemLabel="#{allProject.label}" itemValue="#{allProject.id}"/>
                                 </p:selectOneMenu>
                             </div>
                         </div> 
@@ -228,44 +226,41 @@
                                 <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                             </div>
                             <div class="col-7">
-                                <p:toggleSwitch id="limitToThesaurus" value="#{newUSerBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
-                                    <p:ajax listener="#{newUSerBean.toogleLimitTheso()}" update="addNewUser2Form:userRoleDef"/>
+                                <p:toggleSwitch id="limitToThesaurus" value="#{newUserBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
+                                    <p:ajax listener="#{newUserBean.toogleLimitTheso()}" update="addNewUser2Form:userRoleDef"/>
                                 </p:toggleSwitch>
                                     
                             </div>
                             <p:tooltip value="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}" showDelay="500" for="limitToThesaurus" />
                         </div>    
-                        <h:panelGroup rendered="#{newUSerBean.limitOnTheso}">
+                        <h:panelGroup rendered="#{newUserBean.limitOnTheso}">
                             <div class="row" style="margin-top: 5px;">
                                 <div class="col-5" style="text-align: right">
                                     <h:outputText value="#{langueBean.getMsg('profile.list_of_thesauri')} "  style="font-size: 12px;"/>
                                 </div>
                                 <div class="col-7">
-                                    <p:selectManyMenu value="#{newUSerBean.selectedThesos}"
+                                    <p:selectManyMenu value="#{newUserBean.selectedThesos}"
                                                      styleClass="manymenu-advanced" showCheckbox="true"
                                                      style="width: 100%; ">
-                                        <f:selectItems value="#{newUSerBean.listThesoOfProject}" var="allThesoProject" itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}"/>
+                                        <f:selectItems value="#{newUserBean.listThesoOfProject}" var="allThesoProject" itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}"/>
                                     </p:selectManyMenu>
                                 </div>
                             </div>                         
-                        </h:panelGroup>                        
-                       
-                        
-                    </h:panelGroup> 
-                   
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </h:panelGroup>
 
                 <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                      oncomplete="PF('addNewUser2').hide();"
-                                     ajax="true" process="@this" action="#{newUSerBean.initForSuperAdmin()}" update="idAddNewUser2 addNewUser2Form" />
+                                     ajax="true" process="@this" action="#{newUserBean.initForSuperAdmin()}" update="idAddNewUser2 addNewUser2Form" />
 
                     <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
                                      icon="pi pi-check" oncomplete="PF('addNewUser2').hide();"
                                      styleClass="ui-button-success"
                                      update="messageIndex containerIndex" 
-                                     action="#{newUSerBean.addNewUserBySuperAdmin()}" />
+                                     action="#{newUserBean.addUser(true)}" />
                 </div>
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
@@ -283,7 +278,7 @@
                 <div class="row"> 
                     <div class="col-12" style="font-size: 14px;" >
                         <h:outputText value="#{langueBean.getMsg('candidat.remove')}: " title="#{langueBean.getMsg('profile.tootltip_user')}"/>  
-                        <h:outputText value="#{modifyUSerBean.nodeUser.name} (#{modifyUSerBean.nodeUser.idUser})" style="width: 100%; color: #f47b2a" />
+                        <h:outputText value="#{modifyUserBean.nodeUser.name} (#{modifyUserBean.nodeUser.idUser})" style="width: 100%; color: #f47b2a" />
                     </div>                    
                 </div>
                 <p:spacer height="40px;" />
@@ -297,7 +292,7 @@
                                      icon="pi pi-check" oncomplete="PF('deleteUser2').hide();"
                                      styleClass="ui-button-success"
                                      update="messageIndex containerIndex" 
-                                     action="#{modifyUSerBean.deleteUser()}" />
+                                     action="#{modifyUserBean.deleteUser()}" />
                 </div>
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
@@ -313,7 +308,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.pseudo')} : " />
                     </div>
                     <div class="col-7">
-                        <p:inputText value="#{modifyUSerBean.nodeUser.name}" />
+                        <p:inputText value="#{modifyUserBean.nodeUser.name}" />
                     </div>
                 </div>
 
@@ -323,7 +318,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.email')} : "/>
                     </div>
                     <div class="col-7">
-                        <p:inputText value="#{modifyUSerBean.nodeUser.mail}" autocomplete="off"  />
+                        <p:inputText value="#{modifyUserBean.nodeUser.mail}" autocomplete="off"  />
                     </div>
                 </div>            
 
@@ -333,7 +328,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " />
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch value="#{modifyUSerBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
+                        <p:toggleSwitch value="#{modifyUserBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
                     </div>
                 </div>
 
@@ -343,7 +338,7 @@
                                          update="containerIndex messageIndex"
                                          icon="fa-regular fa-floppy-disk"
                                          styleClass="ui-button-success"
-                                         actionListener="#{modifyUSerBean.updateUser2()}"
+                                         actionListener="#{modifyUserBean.updateUser2()}"
                                          oncomplete="PF('modifyUser2').hide();" />
                     </div>
                 </div>
@@ -355,7 +350,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.new_password')} : " />
                     </div>
                     <div class="col-7">
-                        <p:password value="#{modifyUSerBean.passWord1}" style="width: 100%" autocomplete="off"/>
+                        <p:password value="#{modifyUserBean.passWord1}" style="width: 100%" autocomplete="off"/>
                     </div>
                 </div>
 
@@ -364,7 +359,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.confirmation')} : " />
                     </div>
                     <div class="col-7">
-                        <p:password value="#{modifyUSerBean.passWord2}" style="width: 100%" autocomplete="off"/>
+                        <p:password value="#{modifyUserBean.passWord2}" style="width: 100%" autocomplete="off"/>
                     </div>
                 </div>
 
@@ -373,7 +368,7 @@
                         <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
                                          icon="fa-regular fa-floppy-disk"
                                          styleClass="ui-button-success" oncomplete="PF('modifyUser2').hide();"
-                                         actionListener="#{modifyUSerBean.updatePassword()}">
+                                         actionListener="#{modifyUserBean.updatePassword()}">
                             <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
                         </p:commandButton>
                     </div>
@@ -385,19 +380,19 @@
                             <h:outputText value="#{langueBean.getMsg('profile.apiKeyAuthorize')} : " />
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch value="#{modifyUSerBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                                <p:ajax listener="#{modifyUSerBean.toggleHasKey()}" update="modifyUser2Form:userKey"/>
+                            <p:toggleSwitch value="#{modifyUserBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                                <p:ajax listener="#{modifyUserBean.toggleHasKey()}" update="modifyUser2Form:userKey"/>
                             </p:toggleSwitch>
                         </div>
                     </div>
-                    <h:panelGroup rendered="#{modifyUSerBean.hasKey}" >
+                    <h:panelGroup rendered="#{modifyUserBean.hasKey}" >
                         <div class="row" style="margin-top: 5px;">
                             <div class="col-5" style="text-align: right">
                                 <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
                             </div>
                             <div class="col-7">
-                                <p:toggleSwitch value="#{modifyUSerBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                                    <p:ajax listener="#{modifyUSerBean.toggleKeyNeverExpire()}" update="modifyUser2Form:userKey"/>
+                                <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                                    <p:ajax listener="#{modifyUserBean.toggleKeyNeverExpire()}" update="modifyUser2Form:userKey"/>
                                 </p:toggleSwitch>
                             </div>
                         </div>
@@ -406,7 +401,7 @@
                                 <h:outputText value="#{langueBean.getMsg('profile.apiKeyExpireDate')} : " />
                             </div>
                             <div class="col-7">
-                                <p:datePicker value="#{modifyUSerBean.apiKeyExpireDate}" disabled="#{modifyUSerBean.nodeUser.keyNeverExpire}"></p:datePicker>
+                                <p:datePicker value="#{modifyUserBean.apiKeyExpireDate}" disabled="#{modifyUserBean.nodeUser.keyNeverExpire}"></p:datePicker>
                             </div>
                         </div>
                     </h:panelGroup>
@@ -415,7 +410,7 @@
                             <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
                                              icon="fa-regular fa-floppy-disk"
                                              styleClass="ui-button-success" oncomplete="PF('modifyUser2').hide();"
-                                             actionListener="#{modifyUSerBean.updateApiKey()}">
+                                             actionListener="#{modifyUserBean.updateApiKey()}">
                                 <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
                             </p:commandButton>
                         </div>

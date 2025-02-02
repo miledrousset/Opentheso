@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface UserGroupThesaurusRepository extends JpaRepository<UserGroupThesaurus, Integer> {
 
+    List<UserGroupThesaurus> findAllByIdGroup(Integer idGroup);
+
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(ugt.idThesaurus, tl.title, ugt.idGroup, ugl.label, t.isPrivate) " +
             "FROM UserGroupThesaurus ugt " +
             "JOIN Thesaurus t ON ugt.idThesaurus = t.idThesaurus " +

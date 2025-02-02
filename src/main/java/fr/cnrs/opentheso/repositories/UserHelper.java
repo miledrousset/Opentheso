@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.*;
 
 import java.util.logging.Level;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserComplet;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
@@ -40,175 +38,6 @@ public class UserHelper {
     @Autowired
     private PreferencesHelper preferencesHelper;
 
-    /**
-     * cette fonction permet de retourner tous les roles
-     */
-    public ArrayList<NodeUserRoleGroup> getAllRole() {
-        ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  roles.id, "
-                        + "  roles.name "
-                        + " FROM "
-                        + "  public.roles ");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserRoleGroup nodeUserRoleGroup = new NodeUserRoleGroup();
-                        nodeUserRoleGroup.setIdRole(resultSet.getInt("id"));
-                        nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
-                        nodeUserRoleGroups.add(nodeUserRoleGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserRoleGroups;
-    }
-
-    /**
-     * permet de rechercher un utilisateur avec son nom
-     *
-     * @param userName
-     * @return
-     */
-    public ArrayList<NodeUser> searchUser(String userName) {
-
-        ArrayList<NodeUser> nodeUsers = new ArrayList<>();
-        userName = fr.cnrs.opentheso.utils.StringUtils.convertString(userName);
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_user, username from users where username ilike '%"
-                        + userName + "%' order by username");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUser nodeUser = new NodeUser();
-                        nodeUser.setIdUser(resultSet.getInt("id_user"));
-                        nodeUser.setName(resultSet.getString("username"));
-                        if (userName.trim().equalsIgnoreCase(resultSet.getString("username"))) {
-                            nodeUsers.add(0, nodeUser);
-                        } else {
-                            nodeUsers.add(nodeUser);
-                        }
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUsers;
-    }
-
-    /**
-     * permet de rechercher les projets dont je suis Admin pour depalcer les
-     * thésaurus
-     *
-     * @param idUser
-     * @param projectName
-     * @return
-     */
-    public ArrayList<NodeUserGroup> searchMyProject(int idUser, String projectName) {
-
-        ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet resultSet = stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group "
-                        + "FROM user_role_group, user_group_label "
-                        + "WHERE user_role_group.id_group = user_group_label.id_group "
-                        + "AND user_role_group.id_user = " + idUser
-                        + " AND user_role_group.id_role = 2"
-                        + " AND user_group_label.label_group ilike '%" + projectName + "%' order by label_group")) {
-
-                    while (resultSet.next()) {
-                        NodeUserGroup nodeUserGroup = new NodeUserGroup();
-                        nodeUserGroup.setGroupName(resultSet.getString("label_group"));
-                        nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
-                        nodeUserGroups.add(nodeUserGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserGroups;
-    }
-
-    /**
-     * permet de rechercher les projets pour le SuperAdmin pour depalcer les
-     * thésaurus
-     *
-     * @param projectName
-     * @return
-     */
-    public ArrayList<NodeUserGroup> searchAllProject(String projectName) {
-        ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + " user_group_label.id_group,"
-                        + " user_group_label.label_group"
-                        + " FROM"
-                        + " user_group_label"
-                        + " WHERE"
-                        + " user_group_label.label_group ilike '%" + projectName + "%'"
-                        + " order by label_group");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserGroup nodeUserGroup = new NodeUserGroup();
-                        nodeUserGroup.setGroupName(resultSet.getString("label_group"));
-                        nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
-                        nodeUserGroups.add(nodeUserGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserGroups;
-    }
-
-    /**
-     * Cette fonction permet d'ajouter un nouvel utilisateur sans le role
-     *
-     * @param userName
-     * @param mail
-     * @param password
-     * @param isSuperAdmin
-     * @param alertMail
-     * @return #MR
-     */
-    public boolean addUser(String userName, String mail, String password, boolean isSuperAdmin, boolean alertMail) {
-
-        boolean active = true;
-        boolean passtomodify = false;
-
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("Insert into users"
-                        + "(username,password,active,mail,"
-                        + "passtomodify,alertmail,issuperadmin)"
-                        + " values ("
-                        + "'" + userName + "'"
-                        + ", '" + password + "'"
-                        + "," + active
-                        + ", '" + mail + "'"
-                        + ", " + passtomodify
-                        + ", " + alertMail
-                        + ", " + isSuperAdmin
-                        + ")");
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
 
     /**
      * Permet de récupérer l'Id de l'utilisateur si l'ulisateur existe ou si le
@@ -645,78 +474,13 @@ public class UserHelper {
     }
 
     /**
-     * cette fonction permet de retourner tous les projets/groupes existant au
-     * format Objet pour la gestion
-     *
-     * @return
-     */
-    public ArrayList<NodeUserGroup> getAllProject() {
-        ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group FROM user_group_label order by label_group");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserGroup nodeUserGroup = new NodeUserGroup();
-                        nodeUserGroup.setGroupName(resultSet.getString("label_group"));
-                        nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
-                        nodeUserGroups.add(nodeUserGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserGroups;
-    }
-
-    /**
-     * retourne la liste de tous les projets où l'utilisateur a des droits Admin
-     * dessus
-     *
-     * @param idUser
-     * @return
-     */
-    public ArrayList<NodeUserGroup> getProjectsOfUserAsAdmin(
-             int idUser) {
-        ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT"
-                        + " user_group_label.id_group, user_group_label.label_group"
-                        + " FROM"
-                        + " user_role_group, user_group_label"
-                        + " WHERE"
-                        + " user_role_group.id_group = user_group_label.id_group"
-                        + " AND"
-                        + " user_role_group.id_user = " + idUser
-                        + " AND"
-                        + " user_role_group.id_role = 2"
-                        + " order by label_group");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserGroup nodeUserGroup = new NodeUserGroup();
-                        nodeUserGroup.setGroupName(resultSet.getString("label_group"));
-                        nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
-                        nodeUserGroups.add(nodeUserGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserGroups;
-    }
-
-    /**
      * permet de retourner la liste des thésaurus pour un projet
      *
      * @param idProject
      * @param idLang
      * @return
      */
+    //TODO TO DELETE
     public ArrayList<NodeIdValue> getThesaurusOfProject(int idProject, String idLang) {
 
         ArrayList<String> listIdTheso = getIdThesaurusOfProject(idProject);
@@ -739,6 +503,7 @@ public class UserHelper {
         return nodeIdValues;
     }
 
+    // TODO TO DELETE
     private ArrayList<String> getIdThesaurusOfProject(int idProject) {
         ArrayList<String> nodeIdTheso = new ArrayList<>();
         try (Connection conn = dataSource.getConnection()) {
@@ -962,259 +727,6 @@ public class UserHelper {
     }
 
     /**
-     * pemret de modifier le role de l'utilisateur sur un groupe
-     *
-     * @param idUser
-     * @param idRole
-     * @param idGroup
-     * @return
-     */
-    public boolean updateUserRoleOnGroup(int idUser, int idRole, int idGroup) {
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-
-            /// si le role devient SuperAdmin, alors on supprime les roles sur les groupes
-            if (idRole == 1) {
-                if (!deleteRoleOnGroup(idUser, idGroup)) {
-                    conn.rollback();
-                    return false;
-                }
-            } else {
-                if (!updateUserRoleOnGroupRollBack(conn, idUser, idRole, idGroup)) {
-                    conn.rollback();
-                    return false;
-                }
-            }
-            if (!setIsSuperAdmin(conn, idUser, (idRole == 1))) {
-                conn.rollback();
-                return false;
-            }
-            conn.commit();
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    private boolean updateUserRoleOnGroupRollBack(Connection conn,
-            int idUser, int idRole, int idGroup) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("UPDATE user_role_group set id_role = "
-                    + idRole
-                    + " WHERE id_user = " + idUser
-                    + " and id_group = " + idGroup);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * permet de modifier le role de l'utilisateur sur un groupe si
-     * l'utilisateur change de role (SuperAdmin -> en Admin, on met à jour son
-     * status dans la table Users (isSuperadmin = false)
-     *
-     * @param idUser
-     * @param idRole
-     * @param idGroup
-     * @return
-     */
-    public boolean addUserRoleOnGroup(int idUser, int idRole, int idGroup) {
-        boolean status = false;
-        boolean isSuperAdmin = false;
-
-        if (idRole == 1) {
-            isSuperAdmin = true;
-        }
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-
-            /// si le role devient SuperAdmin, alors on supprime les roles sur les groupes
-            if (isSuperAdmin) {
-                if (!deleteRoleOnGroup(idUser, idGroup)) {
-                    conn.rollback();
-                    return false;
-                }
-            } else {
-                if (!addUserRoleOnGroupRollBack(conn,
-                        idUser, idRole, idGroup)) {
-                    conn.rollback();
-                    return false;
-                }
-            }
-            if (!setIsSuperAdmin(conn, idUser, isSuperAdmin)) {
-                conn.rollback();
-                return false;
-            }
-            conn.commit();
-            status = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de supprimer un role pour un utilisateur sur un thésaurus cas où
-     * l'utilisateur d'un projet a un rôle uniquement à une partie des thésaurus
-     * du projet
-     *
-     * @param idUser
-     * @param idRole
-     * @param idProject
-     * @param idTheso
-     * @return
-     */
-    public boolean deleteUserRoleOnTheso(int idUser, int idRole, int idProject, String idTheso) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("delete from user_role_only_on "
-                        + " where "
-                        + " id_user = " + idUser
-                        + " and "
-                        + " id_role = " + idRole
-                        + " and "
-                        + " id_group = " + idProject
-                        + " and "
-                        + " id_theso = '" + idTheso + "'"
-                );
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de supprimer tous les roles pour un utilisateur sur les thésaurus
-     * d'un projet cas des rôles uniquement à une partie des thésaurus du projet
-     * à appliquer avent update
-     *
-     * @param idUser
-     * @param idProject
-     * @return
-     */
-    public boolean deleteAllUserRoleOnTheso(int idUser, int idProject) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("delete from user_role_only_on "
-                        + " where "
-                        + " id_user = " + idUser
-                        + " and "
-                        + " id_group = " + idProject
-                );
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet d'ajouter un role pour un utilisateur sur ce thésaurus cas où on
-     * ne donne pas accès à l'utilisateur à un projet, mais uniquement à une
-     * partie des thésaurus du projet
-     *
-     * @param idUser
-     * @param idRole
-     * @param idProject
-     * @param idTheso
-     * @return
-     */
-    public boolean addUserRoleOnThisTheso(int idUser, int idRole, int idProject, String idTheso) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-            if (!addUserRoleOnTheso_(conn,
-                    idUser, idRole, idTheso, idProject)) {
-                conn.rollback();
-                return false;
-            }
-            conn.commit();
-            status = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet d'ajouter un role pour un utilisateur sur un lot de thésaurus cas
-     * où on ne donne pas accès à l'utilisateur à un projet, mais uniquement à
-     * une partie des thésaurus du projet
-     *
-     * @param idUser
-     * @param idRole
-     * @param idProject
-     * @param idThesos
-     * @return
-     */
-    public boolean addUserRoleOnTheso(int idUser, int idRole, int idProject, List<String> idThesos) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-            /// On supprime d'abord le rôle de l'utilisateur sur le groupe
-            if (!deleteRoleOnGroup(idUser, idProject)) {
-                conn.rollback();
-                return false;
-            }
-            for (String idTheso : idThesos) {
-                if (!addUserRoleOnTheso_(conn, idUser, idRole, idTheso, idProject)) {
-                    conn.rollback();
-                    return false;
-                }
-            }
-            conn.commit();
-            status = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    private boolean addUserRoleOnTheso_(Connection conn, int idUser, int idRole, String idTheso, int idProject) {
-
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("insert into user_role_only_on (id_user, id_role, id_theso, id_group)"
-                    + " values("
-                    + idUser + ","
-                    + idRole + ","
-                    + "'" + idTheso + "'"
-                    + "," + idProject
-                    + ") on conflict do nothing");
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    private boolean addUserRoleOnGroupRollBack(Connection conn,
-            int idUser, int idRole, int idGroup) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("insert into user_role_group (id_user, id_role, id_group)"
-                    + " values("
-                    + idUser + ","
-                    + idRole + ","
-                    + idGroup + ")");
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
      * Permet de passer un thésaurus d'un groupe à un autre
      *
      * @param idTheso
@@ -1312,57 +824,6 @@ public class UserHelper {
     }
 
     /**
-     * cette fonction permet de retourner la liste des groupes - roles pour un
-     * un utilisateur
-     *
-     * @param idUser
-     * @return #MR
-     */
-    public ArrayList<NodeUserRoleGroup> getUserRoleGroup(int idUser) {
-        ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  user_role_group.id_role,"
-                        + "  roles.name,"
-                        + "  user_role_group.id_group,"
-                        + "  user_group_label.label_group"
-                        + " FROM user_role_group, roles, user_group_label"
-                        + " WHERE"
-                        + "  user_role_group.id_role = roles.id AND"
-                        + "  user_group_label.id_group = user_role_group.id_group AND"
-                        + "  user_role_group.id_user =" + idUser);
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserRoleGroup nodeUserRoleGroup = new NodeUserRoleGroup();
-                        nodeUserRoleGroup.setIdRole(resultSet.getInt("id_role"));
-                        nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
-                        nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
-                        nodeUserRoleGroup.setGroupName(resultSet.getString("label_group"));
-                        //   nodeUserRoleGroup.setNodeUserGroupThesauruses(getUserThesaurusOfGroup(resultSet.getInt("id_group")));
-
-                        if (resultSet.getInt("id_role") == 2) {
-                            nodeUserRoleGroup.setAdmin(true);
-                        }
-                        if (resultSet.getInt("id_role") == 3) {
-                            nodeUserRoleGroup.setManager(true);
-                        }
-                        if (resultSet.getInt("id_role") == 4) {
-                            nodeUserRoleGroup.setContributor(true);
-                        }
-
-                        nodeUserRoleGroups.add(nodeUserRoleGroup);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserRoleGroups;
-    }
-
-    /**
      * permet de retourner le groupe à lequel le thesaurus appartient
      *
      * @param idTheso
@@ -1387,47 +848,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return idGroup;
-    }
-
-    /**
-     * cette fonction permet de retourner la liste des roles/thesos pour un un
-     * utilisateur et un groupe pour les droits limités
-     *
-     * @param idGroup
-     * @param idUser
-     * @return
-     */
-    public ArrayList<NodeThesoRole> getAllRolesThesosByUserGroupLimited(int idGroup, int idUser) {
-        ArrayList<NodeThesoRole> nodeThesoRoles = new ArrayList<>();
-        String idLang;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT roles.name, roles.id, user_role_only_on.id_theso"
-                        + " FROM roles, user_role_only_on "
-                        + " WHERE "
-                        + " user_role_only_on.id_role = roles.id "
-                        + " AND"
-                        + " user_role_only_on.id_group = " + idGroup
-                        + " AND"
-                        + " user_role_only_on.id_user = " + idUser
-                        + " ORDER BY LOWER(id_theso)");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeThesoRole nodeThesoRole = new NodeThesoRole();
-                        nodeThesoRole.setIdRole(resultSet.getInt("id"));
-                        nodeThesoRole.setRoleName(resultSet.getString("name"));
-                        nodeThesoRole.setIdTheso(resultSet.getString("id_theso"));
-                        idLang = preferencesHelper.getWorkLanguageOfTheso(nodeThesoRole.getIdTheso());
-                        nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeThesoRole.getIdTheso(), idLang));
-                        nodeThesoRoles.add(nodeThesoRole);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeThesoRoles;
     }
 
     /**
@@ -1564,48 +984,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listThesos;
-    }
-
-    /**
-     * cette fonction permet de retourner la liste des utilisateurs pour un
-     * groupe avec un role limité sur des thésaurus du group/projet en cours
-     *
-     * @param idGroup
-     * @param idUser
-     * @return
-     */
-    public ArrayList<NodeUserRole> getListRoleByThesoLimited(int idGroup, int idUser) {
-
-        ArrayList<NodeUserRole> listUser = new ArrayList<>();
-        String idLang;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT user_role_only_on.id_theso, roles.name, roles.id "
-                        + " FROM user_role_only_on, roles "
-                        + " WHERE "
-                        + " user_role_only_on.id_role = roles.id"
-                        + " AND "
-                        + " user_role_only_on.id_group = " + idGroup
-                        + " AND "
-                        + " user_role_only_on.id_user = " + idUser
-                        + " ORDER BY LOWER(id_theso)");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeUserRole nodeUserRole = new NodeUserRole();
-                        nodeUserRole.setIdRole(resultSet.getInt("id"));
-                        nodeUserRole.setRoleName(resultSet.getString("name"));
-                        nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
-                        idLang = preferencesHelper.getWorkLanguageOfTheso(nodeUserRole.getIdTheso());
-                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeUserRole.getIdTheso(), idLang));
-                        listUser.add(nodeUserRole);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listUser;
     }
 
     /**
@@ -1848,6 +1226,7 @@ public class UserHelper {
      * @param idGroup
      * @return
      */
+    // TODO TO DELETE
     public boolean deleteRoleOnGroup(int idUser, int idGroup) {
         boolean status = false;
         try (var conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
@@ -2024,58 +1403,13 @@ public class UserHelper {
     }
 
     /**
-     * Cette fonction permet de savoir si le Pseudo existe
-     *
-     * @param pseudo
-     * @return
-     */
-    public boolean isPseudoExist(String pseudo) {
-        boolean existe = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE username='" + pseudo + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        existe = true;
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return existe;
-    }
-
-    public boolean isMailExist(String mail) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT mail FROM users WHERE mail ilike '" + mail + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        if (resultSet.getRow() != 0) {
-                            status = true;
-                        }
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
      * Permet de savoir si l'utilisateur a un droit d'admin sur le groupe
      *
      * @param idUser
      * @param idGroup
      * @return
      */
-    public boolean isAdminOnThisGroup(
-            int idUser, int idGroup) {
+    public boolean isAdminOnThisGroup(int idUser, int idGroup) {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -2135,8 +1469,6 @@ public class UserHelper {
     //////// fin des nouvelles fontions ////////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
-
-
     public Optional<Integer> getUserGroupId (int userId, String thesoId){
         try (Connection connection = dataSource.getConnection()){
             try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
@@ -2154,35 +1486,6 @@ public class UserHelper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    /**
-     * Sauvegarde en base de donnée les informations concernant la clé d'API
-     * @param userId
-     * @param keyNeverExpire
-     * @param apiKeyExpireDate
-     */
-    public boolean updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate) {
-        String sql = "UPDATE users SET key_never_expire = ?, key_expires_at = ? WHERE id_user = ?";
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setBoolean(1, keyNeverExpire);
-            if (apiKeyExpireDate != null) {
-                pstmt.setDate(2, java.sql.Date.valueOf(apiKeyExpireDate));
-            } else {
-                pstmt.setNull(2, java.sql.Types.DATE);
-            }
-            pstmt.setInt(3, userId);
-
-            pstmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
 }

@@ -1,26 +1,28 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -28,13 +30,22 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "newThesoBean")
 @SessionScoped
 public class NewThesoBean implements Serializable {
 
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy private ViewEditionBean viewEditionBean;
+    @Autowired
+    private CurrentUser currentUser;
+
+    @Autowired
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Autowired
+    private ViewEditionBean viewEditionBean;
+
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository;
 
     @Autowired
     private SelectedTheso selectedTheso;
@@ -55,32 +66,9 @@ public class NewThesoBean implements Serializable {
     private ArrayList<Languages_iso639> allLangs;
     private String selectedLang;
 
-    private ArrayList<NodeUserGroup> nodeProjects;
+    private List<UserGroupLabel> nodeProjects;
     private String selectedProject;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(allLangs!= null){
-            allLangs.clear();
-            allLangs = null;
-        }
-        if(nodeProjects!= null){
-            nodeProjects.clear();
-            nodeProjects = null;
-        }
-        title = null;
-        selectedLang = null;        
-        selectedProject = null;
-    }      
-    
-    /**
-     * Creates a new instance of DeleteThesoBean
-     */
-    public NewThesoBean() {
-    }
 
     public void init() {
         allLangs = languageHelper.getAllLanguages();
@@ -88,11 +76,11 @@ public class NewThesoBean implements Serializable {
         selectedProject = "";
         title = "";
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeProjects = userHelper.getAllProject();
+            nodeProjects = userGroupLabelRepository.findAll();
         } else {
-            nodeProjects = userHelper.getProjectsOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
-            for (NodeUserGroup nodeUserProject : nodeProjects) {
-                selectedProject = "" + nodeUserProject.getIdGroup();
+            nodeProjects = userGroupLabelRepository.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
+            for (UserGroupLabel userGroupLabel : nodeProjects) {
+                selectedProject = "" + userGroupLabel.getId();
             }
         }
     }
@@ -101,7 +89,6 @@ public class NewThesoBean implements Serializable {
      * Permet de supprimer un thésaurus
      */
     public void addNewTheso() {
-        String idNewTheso = null;
         FacesMessage msg;
 
         if (title == null || title.isEmpty()) {
@@ -123,7 +110,7 @@ public class NewThesoBean implements Serializable {
         }
 
         // création du thésaurus
-        idNewTheso = thesaurusHelper.addThesaurusRollBack();
+        var idNewTheso = thesaurusHelper.addThesaurusRollBack();
         if(idNewTheso == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -150,7 +137,6 @@ public class NewThesoBean implements Serializable {
             }
         }
 
-
         // écriture des préférences en utilisant le thésaurus en cours pour duppliquer les infos
         NodePreference nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
@@ -173,46 +159,6 @@ public class NewThesoBean implements Serializable {
             pf.ajax().update("toolBoxForm:listThesoForm");
             pf.ajax().update("messageIndex");           
         }  
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ArrayList<Languages_iso639> getAllLangs() {
-        return allLangs;
-    }
-
-    public void setAllLangs(ArrayList<Languages_iso639> allLangs) {
-        this.allLangs = allLangs;
-    }
-
-    public String getSelectedLang() {
-        return selectedLang;
-    }
-
-    public void setSelectedLang(String selectedLang) {
-        this.selectedLang = selectedLang;
-    }
-
-    public ArrayList<NodeUserGroup> getNodeProjects() {
-        return nodeProjects;
-    }
-
-    public void setNodeProjects(ArrayList<NodeUserGroup> nodeProjects) {
-        this.nodeProjects = nodeProjects;
-    }
-
-    public String getSelectedProject() {
-        return selectedProject;
-    }
-
-    public void setSelectedProject(String selectedProject) {
-        this.selectedProject = selectedProject;
     }
 
 }

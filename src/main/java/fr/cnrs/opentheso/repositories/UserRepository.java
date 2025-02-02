@@ -8,9 +8,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserRepository extends JpaRepository<User, Integer> {
+
+    List<User> findAllByUsernameLike(String username);
+
+    Optional<User> findByApiKey(String apiKey);
+
+    Optional<User> findByMail(String mail);
+
+    Optional<User> findByUsernameAndPassword(String username, String password);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupUser(u.id, u.username, -1, '', 0, '') " +
             "FROM User u " +

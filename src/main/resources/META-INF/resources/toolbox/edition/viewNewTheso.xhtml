@@ -59,7 +59,7 @@
                                  value="#{newThesoBean.selectedProject}" >
                     <f:selectItem  itemLabel="..." itemValue="" />
                     <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                 </p:selectOneMenu>
 
                 <p:selectOneMenu rendered="#{!currentUser.nodeUser.isSuperAdmin()}" styleClass="selectOneMenu_custom"
@@ -68,7 +68,7 @@
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"
                                  value="#{newThesoBean.selectedProject}" >
                     <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                 </p:selectOneMenu>
             </div>           
         </div>        

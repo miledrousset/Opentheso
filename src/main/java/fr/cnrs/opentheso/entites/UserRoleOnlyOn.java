@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(UserRoleGroupId.class)
-@Table(name = "user_role_group")
-public class UserRoleGroup {
+@IdClass(UserRoleGroupOnId.class)
+@Table(name = "user_role_only_on")
+public class UserRoleOnlyOn {
 
     @Id
     @ManyToOne
@@ -35,5 +35,10 @@ public class UserRoleGroup {
     @ManyToOne
     @JoinColumn(name = "id_group", insertable = false, updatable = false)
     private UserGroupLabel group;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "id_theso", insertable = false, updatable = false)
+    private Thesaurus theso;
 
 }

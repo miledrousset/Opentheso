@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="col-7">
-                    <p:inputText value="#{newUSerBean.nodeUser.name}" style="width: 100%" />
+                    <p:inputText value="#{newUserBean.nodeUser.name}" style="width: 100%" />
                 </div>                    
             </div>
 
@@ -28,7 +28,7 @@
                     <h:outputText value="#{langueBean.getMsg('profile.email')} *"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText value="#{newUSerBean.nodeUser.mail}" style="width: 100%" autocomplete="off">
+                    <p:inputText value="#{newUserBean.nodeUser.mail}" style="width: 100%" autocomplete="off">
                         <f:validator validatorId="custom.emailValidator" />
                     </p:inputText>
                 </div>   
@@ -40,7 +40,7 @@
                     <h:outputText value="#{langueBean.getMsg('menu.password')} *" />
                 </div>
                 <div class="col-7">
-                    <p:password value="#{newUSerBean.passWord1}" style="width: 100%" autocomplete="off"/>
+                    <p:password value="#{newUserBean.passWord1}" style="width: 100%" autocomplete="off"/>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@
                     <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} * " />
                 </div>
                 <div class="col-7">
-                    <p:password value="#{newUSerBean.passWord2}" style="width: 100%" autocomplete="off"/>
+                    <p:password value="#{newUserBean.passWord2}" style="width: 100%" autocomplete="off"/>
                 </div>
             </div>            
 
@@ -59,7 +59,7 @@
                     <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
+                    <p:toggleSwitch id="isAlertMail" value="#{newUserBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
                 </div>
                 <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
             </div>
@@ -80,7 +80,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.role')} " /> 
                     </div>
                     <div class="col-7">                       
-                        <p:selectOneMenu value="#{newUSerBean.selectedRole}"
+                        <p:selectOneMenu value="#{newUserBean.selectedRole}"
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; max-width: 300px">
@@ -89,7 +89,7 @@
                         </p:selectOneMenu>
                     </div> 
                 </div>                
-                <h:panelGroup rendered="#{(newUSerBean.selectedRole != '1')}">                
+                <h:panelGroup rendered="#{(newUserBean.selectedRole != '1')}">
 
                     <!-- Pour limiter les droits à un ou plusieurs thésaurus du projet -->
                     <div class="row" style="margin-top: 5px;">
@@ -97,23 +97,23 @@
                             <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch  id="limitToThesaurus" value="#{newUSerBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
-                                <p:ajax listener="#{newUSerBean.toogleLimitTheso()}" update="newUserForProjectForm:userRoleDef"/>
+                            <p:toggleSwitch  id="limitToThesaurus" value="#{newUserBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
+                                <p:ajax listener="#{newUserBean.toogleLimitTheso()}" update="newUserForProjectForm:userRoleDef"/>
                             </p:toggleSwitch>
 
                         </div>
                         <p:tooltip value="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}" showDelay="500" for="limitToThesaurus" />
                     </div>    
-                    <h:panelGroup rendered="#{newUSerBean.limitOnTheso}">
+                    <h:panelGroup rendered="#{newUserBean.limitOnTheso}">
                         <div class="row" style="margin-top: 5px;">
                             <div class="col-5" style="text-align: right">
                                 <h:outputText value="#{langueBean.getMsg('profile.list_of_thesauri')} "  style="font-size: 12px;"/>
                             </div>
                             <div class="col-7">
-                                <p:selectManyMenu value="#{newUSerBean.selectedThesos}"
+                                <p:selectManyMenu value="#{newUserBean.selectedThesos}"
                                                   styleClass="manymenu-advanced" showCheckbox="true"
                                                   style="width: 100%; ">
-                                    <f:selectItems value="#{newUSerBean.listThesoOfProject}" var="allThesoProject" itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}"/>
+                                    <f:selectItems value="#{newUserBean.listThesoOfProject}" var="allThesoProject" itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}"/>
                                 </p:selectManyMenu>
                             </div>
                         </div>                         
@@ -135,7 +135,7 @@
                                  ajax="true" process="@form"
                                  styleClass="ui-button-success"
                                  update="messageIndex newUserForProjectForm containerIndex:tabViewRoles" 
-                                 action="#{newUSerBean.addUser()}" />
+                                 action="#{newUserBean.addUser(false)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
