@@ -92,7 +92,7 @@
                                                  value="#{importFileBean.selectedUserProject}" >
                                     <f:selectItem  itemLabel="..." itemValue="" />
                                     <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                                 </p:selectOneMenu>
                             </div>
                         </h:panelGroup> 
@@ -104,7 +104,7 @@
                                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"
                                                  value="#{importFileBean.selectedUserProject}" >
                                     <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                                 </p:selectOneMenu>
                             </div> 
                         </h:panelGroup>

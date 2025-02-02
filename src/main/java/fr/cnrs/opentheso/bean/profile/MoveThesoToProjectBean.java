@@ -1,13 +1,16 @@
 package fr.cnrs.opentheso.bean.profile;
 
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -23,6 +26,12 @@ public class MoveThesoToProjectBean implements Serializable {
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
+
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+
+    @Autowired
+    private UserRoleGroupRepository userRoleGroupRepository;
 
     @Autowired
     private UserHelper userHelper;
@@ -66,11 +75,13 @@ public class MoveThesoToProjectBean implements Serializable {
         newProject = null; 
     }       
     
-    public ArrayList<NodeUserGroup> autoCompleteProject(String projectName) {
+    public List<NodeUserGroup> autoCompleteProject(String projectName) {
         if(currentUser.getNodeUser().isSuperAdmin()) {
-            return userHelper.searchAllProject(projectName);
+            return userGroupLabelRepository.findAll().stream()
+                    .map(group -> NodeUserGroup.builder().idGroup(group.getId()).groupName(group.getLabel()).build())
+                    .toList();
         } else {
-            return userHelper.searchMyProject(currentUser.getNodeUser().getIdUser(), projectName);
+            return userRoleGroupRepository.findGroupByUserAndProject(currentUser.getNodeUser().getIdUser(), projectName);
         }
     }        
 
