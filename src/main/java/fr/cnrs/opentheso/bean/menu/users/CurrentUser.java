@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -52,6 +53,8 @@ public class CurrentUser implements Serializable {
 
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
+    @Autowired
+    private UserRoleGroupRepository userRoleGroupRepository;
     @Autowired @Lazy
     private ViewEditorHomeBean viewEditorHomeBean;
     @Autowired @Lazy
@@ -604,7 +607,7 @@ public class CurrentUser implements Serializable {
      * @return
      */
     private void initAllAuthorizedProjectAsAdmin() {
-        ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(nodeUser.getIdUser());
+        var allAuthorizedProjectAsAdminTemp = userRoleGroupRepository.getUserRoleGroup(nodeUser.getIdUser());
         if (allAuthorizedProjectAsAdmin == null) {
             allAuthorizedProjectAsAdmin = new ArrayList<>();
         } else {

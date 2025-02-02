@@ -1,95 +1,74 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
-import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.entites.User;
+import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
+import fr.cnrs.opentheso.repositories.RoleRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
-import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
+import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.users.UserRoleGroupService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 
 @Data
 @Named(value = "modifyRoleBean")
 @SessionScoped
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class ModifyRoleBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private MyProjectBean myProjectBean;
+    private final MyProjectBean myProjectBean;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final UserGroupLabelRepository2 userGroupLabelRepository2;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
-    @Autowired
-    private UserHelper userHelper;
+    private final ThesaurusService thesaurusService;
+    private final UserRoleGroupService userRoleGroupService;
     
-    private NodeUser nodeSelectedUser;
-    private String selectedProject;
-    private String roleOfSelectedUser;
-
-    // pour l'ajout d'un utilisateur existant au projet
-    private NodeUser selectedUser;
+    private User nodeSelectedUser, selectedUser;
+    private String selectedProject, roleOfSelectedUser;
 
     // liste des (rôle -> projet) qui existent déjà pour l'utilisateur     
-    ArrayList<NodeUserRoleGroup> allMyRoleProject;
+    private List<NodeUserRoleGroup> allMyRoleProject;
     
     // pour gérer les droits limités sur un ou plusieurs thésaurus
     private boolean limitOnTheso;    
-    private ArrayList<NodeIdValue> listThesoOfProject;
+    private List<NodeIdValue> listThesoOfProject, myAuthorizedRolesLimited;
     private List<String> selectedThesos; 
     private NodeUserRole selectedNodeUserRole;
-    private ArrayList<NodeThesoRole> listeLimitedThesoRoleForUser; // la liste des roles / thesos de l'utilisateur et du groupe avec des droits limités       
-    private ArrayList<NodeIdValue> myAuthorizedRolesLimited;
-
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(allMyRoleProject!= null){
-            allMyRoleProject.clear();
-            allMyRoleProject = null;
-        }
-        nodeSelectedUser = null;
-        selectedProject = null;
-        roleOfSelectedUser = null;
-        selectedUser = null;      
-        limitOnTheso = false;
-        listThesoOfProject = null;
-        selectedThesos = null;    
-        myAuthorizedRolesLimited = null;
-    }   
-    
-    public ModifyRoleBean() {
-    }
-
-    public void setSelectedProject(String selectedProject) {
-        this.selectedProject = selectedProject;
-    }
-    
+    private List<NodeUserRole> listeLimitedThesoRoleForUser; // la liste des roles / thesos de l'utilisateur et du groupe avec des droits limités
     
     /**
-     * permet de selectionner l'utilisateur dans la liste avec toutes les
-     * informations nécessaires pour sa modification
-     *
-     * @param idUser
-     * @param roleOfSelectedUser
-     * @param selectedProject
+     * permet de selectionner l'utilisateur dans la liste avec toutes les informations nécessaires pour sa modification
      */
     public void selectUser(int idUser, int roleOfSelectedUser, String selectedProject) {
-        nodeSelectedUser = userHelper.getUser(idUser);
+        nodeSelectedUser = userRepository.findById(idUser).get();
         this.selectedProject = selectedProject;
 
         this.roleOfSelectedUser = "" + roleOfSelectedUser;
@@ -104,9 +83,6 @@ public class ModifyRoleBean implements Serializable {
     /**
      * permet de selectionner l'utilisateur qui a des droits limités 
      * informations nécessaires pour sa modification
-     *
-     * @param selectedNodeUserRole
-     * @param selectedProject
      */
     public void selectUserWithLimitedRole(NodeUserRole selectedNodeUserRole, String selectedProject) {
         this.selectedNodeUserRole = selectedNodeUserRole;
@@ -114,7 +90,8 @@ public class ModifyRoleBean implements Serializable {
         limitOnTheso = true;
         myAuthorizedRolesLimited = null;
         selectedThesos = new ArrayList<>();
-        ArrayList<NodeUserRole> nodeUserRoles = userHelper.getListRoleByThesoLimited(Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
+
+        List<NodeUserRole> nodeUserRoles = userRoleOnlyOnRepository.getListRoleByThesoLimited(Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
         for (NodeUserRole nodeUserRole1 : nodeUserRoles) {
             selectedThesos.add(nodeUserRole1.getIdTheso());
         }
@@ -126,45 +103,34 @@ public class ModifyRoleBean implements Serializable {
      * permet de récupérer la liste des rôles pour l'utilisateur sur les thésaurus du projet
      */
     private void setLimitedRoleForThisUserByGroup(){
-        if (selectedProject == null || selectedProject.isEmpty()) {
+
+        if (StringUtils.isEmpty(selectedProject)) {
             return;
         }
 
-        int idGroup = Integer.parseInt(selectedProject);
-        if (selectedNodeUserRole != null) {
-            listeLimitedThesoRoleForUser = userHelper.getAllRolesThesosByUserGroupLimited(
-                    idGroup, selectedNodeUserRole.getIdUser());
-        } else {
-            if (listeLimitedThesoRoleForUser != null) {
-                listeLimitedThesoRoleForUser.clear(); //cas où on supprime l'utilisateur en cours
-            }
-        }
-        ArrayList<String> idThesosTemp = new ArrayList<>();
-        for (NodeThesoRole nodeThesoRole : listeLimitedThesoRoleForUser) {
-            idThesosTemp.add(nodeThesoRole.getIdTheso());
+        var idGroup = Integer.parseInt(selectedProject);
+
+        if (ObjectUtils.isNotEmpty(selectedNodeUserRole)) {
+            listeLimitedThesoRoleForUser = userRoleOnlyOnRepository.getListRoleByThesoLimited(idGroup, selectedNodeUserRole.getIdUser());
+        } else if (ObjectUtils.isEmpty(selectedNodeUserRole) && ObjectUtils.isNotEmpty(listeLimitedThesoRoleForUser)) {
+            listeLimitedThesoRoleForUser.clear(); //cas où on supprime l'utilisateur en cour
         }
 
-        ArrayList<NodeIdValue> allThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
-        for (NodeIdValue nodeIdValue : allThesoOfProject) {
-            if(!idThesosTemp.contains(nodeIdValue.getId())){
-                NodeThesoRole nodeThesoRole = new NodeThesoRole();
-                nodeThesoRole.setIdTheso(nodeIdValue.getId());
-                nodeThesoRole.setThesoName(nodeIdValue.getValue());
-                nodeThesoRole.setIdRole(-1);
-                nodeThesoRole.setRoleName("");
-                
-                listeLimitedThesoRoleForUser.add(nodeThesoRole);
-            }    
-        }
+        List<String> idThesosTemp = listeLimitedThesoRoleForUser.stream().map(element -> element.getIdTheso()).toList();
+        List<NodeIdValue> allThesoOfProject = thesaurusService.getThesaurusOfProject(idGroup, workLanguage);
+
+        listeLimitedThesoRoleForUser.addAll(allThesoOfProject.stream()
+                .filter(element -> !idThesosTemp.contains(element.getId()))
+                .map(element -> NodeUserRole.builder()
+                        .idTheso(element.getId())
+                        .thesoName(element.getValue())
+                        .idRole(-1)
+                        .roleName("")
+                        .build())
+                .toList());
         
         myAuthorizedRolesLimited = myProjectBean.getMyAuthorizedRoles();
-        NodeIdValue nodeIdValue = new NodeIdValue();
-        nodeIdValue.setId("-1");
-        nodeIdValue.setValue("");
-        myAuthorizedRolesLimited.add(0,nodeIdValue);
-    }      
-    
-    public void setSelectedRoleLimitedForTheso(){
+        myAuthorizedRolesLimited.add(0, NodeIdValue.builder().id("-1").value("").build());
     }
 
     /**
@@ -172,86 +138,67 @@ public class ModifyRoleBean implements Serializable {
      * si on redonne les droits sur le projet entier
      */
     public void updateLimitedRoleOnThesosForUser () {
-        FacesMessage msg;
         
-        if(listeLimitedThesoRoleForUser == null || listeLimitedThesoRoleForUser.isEmpty())  {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(CollectionUtils.isEmpty(listeLimitedThesoRoleForUser))  {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
             return;              
         }
         
         // suppression de tous les rôles
-        if(!userHelper.deleteAllUserRoleOnTheso(selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;                   
-        }
+        var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
+        var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        userRoleOnlyOnRepository.deleteByUserAndGroup(user, userGroupLabel);
         
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
             // ajout des rôles pour l'utilisateur sur les thésaurus
-            for (NodeThesoRole nodeThesoRole : listeLimitedThesoRoleForUser) {
+            for (NodeUserRole nodeThesoRole : listeLimitedThesoRoleForUser) {
                 if(nodeThesoRole.getIdRole() != -1) {
-                    if(!userHelper.addUserRoleOnThisTheso(
-                            selectedNodeUserRole.getIdUser(), nodeThesoRole.getIdRole(),
-                            Integer.parseInt(selectedProject), nodeThesoRole.getIdTheso())){
-                        return;
-                    }
+                    var role = roleRepository.findById(nodeThesoRole.getIdRole()).get();
+                    var thesaurus = thesaurusService.getThesaurusById(nodeThesoRole.getIdTheso());
+                    userRoleOnlyOnRepository.save(UserRoleOnlyOn.builder()
+                            .user(user)
+                            .role(role)
+                            .group(userGroupLabel)
+                            .theso(thesaurus)
+                            .build());
                 }
             }
             myProjectBean.setSelectedIndex("2");
         } else {
-            if(!userHelper.addUserRoleOnGroup(nodeSelectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                    Integer.parseInt(selectedProject))) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;             
-            }
+            userRoleGroupService.addUserRoleOnGroup(nodeSelectedUser.getId(), Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject));
             myProjectBean.setSelectedIndex("1");
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le rôle a été changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Le rôle a été changé avec succès !!!");
         myProjectBean.resetListUsers();
     }
     
     /**
      * met à jour les rôles de l'utilisateur sur les thésaurus du projet
      */
-    public void updateUserRoleLimitedForSelectedUser () {
-        FacesMessage msg;
+    public void updateUserRoleLimitedForSelectedUser() {
         
         if(selectedNodeUserRole == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
             return;              
         }
 
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
-            if(!userHelper.deleteAllUserRoleOnTheso(selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification des rôles !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;                    
-            }
-            if(!userHelper.addUserRoleOnTheso(
-                    selectedNodeUserRole.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                    Integer.parseInt(selectedProject), selectedThesos)){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification des rôles !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;                
-            }
+            var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
+            var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+
+            userRoleOnlyOnRepository.deleteByUserAndGroup(user, userGroupLabel);
+
+            userRoleGroupService.addUserRoleOnTheso(selectedNodeUserRole.getIdUser(), Integer.parseInt(roleOfSelectedUser),
+                    Integer.parseInt(selectedProject), selectedThesos);
         } else {
-            if(!userHelper.updateUserRoleOnGroup(nodeSelectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                    Integer.parseInt(selectedProject))) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;             
-            }
+            userRoleGroupService.updateUserRoleOnGroup(selectedNodeUserRole.getIdUser(),
+                    Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject));
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le rôle a été changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Le rôle a été changé avec succès !!!");
         myProjectBean.resetListUsers();
     }       
     
@@ -259,139 +206,93 @@ public class ModifyRoleBean implements Serializable {
      * permet de supprimer le rôle de l'utilisateur sur ce thésaurus du projet
      */
     public void removeUserRoleOnTheso () {
-        FacesMessage msg;
-        
-        if(selectedNodeUserRole == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de rôle sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if(ObjectUtils.isEmpty(selectedNodeUserRole)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun rôle sélectionné !!!");
             return;              
         }
 
-        if(!userHelper.deleteUserRoleOnTheso(
-                selectedNodeUserRole.getIdUser(),
-                selectedNodeUserRole.getIdRole(),
-                Integer.parseInt(selectedProject),
-                selectedNodeUserRole.getIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de suppression du rôle de l'utilisateur pour ce thésaurus !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
-        }
+        var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
+        var role = roleRepository.findById(selectedNodeUserRole.getIdRole()).get();
+        var group = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        var thesaurus = thesaurusService.getThesaurusById(selectedNodeUserRole.getIdTheso());
+        userRoleOnlyOnRepository.deleteByUserAndGroupAndRoleAndTheso(user, group, role, thesaurus);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le rôle a été supprimé !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Le rôle a été supprimé !!!");
         myProjectBean.resetListLimitedRoleUsers();
     }      
     
     private void initAllMyRoleProject(){
-        allMyRoleProject = userHelper.getUserRoleGroup(nodeSelectedUser.getIdUser());
+        allMyRoleProject = userRoleGroupRepository.getUserRoleGroup(nodeSelectedUser.getId());
     }
    
     public void toogleLimitTheso(){
         if(!limitOnTheso) return;
-        /// récupérer la liste des thésaurus d'un projet
-        int idProject = -1;
         try {
-            idProject = Integer.parseInt(selectedProject);
-        } catch (Exception e) {
-            return;
-        }
-        if(idProject == -1) return;
-        listThesoOfProject = userHelper.getThesaurusOfProject(idProject, workLanguage);
+            listThesoOfProject = thesaurusService.getThesaurusOfProject(Integer.parseInt(selectedProject), workLanguage);
+        } catch (Exception e) { }
     }  
     
     /**
      * met à jour le nouveau rôle de l'utilisateur sur le projet
      */
     public void updateRoleForSelectedUser () {
-        FacesMessage msg;
-        
-        if(nodeSelectedUser== null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
+
+        if(ObjectUtils.isEmpty(nodeSelectedUser)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
+            return;
         }
 
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
-            if(!userHelper.addUserRoleOnTheso(
-                    nodeSelectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                    Integer.parseInt(selectedProject), selectedThesos)){
-                return;
-            }
+            userRoleGroupService.addUserRoleOnTheso(nodeSelectedUser.getId(), Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject), selectedThesos);
             myProjectBean.setSelectedIndex("2");
         } else {
-            if(!userHelper.updateUserRoleOnGroup(nodeSelectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                    Integer.parseInt(selectedProject))) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;             
-            }
+            userRoleGroupService.updateUserRoleOnGroup(nodeSelectedUser.getId(), Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject));
             myProjectBean.setSelectedIndex("1");
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le rôle a été changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Le rôle a été changé avec succès !!!");
         myProjectBean.resetListUsers();
     }
-    
-      
-   
-    /**
-     * permet de supprimer l'utilisateur du projet
-     */
+
     public void removeUserFromProject () {
-        FacesMessage msg;
         
-        if(nodeSelectedUser== null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(ObjectUtils.isEmpty(nodeSelectedUser)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
             return;              
         }
 
-        if(!userHelper.deleteRoleOnGroup(nodeSelectedUser.getIdUser(), Integer.parseInt(selectedProject))) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de suppression de l'utilisateur du projet !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
-        }
+        var user = userRepository.findById(nodeSelectedUser.getId()).get();
+        var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        userRoleGroupRepository.deleteByUserAndGroup(user, userGroupLabel);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'utilisateur a été supprimé du projet !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "L'utilisateur a été supprimé du projet !!!");
         myProjectBean.resetListUsers();
     }    
-    
-    /**
-     * permet d'ajouter un utilisateur existant au projet
-     */
+
     public void addUserToProject () {
-        FacesMessage msg;
         
-        if(selectedUser == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(ObjectUtils.isEmpty(selectedUser)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
             return;              
         }
 
-        if(!userHelper.addUserRoleOnGroup(selectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
-                Integer.parseInt(selectedProject))) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
-        }
+        userRoleGroupService.addUserRoleOnGroup(selectedUser.getId(), Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject));
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'utilisateur a été ajouté avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "L'utilisateur a été ajouté avec succès !!!");
         myProjectBean.resetListUsers();
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-            
-        }
+
+        PrimeFaces.current().ajax().update("containerIndex");
     }      
 
-    public ArrayList<NodeUser> autoCompleteUser(String userName) {
-        ArrayList <NodeUser> nodeUsers = userHelper.searchUser(userName);
-        return nodeUsers;
+    public List<User> autoCompleteUser(String userName) {
+        return userRepository.findAllByUsernameLike(userName);
+    }
+
+    private void showMessage(FacesMessage.Severity type, String message) {
+        var msg = new FacesMessage(type, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 }

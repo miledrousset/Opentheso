@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
@@ -39,7 +41,11 @@ public class RoleOnThesoBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired private LanguageBean languageBean;
+    @Autowired
+    private LanguageBean languageBean;
+
+    @Autowired
+    private UserRoleGroupRepository userRoleGroupRepository;
     
     @Autowired 
     private UserHelper userHelper;
@@ -460,8 +466,7 @@ public class RoleOnThesoBean implements Serializable {
      * thésaurus et gérer les utilisateur pour le group il faut être Admin
      */
     private void setUserRoleGroup(CurrentUser currentUser) {
-        UserHelper currentUserHelper = userHelper;
-        ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = currentUserHelper.getUserRoleGroup(currentUser.getNodeUser().getIdUser());
+        List<NodeUserRoleGroup> nodeUserRoleGroups = userRoleGroupRepository.getUserRoleGroup(currentUser.getNodeUser().getIdUser());
         for (NodeUserRoleGroup nodeUserRoleGroup1 : nodeUserRoleGroups) {
             if (nodeUserRoleGroup1.isAdmin()) {
                 isAdminOnThisTheso = true;

@@ -188,8 +188,6 @@
                     <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
                 </div>
                 
-                
-                
                 <h:panelGroup id="userRoleDef">
                     <div class="row" style="margin-top: 5px;">
                         <div class="col-5" style="text-align: right">
@@ -202,7 +200,7 @@
                                              panelStyle="border: none; box-shadow: none; max-width: 300px">
                                 <p:ajax event="change"   update="addNewUser2Form:userRoleDef"  />
                                 <f:selectItem itemLabel="..." itemValue=""/>
-                                <f:selectItems value="#{newUserBean.nodeAllRoles}" var="allRole" itemLabel="#{allRole.roleName}" itemValue="#{allRole.idRole}"/>
+                                <f:selectItems value="#{newUserBean.nodeAllRoles}" var="allRole" itemLabel="#{allRole.name}" itemValue="#{allRole.id}"/>
                             </p:selectOneMenu>
                         </div> 
                     </div>                
@@ -217,7 +215,7 @@
                                                  style="width: 100%; background: none;  box-shadow: none; "
                                                  panelStyle="border: none; box-shadow: none; max-width: 300px">
                                     <p:ajax event="change" listener="#{newUserBean.toogleLimitTheso()}" update="addNewUser2Form:userRoleDef"/>
-                                    <f:selectItems value="#{newUserBean.nodeAllProjects}" var="allProject" itemLabel="#{allProject.groupName}" itemValue="#{allProject.idGroup}"/>
+                                    <f:selectItems value="#{newUserBean.nodeAllProjects}" var="allProject" itemLabel="#{allProject.label}" itemValue="#{allProject.id}"/>
                                 </p:selectOneMenu>
                             </div>
                         </div> 
@@ -248,11 +246,8 @@
                                     </p:selectManyMenu>
                                 </div>
                             </div>                         
-                        </h:panelGroup>                        
-                       
-                        
-                    </h:panelGroup> 
-                   
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </h:panelGroup>
 
                 <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
@@ -265,7 +260,7 @@
                                      icon="pi pi-check" oncomplete="PF('addNewUser2').hide();"
                                      styleClass="ui-button-success"
                                      update="messageIndex containerIndex" 
-                                     action="#{newUserBean.addNewUserBySuperAdmin()}" />
+                                     action="#{newUserBean.addUser(true)}" />
                 </div>
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>

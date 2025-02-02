@@ -300,6 +300,7 @@ public class ThesaurusHelper {
      * @param idLang
      * @return 
      */
+    //TODO TO DELETE
     public String getTitleOfThesaurus(String idThesaurus, String idLang) {
         String title = "";
         try ( Connection conn = dataSource.getConnection()) {

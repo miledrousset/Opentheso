@@ -135,7 +135,7 @@
                                  ajax="true" process="@form"
                                  styleClass="ui-button-success"
                                  update="messageIndex newUserForProjectForm containerIndex:tabViewRoles" 
-                                 action="#{newUserBean.addUser()}" />
+                                 action="#{newUserBean.addUser(false)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>
