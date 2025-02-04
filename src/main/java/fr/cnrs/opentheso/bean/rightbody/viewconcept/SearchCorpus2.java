@@ -15,9 +15,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import lombok.Data;
 
@@ -37,6 +43,7 @@ public class SearchCorpus2 {
                     if (nodeCorpus.getUriLink().contains("##value##")) {
                         nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
                     }
+                    haveCorpus = true;
                 } else {
                     // recherche par Id
                     /// pour le count par Id interne
@@ -64,11 +71,21 @@ public class SearchCorpus2 {
                     // recherche par value
                     if (nodeCorpus.getUriCount().contains("##value##")) {
                         if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
-                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
+                            try {
+                                nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##",
+                                        URLEncoder.encode(nodeFullConcept.getPrefLabel().getLabel(), StandardCharsets.UTF_8.toString())));
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                     if (nodeCorpus.getUriLink().contains("##value##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
+                        try {
+                            nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##",
+                                    URLEncoder.encode(nodeFullConcept.getPrefLabel().getLabel(), StandardCharsets.UTF_8.toString())));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                     }
                     setCorpusCount(nodeCorpus);
                 }
@@ -81,13 +98,11 @@ public class SearchCorpus2 {
         if (nodeCorpus == null) {
             return;
         }
-        nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
-        /*if (nodeCorpus.getUriCount().contains("https://")) {
-            nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
-        }
-        if (nodeCorpus.getUriCount().contains("http://")) {
+        if(nodeCorpus.isOmekaS()){
+            nodeCorpus.setCount(getCountOfResourcesFromOmekaS(nodeCorpus.getUriCount()));
+        } else {
             nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
-        }*/
+        }
     }
 
     private int getCountOfResourcesFromHttp(String uri) {
@@ -149,81 +164,38 @@ public class SearchCorpus2 {
             return -1;
         }
     }    
-    
-    
-/*
-    private int getCountOfResourcesFromHttps(String uri) {
-        String output;
-        String json = "";
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
 
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            }
-        }
-        };
-
-        // Install the all-trusting trust manager
-        SSLContext sc;
-        try {
-            sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        // Create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
-        // Install the all-trusting host verifier
-        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-
-        // récupération du total des notices
+    //// code pour OmekaS
+    private int getCountOfResourcesFromOmekaS(String uri) {
         try {
             URL url = new URL(uri);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
 
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setUseCaches(false);
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(2000); 
-            conn.setReadTimeout(2000);
-            int status = conn.getResponseCode();
-            if (status != 200) {
-                return -1;
+            // Lire les headers de la réponse
+            // Convertir les headers en minuscule
+            Map<String, List<String>> headers = connection.getHeaderFields();
+            Map<String, List<String>> lowerCaseHeaders = headers.entrySet().stream()
+                    .collect(Collectors.toMap(entry -> entry.getKey() != null ? entry.getKey().toLowerCase() : "", Map.Entry::getValue));
+            List<String> values = lowerCaseHeaders.get("omeka-s-total-results");
+
+            connection.disconnect();
+
+            if (values != null && !values.isEmpty()) {
+                int val = Integer.parseInt(values.get(0));
+                if(val > 0) haveCorpus = true;
+                return val; // Convertir la valeur en entier
             }
-            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((output = br.readLine()) != null) {
-                json += output;
-            }
-            br.close();
-            return getCountFromJson(json);
-
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (IOException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (Exception ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         }
         return -1;
     }
-    */    
-    
+
 }
