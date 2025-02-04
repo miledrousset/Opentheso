@@ -54,8 +54,7 @@ public class NewUSerBean implements Serializable {
     private boolean limitOnTheso;
     private ArrayList<NodeIdValue> listThesoOfProject;
     private List<String> selectedThesos;
-    
-    
+
     @PreDestroy
     public void destroy(){
         clear();

@@ -43,7 +43,6 @@ public class ModifyUSerBean implements Serializable {
     public void toggleKeyNeverExpire(){
     }
 
-    
     /**
      * Permet de selectionner l'utilisateur dans la liste avec toutes les
      * informations nécessaires pour sa modification
