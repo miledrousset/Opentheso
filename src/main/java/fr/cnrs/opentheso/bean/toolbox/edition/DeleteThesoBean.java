@@ -4,9 +4,8 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
@@ -16,52 +15,42 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "deleteThesoBean")
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
-    
-    @Autowired @Lazy 
-    private SelectedTheso selectedTheso;
-    
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final ConceptHelper conceptHelper;
+    private final PreferencesHelper preferencesHelper;
+    private final ThesaurusHelper thesaurusHelper;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
     
-    private String idThesoToDelete;
-    private String valueOfThesoToDelelete;
-    private boolean isDeleteOn;
-    
-    private boolean deletePerennialIdentifiers;
-            
-    private String currentIdTheso;
-    /**
-     * Creates a new instance of DeleteThesoBean
-     */
-    public DeleteThesoBean() {
-        idThesoToDelete = null;
-        valueOfThesoToDelelete = null;
-        isDeleteOn = false;
-        currentIdTheso = null;
-        deletePerennialIdentifiers = false;
+    private String idThesoToDelete, valueOfThesoToDelelete, currentIdTheso;
+    private boolean isDeleteOn, deletePerennialIdentifiers;
+
+
+    public DeleteThesoBean(SelectedTheso selectedTheso,
+                           RoleOnThesoBean roleOnThesoBean,
+                           ConceptHelper conceptHelper,
+                           PreferencesHelper preferencesHelper,
+                           ThesaurusHelper thesaurusHelper,
+                           UserGroupThesaurusRepository userGroupThesaurusRepository) {
+
+        this.selectedTheso = selectedTheso;
+        this.roleOnThesoBean = roleOnThesoBean;
+        this.conceptHelper = conceptHelper;
+        this.preferencesHelper = preferencesHelper;
+        this.thesaurusHelper = thesaurusHelper;
+        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
     }
     
     public void init() {
@@ -86,7 +75,8 @@ public class DeleteThesoBean implements Serializable {
      */
     public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idThesoToDelete);
+
+        var nodePreference = preferencesHelper.getThesaurusPreferences(idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);
@@ -94,19 +84,15 @@ public class DeleteThesoBean implements Serializable {
                 conceptHelper.deleteAllIdHandle(idThesoToDelete);
             }
         }
-        FacesMessage msg;
         
         // supression des droits
-        if(!userHelper.deleteThesoFromGroup(idThesoToDelete)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        userGroupThesaurusRepository.deleteByIdThesaurus(idThesoToDelete);
         
         // suppression complète du thésaurus
         if(!thesaurusHelper.deleteThesaurus(idThesoToDelete)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
@@ -118,56 +104,17 @@ public class DeleteThesoBean implements Serializable {
             selectedTheso.setSelectedProject();
         }
         
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
+        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("containerIndex");
+
         init();
         roleOnThesoBean.showListTheso(currentUser, selectedTheso);
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }    
+        PrimeFaces.current().ajax().update("messageIndex");
     }
     
     public void setThesaurusBeforRemove(String idThesoToDelete, String valueOfThesoToDelelete) {
         this.idThesoToDelete = idThesoToDelete;
         this.valueOfThesoToDelelete = valueOfThesoToDelelete;
     }
-
-    public boolean isIsDeleteOn() {
-        return isDeleteOn;
-    }
-
-    public void setIsDeleteOn(boolean isDeleteOn) {
-        this.isDeleteOn = isDeleteOn;
-    }
-
-    public String getIdThesoToDelete() {
-        return idThesoToDelete;
-    }
-
-    public void setIdThesoToDelete(String idThesoToDelete) {
-        this.idThesoToDelete = idThesoToDelete;
-    }
-
-    public String getValueOfThesoToDelelete() {
-        return valueOfThesoToDelelete;
-    }
-
-    public void setValueOfThesoToDelelete(String valueOfThesoToDelelete) {
-        this.valueOfThesoToDelelete = valueOfThesoToDelelete;
-    }
-
-    public boolean isDeletePerennialIdentifiers() {
-        return deletePerennialIdentifiers;
-    }
-
-    public void setDeletePerennialIdentifiers(boolean deletePerennialIdentifiers) {
-        this.deletePerennialIdentifiers = deletePerennialIdentifiers;
-    }
-
-
-    
-    
-    
 }

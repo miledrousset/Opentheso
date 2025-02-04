@@ -19,7 +19,6 @@ import java.util.List;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -31,31 +30,34 @@ public class SuperAdminBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired
-    private UserRoleGroupRepository userRoleGroupRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ThesaurusRepository thesaurusRepository;
-
-    @Autowired
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
-
-    @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository;
-    
-    @Autowired
-    private CurrentUser currentUser;
-    
-    @Autowired
-    private SelectedTheso selectedTheso;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserRepository userRepository;
+    private final ThesaurusRepository thesaurusRepository;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final UserGroupLabelRepository2 userGroupLabelRepository;
+    private final CurrentUser currentUser;
+    private final SelectedTheso selectedTheso;
 
     private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
     private List<UserGroupLabel> allProjects;
     private List<NodeUserGroupThesaurus> allThesoProject;
 
+    public SuperAdminBean(UserRoleGroupRepository userRoleGroupRepository,
+                          UserRepository userRepository,
+                          ThesaurusRepository thesaurusRepository,
+                          UserGroupThesaurusRepository userGroupThesaurusRepository,
+                          UserGroupLabelRepository2 userGroupLabelRepository,
+                          CurrentUser currentUser,
+                          SelectedTheso selectedTheso) {
+
+        this.userRoleGroupRepository = userRoleGroupRepository;
+        this.userRepository = userRepository;
+        this.thesaurusRepository = thesaurusRepository;
+        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
+        this.userGroupLabelRepository = userGroupLabelRepository;
+        this.currentUser = currentUser;
+        this.selectedTheso = selectedTheso;
+    }
 
     public void init() {
 
