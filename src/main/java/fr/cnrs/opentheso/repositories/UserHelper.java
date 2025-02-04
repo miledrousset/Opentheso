@@ -165,51 +165,6 @@ public class UserHelper {
         return userList;
     }
 
-    public NodeUser getUserByApiKey(String apiKey) {
-        NodeUser nodeUser = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT"
-                        + "  users.id_user,"
-                        + "  users.username,"
-                        + "  users.active,"
-                        + "  users.mail,"
-                        + "  users.passtomodify,"
-                        + "  users.alertmail,"
-                        + "  users.issuperadmin,"
-                        + "  users.apiKey,"
-                        + "users.key_never_expire,"
-                        + "users.key_expires_at,"
-                        + "users.isservice_account,"
-                        + "users.key_description"
-                        + " FROM users"
-                        + " WHERE apikey ilike '" + apiKey + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeUser = new NodeUser();
-                        nodeUser.setIdUser(resultSet.getInt("id_user"));
-                        nodeUser.setName(resultSet.getString("username"));
-                        nodeUser.setActive(resultSet.getBoolean("active"));
-                        nodeUser.setMail(resultSet.getString("mail"));
-                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
-                        nodeUser.setPassToModify(resultSet.getBoolean("passtomodify"));
-                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
-                        nodeUser.setApiKey(resultSet.getString("apiKey"));
-                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
-                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
-                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
-                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
-
-                    }
-                }
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUser;
-    }
-
     /**
      * cette fonction permet de retourner les informations de l'utilisateur
      *
@@ -293,36 +248,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeUser;
-    }
-
-    /**
-     * cette fonction permet de retourner le nom d'un groupe
-     *
-     *
-     * @param projectName
-     * @return
-     */
-    public int getThisProjectId(String projectName) {
-        int projectId = -1;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT"
-                        + "  user_group_label.id_group"
-                        + " FROM"
-                        + "  user_group_label"
-                        + " WHERE"
-                        + "  user_group_label.label_group ilike '" + projectName + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        projectId = resultSet.getInt("id_group");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return projectId;
     }
 
     /**
@@ -638,154 +563,6 @@ public class UserHelper {
     }
 
     /**
-     * permet de créer un groupe ou projet pour regrouper les utilisateurs et
-     * les thésaurus
-     *
-     * @param userGroupName
-     * @return
-     */
-    public boolean addNewProject(String userGroupName) {
-        boolean status = false;
-        userGroupName = fr.cnrs.opentheso.utils.StringUtils.convertString(userGroupName);
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("Insert into user_group_label"
-                        + "(label_group)"
-                        + " values ('"
-                        + userGroupName + "')");
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de savoir si le groupe ou projet existe déja
-     *
-     * @param userGroupName
-     * @return
-     */
-    public boolean isUserGroupExist(String userGroupName) {
-        boolean existe = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_group FROM user_group_label WHERE label_group ilike '" + userGroupName + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        existe = true;
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return existe;
-    }
-
-    /**
-     * permet de mettre à jour les alertes et activer/désactiver l'utilisateur e
-     *
-     * @param idUser
-     * @param name
-     * @param email
-     * @param isIsActive
-     * @param isIsAlertMail
-     * @return
-     */
-    public boolean updateUser(int idUser, String name, String email, boolean isIsActive, boolean isIsAlertMail) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set alertmail = " + isIsAlertMail
-                        + ", username = '" + name + "'"
-                        + ", mail = '" + email + "'"
-                        + ", active = " + isIsActive
-                        + " WHERE id_user = " + idUser);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    public boolean setIsSuperAdmin(Connection conn, int idUser, boolean isSuperAdmin) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("UPDATE users set "
-                    + " issuperadmin = " + isSuperAdmin
-                    + " WHERE id_user = " + idUser);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * Permet de passer un thésaurus d'un groupe à un autre
-     *
-     * @param idTheso
-     * @param newGroup
-     * @return #MR
-     */
-    public boolean moveThesoToGroup(String idTheso, int newGroup) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-
-            if (!deleteThesoFromGroup(idTheso)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            if (!moveThesoToGroupRollBack(conn, idTheso, newGroup)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            conn.commit();
-            status = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    private boolean moveThesoToGroupRollBack(Connection conn, String idTheso, int newGroup) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("insert into user_group_thesaurus(id_group, id_thesaurus)"
-                    + " values('" + newGroup + "'," + "'" + idTheso + "')");
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * permet de supprimer l'appartenance d'un thesaurus à un groupe/projet
-     *
-     * @param idTheso
-     * @return #MR
-     */
-    public boolean deleteThesoFromGroup(String idTheso) {
-        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("delete from user_group_thesaurus where"
-                    + " id_thesaurus ='" + idTheso + "'");
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
      * permet d'ajouter un thesaurus à un groupe/projet
      *
      * @param idTheso
@@ -801,26 +578,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-    }
-
-    /**
-     * permet de supprimer cet utilisateur
-     *
-     * @param idUser
-     * @return
-     */
-    public boolean deleteUser(int idUser) {
-        boolean status = false;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("delete from users where id_user =" + idUser);
-                stmt.executeUpdate("delete from user_role_group where id_user = " + idUser);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
     }
 
     /**
@@ -1240,61 +997,6 @@ public class UserHelper {
         return status;
     }
 
-    /**
-     * permet de supprimer le Projet ou groupe
-     *
-     * @param idGroup
-     * @return
-     */
-    public boolean deleteProjectGroup(int idGroup) {
-        Statement stmt;
-        boolean status = false;
-        Connection conn = null;
-        try {
-            conn = dataSource.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "delete from user_role_group where"
-                            + " id_group =" + idGroup;
-                    stmt.executeUpdate(query);
-
-                    query = "delete from user_group_thesaurus where"
-                            + " id_group =" + idGroup;
-                    stmt.executeUpdate(query);
-
-                    query = "delete from user_group_label where"
-                            + " id_group =" + idGroup;
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-            } finally {
-            }
-        } catch (SQLException sqle) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, sqle);
-        }
-
-        try {
-            if (conn != null) {
-                if (status) {
-                    conn.commit();
-                    conn.close();
-                } else {
-                    conn.rollback();
-                    conn.close();
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
     public boolean isUserMailExist(String mail) {
 
         try (Connection conn = dataSource.getConnection()) {
@@ -1377,31 +1079,6 @@ public class UserHelper {
         return name;
     }
 
-    ///////////////////////////
-    /// fin à vérifier
-    //////////////////////////    
-    /**
-     * permet de renommer un projet
-     *
-     * @param newValue
-     * @param idProject
-     * @return
-     */
-    public boolean updateProject(String newValue, int idProject) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE user_group_label set label_group = '" + newValue
-                        + "' WHERE id_group = " + idProject);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
     /**
      * Permet de savoir si l'utilisateur a un droit d'admin sur le groupe
      *
@@ -1464,11 +1141,6 @@ public class UserHelper {
         return nodeIdValues;
     }
 
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    //////// fin des nouvelles fontions ////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
     public Optional<Integer> getUserGroupId (int userId, String thesoId){
         try (Connection connection = dataSource.getConnection()){
             try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +

@@ -141,7 +141,7 @@
 
                                                                 <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
+                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso)}"
                                                                                      update="idMoveThesoToAnotherProject"
                                                                                      oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
                                                                                      title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"

@@ -19,6 +19,8 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
 
     void deleteByUserAndGroup(User user, UserGroupLabel group);
 
+    void deleteByGroup(UserGroupLabel group);
+
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(" +
             "urg.role.id, r.name, urg.group.id, g.label, " +
             "CASE WHEN urg.role.id = 2 THEN true ELSE false END, " +

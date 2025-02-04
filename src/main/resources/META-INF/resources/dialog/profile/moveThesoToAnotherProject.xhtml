@@ -58,7 +58,7 @@
                                  update="containerIndex messageIndex"
                                  ajax="true" process="@form"
                                  oncomplete="PF('moveThesoToAnotherProject').hide();"
-                                 actionListener="#{moveThesoToProjectBean.moveThesoToProject()}" >
+                                 actionListener="#{moveThesoToProjectBean.moveThesoToProject(false)}" >
                     <p:tooltip value="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}" showDelay="1000" />
                 </p:commandButton>
             </div> 

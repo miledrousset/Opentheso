@@ -14,7 +14,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 
 
 @Data
@@ -25,7 +24,8 @@ public class MyProjectBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired
+    private CurrentUser currentUser;
 
     @Autowired
     private UserHelper userHelper;
