@@ -151,4 +151,5 @@
         <sqlFile path="../changelog/v25.02/25-02_01.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
     <include file="/changelog/v25.02/25-02_02.xml"/>
+    <include file="/changelog/v25.02/25-02_03.xml"/>
 </databaseChangeLog>
