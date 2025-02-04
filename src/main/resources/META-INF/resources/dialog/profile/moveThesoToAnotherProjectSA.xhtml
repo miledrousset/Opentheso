@@ -49,7 +49,7 @@
                                  ajax="true" process="@form"
                                  oncomplete="PF('moveThesoToAnotherProjectSA').hide();"
                                  update="messageIndex containerIndex"                     
-                                 actionListener="#{moveThesoToProjectBean.moveThesoToProjectSA()}" />
+                                 actionListener="#{moveThesoToProjectBean.moveThesoToProject(true)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

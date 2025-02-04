@@ -36,8 +36,6 @@ import fr.cnrs.opentheso.entites.Release;
 @Named(value = "newVersionBean")
 public class NewVersionService implements Serializable {
 
-    
-
     @Autowired
     private ReleaseRepository releaseRepository;
 

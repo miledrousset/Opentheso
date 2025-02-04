@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RequestScoped
 public class ForgetPassBean implements Serializable {
 
-    
-
     @Autowired
     private MailBean mailBean;
 
