@@ -56,6 +56,13 @@ public class UserController {
         if (!user.isSuperAdmin()) {
             user.setThesorusList(userHelper.getThesaurusOfUser(user.getIdUser()));
         }
+        if (StringUtils.isEmpty(user.getApiKey())) {
+            var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
+            if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), user.getIdUser())){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
+            }
+            user.setApiKey(apiKeyValue);
+        }
         return ResponseEntity.ok().body(user);
     }
 
