@@ -95,7 +95,7 @@
                                         <p:toolbar>
                                             <p:toolbarGroup align="right">
                                                 <p:commandButton value="#{langueBean.getMsg('profile.new_userOnProject')}" icon="fas fa-user-plus"
-                                                                 actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
+                                                                 actionListener="#{newUserBean.init(myProjectBean.selectedProject)}"
                                                                  style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;"
                                                                  update="idNewUserForProject newUserForProjectForm" oncomplete="PF('newUserForProject').show();"
                                                                  styleClass="ui-button-success" 
@@ -181,7 +181,7 @@
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_user')}" style="text-align: center">
                                                                     <p:commandButton
-                                                                                     actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
+                                                                                     actionListener="#{modifyUserBean.selectUser(listUser.idUser)}"
 
                                                                                      icon="pi pi-user-edit" update="idModifyUser"
                                                                                      oncomplete="PF('modifyUser').show()" process="@this"
@@ -244,7 +244,7 @@
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_user')}" style="text-align: center">
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUserLimited.idUser}"
-                                                                                     actionListener="#{modifyUSerBean.selectUser(listUserLimited.idUser)}"
+                                                                                     actionListener="#{modifyUserBean.selectUser(listUserLimited.idUser)}"
                                                                                      icon="pi pi-user-edit" update="idModifyUser"
                                                                                      oncomplete="PF('modifyUser').show()" process="@this"
                                                                                      styleClass="edit-button rounded-button" />
