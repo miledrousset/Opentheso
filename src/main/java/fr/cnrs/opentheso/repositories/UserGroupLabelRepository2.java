@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserGroupLabelRepository2 extends JpaRepository<UserGroupLabel, Integer> {
@@ -17,5 +18,9 @@ public interface UserGroupLabelRepository2 extends JpaRepository<UserGroupLabel,
             "AND urg.role.id = :idRole " +
             "ORDER BY ugl.label")
     List<UserGroupLabel> findProjectsByRole(@Param("idUser") int idUser, @Param("idRole") int idRole);
+
+    Optional<UserGroupLabel> findByLabelLike(String label);
+
+    void deleteById(int groupId);
 
 }

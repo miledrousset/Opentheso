@@ -1,62 +1,91 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.RoleRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
-
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.stream.Collectors;
-
+import jakarta.annotation.PreDestroy;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
-@SessionScoped
-@NoArgsConstructor
 @Named(value = "myProjectBean")
+@SessionScoped
 public class MyProjectBean implements Serializable {
 
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
+    @Autowired
     private CurrentUser currentUser;
+
+    @Autowired
     private UserHelper userHelper;
-    private RoleRepository roleRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
 
-    private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
+    private ArrayList<NodeIdValue> listeThesoOfProject;
     private Map<String, String> listeGroupsOfUser;
-    private List<NodeUserRole> listeUserLimitedRole, listeUser;
-    private NodeUserRoleGroup nodeUserRoleOnThisGroup, nodeUserRoleSuperAdmin, myRoleOnThisProject;
-    private String selectedProject, selectedProjectName, selectedIndex, workLanguage;
+    private ArrayList<NodeUserRole> listeUser; // la liste des utilisateur du groupe    
+    
+    private ArrayList<NodeUserRole> listeUserLimitedRole; // la liste des utilisateur du groupe avec des droits limités       
+    
+    private NodeUserRoleGroup nodeUserRoleOnThisGroup;
+    private NodeUserRoleGroup nodeUserRoleSuperAdmin;   
+    
+    // liste des roles que l'utilisateur en cours peut attribuer
+    private ArrayList<NodeIdValue> myAuthorizedRoles;   
+    
+    // Mon Role sur ce groupe  
+    private NodeUserRoleGroup myRoleOnThisProject;     
+    
+    private String selectedProject;
+    private String selectedProjectName;    
+    private String selectedIndex;
+    
 
-
-    @Inject
-    public MyProjectBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                         UserGroupLabelRepository2 userGroupLabelRepository,
-                         RoleRepository roleRepository,
-                         UserRoleGroupRepository userRoleGroupRepository,
-                         CurrentUser currentUser,
-                         UserHelper userHelper) {
-
-        this.workLanguage = workLanguage;
-        this.currentUser = currentUser;
-        this.userHelper = userHelper;
-        this.roleRepository = roleRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(listeThesoOfProject!= null){
+            listeThesoOfProject.clear();
+            listeThesoOfProject = null;
+        }
+        if(listeGroupsOfUser!= null){
+            listeGroupsOfUser.clear();
+            listeGroupsOfUser = null;
+        }
+        if(listeUser!= null){
+            listeUser.clear();
+            listeUser = null;
+        }
+        
+        if(listeUserLimitedRole != null){
+            listeUserLimitedRole.clear();
+            listeUserLimitedRole = null;
+        }
+        
+        if(myAuthorizedRoles!= null){
+            myAuthorizedRoles.clear();
+            myAuthorizedRoles = null;
+        }        
+        nodeUserRoleOnThisGroup = null;
+        nodeUserRoleSuperAdmin = null;
+        myRoleOnThisProject = null;  
+        selectedProject = null;  
+        selectedProjectName = null;  
+        selectedIndex = "0";
+    }  
+    
+    public MyProjectBean() {
     }
 
     public void init() {
@@ -100,9 +129,7 @@ public class MyProjectBean implements Serializable {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }
-        myAuthorizedRoles = roleRepository.findAllByIdGreaterThanEqual(idRoleFrom).stream()
-                .map(element -> NodeIdValue.builder().id(element.getId() + "").value(element.getName()).build())
-                .toList();
+        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(idRoleFrom);
     }     
 
     /**
@@ -110,8 +137,7 @@ public class MyProjectBean implements Serializable {
      */
     private void getGroupsOfUser() {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeGroupsOfUser = userGroupLabelRepository.findAll().stream()
-                    .collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel));
+            listeGroupsOfUser = userHelper.getAllGroups();
             return;
         }
         listeGroupsOfUser = userHelper.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
@@ -125,7 +151,7 @@ public class MyProjectBean implements Serializable {
         nodeUserRoleSuperAdmin = null;
         getListThesoByGroup();
         listUsersByGroup();
-        resetListLimitedRoleUsers();
+        listUsersLimitedRoleByGroup();
         initMyAuthorizedRoleOnThisGroup();
         initAuthorizedRoles();        
     }    
@@ -141,14 +167,10 @@ public class MyProjectBean implements Serializable {
      * appel après la modifcation d'un rôle limité pour un utilisateur
      */
     public void resetListLimitedRoleUsers(){
-        if (selectedProject == null || selectedProject.isEmpty()) {
-            return;
-        }
-
-        int idGroup = Integer.parseInt(selectedProject);
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
-    }
-
+        listUsersLimitedRoleByGroup(); 
+    }    
+    
+   
     
     /**
      * retourne la liste des thésaurus par groupe
@@ -159,7 +181,8 @@ public class MyProjectBean implements Serializable {
             return;
         }
         
-        var idGroup = Integer.parseInt(selectedProject);
+        int idGroup = Integer.parseInt(selectedProject);
+        
         listeThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
     } 
     
@@ -174,18 +197,34 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleSuperAdmin.getIdRole());
+            listeUser = userHelper.getUsersRolesByGroup(
+                    idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
             if (nodeUserRoleOnThisGroup != null) {
-                listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleOnThisGroup.getIdRole());
+                listeUser = userHelper.getUsersRolesByGroup(
+                        idGroup, nodeUserRoleOnThisGroup.getIdRole());
             } else {
                 if (listeUser != null) {
                     listeUser.clear(); //cas où on supprime l'utilisateur en cours
                 }
             }
         }
-        resetListLimitedRoleUsers();
+        listUsersLimitedRoleByGroup();
     }
+    
+     
+    
+    /**
+     * permet de récupérer la liste des utilisateurs et les rôles sur les thésaurus du projet
+     */
+    private void listUsersLimitedRoleByGroup(){
+        if (selectedProject == null || selectedProject.isEmpty()) {
+            return;
+        }
+
+        int idGroup = Integer.parseInt(selectedProject);
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
+    }    
     
     /**
      * setting du role de l'utilisateur sur le group séléctionné
@@ -195,14 +234,15 @@ public class MyProjectBean implements Serializable {
      * @return
      */
     private void setUserRoleOnThisGroup() {
-
-        if (StringUtils.isEmpty(selectedProject)) {
+        if (selectedProject == null) {
+            return;
+        }
+        if (selectedProject.isEmpty()) {
             return;
         }
         int idGroup = Integer.parseInt(selectedProject);
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            var role = roleRepository.findById(1).get();
-            nodeUserRoleSuperAdmin = NodeUserRoleGroup.builder().idRole(role.getId()).roleName(role.getName()).build();
+            nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin();
             return;
         }
         nodeUserRoleOnThisGroup = userHelper.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
@@ -218,19 +258,21 @@ public class MyProjectBean implements Serializable {
         if (currentUser.getNodeUser().isSuperAdmin()) {
             return true;
         }
-
-        if (StringUtils.isEmpty(selectedProject)) {
+        if (selectedProject == null) {
             return false;
         }
-
+        if (selectedProject.isEmpty()) {
+            return false;
+        }
         int idGroup = Integer.parseInt(selectedProject);
-        return userRoleGroupRepository.findUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup).get().getIdRole() < 3;
+        return userHelper.isAdminOnThisGroup(
+                currentUser.getNodeUser().getIdUser(), idGroup);
     }
     
     public String getSelectedProjectName() {
-        if(selectedProject != null)
+        if(selectedProject != null) 
             if(!selectedProject.isEmpty())
-                selectedProjectName = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get().getLabel();
+                selectedProjectName = userHelper.getGroupName(Integer.parseInt(selectedProject));
             else
                 selectedProjectName = selectedProject;
         return selectedProjectName;
