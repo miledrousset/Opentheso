@@ -103,7 +103,7 @@ public class ApiKeyHelper {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement stmt = connection.prepareStatement("SELECT id_user, key_expires_at FROM users WHERE apikey =?")) {
-                stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+                stmt.setString(1, apiKey);
                 ResultSet result = stmt.executeQuery();
                 if (result.next()) {
                     return result.getInt("id_user");
