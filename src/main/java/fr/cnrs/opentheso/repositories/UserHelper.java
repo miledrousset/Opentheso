@@ -976,27 +976,6 @@ public class UserHelper {
         return nodeUserRoleGroup;
     }
 
-    /**
-     * permet de supprimer le role d'un utilisateur sur ce groupe
-     *
-     * @param idUser
-     * @param idGroup
-     * @return
-     */
-    // TODO TO DELETE
-    public boolean deleteRoleOnGroup(int idUser, int idGroup) {
-        boolean status = false;
-        try (var conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("delete from user_role_group where"
-                    + " id_user =" + idUser
-                    + " and id_group = " + idGroup);
-            status = true;
-        } catch (SQLException sqle) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, sqle);
-        }
-        return status;
-    }
-
     public boolean isUserMailExist(String mail) {
 
         try (Connection conn = dataSource.getConnection()) {

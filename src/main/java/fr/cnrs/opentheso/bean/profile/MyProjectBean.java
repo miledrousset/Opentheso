@@ -8,11 +8,9 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import jakarta.annotation.PreDestroy;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -24,68 +22,19 @@ public class MyProjectBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired
-    private CurrentUser currentUser;
+    private final CurrentUser currentUser;
+    private final UserHelper userHelper;
 
-    @Autowired
-    private UserHelper userHelper;
-
-    private ArrayList<NodeIdValue> listeThesoOfProject;
+    private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
     private Map<String, String> listeGroupsOfUser;
-    private ArrayList<NodeUserRole> listeUser; // la liste des utilisateur du groupe    
-    
-    private ArrayList<NodeUserRole> listeUserLimitedRole; // la liste des utilisateur du groupe avec des droits limités       
-    
-    private NodeUserRoleGroup nodeUserRoleOnThisGroup;
-    private NodeUserRoleGroup nodeUserRoleSuperAdmin;   
-    
-    // liste des roles que l'utilisateur en cours peut attribuer
-    private ArrayList<NodeIdValue> myAuthorizedRoles;   
-    
-    // Mon Role sur ce groupe  
-    private NodeUserRoleGroup myRoleOnThisProject;     
-    
-    private String selectedProject;
-    private String selectedProjectName;    
-    private String selectedIndex;
-    
+    private List<NodeUserRole> listeUserLimitedRole, listeUser; // la liste des utilisateur du groupe avec des droits limités
+    private NodeUserRoleGroup nodeUserRoleOnThisGroup, nodeUserRoleSuperAdmin, myRoleOnThisProject;
+    private String selectedProject, selectedProjectName, selectedIndex;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(listeThesoOfProject!= null){
-            listeThesoOfProject.clear();
-            listeThesoOfProject = null;
-        }
-        if(listeGroupsOfUser!= null){
-            listeGroupsOfUser.clear();
-            listeGroupsOfUser = null;
-        }
-        if(listeUser!= null){
-            listeUser.clear();
-            listeUser = null;
-        }
-        
-        if(listeUserLimitedRole != null){
-            listeUserLimitedRole.clear();
-            listeUserLimitedRole = null;
-        }
-        
-        if(myAuthorizedRoles!= null){
-            myAuthorizedRoles.clear();
-            myAuthorizedRoles = null;
-        }        
-        nodeUserRoleOnThisGroup = null;
-        nodeUserRoleSuperAdmin = null;
-        myRoleOnThisProject = null;  
-        selectedProject = null;  
-        selectedProjectName = null;  
-        selectedIndex = "0";
-    }  
-    
-    public MyProjectBean() {
+
+    public MyProjectBean(CurrentUser currentUser, UserHelper userHelper) {
+        this.currentUser = currentUser;
+        this.userHelper = userHelper;
     }
 
     public void init() {
@@ -182,7 +131,6 @@ public class MyProjectBean implements Serializable {
         }
         
         int idGroup = Integer.parseInt(selectedProject);
-        
         listeThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
     } 
     
