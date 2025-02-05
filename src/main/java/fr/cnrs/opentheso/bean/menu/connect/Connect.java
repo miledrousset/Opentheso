@@ -20,7 +20,6 @@ public class Connect implements Serializable{
     @Value("${info.application.version}")
     private String buildVersion;
 
-
     //Retourne la version actuelle d'Opentheso d'après le WAR
     public String getOpenthesoVersion() {
         return buildVersion;
