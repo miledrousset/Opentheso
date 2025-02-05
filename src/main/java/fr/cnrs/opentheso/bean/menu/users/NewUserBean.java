@@ -26,9 +26,9 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Named(value = "newUSerBean")
+@Named(value = "newUserBean")
 @SessionScoped
-public class NewUSerBean implements Serializable {
+public class NewUserBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
@@ -54,8 +54,7 @@ public class NewUSerBean implements Serializable {
     private boolean limitOnTheso;
     private ArrayList<NodeIdValue> listThesoOfProject;
     private List<String> selectedThesos;
-    
-    
+
     @PreDestroy
     public void destroy(){
         clear();

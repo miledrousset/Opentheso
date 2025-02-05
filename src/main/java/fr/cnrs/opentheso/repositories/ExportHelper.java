@@ -119,7 +119,9 @@ public class ExportHelper {
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
         String note;
-        
+        if(baseUrl.endsWith("/")){
+            baseUrl = baseUrl.substring(0, baseUrl.length()-1);
+        }
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.setQueryTimeout(3600);

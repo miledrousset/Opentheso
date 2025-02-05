@@ -11,6 +11,7 @@ public class NodeCorpus {
     private String uriLink;
     private boolean isOnlyUriLink;
     private boolean active;
+    private boolean omekaS;
     private int count = -1;
 
 }

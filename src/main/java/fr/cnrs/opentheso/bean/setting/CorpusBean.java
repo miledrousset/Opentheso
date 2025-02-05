@@ -82,14 +82,16 @@ public class CorpusBean implements Serializable {
         }
 
         //Vérification de l'URI du comptage
-        if(!nodeCorpusForEdit.isOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
-            return;
+        if(!nodeCorpusForEdit.isOnlyUriLink()){
+            if(nodeCorpusForEdit.getUriCount().isEmpty()) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
+                return;
+            }
         }
-        if (nodeCorpusForEdit.isOnlyUriLink() ) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
-            return;
-        }
+//        if (nodeCorpusForEdit.isOnlyUriLink() ) {
+//            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
+//            return;
+//        }
 
         if (corpusHelper.isCorpusExist(selectedTheso.getCurrentIdTheso(),
                 nodeCorpusForEdit.getCorpusName()) && !nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
@@ -137,10 +139,10 @@ public class CorpusBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
             return;
         }
-        if (nodeCorpusForEdit.isOnlyUriLink() ) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
-            return;
-        }
+//        if (nodeCorpusForEdit.isOnlyUriLink() ) {
+//            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
+//            return;
+//        }
 
         if (corpusHelper.isCorpusExist(selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Ce corpus existe déjà, changez de nom !");
@@ -193,8 +195,11 @@ public class CorpusBean implements Serializable {
         nodeCorpusForEdit.setOnlyUriLink(nodeCorpus.isOnlyUriLink());
         nodeCorpusForEdit.setUriLink(nodeCorpus.getUriLink());
         nodeCorpusForEdit.setUriCount(nodeCorpus.getUriCount());
+        nodeCorpusForEdit.setOmekaS(nodeCorpus.isOmekaS());
 
         oldName = nodeCorpus.getCorpusName();
     }
-
+    public void setCorpusForNew() {
+        nodeCorpusForEdit = new NodeCorpus();
+    }
 }

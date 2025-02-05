@@ -20,9 +20,9 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Named(value = "modifyUSerBean")
+@Named(value = "modifyUserBean")
 @SessionScoped
-public class ModifyUSerBean implements Serializable {
+public class ModifyUserBean implements Serializable {
 
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
@@ -43,7 +43,6 @@ public class ModifyUSerBean implements Serializable {
     public void toggleKeyNeverExpire(){
     }
 
-    
     /**
      * Permet de selectionner l'utilisateur dans la liste avec toutes les
      * informations nécessaires pour sa modification
