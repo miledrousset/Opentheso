@@ -12,12 +12,13 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 import java.io.Serializable;
 import java.util.List;
 
-
+@Data
 @Named(value = "moveThesoToProjectBean")
 @SessionScoped
 public class MoveThesoToProjectBean implements Serializable {
