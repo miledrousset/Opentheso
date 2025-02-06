@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     // Paramètres par défaut
     const DEFAULT_LANGUAGE = 'fr';
-    const DEFAULT_BASE_URL = 'https://pactols.frantiq.fr/opentheso';
+    const DEFAULT_BASE_URL = 'https://pactols.frantiq.fr';
 
     const languagesMap = new Map([["fr", "Français"], ["en", "Anglais"], ["it", "Italien"],
         ["es", "Espagnol"], ["ru", "Russian"], ["ar", "Arabe"], ["he", "Hebrew"], ["de", "Allemand"],

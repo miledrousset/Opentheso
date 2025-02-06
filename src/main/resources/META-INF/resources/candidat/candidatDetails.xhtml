@@ -326,7 +326,7 @@
                         </div>
 
                         <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                            <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}">
+                            <div title="#{langueBean.getMsg('candidat.term.no_edit')}" class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}" >
                                 <div class="col-3" >
                                     <h:outputText value="#{note.lexicalValue}" escape="false" style="font-size: 14px;" title="#{langueBean.getMsg('rightbody.concept.by')} #{candidatBean.getUserName(note.idUser)}"/>
                                 </div>
@@ -364,6 +364,7 @@
                                                      actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
                                                      style="color: #666666"/>
                                 </div>
+
                             </div>
                         </ui:repeat>
                     </h:panelGroup>

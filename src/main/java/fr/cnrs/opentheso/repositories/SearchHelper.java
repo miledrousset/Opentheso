@@ -140,6 +140,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
+                                + " and concept.status not in ('DEP', 'CA')"
                                 + multiValuesPT
                                 + " order by term.lexical_value ASC limit 100";
                     }
@@ -182,6 +183,7 @@ public class SearchHelper {
                                 + " and"
                                 + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
                                 + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
+                                + " and concept.status not in ('DEP', 'CA')"
                                 + multiValuesNPT
                                 + " order by non_preferred_term.lexical_value ASC limit 100";
                     } else {
@@ -194,6 +196,7 @@ public class SearchHelper {
                                 + " and preferred_term.id_concept = concept.id_concept"
                                 + " AND preferred_term.id_thesaurus = concept.id_thesaurus"
                                 + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
+                                + " and concept.status not in ('DEP', 'CA')"
                                 + multiValuesNPT
                                 + " order by non_preferred_term.lexical_value ASC limit 100";
                     }
