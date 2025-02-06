@@ -1233,9 +1233,7 @@ public class RestRDFHelper {
      * @param idTheso
      * @return skos
      */
-    private WriteRdf4j brancheOfGroup__(
-            
-            String[] groups, String idTheso) {
+    private WriteRdf4j brancheOfGroup__(String[] groups, String idTheso) {
 
         if (groups == null || idTheso == null) {
             return null;
@@ -1248,6 +1246,7 @@ public class RestRDFHelper {
         var skosXmlDocument = new SKOSXmlDocument();
         ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(idTheso, groups);
         for (String idConcept : branchs) {
+            exportRdf4jHelperNew.setInfos(nodePreference);
             skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
         }
         return new WriteRdf4j(skosXmlDocument);
