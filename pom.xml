@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso</groupId>
     <artifactId>opentheso</artifactId>
-    <version>25.02.01</version>
+    <version>25.02.03</version>
     <packaging>jar</packaging>
     <name>opentheso</name>
 
@@ -463,6 +463,7 @@
     </properties>
 
     <build>
+        <finalName>opentheso-latest</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

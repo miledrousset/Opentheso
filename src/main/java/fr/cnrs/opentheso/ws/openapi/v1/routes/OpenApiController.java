@@ -65,7 +65,7 @@ public class OpenApiController {
     )
     public ResponseEntity<Object> testAuth(@RequestHeader(value = "API-KEY") String apiKey)  {
 
-        var keyState = apiKeyHelper.checkApiKey(MD5Password.getEncodedPassword(apiKey));
+        var keyState = apiKeyHelper.checkApiKey(apiKey);
         if (keyState != ApiKeyState.VALID) {
             return errorResponse(keyState);
         }

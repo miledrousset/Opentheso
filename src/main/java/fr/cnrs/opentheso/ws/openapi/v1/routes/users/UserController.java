@@ -71,8 +71,8 @@ public class UserController {
     @Operation(summary = "Créer un nouveau utilisateur")
     public ResponseEntity createUser(@RequestHeader(value = "API-KEY") String apiKey,
                                      @RequestBody @Valid UserDto userDto) {
-
-        if (getUser(apiKey).isSuperAdmin()) {
+        NodeUser nodeUser = getUser(apiKey);
+        if (nodeUser != null && nodeUser.isSuperAdmin()) {
             if(!userHelper.addUser(userDto.getLogin(), userDto.getMail(), userDto.getPassword(), userDto.isSuperAdmin(), userDto.isAlertMail())){
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la création de l'utilisateur !!!");
             }

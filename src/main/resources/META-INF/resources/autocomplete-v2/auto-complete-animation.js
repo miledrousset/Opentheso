@@ -401,8 +401,10 @@ $(document).ready(function () {
         }
 
         demoAutoComplete.value = '';
+  //      if (autoCompleteInstance) {
+            autoCompleteInstance.destroy();
+    //    }
 
-        autoCompleteInstance.destroy();
         autoCompleteInstance = new autoComplete({
             selector: '#demoAutoComplete',
             loading: 'loading',

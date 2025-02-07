@@ -941,12 +941,16 @@ public class ImportRdf4jHelper {
 
     public void addFoafImages(ArrayList<SKOSResource> foafImages, String idTheso) {
         String images;
+        fr.cnrs.opentheso.utils.StringUtils stringUtils = new fr.cnrs.opentheso.utils.StringUtils();
         for (SKOSResource sKOSResource : foafImages) {
             FoafImage foafImage = sKOSResource.getFoafImage();
             if (foafImage == null) {
                 return;
             }
-            images = foafImage.getImageName() + SOUS_SEPERATEUR + foafImage.getCopyRight() + SOUS_SEPERATEUR + sKOSResource.getUri() + SOUS_SEPERATEUR + foafImage.getCreator();
+            images = stringUtils.convertString(foafImage.getImageName()) + SOUS_SEPERATEUR +
+                    stringUtils.convertString(foafImage.getCopyRight()) + SOUS_SEPERATEUR +
+                    sKOSResource.getUri() + SOUS_SEPERATEUR +
+                    stringUtils.convertString(foafImage.getCreator());
             if (StringUtils.isEmpty(images)) {
                 return;
             }

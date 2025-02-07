@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 
+import fr.cnrs.opentheso.utils.MD5Password;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -340,6 +341,7 @@ public class UserHelper {
 
     public NodeUser getUserByApiKey(String apiKey) {
         NodeUser nodeUser = null;
+        apiKey = MD5Password.getEncodedPassword(apiKey);
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
