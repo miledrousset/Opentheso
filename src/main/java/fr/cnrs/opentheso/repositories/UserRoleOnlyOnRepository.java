@@ -26,4 +26,6 @@ public interface UserRoleOnlyOnRepository extends JpaRepository<UserRoleOnlyOn, 
     void deleteByUserAndGroup(User user, UserGroupLabel group);
 
     void deleteByUserAndGroupAndRoleAndTheso(User user, UserGroupLabel group, Roles role, Thesaurus theso);
+
+    List<NodeUserRole> findAllByUserOrderByTheso(User user);
 }
