@@ -7,7 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
@@ -40,6 +42,12 @@ public class RoleOnThesoBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
+
+    @Autowired
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+
+    @Autowired
+    private final UserRepository userRepository;
 
     @Autowired
     private LanguageBean languageBean;
@@ -99,7 +107,7 @@ public class RoleOnThesoBean implements Serializable {
         nodeUserRoleGroup = null;
         nodePreference = null;
         thesoInfos = null;
-       
+
         if(listTheso != null){
             listTheso.clear();
             listTheso = null;
@@ -199,8 +207,10 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
 
+            var user = userRepository.findById(currentUser.getNodeUser().getIdUser());
             // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            List<String> listThesoTemp = userHelper.getListThesoLimitedRoleByUser(currentUser.getNodeUser().getIdUser());
+            List<String> listThesoTemp = userRoleOnlyOnRepository.findAllByUserOrderByTheso(user.get()).stream()
+                    .map(element -> element.getIdTheso()).toList();
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedTheso.contains(idThesoTemp)) {
                     authorizedTheso.add(idThesoTemp);
@@ -405,15 +415,13 @@ public class RoleOnThesoBean implements Serializable {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1, currentUser); // cas de superadmin, on a accès à tous les groupes
             setRole();
         } else {
-
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup, currentUser);
         }
 
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(
-                    currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
+            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
             if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
                 setRole();
             } else
