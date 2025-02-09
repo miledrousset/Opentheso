@@ -75,7 +75,7 @@ public class ConceptHelper {
     private TermHelper termHelper;
 
     @Autowired
-    private UserHelper userHelper;
+    private UserRepository userRepository;
 
     @Autowired
     private HandleHelper handleHelper;
@@ -3284,8 +3284,8 @@ public class ConceptHelper {
             concept.setNotation("");
         }
 
-        concept.setCreator(userHelper.getIdUserFromPseudo(concept.getCreatorName()));
-        concept.setContributor(userHelper.getIdUserFromPseudo(concept.getContributorName()));
+        concept.setCreator(userRepository.findAllByUsername(concept.getCreatorName()).get().getId());
+        concept.setContributor(userRepository.findAllByUsername(concept.getContributorName()).get().getId());
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -3399,8 +3399,8 @@ public class ConceptHelper {
                 }
 
                 if (concept != null) {
-                    String contributor = userHelper.getNameUser(concept.getContributor());
-                    String creator = userHelper.getNameUser(concept.getCreator());
+                    String contributor = userRepository.findById(concept.getContributor()).get().getUsername();
+                    String creator = userRepository.findById(concept.getCreator()).get().getUsername();
                     if (contributor != null && !contributor.isEmpty()) {
                         concept.setContributorName(contributor);
                     } else {

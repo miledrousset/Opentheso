@@ -39,85 +39,6 @@ public class UserHelper {
     private PreferencesHelper preferencesHelper;
 
 
-    /**
-     * Permet de récupérer l'Id de l'utilisateur si l'ulisateur existe ou si le
-     * mot de passe est faux, on retourne (-1) sinon, on retourne l'ID de
-     * l'utilisateur de retourner l'identifiant
-     *
-     * @param login
-     * @param pwd
-     * @return
-     */
-    public int getIdUser(String login, String pwd) {
-        int idUser = -1;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '" + login + "' AND password='" + pwd + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        idUser = resultSet.getInt("id_user");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idUser;
-    }
-
-    /**
-     * Permet de récupérer l'Id de l'utilisateur à partir de son mail si
-     * l'ulisateur existe ou si le mot de passe est faux, on retourne (-1)
-     * sinon, on retourne l'ID de l'utilisateur de retourner l'identifiant
-     *
-     * @param mail
-     * @return
-     */
-    public int getIdUserFromMail(String mail) {
-        int idUser = -1;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE mail ilike '"
-                        + mail + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        idUser = resultSet.getInt("id_user");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idUser;
-    }
-
-    /**
-     * Permet de récupérer l'Id de l'utilisateur à partir de son mail si
-     * l'ulisateur existe ou si le mot de passe est faux, on retourne (-1)
-     * sinon, on retourne l'ID de l'utilisateur de retourner l'identifiant
-     *
-     * @param pseudo
-     * @return
-     */
-    public int getIdUserFromPseudo(String pseudo) {
-        int idUser = -1;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '"
-                        + pseudo + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        idUser = resultSet.getInt("id_user");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idUser;
-    }
-
     public List<NodeUser> searchUserByCriteria(String mail, String username) {
         mail = StringUtils.isEmpty(mail) ? "" : mail;
         username = StringUtils.isEmpty(username) ? "" : username;
@@ -348,7 +269,6 @@ public class UserHelper {
                         userGroupLabel.setId(resultSet.getInt("id_group"));
                         userGroupLabel.setLabel(resultSet.getString("label_group"));
                         userGroupLabels.add(userGroupLabel);
-                        //listGroup.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
                     }
                 }
                 stmt.executeQuery("SELECT distinct (user_group_label.id_group),  user_group_label.label_group "
@@ -385,7 +305,7 @@ public class UserHelper {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT  user_group_label.id_group,  user_group_label.label_group FROM user_group_label order by label_group");
+                stmt.executeQuery("SELECT  user_group_label.id_group, user_group_label.label_group FROM user_group_label order by label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         sortedHashMap.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
@@ -689,36 +609,6 @@ public class UserHelper {
      * @param idUser
      * @return
      */
-    public List<String> getListThesoLimitedRoleByUser(int idUser) {
-        List<String> listThesos = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT user_role_only_on.id_theso"
-                        + " FROM"
-                        + " user_role_only_on "
-                        + " WHERE "
-                        + " user_role_only_on.id_user = " + idUser
-                        + " ORDER BY id_theso");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        listThesos.add(resultSet.getString("id_theso"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listThesos;
-    }
-
-    /**
-     * cette fonction permet de retourner la liste des utilisateurs pour un
-     * groupe avec un role limité sur des thésaurus du group/projet en cours
-     *
-     * @param idUser
-     * @return
-     */
     public List<String> getListThesoLimitedRoleByUserAsAdmin(int idUser) {
         List<String> listThesos = new ArrayList<>();
 
@@ -974,88 +864,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeUserRoleGroup;
-    }
-
-    public boolean isUserMailExist(String mail) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT mail FROM users WHERE mail ilike '" + mail + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    resultSet.next();
-                    if (resultSet.getRow() != 0) {
-                        return true;
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * permet de retourner le pseudo de l'utilisateur d'après son Email
-     *
-     * @param email
-     * @return
-     */
-    public String getNameUser(String email) {
-        String name = "";
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT username from users "
-                        + " WHERE mail ilike '" + email + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        name = resultSet.getString("username");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return name;
-    }
-
-    public boolean updatePwd(int idUser, String newPwd) {
-        boolean status = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE users set password = '" + newPwd + "' WHERE id_user = " + idUser);
-                status = true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de retourner le nom de l'utilisateur
-     *
-     * @param userId
-     * @return
-     */
-    public String getNameUser(int userId) {
-        String name = "";
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT username from users "
-                        + " WHERE id_user =" + userId);
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        name = resultSet.getString("username");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return name;
     }
 
     /**

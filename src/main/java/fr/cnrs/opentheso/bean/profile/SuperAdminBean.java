@@ -16,7 +16,6 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Named(value = "superAdminBean")
 @SessionScoped
 public class SuperAdminBean implements Serializable {
-
-    @Value("${settings.workLanguage:fr}")
-    private String workLanguage;
 
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserRepository userRepository;
@@ -41,8 +37,10 @@ public class SuperAdminBean implements Serializable {
     private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
     private List<UserGroupLabel> allProjects;
     private List<NodeUserGroupThesaurus> allThesoProject;
+    private String workLanguage;
 
-    public SuperAdminBean(UserRoleGroupRepository userRoleGroupRepository,
+    public SuperAdminBean(@Value("${settings.workLanguage:fr}") String workLanguage,
+                          UserRoleGroupRepository userRoleGroupRepository,
                           UserRepository userRepository,
                           ThesaurusRepository thesaurusRepository,
                           UserGroupThesaurusRepository userGroupThesaurusRepository,
@@ -50,6 +48,7 @@ public class SuperAdminBean implements Serializable {
                           CurrentUser currentUser,
                           SelectedTheso selectedTheso) {
 
+        this.workLanguage = workLanguage;
         this.userRoleGroupRepository = userRoleGroupRepository;
         this.userRepository = userRepository;
         this.thesaurusRepository = thesaurusRepository;
