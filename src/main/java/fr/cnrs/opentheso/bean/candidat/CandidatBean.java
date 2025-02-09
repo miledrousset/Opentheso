@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
+import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
@@ -78,6 +79,9 @@ public class CandidatBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
@@ -854,7 +858,7 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public String getUserName(int idUser) {
-        return userHelper.getNameUser(idUser);
+        return userRepository.findById(idUser).get().getUsername();
 
     }
 

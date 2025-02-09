@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -19,20 +20,18 @@ import org.springframework.beans.factory.annotation.Value;
 @SessionScoped
 public class MyProjectBean implements Serializable {
 
-    @Value("${settings.workLanguage:fr}")
-    private String workLanguage;
-
     private final CurrentUser currentUser;
     private final UserHelper userHelper;
 
     private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
     private Map<String, String> listeGroupsOfUser;
-    private List<NodeUserRole> listeUserLimitedRole, listeUser; // la liste des utilisateur du groupe avec des droits limités
+    private List<NodeUserRole> listeUserLimitedRole, listeUser;
     private NodeUserRoleGroup nodeUserRoleOnThisGroup, nodeUserRoleSuperAdmin, myRoleOnThisProject;
-    private String selectedProject, selectedProjectName, selectedIndex;
+    private String selectedProject, selectedProjectName, selectedIndex, workLanguage;
 
 
-    public MyProjectBean(CurrentUser currentUser, UserHelper userHelper) {
+    public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage, CurrentUser currentUser, UserHelper userHelper) {
+        this.workLanguage = workLanguage;
         this.currentUser = currentUser;
         this.userHelper = userHelper;
     }
@@ -100,7 +99,7 @@ public class MyProjectBean implements Serializable {
         nodeUserRoleSuperAdmin = null;
         getListThesoByGroup();
         listUsersByGroup();
-        listUsersLimitedRoleByGroup();
+        resetListLimitedRoleUsers();
         initMyAuthorizedRoleOnThisGroup();
         initAuthorizedRoles();        
     }    
@@ -116,10 +115,14 @@ public class MyProjectBean implements Serializable {
      * appel après la modifcation d'un rôle limité pour un utilisateur
      */
     public void resetListLimitedRoleUsers(){
-        listUsersLimitedRoleByGroup(); 
-    }    
-    
-   
+        if (selectedProject == null || selectedProject.isEmpty()) {
+            return;
+        }
+
+        int idGroup = Integer.parseInt(selectedProject);
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
+    }
+
     
     /**
      * retourne la liste des thésaurus par groupe
@@ -130,7 +133,7 @@ public class MyProjectBean implements Serializable {
             return;
         }
         
-        int idGroup = Integer.parseInt(selectedProject);
+        var idGroup = Integer.parseInt(selectedProject);
         listeThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
     } 
     
@@ -157,22 +160,8 @@ public class MyProjectBean implements Serializable {
                 }
             }
         }
-        listUsersLimitedRoleByGroup();
+        resetListLimitedRoleUsers();
     }
-    
-     
-    
-    /**
-     * permet de récupérer la liste des utilisateurs et les rôles sur les thésaurus du projet
-     */
-    private void listUsersLimitedRoleByGroup(){
-        if (selectedProject == null || selectedProject.isEmpty()) {
-            return;
-        }
-
-        int idGroup = Integer.parseInt(selectedProject);
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
-    }    
     
     /**
      * setting du role de l'utilisateur sur le group séléctionné
@@ -182,10 +171,8 @@ public class MyProjectBean implements Serializable {
      * @return
      */
     private void setUserRoleOnThisGroup() {
-        if (selectedProject == null) {
-            return;
-        }
-        if (selectedProject.isEmpty()) {
+
+        if (StringUtils.isEmpty(selectedProject)) {
             return;
         }
         int idGroup = Integer.parseInt(selectedProject);
@@ -206,15 +193,13 @@ public class MyProjectBean implements Serializable {
         if (currentUser.getNodeUser().isSuperAdmin()) {
             return true;
         }
-        if (selectedProject == null) {
+
+        if (StringUtils.isEmpty(selectedProject)) {
             return false;
         }
-        if (selectedProject.isEmpty()) {
-            return false;
-        }
+
         int idGroup = Integer.parseInt(selectedProject);
-        return userHelper.isAdminOnThisGroup(
-                currentUser.getNodeUser().getIdUser(), idGroup);
+        return userHelper.isAdminOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
     }
     
     public String getSelectedProjectName() {

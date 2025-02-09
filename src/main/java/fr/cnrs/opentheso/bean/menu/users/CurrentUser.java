@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
@@ -9,6 +10,7 @@ import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
+import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -82,6 +85,9 @@ public class CurrentUser implements Serializable {
 
     @Autowired
     private UserHelper userHelper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -199,28 +205,27 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        int idUser;
+        Optional<User> user;
         if (ldapEnable) {
             if (!ldapService.authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }
-            idUser = userHelper.getIdUserFromPseudo(username);
+            user = userRepository.findAllByUsername(username);
         } else {
-            idUser = userHelper.getIdUser(username, MD5Password.getEncodedPassword(password));
+            user = userRepository.findByUsernameAndPassword(username, MD5Password.getEncodedPassword(password));
         }
 
-        if (idUser == -1) {
+        if (user.isEmpty()) {
             showErrorMessage("User or password wrong, please try again");
             return;
         }
 
         // on récupère le compte de l'utilisatreur
-        nodeUser = userHelper.getUser(idUser);
-        if (nodeUser == null) {
-            showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
-            return;
-        }
+        nodeUser = new NodeUser(user.get().getId(), user.get().getUsername(), user.get().getMail(), user.get().getActive(),
+                user.get().getAlertMail(), user.get().getIsSuperAdmin(), user.get().getPassToModify(),
+                user.get().getApiKey(), user.get().getKeyNeverExpire(), user.get().getKeyExpiresAt(),
+                user.get().getIsServiceAccount(), user.get().getKeyDescription());
 
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -232,8 +237,6 @@ public class CurrentUser implements Serializable {
         setInfos();
         //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
 
-        
-        
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
