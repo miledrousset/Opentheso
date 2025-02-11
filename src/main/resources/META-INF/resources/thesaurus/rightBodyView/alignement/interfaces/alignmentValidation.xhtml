@@ -8,7 +8,6 @@
         <p:dataTable id="checkboxDT" var="alignement" value="#{alignmentBean.allAlignementFound}"
                      selection="#{alignmentBean.selectOneAlignementForAdd}" rowKey="#{alignement.uri_target}"
                      style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
-
             <f:facet name="header">
                 <div class="products-table-header">
                     <span style="font-weight: bold">#{langueBean.getMsg('rightbody.alignmentList')}</span>
@@ -17,7 +16,7 @@
 
             <p:headerRow field="internal_id_concept" expandable="true" expanded="true">
                 <p:column colspan="5" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
-                    <h:outputText styleClass="ml-2" value="#{alignement.concept_target}"/>
+                    <h:outputText styleClass="ml-2" value="#{alignement.labelLocal}"/>
                 </p:column>
             </p:headerRow>
 
@@ -51,11 +50,18 @@
                     <h:outputText value="#{langueBean.getMsg('alignment.totalFoundFor')} (#{alignement.concept_target}) : #{alignmentBean.getTotalCount(alignement.internal_id_concept)}"/>
                 </p:column>
                 <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e; text-align: right">
+
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                     update="containerIndex:rightTab:checkboxDT"
+                                     actionListener="#{alignmentBean.removeAlignmentFromTab(alignement)}"
+                                     styleClass="rounded-button ui-button-outlined"
+                                     style="color: white; background-color: #617D8B" >
+                    </p:commandButton>
                     <p:commandButton value="#{langueBean.getMsg('statistique.validate')}"
                                      update=":containerIndex:addAlignementID containerIndex:remplacerAlignementID"
                                      actionListener="#{alignmentBean.addAlignementByConcept()}"
                                      styleClass="rounded-button ui-button-outlined"
-                                     style="color: #f47b2a" >
+                                     style="color: white; background-color: #f47b2a ;margin-left: 10px;" >
                     </p:commandButton>
                 </p:column>
             </p:summaryRow>

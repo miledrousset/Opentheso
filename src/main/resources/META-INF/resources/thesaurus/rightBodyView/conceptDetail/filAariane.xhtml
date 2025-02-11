@@ -2,7 +2,6 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
-
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
         <h:panelGroup id="idConceptViewActions" rendered="#{currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}" >
             <p:commandButton id="dynaButton" type="button" icon="pi pi-align-justify"
@@ -15,7 +14,8 @@
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
                 <!-- gestion de type de concept -->
-                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.nodeCustomRelations.size() == 0}"
+                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and
+                                            (conceptView.nodeConcept.nodeCustomRelations == null or conceptView.nodeConcept.nodeCustomRelations.size() == 0)}"
                             value="#{langueBean.getMsg('concept.editConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idEditConceptType" icon="fas fa-edit"
                             oncomplete="PF('editConceptType').show();"  />
