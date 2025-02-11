@@ -89,6 +89,7 @@ public class UserController {
             }
 
             var userCreated = userHelper.getUser(idUser);
+            userCreated.setApiKey(apiKeyValue);
             return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
@@ -151,6 +152,28 @@ public class UserController {
         if (getUser(apiKey).isSuperAdmin()) {
             var users = userHelper.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
             return ResponseEntity.status(HttpStatus.OK).body(users);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+        }
+    }
+
+    @PutMapping("/api-key/{idUser}")
+    @Operation(summary = "Modifier un utilisateur")
+    public ResponseEntity generateApiKey(@RequestHeader(value = "API-KEY") String apiKey,
+                                         @PathVariable("idUser") Integer idUser) {
+
+        var userRequest = getUser(apiKey);
+        if (userRequest != null) {
+            var user = userHelper.getUser(idUser);
+            if (!ObjectUtils.isEmpty(user)) {
+                var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
+                if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
+                }
+                user.setApiKey(apiKeyValue);
+                return ResponseEntity.status(HttpStatus.OK).body(user);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
