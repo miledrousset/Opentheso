@@ -393,7 +393,7 @@
                                     <h:panelGroup rendered="#{(corpus.count != 0 and corpus.count!= -1) or (corpus.onlyUriLink)}">
                                         <div class="row">
                                             <h:panelGroup rendered="#{!corpus.onlyUriLink}">
-                                                <div class="col-6">
+                                                <div class="col-12">
                                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                                     <p:link
                                                             href="#{not empty corpus.uriLink ? corpus.uriLink : '#'}"
@@ -403,7 +403,7 @@
                                                 </div>
                                             </h:panelGroup>
                                             <h:panelGroup rendered="#{corpus.onlyUriLink}">
-                                                <div class="col-6">
+                                                <div class="col-12">
                                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 14px;"/>                                                    
                                                     <p:link
                                                             href="#{not empty corpus.uriLink ? corpus.uriLink : '#'}"

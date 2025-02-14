@@ -1,9 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.logging.Level;
@@ -49,197 +46,111 @@ public class SearchHelper {
 
     /**
      * Permet de chercher les terms avec précision pour limiter le bruit avec filtre par langue et ou par groupe
+     * # MR
      */
-    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(String value, String idLang,
-                                                                String[] idGroups, String idTheso, boolean withNotes) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        
-
+    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(String value, String idLang, String[] idGroups, String idTheso, boolean withNotes) {
         ArrayList<NodeAutoCompletion> nodeAutoCompletions = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
-        String multiValuesPT = "";
-        String multiValuesNPT = "";
-        String values[] = value.trim().split(" ");
-
-        // filter by lang, c'est très important 
-        if (idLang != null && !idLang.isEmpty()) {
-            multiValuesPT += " and term.lang = '" + idLang + "'";
-            multiValuesNPT += " and non_preferred_term.lang = '" + idLang + "'";
-        }
-
-        // filter by group, c'est très important 
-        if (idGroups != null && idGroups.length != 0) {
-            String groupSearch = "";
-            for (String idGroup : idGroups) {
-                if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup.toLowerCase() + "'";
-                } else {
-                    groupSearch = groupSearch + ",'" + idGroup.toLowerCase() + "'";
-                }
-            }
-            multiValuesPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
-            multiValuesNPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
-        }
-
-        for (String value1 : values) {
-            multiValuesPT
-                    += " and ("
-                    + " f_unaccent(lower(term.lexical_value)) like '" + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(term.lexical_value)) like '% " + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(term.lexical_value)) like '%''" + value1 + "%'"
-                    + ")";
-            multiValuesNPT
-                    += " and ("
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value1 + "%'"
-                    + ")";
-        }
-
-        String query;
-        try {
-            conn = dataSource.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    if (idGroups != null && idGroups.length != 0) {
-                        query = "select term.lexical_value, term.lang, concept.id_concept, concept.id_ark, concept.id_handle "
-                                + " from concept, concept_group_concept, preferred_term, term "
-                                + " where"
-                                + " concept.id_concept = concept_group_concept.idconcept"
-                                + " and"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus"
-                                + " and"
-                                + " concept.id_concept = preferred_term.id_concept"
-                                + " and"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus "
-                                + " and"
-                                + " preferred_term.id_term = term.id_term"
-                                + " and"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus "
-                                + " and"
-                                + " term.id_thesaurus = '" + idTheso + "'"
-                                + multiValuesPT
-                                + " order by term.lexical_value ASC limit 100";
-                    } else {
-                        query = "select term.lexical_value, term.lang,"
-                                + " concept.id_concept, concept.id_ark, concept.id_handle"
-                                + " from term, preferred_term, concept where"
-                                + " concept.id_concept = preferred_term.id_concept"
-                                + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                                + " and preferred_term.id_term = term.id_term"
-                                + " and"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + " and"
-                                + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status not in ('DEP', 'CA')"
-                                + multiValuesPT
-                                + " order by term.lexical_value ASC limit 100";
-                    }
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        NodeAutoCompletion nodeAutoCompletion = new NodeAutoCompletion();
-                        nodeAutoCompletion.setIdConcept(resultSet.getString("id_concept"));
-                        nodeAutoCompletion.setIdArk(resultSet.getString("id_ark"));
-                        nodeAutoCompletion.setIdHandle(resultSet.getString("id_handle"));
-                        nodeAutoCompletion.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeAutoCompletion.setAltLabel(false);
-                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
-                            nodeAutoCompletions.add(0, nodeAutoCompletion);
-                        } else {
-                            nodeAutoCompletions.add(nodeAutoCompletion);
-                        }
-                        if (withNotes) {
-                            if (noteHelper != null) {
-                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
-                            }
-                        }
-                    }
-
-                    /**
-                     * recherche de Synonymes
-                     */
-                    if (idGroups != null && idGroups.length != 0) {
-                        query = "select non_preferred_term.lexical_value, non_preferred_term.lang, concept.id_concept, concept.id_ark, concept.id_handle "
-                                + " from concept, concept_group_concept, preferred_term, non_preferred_term"
-                                + " where"
-                                + " concept.id_concept = concept_group_concept.idconcept"
-                                + " and"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus"
-                                + " and"
-                                + " concept.id_concept = preferred_term.id_concept"
-                                + " and"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus"
-                                + " and"
-                                + " preferred_term.id_term = non_preferred_term.id_term"
-                                + " and"
-                                + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
-                                + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status not in ('DEP', 'CA')"
-                                + multiValuesNPT
-                                + " order by non_preferred_term.lexical_value ASC limit 100";
-                    } else {
-                        query = "select non_preferred_term.lexical_value, non_preferred_term.lang, "
-                                + " concept.id_concept, concept.id_ark, concept.id_handle"
-                                + " from non_preferred_term, preferred_term, concept"
-                                + " where"
-                                + " preferred_term.id_term = non_preferred_term.id_term "
-                                + " and preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
-                                + " and preferred_term.id_concept = concept.id_concept"
-                                + " AND preferred_term.id_thesaurus = concept.id_thesaurus"
-                                + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status not in ('DEP', 'CA')"
-                                + multiValuesNPT
-                                + " order by non_preferred_term.lexical_value ASC limit 100";
-                    }
-
-                    resultSet = stmt.executeQuery(query);
-
-                    while (resultSet.next()) {
-                        NodeAutoCompletion nodeAutoCompletion = new NodeAutoCompletion();
-                        nodeAutoCompletion.setIdConcept(resultSet.getString("id_concept"));
-                        nodeAutoCompletion.setIdArk(resultSet.getString("id_ark"));
-                        nodeAutoCompletion.setIdHandle(resultSet.getString("id_handle"));
-                        nodeAutoCompletion.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeAutoCompletion.setAltLabel(true);
-                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
-                            nodeAutoCompletions.add(0, nodeAutoCompletion);
-                        } else {
-                            nodeAutoCompletions.add(nodeAutoCompletion);
-                        }
-                        if (withNotes) {
-                            if (noteHelper != null) {
-                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
-                            }
-                        }
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
+        try (Connection conn = dataSource.getConnection()) {
+            searchConcepts(conn, value, idLang, idGroups, idTheso, withNotes, nodeAutoCompletions, false);
+            searchConcepts(conn, value, idLang, idGroups, idTheso, withNotes, nodeAutoCompletions, true);
         } catch (SQLException ex) {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return nodeAutoCompletions;
     }
 
+    private void searchConcepts(Connection conn, String value, String idLang, String[] idGroups, String idTheso, boolean withNotes, ArrayList<NodeAutoCompletion> nodeAutoCompletions, boolean isSynonym) throws SQLException {
+        String query = buildQuery(value, idLang, idGroups, idTheso, isSynonym);
 
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            int index = 1;
+            stmt.setString(index++, idTheso);
+
+            if (idLang != null && !idLang.isEmpty()) {
+                stmt.setString(index++, idLang);
+            }
+
+            if (idGroups != null) {
+                for (String idGroup : idGroups) {
+                    stmt.setString(index++, idGroup.toLowerCase());
+                }
+            }
+
+            String[] values = value.trim().split(" ");
+            for (String val : values) {
+                stmt.setString(index++, "%" + val + "%");
+            }
+
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                while (resultSet.next()) {
+                    NodeAutoCompletion node = new NodeAutoCompletion();
+                    node.setIdConcept(resultSet.getString("id_concept"));
+                    node.setIdArk(resultSet.getString("id_ark"));
+                    node.setIdHandle(resultSet.getString("id_handle"));
+                    node.setPrefLabel(resultSet.getString("lexical_value"));
+                    node.setAltLabel(isSynonym);
+
+                    if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                        nodeAutoCompletions.add(0, node);
+                    } else {
+                        nodeAutoCompletions.add(node);
+                    }
+
+                    if (withNotes && noteHelper != null) {
+                        node.setDefinition(noteHelper.getDefinition(node.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private String buildQuery(String value, String idLang, String[] idGroups, String idTheso, boolean isSynonym) {
+        String tableName = isSynonym ? "non_preferred_term" : "term";
+        String tableAlias = isSynonym ? "npt" : "t";
+        String joinCondition = isSynonym ? "pt.id_term = npt.id_term" : "pt.id_term = t.id_term";
+
+        StringBuilder query = new StringBuilder("SELECT ")
+                .append(tableAlias).append(".lexical_value, ")
+                .append(tableAlias).append(".lang, c.id_concept, c.id_ark, c.id_handle ")
+                .append("FROM concept c ")
+                .append("JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus ")
+                .append("JOIN ").append(tableName).append(" ").append(tableAlias).append(" ON ").append(joinCondition)
+                .append(" AND pt.id_thesaurus = ").append(tableAlias).append(".id_thesaurus ")
+                .append("WHERE c.id_thesaurus = ? ")  // Ajout du filtre idTheso
+                .append("AND c.status NOT IN ('DEP', 'CA') ");
+
+        if (idLang != null && !idLang.isEmpty()) {
+            query.append("AND ").append(tableAlias).append(".lang = ? ");
+        }
+
+        if (idGroups != null && idGroups.length > 0) {
+            query.append("AND c.id_concept IN (SELECT idconcept FROM concept_group_concept WHERE idgroup IN (");
+            query.append(String.join(",", Collections.nCopies(idGroups.length, "?")));
+            query.append(")) ");
+        }
+
+        query.append("AND (");
+        StringJoiner likeConditions = new StringJoiner(" AND ");
+        for (String val : value.trim().split(" ")) {
+            likeConditions.add("f_unaccent(lower(" + tableAlias + ".lexical_value)) LIKE ?");
+        }
+        query.append(likeConditions.toString()).append(") ");
+
+        query.append("ORDER BY ").append(tableAlias).append(".lexical_value ASC LIMIT 100");
+
+        return query.toString();
+    }
+
+    // firas
     public List<NodeConceptSearch> searchConceptWSV2(String value, String idLang, String idGroup, String idTheso) {
 
         var results = new ArrayList<NodeConceptSearch>();
 
-        try (var conn = dataSource.getConnection()){
+        try (var conn = dataSource.getConnection()) {
             try (var stmt = conn.createStatement()) {
 
                 var groups = generateGroupCondition(idTheso, idGroup);
@@ -351,7 +262,7 @@ public class SearchHelper {
         var values = List.of(formatValue(valueToSearch).trim().split(" "));
         for (String value1 : values) {
             if ("ar".equals(idLang)) {
-                subQuerry += "AND to_tsvector('arabic', term.lexical_value) @@ to_tsquery('arabic', '"+ Normalizer.normalize(value1, Normalizer.Form.NFKC)+"') ";
+                subQuerry += "AND to_tsvector('arabic', term.lexical_value) @@ to_tsquery('arabic', '" + Normalizer.normalize(value1, Normalizer.Form.NFKC) + "') ";
             } else {
                 subQuerry += "AND f_unaccent(lower(term.lexical_value)) like '%" + value1 + "%' ";
             }
@@ -387,29 +298,29 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
-        
+
         String limit = " limit 100";
-        if(StringUtils.isEmpty(value)){
+        if (StringUtils.isEmpty(value)) {
             limit = " limit 5000";
         }
-        
+
         String multiValuesPT = "";
         String multiValuesNPT = "";
         String values[] = value.split(" ");
 
-        // filter by lang, c'est très important 
+        // filter by lang, c'est très important
         if (idLang != null && !idLang.isEmpty()) {
             multiValuesPT += " and term.lang = '" + idLang + "'";
             multiValuesNPT += " and non_preferred_term.lang = '" + idLang + "'";
         }
 
-        // filter by group, c'est très important 
+        // filter by group, c'est très important
         if (idGroups != null && idGroups.length != 0) {
             String groupSearch = "";
             for (String idGroup : idGroups) {
@@ -546,7 +457,7 @@ public class SearchHelper {
                                 + " CASE unaccent(lower(non_preferred_term.lexical_value)) "
                                 + " WHEN '" + value + "' THEN 1"
                                 + " END, lexical_value"
-                                + limit ;
+                                + limit;
                     } else {
                         query = "select concept.id_concept, non_preferred_term.lexical_value"
                                 + " from non_preferred_term, preferred_term, concept"
@@ -596,7 +507,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
@@ -606,13 +517,13 @@ public class SearchHelper {
         String multiValuesPT = "";
         String multiValuesNPT = "";
 
-        // filter by lang, c'est très important 
+        // filter by lang, c'est très important
         if (idLang != null && !idLang.isEmpty()) {
             multiValuesPT += " and term.lang = '" + idLang + "'";
             multiValuesNPT += " and non_preferred_term.lang = '" + idLang + "'";
         }
 
-        // filter by group, c'est très important 
+        // filter by group, c'est très important
         if (idGroups != null && idGroups.length != 0) {
             String groupSearch = "";
             for (String idGroup : idGroups) {
@@ -773,7 +684,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
@@ -783,13 +694,13 @@ public class SearchHelper {
         String multiValuesPT = "";
         String multiValuesNPT = "";
 
-        // filter by lang, c'est très important 
+        // filter by lang, c'est très important
         if (idLang != null && !idLang.isEmpty()) {
             multiValuesPT += " and term.lang = '" + idLang + "'";
             multiValuesNPT += " and non_preferred_term.lang = '" + idLang + "'";
         }
 
-        // filter by group, c'est très important 
+        // filter by group, c'est très important
         if (idGroups != null && idGroups.length != 0) {
             String groupSearch = "";
             for (String idGroup : idGroups) {
@@ -941,7 +852,7 @@ public class SearchHelper {
      * (la recherche porte sur les termes contenus dans une chaine) en utilisant
      * la méthode PostgreSQL Trigram Index, le résultat est proche d'une
      * recherche avec ElasticSearch
-     *
+     * <p>
      * Elle retourne la liste des termes + identifiants
      *
      * @param value
@@ -954,7 +865,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<NodeSearchMini> nodeSearchMinis = null;
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -967,7 +878,7 @@ public class SearchHelper {
         String lang;
         String langSynonyme;
 
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée)
         if (idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
@@ -1062,30 +973,30 @@ public class SearchHelper {
     public ArrayList<NodeSearchMini> searchByAllId(String identifier, String idLang, String idTheso) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        if(StringUtils.isEmpty(identifier)) return nodeSearchMinis;
+        if (StringUtils.isEmpty(identifier)) return nodeSearchMinis;
         identifier = identifier.trim();
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " +
-                            " from term, preferred_term, concept" +
-                            " where " +
-                            " concept.id_concept = preferred_term.id_concept " +
-                            " and concept.id_thesaurus = preferred_term.id_thesaurus " +
-                            " and preferred_term.id_term = term.id_term " +
-                            " and preferred_term.id_thesaurus = term.id_thesaurus " +
-                            " and concept.id_thesaurus = '" + idTheso + "' " +
-                            " and term.lang = '" + idLang + "' " +
-                            " and concept.status != 'CA' " +
-                            " and (	" +
-                            "	concept.id_concept = '" + identifier + "'" +
-                            "	or	" +
-                            "	concept.id_ark = '" + identifier + "'" +
-                            "	or " +
-                            "	concept.id_handle = '" + identifier + "'" +
-                            "	or concept.notation = '" + identifier + "'" +
-                            " ) " +
-                            " order by unaccent(lower(lexical_value))");
+                        " from term, preferred_term, concept" +
+                        " where " +
+                        " concept.id_concept = preferred_term.id_concept " +
+                        " and concept.id_thesaurus = preferred_term.id_thesaurus " +
+                        " and preferred_term.id_term = term.id_term " +
+                        " and preferred_term.id_thesaurus = term.id_thesaurus " +
+                        " and concept.id_thesaurus = '" + idTheso + "' " +
+                        " and term.lang = '" + idLang + "' " +
+                        " and concept.status != 'CA' " +
+                        " and (	" +
+                        "	concept.id_concept = '" + identifier + "'" +
+                        "	or	" +
+                        "	concept.id_ark = '" + identifier + "'" +
+                        "	or " +
+                        "	concept.id_handle = '" + identifier + "'" +
+                        "	or concept.notation = '" + identifier + "'" +
+                        " ) " +
+                        " order by unaccent(lower(lexical_value))");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -1110,16 +1021,17 @@ public class SearchHelper {
             log.error("Error while search By Id : " + identifier, sqle);
         }
         return nodeSearchMinis;
-    }    
+    }
+
     private ArrayList<NodeSearchMini> searchCollectionsById(Connection conn, String idTheso, String identifier, String idLang,
-            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+                                                            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select idGroup, lexicalvalue from concept_group_label " +
-                        " where" +
-                        " idthesaurus = '" + idTheso + "'" +
-                        " and " +
-                        " lower(idGroup) = lower('" + identifier + "')" +
-                        " and lang = '" + idLang + "'");
+                    " where" +
+                    " idthesaurus = '" + idTheso + "'" +
+                    " and " +
+                    " lower(idGroup) = lower('" + identifier + "')" +
+                    " and lang = '" + idLang + "'");
 
             try (ResultSet resultSet = stmt.getResultSet()) {
                 while (resultSet.next()) {
@@ -1134,19 +1046,19 @@ public class SearchHelper {
             }
         }
         return nodeSearchMinis;
-    }    
-    
+    }
+
     private ArrayList<NodeSearchMini> searchFacetsById(Connection conn,
-            String idTheso, String identifier, String idLang,
-            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+                                                       String idTheso, String identifier, String idLang,
+                                                       ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
         /// rechercher les Facettes
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select id_facet, lexical_value from node_label " +
-                        " where " +
-                        " id_thesaurus = '" + idTheso + "'" +
-                        " and " +
-                        " id_facet = '" + identifier + "'" +
-                        " and lang = '" + idLang + "'");
+                    " where " +
+                    " id_thesaurus = '" + idTheso + "'" +
+                    " and " +
+                    " id_facet = '" + identifier + "'" +
+                    " and lang = '" + idLang + "'");
 
             try (ResultSet resultSet = stmt.getResultSet()) {
                 while (resultSet.next()) {
@@ -1163,7 +1075,7 @@ public class SearchHelper {
         return nodeSearchMinis;
     }
 
-    
+
     /**
      * Permet de chercher les terms exacts avec des règles précises pour trouver
      * par exemple : or, Ur, d'Ur ...
@@ -1219,7 +1131,7 @@ public class SearchHelper {
                         + "	unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "'))"
                         + "	or"
                         + "	unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "'))"
-                        // pour les parenthèses pour trouver monstre exp: (monstre)                                
+                        // pour les parenthèses pour trouver monstre exp: (monstre)
                         + "     or"
                         + "     unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + ")%'))"
                         + "     or"
@@ -1334,7 +1246,7 @@ public class SearchHelper {
      */
     public ArrayList<NodeSearchMini> searchStartWith(
             String value, String idLang, String idTheso) {
-        
+
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1602,7 +1514,7 @@ public class SearchHelper {
                         + " group by lower(lexical_value) having count(*) > 1 ");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        if(!conceptLabels.contains(resultSet.getString("lower")))
+                        if (!conceptLabels.contains(resultSet.getString("lower")))
                             conceptLabels.add(resultSet.getString("lower"));
                     }
                 }
@@ -1618,10 +1530,10 @@ public class SearchHelper {
                         + " and"
                         + " term.id_thesaurus = '" + idTheso + "'"
                         + " and term.lang = '" + idLang + "'"
-                        );
+                );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        if(!conceptLabels.contains(resultSet.getString("lower")))
+                        if (!conceptLabels.contains(resultSet.getString("lower")))
                             conceptLabels.add(resultSet.getString("lower"));
                     }
                 }
@@ -1635,7 +1547,7 @@ public class SearchHelper {
                         + " group by lower(lexical_value) having count(*) > 1 ");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        if(!conceptLabels.contains(resultSet.getString("lower")))                        
+                        if (!conceptLabels.contains(resultSet.getString("lower")))
                             conceptLabels.add(resultSet.getString("lower"));
                     }
                 }
@@ -1687,7 +1599,6 @@ public class SearchHelper {
      * Préférés et les synonymes (la recherche porte sur les termes exactes en
      * ignorant les accents et la casse)
      *
-     *
      * @param value
      * @param idLang
      * @param idTheso
@@ -1698,7 +1609,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1716,7 +1627,7 @@ public class SearchHelper {
                 += " and f_unaccent(lower(non_preferred_term.lexical_value)) like"
                 + " '" + value + "'";
 
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée)
         if (idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
@@ -1730,7 +1641,7 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    
+
                     query = "SELECT preferred_term.id_concept, term.lexical_value, "
                             + " preferred_term.id_term"
                             + " FROM term, preferred_term WHERE "
@@ -1812,7 +1723,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1945,7 +1856,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
         ArrayList<String> tabIdConcepts = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
@@ -2078,7 +1989,7 @@ public class SearchHelper {
      * Préférés et les synonymes (la recherche porte sur les termes contenus
      * dans une chaine) en utilisant la méthode PostgreSQL Trigram Index, le
      * résultat est proche d'une recherche avec ElasticSearch
-     *
+     * <p>
      * Elle retourne la liste des termes + identifiants
      *
      * @param value
@@ -2090,7 +2001,7 @@ public class SearchHelper {
         if (value == null) {
             return null;
         }
-        
+
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -2099,7 +2010,7 @@ public class SearchHelper {
         String orderByPT;
         String orderByNPT;
         Set<String> supportedLangs = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
-        if(supportedLangs.contains(idLang.toLowerCase())){
+        if (supportedLangs.contains(idLang.toLowerCase())) {
             preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             orderByPT = "order by term.lexical_value <-> '" + value + "' limit 50";
@@ -2114,7 +2025,7 @@ public class SearchHelper {
 
         String lang;
         String langSynonyme;
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée)
         if (idLang == null || idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
@@ -2225,7 +2136,7 @@ public class SearchHelper {
      * Préférés et les synonymes (la recherche porte sur les termes contenus
      * dans une chaine) en utilisant la méthode PostgreSQL Trigram Index, le
      * résultat est proche d'une recherche avec ElasticSearch
-     *
+     * <p>
      * Elle retourne la liste des termes + identifiants
      *
      * @param value
@@ -2238,7 +2149,7 @@ public class SearchHelper {
         if (value == null) {
             return null;
         }
-        
+
 
         ArrayList<String> listIds = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -2249,7 +2160,7 @@ public class SearchHelper {
         String orderByNPT;
 
         Set<String> supportedLangs = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
-        if(supportedLangs.contains(idLang.toLowerCase())){
+        if (supportedLangs.contains(idLang.toLowerCase())) {
             preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             orderByPT = "order by term.lexical_value <-> '" + value + "' limit 50";
@@ -2264,7 +2175,7 @@ public class SearchHelper {
 
         String lang;
         String langSynonyme;
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée)
         if (idLang == null || idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
@@ -2329,8 +2240,8 @@ public class SearchHelper {
     }
 
     private ArrayList<NodeSearchMini> searchCollections(Connection conn,
-            String idTheso, String value, String idLang,
-            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+                                                        String idTheso, String value, String idLang,
+                                                        ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select idGroup, lexicalvalue from concept_group_label"
                     + " where idthesaurus = '" + idTheso + "'"
@@ -2369,8 +2280,8 @@ public class SearchHelper {
     }
 
     private ArrayList<NodeSearchMini> searchFacets(Connection conn,
-            String idTheso, String value, String idLang,
-            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+                                                   String idTheso, String value, String idLang,
+                                                   ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
         /// rechercher les Facettes
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select id_facet, lexical_value from node_label"
@@ -2420,7 +2331,7 @@ public class SearchHelper {
      * @return #MR
      */
     public List<NodeSearchMini> searchAutoCompletionForRelation(
-            
+
             String value,
             String idLang,
             String idTheso,
@@ -2430,19 +2341,19 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        
+
 
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String status;
-        if(includeDeprecated) {
+        if (includeDeprecated) {
             status = " and concept.status != 'CA'";
-            
+
         } else {
             status = " and concept.status not in ('CA', 'DEP')";
         }
-        
+
         try {
             // Get connection from pool
             conn = dataSource.getConnection();
@@ -2523,8 +2434,8 @@ public class SearchHelper {
         }
 
         return nodeSearchMinis;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
@@ -2540,7 +2451,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        
+
 
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
@@ -2614,7 +2525,7 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setAltLabelValue(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
-                        nodeSearchMini.setConceptType(resultSet.getString("concept_type"));                        
+                        nodeSearchMini.setConceptType(resultSet.getString("concept_type"));
                         nodeSearchMini.setAltLabel(true);
                         nodeSearchMinis.add(nodeSearchMini);
                     }
@@ -2647,7 +2558,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        
+
 
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
@@ -2742,7 +2653,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        
+
 
         ArrayList<NodeSearch> nodeSearchList = null;
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -2775,7 +2686,7 @@ public class SearchHelper {
                     + " '%" + value + "%'";
         }
 
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée)
         if (idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
