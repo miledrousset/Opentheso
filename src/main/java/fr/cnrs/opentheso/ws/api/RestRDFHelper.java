@@ -1,10 +1,12 @@
 package fr.cnrs.opentheso.ws.api;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import jakarta.faces.context.FacesContext;
 import jakarta.json.JsonArray;
 
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
@@ -32,6 +34,8 @@ import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
+
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.json.Json;
@@ -39,6 +43,8 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -47,6 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+@Slf4j
 @Service
 public class RestRDFHelper {
 
@@ -962,9 +969,9 @@ public class RestRDFHelper {
             uri = getUri(nodePreference, nodeAutoCompletion1, idTheso);
             if (withNotes) {
                 jsonHelper.addJsonDataFull(uri, nodeAutoCompletion1.getPrefLabel(),
-                        nodeAutoCompletion1.getDefinition(), nodeAutoCompletion1.isAltLabel());
+                        nodeAutoCompletion1.getDefinition(), nodeAutoCompletion1.isAltLabel(), nodeAutoCompletion1.getIdConcept());
             } else {
-                jsonHelper.addJsonData(uri, nodeAutoCompletion1.getPrefLabel());
+                jsonHelper.addJsonData(uri, nodeAutoCompletion1.getPrefLabel(), nodeAutoCompletion1.getIdConcept());
             }
         }
         JsonArray datasJson = jsonHelper.getBuilder();
@@ -1242,14 +1249,37 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
         var skosXmlDocument = new SKOSXmlDocument();
-        ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(idTheso, groups);
-        for (String idConcept : branchs) {
-            exportRdf4jHelperNew.setInfos(nodePreference);
-            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
+
+        ////////// nouvelle méthode par Miled pour optimiser la récupération des Branches
+        String baseUrl;
+        if(StringUtils.isEmpty(nodePreference.getCheminSite())) {
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+            String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+            String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+            HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+            baseUrl = protocole + "://" + serverAdress + ":" + request.getLocalPort() + contextPath;
+        } else {
+            baseUrl = nodePreference.getCheminSite();
         }
-        return new WriteRdf4j(skosXmlDocument);
+        List<SKOSResource> concepts;
+        try {
+            for(String idGroup : groups) {
+                concepts = exportHelper.getAllConcepts(idTheso, baseUrl, idGroup,
+                        nodePreference.getOriginalUri(), nodePreference, false);
+                for (SKOSResource concept : concepts) {
+                    skosXmlDocument.addconcept(concept);
+                }
+            }
+        } catch (Exception ex){}
+
+        /* ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(idTheso, groups);
+         exportRdf4jHelperNew.setInfos(nodePreference);
+        for (String idConcept : branchs) {
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
+        }*/
+
+         return new WriteRdf4j(skosXmlDocument);
     }
 
     /**

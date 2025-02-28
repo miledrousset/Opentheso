@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,6 +181,7 @@ public class GroupThesoController {
         }
         
         var datas = restRDFHelper.brancheOfGroup(groups, idTheso, removeCharset(acceptHeader));
+        log.info(LocalTime.now().toString() + " fin ");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 

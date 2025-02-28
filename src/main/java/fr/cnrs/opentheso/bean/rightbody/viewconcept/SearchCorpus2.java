@@ -154,7 +154,18 @@ public class SearchCorpus2 {
         try {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
-            int count = jsonObject.getInt("count");
+            int count = -1;
+            try {
+                count = jsonObject.getInt("count");
+            } catch (Exception e) {
+            }
+            ///  récupération du total de HAL SHS
+            if(count == -1) {
+                try {
+                    count = jsonObject.getJsonObject("response").getInt("numFound");
+                } catch (Exception e) {
+                }
+            }
             if (count > 0) {
                 haveCorpus = true;
             }

@@ -588,23 +588,19 @@ public class Rest_new {
         switch (format) {
             case "rdf": {
                 return ResponseEntity.ok()
-                        .header("Access-Control-Allow-Origin", "*")
                         .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
                         .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_RDF));
             }
             case "jsonld":
                 return ResponseEntity.ok()
-                    .header("Access-Control-Allow-Origin", "*")
                     .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
                     .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_JSON_LD));
             case "turtle":
                 return ResponseEntity.ok()
-                        .header("Access-Control-Allow-Origin", "*")
                         .contentType(MediaType.TEXT_PLAIN)
                         .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_TURTLE));
             default:
                 return ResponseEntity.ok()
-                        .header("Access-Control-Allow-Origin", "*")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(getBranchOfConcepts(idConcept, idTheso, way, JSON_FORMAT));
         }

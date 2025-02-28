@@ -5,6 +5,7 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 
 /**
  *
@@ -27,5 +28,18 @@ public class HeaderHelper {
         }
         return contentType.substring(0, indexCharset);
     }
-    
+
+    public static MediaType getMediaType(String acceptHeader) {
+        MediaType mediaType;
+        try{
+            mediaType = MediaType.parseMediaType(acceptHeader);
+        } catch (Exception e) {
+            mediaType = MediaType.APPLICATION_JSON;
+        }
+        if(acceptHeader.equalsIgnoreCase("*/*")) {
+            mediaType = MediaType.APPLICATION_JSON;
+        }
+        return mediaType;
+    }
+
 }

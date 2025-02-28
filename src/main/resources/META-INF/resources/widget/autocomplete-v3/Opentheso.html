@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<h2>Consultation de l'API REST</h2>
+<h2>Widget Opentheso - Consultation de l'API REST</h2>
 
 <!-- Champ pour l'URI du serveur -->
 <label>Serveur API: <input type="text" id="server-uri" value="https://pactols.frantiq.fr"></label><br>
@@ -41,6 +41,7 @@
 
 <!-- Champs affichés après la sélection -->
 <div class="selection-container">
+    <label>Identifiant interne: <input type="text" id="selected-identifier" readonly></label>
     <label>Labels sélectionnés: <input type="text" id="selected-label" readonly></label>
     <label>URIs sélectionnées: <input type="text" id="selected-uri" readonly></label>
     <label>Définitions sélectionnées: <input type="text" id="selected-definition" readonly></label>
@@ -73,7 +74,7 @@
         if (groupe && groupe !== "") {
             url += `&group=${groupe}`;
         }
-        console.log(url);
+//        console.log(url);
 
         try {
             let response = await fetch(url);
@@ -99,6 +100,12 @@
                 labelSpan.className = 'label';
                 labelSpan.textContent = item.label;
 
+                // Appliquer le style si isAltLabel est vrai
+                if (item.isAltLabel) {
+                    labelSpan.style.fontStyle = "italic";
+                    labelSpan.style.color = "orange";
+                }
+
                 let uriSpan = document.createElement('span');
                 uriSpan.className = 'uri';
                 uriSpan.textContent = item.uri;
@@ -114,32 +121,34 @@
                 }
 
                 div.onclick = function () {
-                    ajouterSelection(item.label, item.uri, item.definition);
+                    ajouterSelection(item.label, item.uri, item.definition, item.identifier);
                     document.getElementById('value').value = ''; // Vider le champ de saisie
                     listDiv.innerHTML = ''; // Fermer la liste
                 };
 
                 listDiv.appendChild(div);
             });
+
         } catch (error) {
             console.error('Erreur lors de la requête:', error);
         }
     }
 
-    function ajouterSelection(label, uri, definition) {
+    function ajouterSelection(label, uri, definition, identifier) {
         let labelInput = document.getElementById('selected-label');
         let uriInput = document.getElementById('selected-uri');
         let definitionInput = document.getElementById('selected-definition');
+        let identifierInput = document.getElementById('selected-identifier');
+        let identifierLabel = document.getElementById('identifier-label');
 
-        // Ajoute les nouvelles valeurs avec un séparateur s'il y a déjà du contenu
         labelInput.value = labelInput.value ? `${labelInput.value} ; ${label}` : label;
         uriInput.value = uriInput.value ? `${uriInput.value} ; ${uri}` : uri;
-
-        // Vérifier que la définition n'est pas vide ou égale à "[]"
+        identifierInput.value = identifierInput.value ? `${identifierInput.value} ; ${identifier}` : identifier;
         if (definition && definition.trim() !== "[]" && definition.trim() !== "") {
             definitionInput.value = definitionInput.value ? `${definitionInput.value} ; ${definition}` : definition;
         }
     }
+
 </script>
 </body>
 </html>

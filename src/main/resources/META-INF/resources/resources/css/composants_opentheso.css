@@ -9,6 +9,11 @@
         #ecf8f1 vert clair
 */
 
+.scrollable-editor .ql-editor {
+    max-height: 200px; /* Ajustez selon vos besoins */
+    overflow-y: auto;
+}
+
 body .ui-tabs .ui-tabs-panels .ui-tabs-panel {
     padding-left: 0rem;
     padding-right: 0rem;

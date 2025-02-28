@@ -479,7 +479,7 @@ public class ConceptView implements Serializable {
 
     private void logConcept(){
         String ipAddress = ipAddressService.getClientIpAddress();
-        log.info("Concept: {}({}), Thesaurus: {}({}), IP: {}", nodeFullConcept.getPrefLabel().getLabel(), nodeFullConcept.getPrefLabel().getId(), selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
+        log.info("Concept: {}, identifier: {}, Thesaurus: {}({}), IP: {}", nodeFullConcept.getPrefLabel().getLabel(), nodeFullConcept.getPrefLabel().getId(), selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 
     /**

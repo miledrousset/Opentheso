@@ -51,7 +51,8 @@ public class OpenthesoHelper {
         if (lexicalValue.trim().equals("")) {
             return null;
         }        
-        
+        String originalLabel = new String(lexicalValue);
+
         ArrayList<NodeAlignment> listeAlign = new ArrayList<>();
         // construction de la requête de type (webservices Opentheso)
         HttpsURLConnection cons = null;
@@ -98,7 +99,7 @@ public class OpenthesoHelper {
             if(con != null)
                 con.disconnect();
             
-            listeAlign = getValues(lexicalValue, xmlRecord, idC, idLang, idTheso, source);
+            listeAlign = getValues(originalLabel, xmlRecord, idC, idLang, idTheso, source);
             br.close();
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());

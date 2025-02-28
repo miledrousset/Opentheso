@@ -2160,7 +2160,7 @@ public class SearchHelper {
         String orderByNPT;
 
         Set<String> supportedLangs = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
-        if (supportedLangs.contains(idLang.toLowerCase())) {
+        if (idLang!= null && supportedLangs.contains(idLang.toLowerCase())) {
             preparedValuePT = " and unaccent(lower(term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) LIKE '%' || (unaccent(lower('" + value + "'))) || '%'";
             orderByPT = "order by term.lexical_value <-> '" + value + "' limit 50";
