@@ -31,6 +31,7 @@ public class ImagesHelper {
         
         copyRight = StringUtils.convertString(copyRight);
         imageName = StringUtils.convertString(imageName);
+        creator = StringUtils.convertString(creator);
         uri = uri.trim();
         try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {

@@ -29,15 +29,17 @@ public class JsonHelper {
         jab = Json.createArrayBuilder();
     }
     
-    public void addJsonData(String uri, String value) {
+    public void addJsonData(String uri, String value, String identifier) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("identifier", identifier);
         builder.add("uri", uri);
         builder.add("label", value);
         jab.add(builder);
     }
         
-    public void addJsonDataFull(String uri, String value, String definition, boolean isAltLabel) {
+    public void addJsonDataFull(String uri, String value, String definition, boolean isAltLabel, String identifier) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("identifier", identifier);
         builder.add("uri", uri);
         builder.add("label", value);
         builder.add("isAltLabel", isAltLabel);

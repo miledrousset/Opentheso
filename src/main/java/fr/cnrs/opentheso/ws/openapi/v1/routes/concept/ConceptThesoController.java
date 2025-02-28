@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
+import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getMediaType;
 
 
 @Slf4j
@@ -112,9 +114,11 @@ public class ConceptThesoController {
     public ResponseEntity<Object> getDatasForGraph(
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
             @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
+            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang,
+            @Parameter(name = "limit", example = "true", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "pour limiter ou non le nombre de concepts à récupérer")
+            @RequestParam(value = "limit", required = false, defaultValue = "false") Boolean limit) {
 
-        var datas = d3jsHelper.findDatasForGraph__(idConcept, idThesaurus, lang);
+        var datas = d3jsHelper.findDatasForGraph__(idConcept, idThesaurus, lang, limit);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -133,9 +137,12 @@ public class ConceptThesoController {
     )
     public ResponseEntity<Object> getDatasForGraphForThisTheso(
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept", required = true) @PathVariable("idTheso") String idThesaurus,
-            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
+            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang,
+            @Parameter(name = "limit", example = "true", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "pour limiter ou non le nombre de concepts à récupérer")
+            @RequestParam(value = "limit", required = false, defaultValue = "true") Boolean limit)
+    {
 
-        var datas = d3jsHelper.findDatasForGraph__(null, idThesaurus, lang);
+        var datas = d3jsHelper.findDatasForGraph__(null, idThesaurus, lang, limit);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -168,29 +175,26 @@ public class ConceptThesoController {
             switch (format) {
                 case "rdf": {
                     return ResponseEntity.ok()
-                            .header("Access-Control-Allow-Origin", "*")
                             .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
                             .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_RDF));
                 }
                 case "jsonld":
                     return ResponseEntity.ok()
-                            .header("Access-Control-Allow-Origin", "*")
                             .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
                             .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_JSON_LD));
                 case "turtle":
                     return ResponseEntity.ok()
-                            .header("Access-Control-Allow-Origin", "*")
                             .contentType(MediaType.TEXT_PLAIN)
                             .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_TURTLE));
                 default:
                     return ResponseEntity.ok()
-                            .header("Access-Control-Allow-Origin", "*")
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(getBranchOfConcepts(idConcept, idTheso, way, JSON_FORMAT));
             }
         } else {
             var datas = getBranchOfConcepts(idConcept, idTheso, way, removeCharset(acceptHeader));
-            return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
+            return ResponseEntity.ok()
+                    .contentType(getMediaType(acceptHeader)).body(datas);
         }
     }
 

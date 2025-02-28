@@ -50,9 +50,35 @@
                         <h:outputText value="#{langueBean.getMsg('toolbox.makeThesaurusPrivate')}" />
                     </div>
                     <div class="col-5" >
-                        <p:toggleSwitch label="Public/Privé" value="#{editThesoBean.isPrivateTheso}" style="height: 25px;">
+                        <p:toggleSwitch label="Public/Privé" value="#{editThesoBean.privateTheso}" style="height: 25px;">
                             <p:ajax listener="#{editThesoBean.changeStatus()}" update="containerIndex messageIndex" />
                         </p:toggleSwitch>
+                    </div>
+                </div>
+
+                <!-- Générer l'identifiant pérenne pour le thésaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" />
+                    </div>
+                    <div class="col-1" >
+                        <p:commandButton value="#{langueBean.getMsg('service.generate')}" action="#{editThesoBean.generateArkId()}" update="containerIndex messageIndex"/>
+                    </div>
+                    <div class="col-4" >
+                        <h:outputText value="#{editThesoBean.arkIdOfTheso}"/>
+                    </div>
+                </div>
+
+                <!-- Modifier l'Identifiant du thésaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="#{langueBean.getMsg('toolbox.modifyThesaurusId')}" />
+                    </div>
+                    <div class="col-1" >
+                        <p:commandButton value="#{langueBean.getMsg('candidat.edit')}"
+                                         actionListener="#{editThesoBean.reset()}"
+                                         update="idChangeIdOfTheso"
+                                         oncomplete="PF('changeIdOfTheso').show();" process="@this"/>
                     </div>
                 </div>
             </div>

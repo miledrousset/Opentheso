@@ -66,8 +66,21 @@
                                      update="vote"
                                      action="#{candidatBean.updateCandidateLabel()}"
                                      value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="fa-solid fa-save"
-                                     ajax="true" process="@this" style="margin-left: 20px"/>                    
-                    
+                                     ajax="true" process="@this" style="margin-left: 20px"/>
+                    <p:commandButton id="deleteBtn" rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
+                                     update="tabViewCandidat"
+                                     actionListener="#{candidatBean.deleteCandidate(currentUser.nodeUser.idUser)}"
+                                     action="#{candidatBean.setIsListCandidatsActivate(true)}"
+                                     value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-danger-private" icon="fa-solid fa-remove"
+                                     ajax="true" process="@this" style="margin-left: 20px">
+                        <p:confirm header="#{langueBean.getMsg('profile.confirmation')}"
+                                   message="#{langueBean.getMsg('confirmDelele')} ?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
+
                 </div>
             </h:panelGroup>
 
@@ -326,7 +339,7 @@
                         </div>
 
                         <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                            <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}">
+                            <div title="#{langueBean.getMsg('candidat.term.no_edit')}" class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}" >
                                 <div class="col-3" >
                                     <h:outputText value="#{note.lexicalValue}" escape="false" style="font-size: 14px;" title="#{langueBean.getMsg('rightbody.concept.by')} #{candidatBean.getUserName(note.idUser)}"/>
                                 </div>
@@ -364,6 +377,7 @@
                                                      actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
                                                      style="color: #666666"/>
                                 </div>
+
                             </div>
                         </ui:repeat>
                     </h:panelGroup>

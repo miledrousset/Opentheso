@@ -15,21 +15,20 @@
         <file>${LOG_PATH:-./logs/opentheso.log}</file>
 
         <!-- Politique de rotation basée sur la taille et le temps -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Les fichiers de log des jours précédents seront nommés opentheso-yyyy-MM-dd.log et compressés -->
-            <fileNamePattern>${LOG_PATH:-./logs}/opentheso-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
 
-            <!-- Nombre maximum de jours à conserver (1 mois) -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Nom des fichiers avec rotation journalière et compression -->
+            <fileNamePattern>${LOG_PATH:-./logs}/opentheso-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+
+            <!-- Taille maximale d'un fichier avant rotation -->
+            <maxFileSize>200MB</maxFileSize>
+
+            <!-- Nombre maximum de jours à conserver -->
             <maxHistory>30</maxHistory>
 
-            <!-- Taille totale maximale pour les logs conservés (4 Go) -->
+            <!-- Taille totale maximale des logs conservés -->
             <totalSizeCap>4GB</totalSizeCap>
         </rollingPolicy>
-
-        <!-- Limite la taille de chaque fichier à 200 Mo -->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>200MB</maxFileSize>
-        </triggeringPolicy>
 
         <!-- Format des logs dans le fichier  -->
         <encoder>

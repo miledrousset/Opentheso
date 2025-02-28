@@ -97,19 +97,22 @@ public class WikidataHelper {
     private ArrayList<NodeAlignment> getValuesFromJson(String jsonValue, String idConcept, String idTheso, String source){
         JsonObject object;
         JsonArray jsonArray;
-        JsonObject value;   
+        JsonObject value;
+        String localValue;
        
         ArrayList<NodeAlignment> listAlignValues = new ArrayList<>();
         
         try {
             JsonReader jsonReader = Json.createReader(new StringReader(jsonValue));
             object = jsonReader.readObject();
+            localValue = object.getJsonObject("searchinfo").getString("search");
             jsonArray = object.getJsonArray("search");
 
             for (int i = 0; i < jsonArray.size(); i++) {
                 NodeAlignment na = new NodeAlignment();
                 na.setInternal_id_concept(idConcept);
                 na.setInternal_id_thesaurus(idTheso);
+                na.setLabelLocal(localValue);
                 value = jsonArray.getJsonObject(i);
                 // label ou Nom
                 try {
@@ -197,7 +200,7 @@ public class WikidataHelper {
             NodeAlignment na = new NodeAlignment();
             na.setInternal_id_concept(idC);
             na.setInternal_id_thesaurus(idTheso);    
-            
+
             // label ou Nom
             if (result.get("itemLabel") != null) {
                 na.setConcept_target(result.get("itemLabel"));

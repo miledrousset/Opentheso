@@ -777,14 +777,18 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
+        String uriBase = getPath();
+        if (uriBase.endsWith("/")) {
+            uriBase = uriBase.substring(0, uriBase.length() - 1);
+        }
         if(nodePreference.isOriginalUriIsArk()){
             if(!StringUtils.isEmpty((nodePreference.getOriginalUri()))){
                 return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
             } else {
-                return getPath() + "/?idt=" + id;
+                return uriBase + "/?idt=" + id;
             }
         } else {
-            return getPath() + "/?idt=" + id;
+            return uriBase + "/?idt=" + id;
         }
     }
 
@@ -803,7 +807,10 @@ public class ExportRdf4jHelperNew {
         if (nodeConceptExport.getConcept() == null) {
             return uri;
         }
-
+        String path = getPath();
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
         // Choix de l'URI pour l'export : 
         // Si Handle est actif, on le prend en premier 
         // sinon,  on vérifie si Ark est actif, 
@@ -815,7 +822,7 @@ public class ExportRdf4jHelperNew {
                 uri = nodePreference.getOriginalUri()+ "/" +nodeConceptExport.getConcept().getIdArk();
                 return uri;
             } else {
-                uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
+                uri = path + "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                             + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();                
                 return uri;
             }
@@ -845,7 +852,7 @@ public class ExportRdf4jHelperNew {
             uri = nodePreference.getOriginalUri()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         } else {
-            uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
+            uri = path + "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         }
 
@@ -855,14 +862,19 @@ public class ExportRdf4jHelperNew {
     private String getLocalUri(NodeConceptExport nodeConceptExport){
 
         String uri = "";
-        if(getPath() == null) return uri;        
+        String path = getPath();
+        if(path == null) return uri;
         if (nodeConceptExport == null) {
             return uri;
         }
         if (nodeConceptExport.getConcept() == null) {
             return uri;
         }
-        uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        uri = path+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                     + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         return uri;
     }
@@ -880,6 +892,10 @@ public class ExportRdf4jHelperNew {
         if (nodeGroupLabel.getIdGroup() == null) {
             return uri;
         }
+        String uriBase = getPath();
+        if (uriBase.endsWith("/")) {
+            uriBase = uriBase.substring(0, uriBase.length() - 1);
+        }
 
         // Choix de l'URI pour l'export : 
         // Si Handle est actif, on le prend en premier 
@@ -892,7 +908,7 @@ public class ExportRdf4jHelperNew {
                 uri = nodePreference.getUriArk() + nodeGroupLabel.getIdArk();
                 return uri;
             } else {
-                uri = getPath() + "/?idg=" + nodeGroupLabel.getIdGroup()
+                uri = uriBase + "/?idg=" + nodeGroupLabel.getIdGroup()
                             + "&idt=" + nodeGroupLabel.getIdThesaurus();
                 return uri;
             }
@@ -922,7 +938,7 @@ public class ExportRdf4jHelperNew {
             uri = nodePreference.getOriginalUri() + "/?idg=" + nodeGroupLabel.getIdGroup()
                         + "&idt=" + nodeGroupLabel.getIdThesaurus();
         } else {
-            uri = getPath() + "/?idg=" + nodeGroupLabel.getIdGroup()
+            uri = uriBase + "/?idg=" + nodeGroupLabel.getIdGroup()
                         + "&idt=" + nodeGroupLabel.getIdThesaurus();
         }
 
@@ -941,6 +957,10 @@ public class ExportRdf4jHelperNew {
         if (nodeUri == null) {
             return uri;
         }
+        String uriBase = getPath();
+        if (uriBase.endsWith("/")) {
+            uriBase = uriBase.substring(0, uriBase.length() - 1);
+        }
 
         // Choix de l'URI pour l'export : 
         // Si Handle est actif, on le prend en premier 
@@ -953,7 +973,7 @@ public class ExportRdf4jHelperNew {
                 uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                 return uri;
             } else {
-                uri = getPath() + "/?idg=" + nodeUri.getIdConcept()
+                uri = uriBase + "/?idg=" + nodeUri.getIdConcept()
                                 + "&idt=" + idTheso;              
                 return uri;
             }
@@ -974,7 +994,7 @@ public class ExportRdf4jHelperNew {
             uri = nodePreference.getOriginalUri() + "/?idg=" + nodeUri.getIdConcept()
                             + "&idt=" + idTheso;
         } else {
-            uri = getPath() + "/?idg=" + nodeUri.getIdConcept()
+            uri = uriBase + "/?idg=" + nodeUri.getIdConcept()
                             + "&idt=" + idTheso;
         }
 
@@ -992,6 +1012,10 @@ public class ExportRdf4jHelperNew {
         if (nodeUri == null) {
             return uri;
         }
+        String uriBase = getPath();
+        if (uriBase.endsWith("/")) {
+            uriBase = uriBase.substring(0, uriBase.length() - 1);
+        }
 
         // Choix de l'URI pour l'export : 
         // Si Handle est actif, on le prend en premier 
@@ -1005,7 +1029,7 @@ public class ExportRdf4jHelperNew {
                 uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                 return uri;
             } else {
-                uri = getPath() + "/?idc=" + nodeUri.getIdConcept().trim()
+                uri = uriBase + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
                 return uri;
             }
@@ -1034,7 +1058,7 @@ public class ExportRdf4jHelperNew {
             uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
         } else {
-            uri = getPath() + "/?idc=" + nodeUri.getIdConcept().trim()
+            uri = uriBase + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
         }
 
@@ -1049,7 +1073,11 @@ public class ExportRdf4jHelperNew {
         if (idFacet == null) {
             return uri;
         }
-        uri = getPath()+ "/?idf=" + idFacet + "&idt=" +idTheso;
+        String uriBase = getPath();
+        if (uriBase.endsWith("/")) {
+            uriBase = uriBase.substring(0, uriBase.length() - 1);
+        }
+        uri =uriBase + "/?idf=" + idFacet + "&idt=" +idTheso;
         return uri;
     }    
     
@@ -1059,6 +1087,9 @@ public class ExportRdf4jHelperNew {
      * @return
      */
     private String getPath(){
+        if(StringUtils.isNotEmpty(nodePreference.getCheminSite())){
+            return nodePreference.getCheminSite();
+        }
         if(FacesContext.getCurrentInstance() == null) {
             return nodePreference.getOriginalUri();
         }

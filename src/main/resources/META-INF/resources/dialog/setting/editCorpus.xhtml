@@ -33,7 +33,7 @@
             </div>
 
             <h:panelGroup id="uriCount" rendered="#{!corpusBean.nodeCorpusForEdit.onlyUriLink}">
-                <div class="row" style="margin-top: 5px" contentDisabled="#{corpusBean.nodeCorpusForEdit.onlyUriLink}">
+                <div class="row" style="margin-top: 5px" >
                     <div class="col-5" >
                         <p:outputLabel value="#{langueBean.getMsg('setting.UriToGetTotal')} *" style="font-size: 12px;"/>
                     </div>
@@ -46,7 +46,7 @@
             </h:panelGroup>
 
 
-            <div class="row" style="margin-top: 5px" contentDisabled="#{corpusBean.nodeCorpusForEdit.onlyUriLink}">
+            <div class="row" style="margin-top: 5px" >
                 <div class="col-5" >
                     <p:outputLabel value="#{langueBean.getMsg('setting.UriToLink')} *" style="font-size: 12px;"/>
                 </div>
@@ -69,6 +69,19 @@
                 </div>
             </div>
 
+            <p:spacer/>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-10" >
+                    <h:outputText value="#{langueBean.getMsg('setting.isOmekasResource')}" style="font-size: 12px;"/>
+                </div>
+                <div class="col-1">
+                    <p:toggleSwitch label="Off/On" value="#{corpusBean.nodeCorpusForEdit.omekaS}" style="font-size: 12px">
+                        <p:ajax event="change" />
+                    </p:toggleSwitch>
+                </div>
+            </div>
+            <p:spacer/>
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 

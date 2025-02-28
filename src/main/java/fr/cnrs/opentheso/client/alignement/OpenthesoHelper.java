@@ -51,7 +51,8 @@ public class OpenthesoHelper {
         if (lexicalValue.trim().equals("")) {
             return null;
         }        
-        
+        String originalLabel = new String(lexicalValue);
+
         ArrayList<NodeAlignment> listeAlign = new ArrayList<>();
         // construction de la requête de type (webservices Opentheso)
         HttpsURLConnection cons = null;
@@ -98,7 +99,7 @@ public class OpenthesoHelper {
             if(con != null)
                 con.disconnect();
             
-            listeAlign = getValues(xmlRecord, idC, idLang, idTheso, source);
+            listeAlign = getValues(originalLabel, xmlRecord, idC, idLang, idTheso, source);
             br.close();
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());
@@ -106,7 +107,7 @@ public class OpenthesoHelper {
         return listeAlign;
     }
 
-    private ArrayList<NodeAlignment> getValues(String xmlDatas,
+    private ArrayList<NodeAlignment> getValues(String originalValue, String xmlDatas,
             String idC, String idLang, String idTheso, String source) {
 
         ArrayList<NodeAlignment> listAlignValues = new ArrayList<>();
@@ -120,6 +121,7 @@ public class OpenthesoHelper {
             for (SKOSResource resource : sxd.getConceptList()) {
                 NodeAlignment na = new NodeAlignment();
                 na.setInternal_id_concept(idC);
+                na.setLabelLocal(originalValue);
                 na.setInternal_id_thesaurus(idTheso);
                 na.setThesaurus_target(source);//"Pactols");
                 na.setUri_target(resource.getUri());

@@ -233,6 +233,12 @@ public class AlignmentBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public void removeAlignmentFromTab(NodeAlignment alignment) {
+        allAlignementFound = allAlignementFound.stream()
+                .filter(element -> !StringUtils.isEmpty(element.getInternal_id_concept()) && !element.getInternal_id_concept().equalsIgnoreCase(alignment.getInternal_id_concept()))
+                .collect(Collectors.toList());
+    }
+
     public void getIdsAndValues(String idLang, String idTheso) {
         if (idsToGet == null) {
             return;

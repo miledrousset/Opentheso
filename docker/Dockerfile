@@ -1,17 +1,8 @@
-FROM tomcat:9.0
-MAINTAINER Evolved Binary
+FROM bitnami/java:17.0.12-10
 
-# Installer unzip
-RUN apt-get update && apt-get install -y unzip
+WORKDIR /app
+ADD ./opentheso.jar .
+ADD ./application-prod.yaml .
 
-#COPY opentheso2-21.06.war /usr/local/tomcat/webapps/opentheso2.war
-ADD https://github.com/miledrousset/Opentheso2/releases/download/v24.03.06/opentheso2-24.03.06.war /usr/local/tomcat/webapps/opentheso2.war
-
-RUN mkdir /usr/local/tomcat/webapps/opentheso2
-RUN unzip -d /usr/local/tomcat/webapps/opentheso2/ /usr/local/tomcat/webapps/opentheso2.war
-
-
-# Modify the config for Opentheso
-COPY preferences.properties /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
-COPY hikari.properties /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
-COPY hibernate.cfg.xml /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
+EXPOSE 8080
+CMD java -jar opentheso.jar --spring.profiles.active=prod --spring.config.additional-location=./application-prod.yaml

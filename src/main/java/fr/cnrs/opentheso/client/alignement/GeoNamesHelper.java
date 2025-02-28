@@ -130,6 +130,7 @@ public class GeoNamesHelper {
                     if (value.trim().equalsIgnoreCase(toponymName.trim())) {
                         na.setConcept_target(toponymName);
                         na.setDef_target(infos);
+                        na.setLabelLocal(value);
                         na.setInternal_id_concept(idC);
                         na.setInternal_id_thesaurus(idTheso);
                         na.setThesaurus_target(source);
@@ -140,6 +141,7 @@ public class GeoNamesHelper {
                     } else {
                         na.setConcept_target(toponymName);
                         na.setDef_target(infos);
+                        na.setLabelLocal(value);
                         na.setInternal_id_concept(idC);
                         na.setInternal_id_thesaurus(idTheso);
                         na.setThesaurus_target(source);

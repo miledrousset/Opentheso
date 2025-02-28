@@ -130,9 +130,14 @@ public class HtmlPageHelper {
      */
     public boolean setThesoHomePage(String htmlText, String idTheso, String idLang) {
 
-        if (isThesoHomeExist(idTheso, idLang) && !updateThesoHome(htmlText, idTheso, idLang)) {
-            return false;
-        } else if (!insertThesoHome(htmlText, idTheso, idLang)) {
+        if (isThesoHomeExist(idTheso, idLang)){
+            if(!updateThesoHome(htmlText, idTheso, idLang)) {
+                return false;
+            } else
+                return true;
+        }
+
+        if (!insertThesoHome(htmlText, idTheso, idLang)) {
             return false;
         }
         return true;

@@ -865,13 +865,16 @@ public class ExportFileBean implements Serializable {
 
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(idTheso, nodePreference));
-
-        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
-        String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
-        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
-        HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
-        String baseUrl = protocole + "://" + serverAdress + ":" + request.getLocalPort() + contextPath;
-
+        String baseUrl;
+        if(StringUtils.isEmpty(nodePreference.getCheminSite())) {
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+            String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+            String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+            HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+            baseUrl = protocole + "://" + serverAdress + ":" + request.getLocalPort() + contextPath;
+        } else {
+            baseUrl = nodePreference.getCheminSite();
+        }
         List<SKOSResource> concepts = new ArrayList<>();
 
         // cas d'export pour tout le thésaurus avec les collections et facettes

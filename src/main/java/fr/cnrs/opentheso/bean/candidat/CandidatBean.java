@@ -291,7 +291,7 @@ public class CandidatBean implements Serializable {
      * @param idUser
      */
     public void deleteSelectedCandidate(int idUser) {
-        if (selectedCandidates == null) {
+        if (CollectionUtils.isEmpty(selectedCandidates)) {
             return;
         }
 
@@ -305,6 +305,23 @@ public class CandidatBean implements Serializable {
         initCandidatModule();
         getAllCandidatsByThesoAndLangue();
         showMessage(FacesMessage.SEVERITY_INFO, "Candidats supprimés");
+    }
+
+    /**
+     * permet de supprimer le candidat sélectionné
+     */
+    public void deleteCandidate(int idUser) {
+        if (candidatSelected == null) {
+            return;
+        }
+        if (!conceptHelper.deleteConcept(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), idUser)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
+            return;
+        }
+        initCandidatModule();
+        getAllCandidatsByThesoAndLangue();
+        showMessage(FacesMessage.SEVERITY_INFO, "Candidat supprimé");
     }
 
     /**

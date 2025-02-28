@@ -149,7 +149,7 @@ public class EditConcept implements Serializable {
         nodeConceptTypeToDelete = null;
         nodeConceptTypeToAdd = null;
 
-        PrimeFaces.current().executeScript("window.location.reload();");
+      //  PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     public void infos() {

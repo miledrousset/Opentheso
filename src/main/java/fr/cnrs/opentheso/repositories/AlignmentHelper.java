@@ -539,7 +539,7 @@ public class AlignmentHelper {
                         nodeAlignment.setInternal_id_concept(resultSet.getString("internal_id_concept"));
                         nodeAlignment.setId_source(resultSet.getInt("id_alignement_source"));
                         nodeAlignment.setAlignmentLabelType(resultSet.getString("label"));
-                        nodeAlignment.setAlignmentLabelType(resultSet.getString("label_skos"));
+                        nodeAlignment.setAlignmentLabelSkosType(resultSet.getString("label_skos"));
                         nodeAlignment.setAlignementLocalValide(resultSet.getBoolean("url_available"));
                         nodeAlignmentList.add(nodeAlignment);
                     }

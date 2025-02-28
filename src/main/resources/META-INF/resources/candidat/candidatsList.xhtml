@@ -86,6 +86,8 @@
                     <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList"  />
                     <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList" />
 
+                    <p:column selectionBox="true" style="width:16px;text-align:center"/>
+
                     <f:facet name="header">
                         <div class="products-table-header">
                             <span style="font-weight: bold">#{langueBean.getMsg('candidate.list')}</span>

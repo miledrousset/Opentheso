@@ -1,0 +1,17 @@
+services:
+  opentheso-db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: opentheso
+      POSTGRES_PASSWORD: opentheso
+
+  opentheso:
+    image: opentheso:local
+    build: .
+    restart: always
+    depends_on:
+      - opentheso-db
+    ports:
+      - 8090:8099
+

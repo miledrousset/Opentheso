@@ -88,7 +88,8 @@ public class DaoResourceHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_topterm_forgraph"
                         + "('" + idTheso + "', '" + idLang + "') "
-                        + " as x(idconcept Character varying, local_uri text, status Character varying,  label VARCHAR, altlabel VARCHAR, definition text, havechildren boolean);"
+                        + " as x(idconcept Character varying, local_uri text, status Character varying,  label VARCHAR," +
+                        " altlabel VARCHAR, definition text, havechildren boolean, image text);"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -118,8 +119,17 @@ public class DaoResourceHelper {
                             nodeConceptGraph.setDefinitions(null);
                         } else {
                             nodeConceptGraph.setDefinitions(getLabelsWithoutSub(resultSet.getString("definition")));
-                        }                          
-                        
+                        }
+
+                        if(StringUtils.isEmpty(resultSet.getString("image"))) {
+                            nodeConceptGraph.setImages(null);
+                        } else {
+                            if(nodeConceptGraph.getImages() == null) {
+                                nodeConceptGraph.setImages(new ArrayList<>());
+                            }
+                            nodeConceptGraph.setImages(getExternalResources(resultSet.getString("image")));
+                        }
+
                         nodeConceptGraph.setHaveChildren(resultSet.getBoolean("havechildren"));
 
                         nodeConceptGraphs.add(nodeConceptGraph);
@@ -153,7 +163,7 @@ public class DaoResourceHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_narrower_forgraph"
                         + "('" + idTheso + "', '" + idConceptBT + "', '" + idLang + "') "
-                        + " as x(idconcept2 Character varying, local_uri text, status Character varying,  label VARCHAR, altlabel VARCHAR, definition text, havechildren boolean);"
+                        + " as x(idconcept2 Character varying, local_uri text, status Character varying,  label VARCHAR, altlabel VARCHAR, definition text, havechildren boolean, image text);"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -183,8 +193,17 @@ public class DaoResourceHelper {
                             nodeConceptGraph.setDefinitions(null);
                         } else {
                             nodeConceptGraph.setDefinitions(getLabelsWithoutSub(resultSet.getString("definition")));
-                        }                          
-                        
+                        }
+
+                        if(StringUtils.isEmpty(resultSet.getString("image"))) {
+                            nodeConceptGraph.setImages(null);
+                        } else {
+                            if(nodeConceptGraph.getImages() == null) {
+                                nodeConceptGraph.setImages(new ArrayList<>());
+                            }
+                            nodeConceptGraph.setImages(getExternalResources(resultSet.getString("image")));
+                        }
+
                         nodeConceptGraph.setHaveChildren(resultSet.getBoolean("havechildren"));
 
                         nodeConceptGraphs.add(nodeConceptGraph);

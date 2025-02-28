@@ -15,4 +15,5 @@ public class NodeDatas {
     private List<String> definition;
     private List<String> synonym;
     private List<NodeDatas> childrens;
-}
+    private List<String> image;
+ }

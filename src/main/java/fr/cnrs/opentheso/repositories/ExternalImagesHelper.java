@@ -28,6 +28,8 @@ public class ExternalImagesHelper {
             String imageName, String copyRight, String uri, String creator) {
 
         copyRight = fr.cnrs.opentheso.utils.StringUtils.convertString(copyRight);
+        imageName = fr.cnrs.opentheso.utils.StringUtils.convertString(imageName);
+        creator = fr.cnrs.opentheso.utils.StringUtils.convertString(creator);
         try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_images (id_concept, id_thesaurus, image_name, "
