@@ -37,8 +37,6 @@ Contacts: opentheso.contact@services.cnrs.fr
 # Installation under Linux (Debian or Ubuntu):
 Link to the [installation](https://github.com/miledrousset/Opentheso/blob/dev/src/main/resources/doc/installation_debian_en.pdf) 
 
-documentation(https://github.com/miledrousset/Opentheso/blob/master/src/main/resources/doc/installation_debian.pdf)
-
 # Opentheso
 link to the [documentation](https://opentheso.hypotheses.org/)
 
