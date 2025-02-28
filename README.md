@@ -3,7 +3,7 @@
 [another docker install](https://github.com/viaacode/opentheso2-docker)
 
 # Installation sous linux (Debian ou Ubuntu):
-Lien vers la documentation d'[installation](https://github.com/miledrousset/Opentheso/blob/master/src/main/resources/doc/installation_debian.pdf)
+Lien vers la documentation d'[installation](https://github.com/miledrousset/Opentheso/blob/dev/src/main/resources/doc/installation_debian.pdf)
 
 
 # Opentheso
@@ -35,9 +35,7 @@ Contacts: opentheso.contact@services.cnrs.fr
 -----------------------------------------------------------------
 
 # Installation under Linux (Debian or Ubuntu):
-Link to the [installation](https://github.com/miledrousset/Opentheso/blob/master/src/main/resources/doc/installation_debian.pdf) 
-
-documentation(https://github.com/miledrousset/Opentheso/blob/master/src/main/resources/doc/installation_debian.pdf)
+Link to the [installation](https://github.com/miledrousset/Opentheso/blob/dev/src/main/resources/doc/installation_debian_en.pdf) 
 
 # Opentheso
 link to the [documentation](https://opentheso.hypotheses.org/)
