@@ -268,7 +268,8 @@ public class PropositionService implements Serializable {
     }
 
     public int searchNbrNewProposition() {
-        return propositionHelper.searchNbrPorpositoinByStatus(PropositionStatusEnum.ENVOYER.name());
+        if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) return 0;
+        return propositionHelper.searchNbrPorpositoinByStatus(selectedTheso.getCurrentIdTheso(), PropositionStatusEnum.ENVOYER.name());
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {

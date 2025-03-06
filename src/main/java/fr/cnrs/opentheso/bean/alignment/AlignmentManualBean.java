@@ -59,7 +59,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
+       // nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){

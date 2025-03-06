@@ -215,10 +215,7 @@ public class ImportFileBean implements Serializable {
 
     private String selectedSearchType;
 
-    @PreDestroy
-    public void destroy() {
-        clearMemory();
-    }
+
 
     private void clearMemory() {
         if (conceptObjects != null) {

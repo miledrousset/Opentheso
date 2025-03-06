@@ -208,20 +208,22 @@ public class PropositionBean implements Serializable {
     }
 
     public void afficherPropositionsNotification() {
+        if(StringUtils.isEmpty(selectedTheso.getSelectedIdTheso() )) return;
         chercherProposition();
         PrimeFaces.current().ajax().update("listPropositionsPanel");
         PrimeFaces.current().executeScript("showListPropositionsBar();");
     }
 
     public void chercherProposition() {
-        String idTheso = "2".equals(filter2) ? selectedTheso.getSelectedIdTheso() : "%";
+        String idTheso = selectedTheso.getSelectedIdTheso();//"2".equals(filter2) ? selectedTheso.getSelectedIdTheso() : "%";
+        if(StringUtils.isEmpty(idTheso)) return;
         switch (showAllPropositions) {
             case "1":
                 propositions = propositionService.searchPropositionsNonTraitter(idTheso);
                 break;
-            case "2":
+           /* case "2":
                 propositions = propositionService.searchOldPropositions(idTheso);
-                break;
+                break;*/
             default:
                 propositions = propositionService.searchAllPropositions(idTheso);
         }

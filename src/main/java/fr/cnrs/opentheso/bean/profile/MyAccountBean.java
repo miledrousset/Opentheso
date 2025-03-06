@@ -51,13 +51,7 @@ public class MyAccountBean implements Serializable {
     public MyAccountBean() {
     }
 
-    /**
-     * Nettoie les ressources avant la destruction.
-     */
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
+
 
     /**
      * Réinitialise les informations de profil de l'utilisateur.

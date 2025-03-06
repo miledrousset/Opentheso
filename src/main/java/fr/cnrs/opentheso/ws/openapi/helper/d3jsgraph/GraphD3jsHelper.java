@@ -208,10 +208,14 @@ public class GraphD3jsHelper {
         properties.setPropertiesLabel("skos__prefLabel");
 
         List<String> prefLabels = new ArrayList<>();
-        prefLabels.add(nodeFullConcept.getPrefLabel().getLabel() + "@" + nodeFullConcept.getPrefLabel().getIdLang());
+    //    prefLabels.add(nodeFullConcept.getPrefLabel().getLabel() + "@" + nodeFullConcept.getPrefLabel().getIdLang());
+        prefLabels.add((nodeFullConcept != null && nodeFullConcept.getPrefLabel() != null) ?
+                (nodeFullConcept.getPrefLabel().getLabel() + "@" + nodeFullConcept.getPrefLabel().getIdLang()) :
+                "");
         if(nodeFullConcept.getPrefLabelsTraduction() != null){
             for (ConceptLabel conceptLabel : nodeFullConcept.getPrefLabelsTraduction()) {
-                prefLabels.add(conceptLabel.getLabel() + "@" + conceptLabel.getIdLang());
+                //prefLabels.add(conceptLabel.getLabel() + "@" + conceptLabel.getIdLang());
+                prefLabels.add(conceptLabel != null ? conceptLabel.getLabel() + "@" + conceptLabel.getIdLang() : "");
             }
         }
         properties.setPrefLabels(prefLabels);

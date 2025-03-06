@@ -18,13 +18,13 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- Nom des fichiers avec rotation journalière et compression -->
-            <fileNamePattern>${LOG_PATH:-./logs}/opentheso-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_PATH:-./logs}/opentheso-%d{yyyy-MM}.%i.log.gz</fileNamePattern>
 
             <!-- Taille maximale d'un fichier avant rotation -->
-            <maxFileSize>200MB</maxFileSize>
+            <maxFileSize>200mb</maxFileSize>
 
             <!-- Nombre maximum de jours à conserver -->
-            <maxHistory>30</maxHistory>
+            <maxHistory>12</maxHistory>
 
             <!-- Taille totale maximale des logs conservés -->
             <totalSizeCap>4GB</totalSizeCap>
