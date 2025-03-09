@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -82,6 +83,10 @@ public class CurrentUser implements Serializable {
 
     @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
+
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository2;
+
 
     @Autowired
     private UserHelper userHelper;
@@ -414,13 +419,29 @@ public class CurrentUser implements Serializable {
             } else {
                 idRole = userHelper.getRoleOnThisTheso(nodeUser.getIdUser(), idProject, idTheso);
                 userPermissions.setRole(idRole);
-                userPermissions.setRoleName(userHelper.getRoleName(idRole));
+                userPermissions.setRoleName(getRoleName(idRole));
             }
         }
         
         userPermissions.setProjectOfselectedTheso(idProject);
-        userPermissions.setProjectOfselectedThesoName(userHelper.getGroupName(idProject));
-    }    
+
+        userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+    }
+
+    private String getRoleName(int idRole) {
+        switch (idRole) {
+            case 1:
+                return "superAdmin";
+            case 2:
+                return "admin";
+            case 3:
+                return "manager";
+            case 4:
+                return "contributor";
+            default:
+                return "";
+        }
+    }
     
     public void initUserPermissionsForThisProject(int idProject){
         if(userPermissions == null){
@@ -428,7 +449,7 @@ public class CurrentUser implements Serializable {
         }
 
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userHelper.getGroupName(idProject));
+        userPermissions.setSelectedProjectName(userGroupLabelRepository2.findById(idProject).get().getLabel());
         userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {

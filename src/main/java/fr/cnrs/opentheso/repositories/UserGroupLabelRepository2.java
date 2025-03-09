@@ -20,7 +20,4 @@ public interface UserGroupLabelRepository2 extends JpaRepository<UserGroupLabel,
     List<UserGroupLabel> findProjectsByRole(@Param("idUser") int idUser, @Param("idRole") int idRole);
 
     Optional<UserGroupLabel> findByLabelLike(String label);
-
-    void deleteById(int groupId);
-
 }
