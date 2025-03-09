@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.users.UserRoleGroupService;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -32,24 +33,23 @@ import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "modifyRoleBean")
 @SessionScoped
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
+@Named(value = "modifyRoleBean")
 public class ModifyRoleBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    private final MyProjectBean myProjectBean;
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
-    private final UserGroupLabelRepository2 userGroupLabelRepository2;
-    private final UserRoleGroupRepository userRoleGroupRepository;
-    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private MyProjectBean myProjectBean;
+    private RoleRepository roleRepository;
+    private UserRepository userRepository;
+    private UserGroupLabelRepository2 userGroupLabelRepository2;
+    private UserRoleGroupRepository userRoleGroupRepository;
+    private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
-    private final ThesaurusService thesaurusService;
-    private final UserRoleGroupService userRoleGroupService;
+    private ThesaurusService thesaurusService;
+    private UserRoleGroupService userRoleGroupService;
     
     private User nodeSelectedUser, selectedUser;
     private String selectedProject, roleOfSelectedUser;
@@ -63,7 +63,24 @@ public class ModifyRoleBean implements Serializable {
     private List<String> selectedThesos; 
     private NodeUserRole selectedNodeUserRole;
     private List<NodeUserRole> listeLimitedThesoRoleForUser; // la liste des roles / thesos de l'utilisateur et du groupe avec des droits limités
-    
+
+
+    @Inject
+    public ModifyRoleBean(MyProjectBean myProjectBean, RoleRepository roleRepository, UserRepository userRepository,
+                          UserGroupLabelRepository2 userGroupLabelRepository2, UserRoleGroupRepository userRoleGroupRepository,
+                          UserRoleOnlyOnRepository userRoleOnlyOnRepository,
+                          ThesaurusService thesaurusService, UserRoleGroupService userRoleGroupService) {
+
+        this.myProjectBean = myProjectBean;
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.userGroupLabelRepository2 = userGroupLabelRepository2;
+        this.userRoleGroupRepository = userRoleGroupRepository;
+        this.userRoleOnlyOnRepository = userRoleOnlyOnRepository;
+        this.thesaurusService = thesaurusService;
+        this.userRoleGroupService = userRoleGroupService;
+    }
+
     /**
      * permet de selectionner l'utilisateur dans la liste avec toutes les informations nécessaires pour sa modification
      */

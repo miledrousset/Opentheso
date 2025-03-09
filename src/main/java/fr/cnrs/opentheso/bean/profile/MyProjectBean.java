@@ -1,27 +1,40 @@
 package fr.cnrs.opentheso.bean.profile;
 
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.RoleRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
-@Named(value = "myProjectBean")
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "myProjectBean")
 public class MyProjectBean implements Serializable {
 
-    private final CurrentUser currentUser;
-    private final UserHelper userHelper;
+    private CurrentUser currentUser;
+    private UserHelper userHelper;
+    private RoleRepository roleRepository;
+    private UserRoleGroupRepository userRoleGroupRepository;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
 
     private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
     private Map<String, String> listeGroupsOfUser;
@@ -30,10 +43,19 @@ public class MyProjectBean implements Serializable {
     private String selectedProject, selectedProjectName, selectedIndex, workLanguage;
 
 
-    public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage, CurrentUser currentUser, UserHelper userHelper) {
+    @Inject
+    public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage,
+                         UserGroupLabelRepository2 userGroupLabelRepository,
+                         RoleRepository roleRepository,
+                         UserRoleGroupRepository userRoleGroupRepository,
+                         CurrentUser currentUser, UserHelper userHelper) {
+
         this.workLanguage = workLanguage;
         this.currentUser = currentUser;
         this.userHelper = userHelper;
+        this.roleRepository = roleRepository;
+        this.userRoleGroupRepository = userRoleGroupRepository;
+        this.userGroupLabelRepository = userGroupLabelRepository;
     }
 
     public void init() {
@@ -77,7 +99,9 @@ public class MyProjectBean implements Serializable {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }
-        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(idRoleFrom);
+        myAuthorizedRoles = roleRepository.findAllByIdGreaterThanEqual(idRoleFrom).stream()
+                .map(element -> NodeIdValue.builder().id(element.getId() + "").value(element.getName()).build())
+                .toList();
     }     
 
     /**
@@ -85,7 +109,8 @@ public class MyProjectBean implements Serializable {
      */
     private void getGroupsOfUser() {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeGroupsOfUser = userHelper.getAllGroups();
+            listeGroupsOfUser = userGroupLabelRepository.findAll().stream()
+                    .collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel));
             return;
         }
         listeGroupsOfUser = userHelper.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
@@ -148,12 +173,10 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUser = userHelper.getUsersRolesByGroup(
-                    idGroup, nodeUserRoleSuperAdmin.getIdRole());
+            listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
             if (nodeUserRoleOnThisGroup != null) {
-                listeUser = userHelper.getUsersRolesByGroup(
-                        idGroup, nodeUserRoleOnThisGroup.getIdRole());
+                listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleOnThisGroup.getIdRole());
             } else {
                 if (listeUser != null) {
                     listeUser.clear(); //cas où on supprime l'utilisateur en cours
@@ -177,7 +200,8 @@ public class MyProjectBean implements Serializable {
         }
         int idGroup = Integer.parseInt(selectedProject);
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin();
+            var role = roleRepository.findById(1).get();
+            nodeUserRoleSuperAdmin = NodeUserRoleGroup.builder().idRole(role.getId()).roleName(role.getName()).build();
             return;
         }
         nodeUserRoleOnThisGroup = userHelper.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
@@ -199,13 +223,13 @@ public class MyProjectBean implements Serializable {
         }
 
         int idGroup = Integer.parseInt(selectedProject);
-        return userHelper.isAdminOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
+        return userRoleGroupRepository.findUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup).get().getIdRole() < 3;
     }
     
     public String getSelectedProjectName() {
-        if(selectedProject != null) 
+        if(selectedProject != null)
             if(!selectedProject.isEmpty())
-                selectedProjectName = userHelper.getGroupName(Integer.parseInt(selectedProject));
+                selectedProjectName = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get().getLabel();
             else
                 selectedProjectName = selectedProject;
         return selectedProjectName;

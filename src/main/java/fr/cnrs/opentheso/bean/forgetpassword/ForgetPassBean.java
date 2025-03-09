@@ -15,8 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 @Data
-@Named(value = "forgetPassBean")
 @RequestScoped
+@Named(value = "forgetPassBean")
 public class ForgetPassBean implements Serializable {
 
     private MailBean mailBean;

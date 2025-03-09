@@ -11,34 +11,39 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
-@Named(value = "superAdminBean")
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "superAdminBean")
 public class SuperAdminBean implements Serializable {
 
-    private final UserRoleGroupRepository userRoleGroupRepository;
-    private final UserRepository userRepository;
-    private final ThesaurusRepository thesaurusRepository;
-    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private final UserGroupLabelRepository2 userGroupLabelRepository;
-    private final CurrentUser currentUser;
-    private final SelectedTheso selectedTheso;
+    private UserRoleGroupRepository userRoleGroupRepository;
+    private UserRepository userRepository;
+    private ThesaurusRepository thesaurusRepository;
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private CurrentUser currentUser;
+    private SelectedTheso selectedTheso;
 
     private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
     private List<UserGroupLabel> allProjects;
     private List<NodeUserGroupThesaurus> allThesoProject;
     private String workLanguage;
 
+
+    @Inject
     public SuperAdminBean(@Value("${settings.workLanguage:fr}") String workLanguage,
                           UserRoleGroupRepository userRoleGroupRepository,
                           UserRepository userRepository,

@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -33,23 +34,22 @@ import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "newUserBean")
 @SessionScoped
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
+@Named(value = "newUserBean")
 public class NewUserBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    private final MyProjectBean myProjectBean;
-    private final SuperAdminBean superAdminBean;
-    private final UserGroupLabelRepository2 userGroupLabelRepository;
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private MyProjectBean myProjectBean;
+    private SuperAdminBean superAdminBean;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private RoleRepository roleRepository;
+    private UserRepository userRepository;
 
-    private final ThesaurusService thesaurusService;
-    private final UserRoleGroupService userRoleGroupService;
+    private ThesaurusService thesaurusService;
+    private UserRoleGroupService userRoleGroupService;
 
     private NodeUser nodeUser;
     private boolean limitOnTheso;
@@ -60,6 +60,22 @@ public class NewUserBean implements Serializable {
     private List<String> selectedThesos;
     
 
+    @Inject
+    public NewUserBean(MyProjectBean myProjectBean, SuperAdminBean superAdminBean,
+                       UserGroupLabelRepository2 userGroupLabelRepository,
+                       RoleRepository roleRepository,
+                       UserRepository userRepository,
+                       ThesaurusService thesaurusService,
+                       UserRoleGroupService userRoleGroupService) {
+
+        this.myProjectBean = myProjectBean;
+        this.superAdminBean = superAdminBean;
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.thesaurusService = thesaurusService;
+        this.userRoleGroupService = userRoleGroupService;
+        this.userGroupLabelRepository = userGroupLabelRepository;
+    }
 
     public void init(String selectedProject) {
         nodeUser = new NodeUser();
@@ -103,7 +119,6 @@ public class NewUserBean implements Serializable {
     public void addUser(boolean bySuperAdmin){
 
         if(checkUserDatas()) {
-
             var userCreated = saveUser();
             saveRole(userCreated);
             showMessage(FacesMessage.SEVERITY_INFO, "Utilisateur créé avec succès !!!");
@@ -126,6 +141,10 @@ public class NewUserBean implements Serializable {
                 .password(MD5Password.getEncodedPassword(passWord1))
                 .isSuperAdmin(nodeUser.isSuperAdmin())
                 .alertMail(nodeUser.isAlertMail())
+                .isServiceAccount(nodeUser.isServiceAccount())
+                .active(true)
+                .keyNeverExpire(false)
+                .passToModify(false)
                 .build();
         var userCreated = userRepository.save(user);
         if(ObjectUtils.isEmpty(userCreated)) {

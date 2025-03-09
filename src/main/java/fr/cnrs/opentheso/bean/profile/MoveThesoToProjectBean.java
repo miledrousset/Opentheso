@@ -8,31 +8,37 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 import java.io.Serializable;
 import java.util.List;
 
+
 @Data
-@Named(value = "moveThesoToProjectBean")
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "moveThesoToProjectBean")
 public class MoveThesoToProjectBean implements Serializable {
 
-    private final MyProjectBean myProjectBean;
-    private final CurrentUser currentUser;
-    private final SuperAdminBean superAdminBean;
-    private final UserGroupLabelRepository2 userGroupLabelRepository;
-    private final UserRoleGroupRepository userRoleGroupRepository;
-    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private MyProjectBean myProjectBean;
+    private CurrentUser currentUser;
+    private SuperAdminBean superAdminBean;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserRoleGroupRepository userRoleGroupRepository;
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
     
     private NodeIdValue selectedThesoToMove;
     private NodeUserGroup newProject;
-            
+
+
+    @Inject
     public MoveThesoToProjectBean(MyProjectBean myProjectBean,
                                   CurrentUser currentUser,
                                   SuperAdminBean superAdminBean,
