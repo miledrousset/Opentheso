@@ -44,11 +44,12 @@ public class MyProjectBean implements Serializable {
 
 
     @Inject
-    public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage,
+    public MyProjectBean(@Value("${settings.workLanguage:fr}") String workLanguage,
                          UserGroupLabelRepository2 userGroupLabelRepository,
                          RoleRepository roleRepository,
                          UserRoleGroupRepository userRoleGroupRepository,
-                         CurrentUser currentUser, UserHelper userHelper) {
+                         CurrentUser currentUser,
+                         UserHelper userHelper) {
 
         this.workLanguage = workLanguage;
         this.currentUser = currentUser;
