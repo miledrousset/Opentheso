@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,10 @@ import java.util.Optional;
 
 public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, Integer> {
 
+    @Transactional
     void deleteByUserAndGroup(User user, UserGroupLabel group);
 
+    @Transactional
     void deleteByGroup(UserGroupLabel group);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(" +
