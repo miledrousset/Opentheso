@@ -26,13 +26,8 @@ import org.primefaces.validate.ClientValidator;
 @FacesValidator("custom.emailValidator")
 public class EmailValidator implements Validator, ClientValidator {
  
-    private Pattern pattern;
-  
-    private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@(.+)$";
-  
-    public EmailValidator() {
-        pattern = Pattern.compile(EMAIL_PATTERN);
-    }
+    private Pattern pattern= Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
  
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if(value == null) {

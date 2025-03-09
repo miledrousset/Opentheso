@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.converter;
 
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
@@ -14,8 +15,8 @@ public class UserConverter implements Converter{
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if(value != null && value.trim().length() > 0) {
             try {
-                NodeUser nodeUser = new NodeUser();
-                nodeUser.setIdUser(Integer.parseInt(value));
+                User nodeUser = new User();
+                nodeUser.setId(Integer.parseInt(value));
                 return nodeUser;
             } catch(NumberFormatException e) {
                 throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid Id User"));
@@ -32,7 +33,7 @@ public class UserConverter implements Converter{
         if(o == null) {
             return null;
         } else {
-            return "" + ((NodeUser)o).getIdUser();
+            return "" + ((User)o).getId();
         }
     }
 }

@@ -7,6 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.RoleRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
@@ -69,6 +73,15 @@ public class RoleOnThesoBean implements Serializable {
 
     @Autowired
     private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private ThesaurusRepository thesoRepository;
+
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository2;
 
     //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
     private List<ThesoModel> listTheso;    
@@ -421,7 +434,11 @@ public class RoleOnThesoBean implements Serializable {
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
+            var user = userRepository.findById(currentUser.getNodeUser().getIdUser()).get();
+            var group = userGroupLabelRepository2.findById(idGroup).get();
+            var thesaurus = thesoRepository.findById(selectedTheso.getCurrentIdTheso()).get();
+            var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
+            nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
             if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
                 setRole();
             } else
@@ -460,7 +477,8 @@ public class RoleOnThesoBean implements Serializable {
      */
     private NodeUserRoleGroup getUserRoleOnThisGroup(int idGroup, CurrentUser currentUser) {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            return userHelper.getUserRoleForSuperAdmin();
+            var role = roleRepository.findById(1).get();
+            return NodeUserRoleGroup.builder().idRole(role.getId()).roleName(role.getName()).build();
         }
         if (idGroup == -1) {
             return null;

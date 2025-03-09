@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GpsHelper;
@@ -26,6 +27,7 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -134,6 +136,9 @@ public class ImportRdf4jHelper {
 
     @Autowired
     private FacetHelper facetHelper;
+
+    @Autowired
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
 
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
@@ -262,12 +267,8 @@ public class ImportRdf4jHelper {
 
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                if (!userHelper.addThesoToGroup(thesaurus.getId_thesaurus(), idGroupUser)) {
-                    conn.rollback();
-                    conn.close();
-                    message.append("Erreur lors de l'ajout du thésaurus au projet");
-                    return null;
-                }
+                var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(thesaurus.getId_thesaurus()).idGroup(idGroupUser).build();
+                userGroupThesaurusRepository.save(userGroupThesaurus);
             }
             conn.commit();
         }
