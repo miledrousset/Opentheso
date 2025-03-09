@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.HtmlPageHelper;
 import fr.cnrs.opentheso.repositories.StatisticHelper;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 
@@ -12,11 +13,11 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * @author miledrousset
  */
+@Data
 @SessionScoped
 @Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
@@ -47,23 +49,16 @@ public class ViewEditorThesoHomeBean implements Serializable {
     @Autowired
     private UserHelper userHelper;
 
+    @Autowired
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+
     private boolean isViewPlainText;
     private boolean isInEditing;
 
     private String text;
     private String colorOfHtmlButton;
-    private String colorOfTextButton;    
+    private String colorOfTextButton;
 
-
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        text = null;
-        colorOfHtmlButton = null;
-        colorOfTextButton = null;        
-    }     
 
     public void reset(){
         isInEditing = false;
@@ -140,7 +135,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public String getProjectName(String idThesaurus){
         int idProject = userHelper.getGroupOfThisTheso(idThesaurus);
         if(idProject != -1) {
-            return userHelper.getGroupName(idProject);
+            return userGroupLabelRepository.findById(idProject).get().getLabel();
         } else
             return "";
     }
@@ -158,46 +153,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
             colorOfTextButton = "#8C8C8C;";            
         } 
         isViewPlainText = status;
-    }
-
-    public boolean isViewPlainText() {
-        return isViewPlainText;
-    }
-
-    public void setIsViewPlainText(boolean isViewPlainText) {
-        this.isViewPlainText = isViewPlainText;
-    }
-
-    public boolean isInEditing() {
-        return isInEditing;
-    }
-
-    public void setIsInEditing(boolean isInEditing) {
-        this.isInEditing = isInEditing;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getColorOfHtmlButton() {
-        return colorOfHtmlButton;
-    }
-
-    public void setColorOfHtmlButton(String colorOfHtmlButton) {
-        this.colorOfHtmlButton = colorOfHtmlButton;
-    }
-
-    public String getColorOfTextButton() {
-        return colorOfTextButton;
-    }
-
-    public void setColorOfTextButton(String colorOfTextButton) {
-        this.colorOfTextButton = colorOfTextButton;
     }
     
 }

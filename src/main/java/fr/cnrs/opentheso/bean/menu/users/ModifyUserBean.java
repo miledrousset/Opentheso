@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -22,20 +23,26 @@ import org.primefaces.PrimeFaces;
 
 @Data
 @SessionScoped
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @Named(value = "modifyUserBean")
 public class ModifyUserBean implements Serializable {
 
-    private final MyProjectBean myProjectBean;
-    private final SuperAdminBean superAdminBean;
-    private final UserRepository userRepository;
+    private MyProjectBean myProjectBean;
+    private SuperAdminBean superAdminBean;
+    private UserRepository userRepository;
     
     private User nodeUser;
     private String passWord1, passWord2;
     private boolean hasKey;
     private LocalDate apiKeyExpireDate;
 
+
+    @Inject
+    public ModifyUserBean(MyProjectBean myProjectBean, SuperAdminBean superAdminBean, UserRepository userRepository) {
+        this.myProjectBean = myProjectBean;
+        this.superAdminBean = superAdminBean;
+        this.userRepository = userRepository;
+    }
     
     /**
      * Permet de selectionner l'utilisateur dans la liste avec toutes les informations nécessaires pour sa modification

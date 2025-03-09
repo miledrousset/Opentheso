@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
@@ -81,6 +82,9 @@ public class CsvImportHelper {
     @Autowired
     private ExternalResourcesHelper externalResourcesHelper;
 
+    @Autowired
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
 
@@ -128,11 +132,8 @@ public class CsvImportHelper {
 
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                if (!userHelper.addThesoToGroup(thesaurus.getId_thesaurus(), idProject)) {
-                    conn.rollback();
-                    conn.close();
-                    return null;
-                }
+                var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(thesaurus.getId_thesaurus()).idGroup(idProject).build();
+                userGroupThesaurusRepository.save(userGroupThesaurus);
             }
             conn.commit();
             return idTheso1;

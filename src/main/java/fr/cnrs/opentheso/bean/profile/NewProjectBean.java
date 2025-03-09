@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.users.UserRoleGroupService;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -14,30 +15,34 @@ import java.util.List;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+
 
 /**
  *
  * @author miledrousset
  */
 @Data
-@Named(value = "newProjectBean")
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "newProjectBean")
 public class NewProjectBean implements Serializable {
 
-    private final MyProjectBean myProjectBean;
-    private final CurrentUser currentUser;
-    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private final UserGroupLabelRepository2 userGroupLabelRepository;
-    private final UserRoleGroupService userRoleGroupService;
+    private MyProjectBean myProjectBean;
+    private CurrentUser currentUser;
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserRoleGroupService userRoleGroupService;
  
     private String projectName;
     private List<UserGroupLabel> listeProjectOfUser;
 
 
+    @Inject
     public NewProjectBean(MyProjectBean myProjectBean, CurrentUser currentUser,
                           UserGroupThesaurusRepository userGroupThesaurusRepository,
                           UserGroupLabelRepository2 userGroupLabelRepository,

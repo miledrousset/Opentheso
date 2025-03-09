@@ -27,11 +27,11 @@
                 <div class="col-7">            
                     <p:autoComplete value="#{modifyRoleBean.selectedUser}" var="users"
                                     forceSelection="true" completeMethod="#{modifyRoleBean.autoCompleteUser}"                                  
-                                    minQueryLength="1" itemLabel="#{users.name}" itemValue="#{users}" converter="userConverter"
+                                    minQueryLength="1" itemLabel="#{users.username}" itemValue="#{users}" converter="userConverter"
                                     scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 25px;box-shadow: none;border-color: #43B572"
                                     style="font-size: 12px; width: 100%">
                         <p:column style="font-size: 12px;">
-                            <h:outputText title="#{users.idUser}" value="#{users.name}" />
+                            <h:outputText title="#{users.id}" value="#{users.username}" />
                         </p:column>
                     </p:autoComplete>   
                 </div> 
