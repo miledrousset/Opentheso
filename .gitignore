@@ -4,3 +4,8 @@
 /src/test/java/deepl/
 /src/main/resources/hibernate.cfg.xml
 /src/main/resources/hikari.properties
+/src/main/resources/certificats/cacerts2
+/src/test/java/concept/export.java
+/src/main/resources/certificats/key.p12
+/nb-configuration.xml
+/nbactions.xml
