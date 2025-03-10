@@ -140,7 +140,10 @@ public class ConceptReader {
                     skosConcept.getGpsCoordinates().add(element);
                 }
                 break;
-
+            //Notation
+            case "notation":
+                skosConcept.addNotation(literal.getLabel());
+                break;
             //identifier
             case "identifier":
                 skosConcept.setIdentifier(literal.getLabel());

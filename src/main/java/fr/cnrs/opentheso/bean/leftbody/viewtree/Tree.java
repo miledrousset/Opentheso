@@ -112,10 +112,6 @@ public class Tree implements Serializable {
     @Autowired
     private PrimeFaces primefaces;
 
-    @PreDestroy
-    public void destroy() {
-        reset();
-    }
 
     public void reset() {
         if (selectedNodes != null) {

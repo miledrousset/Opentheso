@@ -59,10 +59,6 @@ public class TreeConcepts implements Serializable {
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
 
-    @PreDestroy
-    public void destroy(){
-        reset();
-    }
     
     public void reset() {
         root = null;

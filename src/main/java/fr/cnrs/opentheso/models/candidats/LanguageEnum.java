@@ -6,7 +6,8 @@ public enum LanguageEnum {
     EN("English"),
     ES("Española"),
     IT("Italiano"),
-    DE("Deutsche");
+    DE("Deutsche"),
+    AR("Arabe");
     
     private String language;
     

@@ -103,11 +103,11 @@ public class PropositionHelper {
         return null;
     }
 
-    public int searchNbrPorpositoinByStatus(String status) {
+    public int searchNbrPorpositoinByStatus(String idTheso, String status) {
 
         try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select count(*) AS nbr from proposition_modification WHERE status = '" + status + "'");
+                stmt.executeQuery("select count(*) AS nbr from proposition_modification WHERE id_theso = '" + idTheso + "' and status = '" + status + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         return resultSet.getInt("nbr");

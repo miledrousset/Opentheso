@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
@@ -11,12 +12,14 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.services.IpAddressService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -28,13 +31,16 @@ import org.springframework.context.annotation.Lazy;
  */
 @Named(value = "groupView")
 @SessionScoped
+@Slf4j
 public class GroupView implements Serializable {
 
     
     @Autowired @Lazy private IndexSetting indexSetting;     
     @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
     @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
-
+    @Autowired private IpAddressService ipAddressService;
+    @Autowired
+    private SelectedTheso selectedTheso;
     @Autowired
     private GroupHelper groupHelper;
 
@@ -69,7 +75,7 @@ public class GroupView implements Serializable {
 
     private boolean toggleSwitchNotesLang;
 
-    @PreDestroy
+     @PreDestroy
     public void destroy(){
         clear();
     }  
@@ -113,13 +119,19 @@ public class GroupView implements Serializable {
         
         nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
         nodeGroupType = groupHelper.getGroupType(nodeGroup.getConceptGroup().getIdtypecode());
-
+        logGroup();
         setNotes(idTheso, idGroup, idLang);
 
         count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+    }
+
+    private void logGroup() {
+        String ipAddress = ipAddressService.getClientIpAddress();
+        log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdgroup(),
+                selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 
     public void setNotes(String idTheso, String idGroup, String idLang) {

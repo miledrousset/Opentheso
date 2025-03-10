@@ -13,16 +13,8 @@
                 <p:selectOneButton value="#{propositionBean.showAllPropositions}" style="margin-bottom: 5px">
                     <p:ajax update="listPropositionsPanel" event="change" listener="#{propositionBean.chercherProposition()}" />
                     <f:selectItem itemLabel="#{langueBean.getMsg('proposal.news')}" itemValue="1"  />
-                    <f:selectItem itemLabel="#{langueBean.getMsg('proposal.olds')}" itemValue="2"/>
                     <f:selectItem itemLabel="#{langueBean.getMsg('proposal.all')}" itemValue="3"/>
                 </p:selectOneButton>
-
-                <p:selectOneMenu value="#{propositionBean.filter2}"  rendered="#{selectedTheso.currentIdTheso != null}"
-                                 style="color: #000; height: 28px;" >
-                    <p:ajax event="valueChange" listener="#{propositionBean.chercherProposition()}" update="listPropositionsPanel" />
-                    <f:selectItem itemLabel="#{langueBean.getMsg('proposal.all')}" itemValue="1"/>
-                    <f:selectItem itemLabel="#{langueBean.getMsg('proposal.selectedTheso')}" itemValue="2"/>
-                </p:selectOneMenu>
             </div>
 
             <p:panel rendered="#{propositionBean.propositions == null or propositionBean.propositions.size() == 0}"
