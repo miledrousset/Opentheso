@@ -368,9 +368,7 @@
                             <h:outputText value="#{langueBean.getMsg('profile.apiKeyAuthorize')} : " />
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch value="#{modifyUserBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                                <p:ajax listener="#{modifyUserBean.toggleHasKey()}" update="modifyUser2Form:userKey"/>
-                            </p:toggleSwitch>
+                            <p:toggleSwitch value="#{modifyUserBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" />
                         </div>
                     </div>
                     <h:panelGroup rendered="#{modifyUserBean.hasKey}" >
@@ -379,9 +377,7 @@
                                 <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
                             </div>
                             <div class="col-7">
-                                <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                                    <p:ajax listener="#{modifyUserBean.toggleKeyNeverExpire()}" update="modifyUser2Form:userKey"/>
-                                </p:toggleSwitch>
+                                <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" />
                             </div>
                         </div>
                         <div class="row" style="margin-top: 5px;">

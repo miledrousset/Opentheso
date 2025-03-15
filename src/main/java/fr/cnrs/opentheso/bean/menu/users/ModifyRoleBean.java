@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -145,9 +144,9 @@ public class ModifyRoleBean implements Serializable {
                         .roleName("")
                         .build())
                 .toList());
-        
+
+        //myAuthorizedRolesLimited = List.of(NodeIdValue.builder().id("-1").value("").build());
         myAuthorizedRolesLimited = myProjectBean.getMyAuthorizedRoles();
-        myAuthorizedRolesLimited.add(0, NodeIdValue.builder().id("-1").value("").build());
     }
 
     /**
@@ -183,7 +182,8 @@ public class ModifyRoleBean implements Serializable {
             }
             myProjectBean.setSelectedIndex("2");
         } else {
-            userRoleGroupService.addUserRoleOnGroup(nodeSelectedUser.getId(), Integer.parseInt(roleOfSelectedUser), Integer.parseInt(selectedProject));
+            var roleSelected = StringUtils.isEmpty(roleOfSelectedUser) ? myProjectBean.getMyAuthorizedRoles().get(0).getId() : roleOfSelectedUser;
+            userRoleGroupService.addUserRoleOnGroup(user.getId(), Integer.parseInt(roleSelected), Integer.parseInt(selectedProject));
             myProjectBean.setSelectedIndex("1");
         }
 

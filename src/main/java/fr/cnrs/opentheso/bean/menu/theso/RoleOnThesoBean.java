@@ -7,15 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -37,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
 
 
 @Data
@@ -109,43 +108,9 @@ public class RoleOnThesoBean implements Serializable {
 
     //liste des thesaurus pour l'utilisateur connecté suivant ses droits, inclus aussi ses thésaurus privés 
     private List<String> authorizedTheso;
-    
     private List<String> authorizedThesoAsAdmin;
-    
     private NodePreference nodePreference;
-
     private NodeUserRoleGroup nodeUserRoleGroup;
-
-    public void clear(){
-        nodeUserRoleGroup = null;
-        nodePreference = null;
-        thesoInfos = null;
-
-        if(listTheso != null){
-            listTheso.clear();
-            listTheso = null;
-        }
-        if(listThesoAsAdmin != null){
-            listThesoAsAdmin.clear();
-            listThesoAsAdmin = null;
-        }
-        if(nodeListTheso != null){
-            nodeListTheso.clear();
-            nodeListTheso = null;
-        }
-        if(nodeListThesoAsAdmin != null){
-            nodeListThesoAsAdmin.clear();
-            nodeListThesoAsAdmin = null;
-        }
-        if(authorizedTheso != null){
-            authorizedTheso.clear();
-            authorizedTheso = null;
-        }
-        if(authorizedThesoAsAdmin != null){
-            authorizedThesoAsAdmin.clear();
-            authorizedThesoAsAdmin = null;
-        }
-    }
 
    
     //// restructuration de la classe le 05/04/2018 par Miled Rousset//////    
@@ -223,7 +188,8 @@ public class RoleOnThesoBean implements Serializable {
             var user = userRepository.findById(currentUser.getNodeUser().getIdUser());
             // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
             List<String> listThesoTemp = userRoleOnlyOnRepository.findAllByUserOrderByTheso(user.get()).stream()
-                    .map(element -> element.getIdTheso()).toList();
+                    .map(element -> element.getTheso().getIdThesaurus())
+                    .toList();
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedTheso.contains(idThesoTemp)) {
                     authorizedTheso.add(idThesoTemp);

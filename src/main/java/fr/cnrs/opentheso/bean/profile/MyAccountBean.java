@@ -21,7 +21,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.enterprise.context.SessionScoped;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,7 +91,7 @@ public class MyAccountBean implements Serializable {
         nodeUser.setApiKey(displayedKey);
 
         if (apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "La clé a bien été enregistrée.");
+            showMessage(FacesMessage.SEVERITY_INFO, "La clé a bien été enregistrée.");
         } else {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de sauvegarde de la clé.");
         }

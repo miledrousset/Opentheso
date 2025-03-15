@@ -111,7 +111,10 @@
                                 <p:selectManyMenu value="#{newUserBean.selectedThesos}"
                                                   styleClass="manymenu-advanced" showCheckbox="true"
                                                   style="width: 100%; ">
-                                    <f:selectItems value="#{newUserBean.listThesoOfProject}" var="allThesoProject" itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}"/>
+                                    <f:selectItems value="#{newUserBean.listThesoOfProject}"
+                                                   var="allThesoProject"
+                                                   itemLabel="#{allThesoProject.value} (#{allThesoProject.id})"
+                                                   itemValue="#{allThesoProject.id}"/>
                                 </p:selectManyMenu>
                             </div>
                         </div>
