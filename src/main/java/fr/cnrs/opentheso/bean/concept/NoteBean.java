@@ -278,13 +278,14 @@ public class NoteBean implements Serializable {
         }
         nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
         nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
-
+        nodeNote.setNoteSource(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()));
         if (!noteHelper.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
+                nodeNote.getNoteSource(),
                 nodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -712,6 +713,7 @@ public class NoteBean implements Serializable {
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
+                nodeNote.getNoteSource(),
                 nodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -745,6 +747,7 @@ public class NoteBean implements Serializable {
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
+                nodeNote.getNoteSource(),
                 nodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -776,6 +779,7 @@ public class NoteBean implements Serializable {
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
+                nodeNote.getNoteSource(),
                 nodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");

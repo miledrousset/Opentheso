@@ -86,7 +86,8 @@ public class NoteHelper {
     /**
      * Cette fonction permet de mettre à jour une note
      */
-    public boolean updateNote(int idNote, String idConcept, String idLang, String idThesaurus, String note, String noteTypeCode, int idUser) {
+    public boolean updateNote(int idNote, String idConcept, String idLang, String idThesaurus,
+                              String note, String noteSource, String noteTypeCode, int idUser) {
         
         idLang = languageHelper.normalizeIdLang(idLang);
         
@@ -95,6 +96,7 @@ public class NoteHelper {
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "',"
+                        + " notesource = '" + noteSource + "',"
                         + " modified = current_date WHERE id = " + idNote + " AND id_thesaurus = '" + idThesaurus + "'");
                 addConceptNoteHistorique(idConcept, idLang, idThesaurus, note, noteTypeCode, "update", idUser);
                 status = true;

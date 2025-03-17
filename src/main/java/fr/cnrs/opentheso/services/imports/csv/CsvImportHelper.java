@@ -1228,7 +1228,7 @@ public class CsvImportHelper {
                 if(idNote != -1){
                     // on remplace la valeur du altLabel par la nouvelle valeur
                     if(!noteHelper.updateNote(idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
-                            nodeReplaceValueByValue.getNewValue(), "definition", idUser1)) {
+                            nodeReplaceValueByValue.getNewValue(), "", "definition", idUser1)) {
                         addMessage("Rename definition error :", nodeReplaceValueByValue);
                     }                      
                 } else {

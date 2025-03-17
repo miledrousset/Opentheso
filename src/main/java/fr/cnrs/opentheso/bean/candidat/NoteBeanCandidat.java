@@ -142,6 +142,7 @@ public class NoteBeanCandidat implements Serializable {
                 selectedNodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getLexicalValue(),
+                selectedNodeNote.getNoteSource(),
                 selectedNodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");

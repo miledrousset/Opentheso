@@ -564,6 +564,7 @@ public class PropositionService implements Serializable {
                 notePropBean.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 notePropBean.getLexicalValue(),
+                notePropBean.getNoteSource(),
                 notePropBean.getNoteTypeCode(),
                 currentUser.getNodeUser().getIdUser())) {
 

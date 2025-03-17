@@ -69,7 +69,21 @@
                                       placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" styleClass="scrollable-editor"/>
                     </div>
                 </div>
+
+                <!-- Source de la note -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('alignment.source')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{noteBean.selectedNodeNote.noteSource}" style="width: 100%;"/>
+                    </div>
+                </div>
+
+
             </h:panelGroup>
+
+            <p:spacer/>
 
 
             <div class="row" style="margin-top: 20px;">
