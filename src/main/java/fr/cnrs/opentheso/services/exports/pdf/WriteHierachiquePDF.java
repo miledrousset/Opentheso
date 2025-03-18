@@ -196,6 +196,36 @@ public class WriteHierachiquePDF {
         }
     }
 
+    private void addImages(List<Paragraph> paragraphs, List<NodeImage> images, String indentation, WritePdfSettings writePdfSettings) {
+        if (CollectionUtils.isNotEmpty(images)) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
+            for (NodeImage imageElement : images) {
+                if (imageElement.getUri() != null && !imageElement.getUri().isEmpty()) {
+                    try {
+                        // Téléchargement de l'image
+                        URL imageUrl = new URL(imageElement.getUri());
+                        Image image = Image.getInstance(imageUrl);
+
+                        // Redimensionnement
+                        float scaleFactor = writePdfSettings.resiseImage(image);
+                        if (scaleFactor > 0) {
+                            image.scaleAbsolute(image.getWidth() / scaleFactor, image.getHeight() / scaleFactor);
+                            // Ajout de l'image au paragraphe avec indentation
+                            paragraphs.add(new Paragraph(new Chunk(image, indentation.length() * (2.9f), 0, true)));
+                        } else {
+                            paragraphs.add(new Paragraph("Erreur de redimensionnement de l'image : " + imageElement.getUri()));
+                        }
+                    } catch (BadElementException | IOException ex) {
+                        paragraphs.add(new Paragraph("Erreur de téléchargement de l'image (image vide) : " + imageElement.getUri()));
+                    }
+                } else {
+                    paragraphs.add(new Paragraph("Image invalide : " + imageElement.getUri()));
+                }
+            }
+        }
+    }
+
+    /*
     private void addImages(List<Paragraph> paragraphs, ArrayList<NodeImage> images, String indentation, WritePdfSettings writePdfSettings) {
 
         if (CollectionUtils.isNotEmpty(images)) {
@@ -209,6 +239,6 @@ public class WriteHierachiquePDF {
                         } catch (BadElementException | IOException ex) {}
                     });
         }
-    }
+    }*/
    
 }

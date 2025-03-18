@@ -329,12 +329,16 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(), pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return DefaultStreamedContent
-                        .builder()
-                        .contentType("application/pdf")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
-                        .stream(() -> flux)
-                        .build();
+                if (flux != null && flux.available() > 0) {
+                    return DefaultStreamedContent
+                            .builder()
+                            .contentType("application/pdf")
+                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                            .stream(() -> flux)
+                            .build();
+                } else{
+                    return new DefaultStreamedContent();
+                }
             } catch (Exception ex) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
@@ -539,18 +543,22 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()) == 0) {
                 pdfExportType = PdfExportType.HIERARCHIQUE;
             }
-
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(),
                     pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
 
-                return DefaultStreamedContent
-                        .builder()
-                        .contentType("application/pdf")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
-                        .stream(() -> flux)
-                        .build();
+                if (flux != null && flux.available() > 0) {
+                    return DefaultStreamedContent
+                            .builder()
+                            .contentType("application/pdf")
+                            .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                            .stream(() -> flux)
+                            .build();
+                } else {
+                    return new DefaultStreamedContent();  // Flux vide ou invalide
+                }
+
             } catch (Exception ex) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();

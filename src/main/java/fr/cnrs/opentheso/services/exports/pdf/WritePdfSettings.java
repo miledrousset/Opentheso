@@ -120,13 +120,32 @@ public class WritePdfSettings {
 
         return fr.cnrs.opentheso.utils.StringUtils.normalizeStringForIdentifier(uri);
     }
-    
-    
-    
-    
-    
-    
 
+
+
+
+    public float resiseImage(Image image) {
+        float width = image.getWidth();
+        float height = image.getHeight();
+        float rate;
+
+        // Vérification si l'image est horizontale ou verticale
+        if (width > height) {
+            // L'image est horizontale.
+            rate = getRate(width);  // Si vous utilisez un calcul basé sur la largeur
+        } else {
+            // L'image est verticale.
+            rate = getRate(height);  // Si vous utilisez un calcul basé sur la hauteur
+        }
+
+        // Retourne le facteur de redimensionnement (ratios de largeur/hauteur)
+        return rate;
+    }
+    private float getRate(float size){
+        return size/250;
+    }
+    
+/*
     public Rectangle resiseImage(Image image){
         float width = image.getWidth();
         float height = image.getHeight();
@@ -141,10 +160,8 @@ public class WritePdfSettings {
         }
         return new Rectangle(width/rate, height/rate);
     }
-    
+    */
     // pour définir la taille souhaitée,
     // la valeur size/200 est pour obtenir une image de (200x200)
-    private float getRate(float size){
-        return size/250;
-    }
+
 }
