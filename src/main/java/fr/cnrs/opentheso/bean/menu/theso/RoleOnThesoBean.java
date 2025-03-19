@@ -404,8 +404,8 @@ public class RoleOnThesoBean implements Serializable {
             var group = userGroupLabelRepository2.findById(idGroup).get();
             var thesaurus = thesoRepository.findById(selectedTheso.getCurrentIdTheso()).get();
             var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
-            nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
-            if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
+            if(ObjectUtils.isNotEmpty(tmp)) {
+                nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
                 setRole();
             } else
                 isAdminOnThisTheso = false;

@@ -7,12 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
-
-    Optional<Thesaurus> getThesaurusByIdArk(String idArk);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(" +
             "t.idThesaurus, tl.title, -1, '', t.isPrivate) " +

@@ -76,10 +76,8 @@ public class UserRoleGroupService {
         if (roleId == 1) {
             userRoleGroupRepository.deleteByUserAndGroup(user, group);
         } else {
-            var userRoleGroup = userRoleGroupRepository.findByUserAndGroup(user, group);
             var role = roleRepository.findById(roleId).get();
-            userRoleGroup.get().setRole(role);
-            userRoleGroupRepository.save(userRoleGroup.get());
+            userRoleGroupRepository.updateUserRole(user, group, role);
         }
 
         var isSuperAdmin = (roleId == 1);

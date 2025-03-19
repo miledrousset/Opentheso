@@ -92,8 +92,8 @@
                         <h:outputText value="#{langueBean.getMsg('profile.apiKeyAuthorize')} : " />
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch value="#{modifyUserBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                            <p:ajax listener="#{modifyUserBean.toggleHasKey()}" update="userKey"/>
+                        <p:toggleSwitch value="#{modifyUserBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax update="userKey"/>
                         </p:toggleSwitch>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                             <h:outputText value="#{langueBean.getMsg('profile.apiKeyExpireDate')} : " />
                         </div>
                         <div class="col-7">
-                            <p:datePicker value="#{modifyUserBean.apiKeyExpireDate}" disabled="#{modifyUserBean.nodeUser.keyNeverExpire}"></p:datePicker>
+                            <p:datePicker value="#{modifyUserBean.apiKeyExpireDate}" disabled="#{modifyUserBean.nodeUser.keyNeverExpire}"/>
                         </div>
                     </div>
                 </h:panelGroup>

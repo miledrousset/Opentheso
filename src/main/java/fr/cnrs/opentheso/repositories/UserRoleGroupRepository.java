@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.dto.GroupInfoDTO;
+import fr.cnrs.opentheso.entites.Roles;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
@@ -8,6 +9,7 @@ import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,11 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
 
     @Transactional
     void deleteByGroup(UserGroupLabel group);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserRoleGroup urg SET urg.role = :newRole WHERE urg.user = :user AND urg.group = :group")
+    int updateUserRole(@Param("user") User user, @Param("group") UserGroupLabel group, @Param("newRole") Roles newRole);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(" +
             "urg.role.id, r.name, urg.group.id, g.label, " +

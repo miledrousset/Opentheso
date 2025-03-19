@@ -55,9 +55,17 @@ public class ModifyUserBean implements Serializable {
     }
 
     public boolean hasKey(){
+        if (nodeUser == null) return false;
 
-        return ObjectUtils.isNotEmpty(nodeUser)
-                && (nodeUser.getKeyNeverExpire() || ObjectUtils.isNotEmpty(nodeUser.getKeyNeverExpire()));
+        if (nodeUser.getKeyNeverExpire()){
+            return true;
+        }
+
+        if (nodeUser.getKeyExpiresAt() != null){
+            return true;
+        }
+
+        return false;
     }
 
     public void setUserStringId(String idUser){
