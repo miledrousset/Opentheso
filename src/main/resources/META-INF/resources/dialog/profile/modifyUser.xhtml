@@ -103,7 +103,9 @@
                             <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" />
+                            <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check">
+                                <p:ajax update="userKey"/>
+                            </p:toggleSwitch>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 5px;">

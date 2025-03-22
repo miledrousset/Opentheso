@@ -304,7 +304,7 @@ public class ModifyRoleBean implements Serializable {
     }      
 
     public List<User> autoCompleteUser(String userName) {
-        return userRepository.findAllByUsernameLike("%" + userName + "%s");
+        return userRepository.findAllByUsernameLike("%" + userName + "%");
     }
 
     private void showMessage(FacesMessage.Severity type, String message) {
