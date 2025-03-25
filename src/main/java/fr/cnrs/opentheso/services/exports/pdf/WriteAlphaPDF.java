@@ -37,13 +37,15 @@ public class WriteAlphaPDF {
     private final static String USE = TAB_NIVEAU + "USE: ";
     private final static String GPS = TAB_NIVEAU + "GPS: ";
 
+    private boolean isToogleExportImage;
+
     @Autowired
     private UriHelper uriHelper;
 
 
     public void writeAlphabetiquePDF(SKOSXmlDocument xmlDocument, List<Paragraph> paragraphs, List<Paragraph> paragraphTradList,
-            String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings) {
-
+            String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings, boolean isToogleExportImage) {
+        this.isToogleExportImage = isToogleExportImage;
         var concepts = xmlDocument.getConceptList();
         List<String> resourceChecked = new ArrayList<>();
         HashMap<String, List<Integer>> traductions = new HashMap<>();
@@ -80,7 +82,8 @@ public class WriteAlphaPDF {
             addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2, writePdfSettings);
             addMatchs(paragraphs, concept.getMatchList(), writePdfSettings);
             addGpsCoordiantes(paragraphs, concept.getGpsCoordinates(), writePdfSettings);
-            addImages(paragraphs, concept.getNodeImages(), writePdfSettings);
+            if(isToogleExportImage)
+                addImages(paragraphs, concept.getNodeImages(), writePdfSettings);
         }
     }
 

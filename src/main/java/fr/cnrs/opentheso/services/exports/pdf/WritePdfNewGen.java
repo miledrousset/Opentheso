@@ -33,7 +33,7 @@ public class WritePdfNewGen {
 
 
     public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLanguage1, String codeLanguage2,
-                                PdfExportType pdfExportType) throws DocumentException, IOException {
+                                PdfExportType pdfExportType, boolean isToogleExportImage) throws DocumentException, IOException {
 
         List<Paragraph> paragraphList = new ArrayList<>();
         List<Paragraph> paragraphTradList = new ArrayList<>();
@@ -52,10 +52,10 @@ public class WritePdfNewGen {
 
             // Préparation des données
             if (pdfExportType == PdfExportType.ALPHABETIQUE) {
-                writeAlphaPDF.writeAlphabetiquePDF(xmlDocument, paragraphList, paragraphTradList, codeLanguage1, codeLanguage2, writePdfSettings);
+                writeAlphaPDF.writeAlphabetiquePDF(xmlDocument, paragraphList, paragraphTradList, codeLanguage1, codeLanguage2, writePdfSettings,isToogleExportImage );
             } else {
                 writeHierachiquePDF.writeHierachiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2,
-                        writePdfSettings, xmlDocument);
+                        writePdfSettings, xmlDocument, isToogleExportImage);
             }
 
             createPdfFile(document, codeLanguage2, paragraphList, paragraphTradList);

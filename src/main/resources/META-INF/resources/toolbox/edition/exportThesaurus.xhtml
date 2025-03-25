@@ -136,7 +136,22 @@
                                 <p:ajax  listener="#{viewExportBean.listenerForToogleClearHtmlCharacter()}"/>
                             </p:toggleSwitch>
                         </div>
-                    </div>                    
+                    </div>
+
+                    <!-- inclure les images -->
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="#{langueBean.getMsg('export.filterAddImage')}"
+                                          title="#{langueBean.getMsg('export.filterAddImageTooltip')} !!"/>
+                        </div>
+
+                        <div class="col-5">
+                            <p:toggleSwitch id="toggleFilterImage" value="#{viewExportBean.toogleExportImage}">
+                                <p:ajax  listener="#{viewExportBean.listenerForToogleAddImage()}"/>
+                            </p:toggleSwitch>
+                        </div>
+                    </div>
+
                 </p:panel>
 
 

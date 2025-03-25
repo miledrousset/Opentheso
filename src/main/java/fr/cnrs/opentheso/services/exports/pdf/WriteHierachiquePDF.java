@@ -40,10 +40,11 @@ public class WriteHierachiquePDF {
     @Autowired
     private TermHelper termHelper;
 
+    private boolean isToogleExportImage;
 
     public void writeHierachiquePDF(List<Paragraph> paragraphs, List<Paragraph> paragraphTradList, String codeLanguage1,
-                                    String codeLanguage2, WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
-
+                                    String codeLanguage2, WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument, boolean isToogleExportImage) {
+        this.isToogleExportImage = isToogleExportImage;
         HashMap<String, String> labels = new HashMap<>();
         HashMap<String, List<String>> idToChildId = new HashMap<>();
         HashMap<String, ArrayList<String>> notes = new HashMap<>();
@@ -150,7 +151,9 @@ public class WriteHierachiquePDF {
         addNotes(paragraphs, space, idToDoc.get(key), notesDiff.get(key), writePdfSettings);
         addMatchs(paragraphs, matchs.get(key), space, writePdfSettings);
         addGpsCoordiantes(paragraphs, gps.get(key), space, writePdfSettings);
-        addImages(paragraphs, images.get(key), indentation, writePdfSettings);
+        if(isToogleExportImage) {
+            addImages(paragraphs, images.get(key), indentation, writePdfSettings);
+        }
     }
 
     private String getSpace(String indentation) {

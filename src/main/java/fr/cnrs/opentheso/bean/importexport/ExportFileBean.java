@@ -327,7 +327,7 @@ public class ExportFileBean implements Serializable {
             }
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
-                    viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(), pdfExportType))) {
+                    viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(), pdfExportType, viewExportBean.isToogleExportImage()))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 if (flux != null && flux.available() > 0) {
                     return DefaultStreamedContent
@@ -545,7 +545,7 @@ public class ExportFileBean implements Serializable {
             }
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(writePdfNewGen.createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(), viewExportBean.getSelectedLang2_PDF(),
-                    pdfExportType))) {
+                    pdfExportType, viewExportBean.isToogleExportImage()))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
 
                 if (flux != null && flux.available() > 0) {

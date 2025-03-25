@@ -69,8 +69,9 @@ public class ViewExportBean implements Serializable {
     private boolean toogleFilterByGroup;
     private boolean toogleExportByGroup;
     
-    private boolean toogleClearHtmlCharacter;    
-    
+    private boolean toogleClearHtmlCharacter;
+    private boolean toogleExportImage;
+
     private String selectedGroup;
     private String selectedIdLangTheso;
     private List<String> selectedIdGroups;
@@ -151,6 +152,7 @@ public class ViewExportBean implements Serializable {
         toogleFilterByGroup = false;
         toogleExportByGroup = false;
         toogleClearHtmlCharacter = false;
+        toogleExportImage = false;
         
         if(selectedIdGroups == null){
             selectedIdGroups = new ArrayList<>();
@@ -224,8 +226,17 @@ public class ViewExportBean implements Serializable {
     }      
     
     public void listenerForToogleClearHtmlCharacter() {
+    }
+    public void listenerForToogleAddImage() {
+    }
 
-    }      
+    public boolean isToogleExportImage() {
+        return toogleExportImage;
+    }
+
+    public void setToogleExportImage(boolean toogleExportImage) {
+        this.toogleExportImage = toogleExportImage;
+    }
 
     public boolean isToogleClearHtmlCharacter() {
         return toogleClearHtmlCharacter;
