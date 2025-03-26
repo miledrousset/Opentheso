@@ -223,7 +223,9 @@ public class MyProjectBean implements Serializable {
         }
 
         int idGroup = Integer.parseInt(selectedProject);
-        return userRoleGroupRepository.findUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup).get().getIdRole() < 3;
+        int idUser = currentUser.getNodeUser().getIdUser();
+        var userRole = userRoleGroupRepository.findUserRoleOnThisGroup(idUser, idGroup);
+        return userRole.isPresent() ? userRole.get().getIdRole() < 3 : false;
     }
     
     public String getSelectedProjectName() {

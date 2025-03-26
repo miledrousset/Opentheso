@@ -46,7 +46,7 @@ public class EditThesoBean implements Serializable {
     private PreferencesHelper preferencesHelper;
 
     @Autowired
-    private AccessThesaurusHelper accessThesaurusHelper;
+    private ThesaurusRepository thesaurusRepository;
 
     @Autowired
     private LanguageHelper languageHelper;
@@ -197,7 +197,7 @@ public class EditThesoBean implements Serializable {
      */
     public void changeStatus() {
         FacesMessage msg;
-        if (!accessThesaurusHelper.updateVisibility(nodeIdValueOfTheso.getId(), isPrivateTheso)) {
+        if (thesaurusRepository.updateVisibility(nodeIdValueOfTheso.getId(), isPrivateTheso) == 0) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "La modification a échoué !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

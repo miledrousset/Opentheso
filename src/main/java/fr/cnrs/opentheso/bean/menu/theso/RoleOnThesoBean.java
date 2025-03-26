@@ -1,12 +1,5 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
@@ -14,7 +7,6 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.StatisticHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -26,16 +18,26 @@ import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import lombok.Data;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import java.io.Serializable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.primefaces.model.TreeNode;
 import org.springframework.beans.factory.annotation.Value;
-import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
+import lombok.Data;
+
+import jakarta.inject.Named;
+import jakarta.inject.Inject;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
+
+import java.io.Serializable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Data
@@ -45,86 +47,58 @@ public class RoleOnThesoBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
-
-    @Autowired
-    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
-
-    @Autowired
-    private final UserRepository userRepository;
-
-    @Autowired
+    private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private UserRepository userRepository;
     private LanguageBean languageBean;
-
-    @Autowired
     private UserRoleGroupRepository userRoleGroupRepository;
-    
-    @Autowired 
     private UserHelper userHelper;
-
-    @Autowired
-    private AccessThesaurusHelper accessThesaurusHelper;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private StatisticHelper statisticHelper;
-
-    @Autowired
     private PreferencesHelper preferencesHelper;
-
-    @Autowired
     private RoleRepository roleRepository;
-
-    @Autowired
-    private ThesaurusRepository thesoRepository;
-
-    @Autowired
+    private ThesaurusRepository thesaurusRepository;
     private UserGroupLabelRepository2 userGroupLabelRepository2;
 
-    //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
-    private List<ThesoModel> listTheso;    
-    //liste des thesaurus For export or management avec droits admin pour l'utilisateur en cours
-    private Map<String, String> listThesoAsAdmin;    
-    
-    // la liste des thésaurus autorisés pour l'utilisateur où il est au minimun manager pour pouvoir les modifier
-    private ArrayList<NodeIdValue> nodeListTheso;
-    
-    // la liste des thésaurus autorisés pour l'utilisateur où il est admin pour avoir le droit de les exporter
-    private ArrayList<NodeIdValue> nodeListThesoAsAdmin;    
-    
-    private ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered;       
-
-    private List<String> selectedThesoForSearch;
-
-    //thesaurus à gérer
+    private List<ThesoModel> listTheso;
+    private Map<String, String> listThesoAsAdmin;
+    private List<NodeIdValue> nodeListTheso, nodeListThesoAsAdmin,nodeListThesoAsAdminFiltered;
     private Thesaurus thesoInfos;
-
-    private boolean isSuperAdmin = false;
-    private boolean isAdminOnThisTheso = false;
-    private boolean isManagerOnThisTheso = false;
-    private boolean isContributorOnThisTheso = false;
-    private boolean isNoRole = false;
-
-    //liste des thesaurus pour l'utilisateur connecté suivant ses droits, inclus aussi ses thésaurus privés 
-    private List<String> authorizedTheso;
-    private List<String> authorizedThesoAsAdmin;
+    private boolean isSuperAdmin, isAdminOnThisTheso,isManagerOnThisTheso, isContributorOnThisTheso, isNoRole;
+    private List<String> selectedThesoForSearch, authorizedTheso, authorizedThesoAsAdmin;
     private NodePreference nodePreference;
     private NodeUserRoleGroup nodeUserRoleGroup;
 
-   
-    //// restructuration de la classe le 05/04/2018 par Miled Rousset//////    
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////// Nouvelles fonctions //////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////       
-    /**
-     * permet de récupérer les préférences pour le thésaurus sélectionné s'il y
-     * en a pas, on les initialises par les valeurs par defaut
-     *
-     * #MR
-     */
+    private TreeNode<NodeIdValue> root;
+
+
+    @Inject
+    public RoleOnThesoBean(@Value("${settings.workLanguage:fr}")String workLanguage,
+                           RoleRepository roleRepository,
+                           UserRoleGroupRepository userRoleGroupRepository,
+                           UserRoleOnlyOnRepository userRoleOnlyOnRepository,
+                           UserRepository userRepository,
+                           LanguageBean languageBean,
+                           UserHelper userHelper,
+                           ThesaurusHelper thesaurusHelper,
+                           StatisticHelper statisticHelper,
+                           PreferencesHelper preferencesHelper,
+                           ThesaurusRepository thesaurusRepository,
+                           UserGroupLabelRepository2 userGroupLabelRepository2) {
+
+        this.workLanguage = workLanguage;
+        this.languageBean = languageBean;
+        this.userHelper = userHelper;
+        this.userRoleOnlyOnRepository = userRoleOnlyOnRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.thesaurusHelper = thesaurusHelper;
+        this.statisticHelper = statisticHelper;
+        this.thesaurusRepository = thesaurusRepository;
+        this.preferencesHelper = preferencesHelper;
+        this.userRoleGroupRepository = userRoleGroupRepository;
+        this.userGroupLabelRepository2 = userGroupLabelRepository2;
+    }
+
     public void initNodePref(SelectedTheso selectedTheso) {
         if (selectedTheso.getCurrentIdTheso() == null) {
             return;
@@ -252,7 +226,7 @@ public class RoleOnThesoBean implements Serializable {
                 nodeIdValue.setId(listTheso1.getId());
                 nodeIdValue.setValue(listTheso1.getValue());
                 nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(listTheso1.getId()));
-                nodeListThesoAsAdmin.add(nodeIdValue);                
+                nodeListThesoAsAdmin.add(nodeIdValue);
             }
         } else { // sinon, on prend les thésaurus où l'utilisateur a un role Admin 
             for (NodeProjectThesoRole nodeProjectsWithThesosRole : currentUser.getUserPermissions().getNodeProjectsWithThesosRoles()) {
@@ -267,9 +241,7 @@ public class RoleOnThesoBean implements Serializable {
                 }
             }
         }
-        
-        
-               
+
         this.listThesoAsAdmin = authorizedThesoAsAdminHM;
     }    
             
@@ -320,37 +292,12 @@ public class RoleOnThesoBean implements Serializable {
             selectedThesoForSearch.add(thesoModel.getId());
         }
     }
-    
+
+    @Data
     public class ThesoModel implements Serializable{
         private String id;
         private String nom;
         private String defaultLang;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getNom() {
-            return nom;
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getDefaultLang() {
-            return defaultLang;
-        }
-
-        public void setDefaultLang(String defaultLang) {
-            this.defaultLang = defaultLang;
-        }
-        
-        
     }    
 
     /**
@@ -402,7 +349,7 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             var user = userRepository.findById(currentUser.getNodeUser().getIdUser()).get();
             var group = userGroupLabelRepository2.findById(idGroup).get();
-            var thesaurus = thesoRepository.findById(selectedTheso.getCurrentIdTheso()).get();
+            var thesaurus = thesaurusRepository.findById(selectedTheso.getCurrentIdTheso()).get();
             var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
             if(ObjectUtils.isNotEmpty(tmp)) {
                 nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
@@ -458,7 +405,7 @@ public class RoleOnThesoBean implements Serializable {
      * thésaurus et gérer les utilisateur pour le group il faut être Admin
      */
     private void setUserRoleGroup(CurrentUser currentUser) {
-        List<NodeUserRoleGroup> nodeUserRoleGroups = userRoleGroupRepository.getUserRoleGroup(currentUser.getNodeUser().getIdUser());
+        var nodeUserRoleGroups = userRoleGroupRepository.getUserRoleGroup(currentUser.getNodeUser().getIdUser());
         for (NodeUserRoleGroup nodeUserRoleGroup1 : nodeUserRoleGroups) {
             if (nodeUserRoleGroup1.isAdmin()) {
                 isAdminOnThisTheso = true;
@@ -480,164 +427,26 @@ public class RoleOnThesoBean implements Serializable {
             selectedTheso.redirectToTheso();
     }
     
-    
     public void showInfosOfTheso(String idTheso) {
-        int conceptsCount = statisticHelper.getNbCpt(idTheso);
-        int candidatesCount = statisticHelper.getNbCandidate(idTheso);        
-        int deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(idTheso);        
-        
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
+
+        var conceptsCount = statisticHelper.getNbCpt(idTheso);
+        var candidatesCount = statisticHelper.getNbCandidate(idTheso);
+        var deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(idTheso);
+
+        var message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
                 languageBean.getMsg("candidat.total_concepts") + " = " + conceptsCount + "\n" 
                 + languageBean.getMsg("candidat.titre") + " = " + candidatesCount + "\n"
                 + languageBean.getMsg("search.deprecated") + " = " + deprecatedsCount);
         
         PrimeFaces.current().dialog().showMessageDynamic(message);
     }
-    
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    //////// fin des nouvelles fontions ////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////          
-    /**
-     * Fonction accessAThesaurus fonction pour afficher un Thesaurus avec tous
-     * ses champs, dans la variable privée thesaurus #JM
-     *
-     * @param idTheso
-     */
+
     public void accessAThesaurus(String idTheso) {
-        this.thesoInfos = accessThesaurusHelper.getAThesaurus(idTheso, workLanguage);
+        this.thesoInfos = thesaurusRepository.getThesaurusByIdAndLang(idTheso, workLanguage)
+                .orElseThrow(() -> new RuntimeException("Thesaurus not found: " + idTheso));
     }
     
     public boolean alignementVisible(CurrentUser currentUser) {
         return currentUser.getNodeUser() != null && (isManagerOnThisTheso || isAdminOnThisTheso || currentUser.getNodeUser().isSuperAdmin());
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public List<ThesoModel> getListTheso() {
-        return listTheso;
-    }
-
-    public void setListTheso(List<ThesoModel> listTheso) {
-        this.listTheso = listTheso;
-    }
-
-    public Map<String, String> getListThesoAsAdmin() {
-        return listThesoAsAdmin;
-    }
-
-    public void setListThesoAsAdmin(Map<String, String> listThesoAsAdmin) {
-        this.listThesoAsAdmin = listThesoAsAdmin;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListTheso() {
-        return nodeListTheso;
-    }
-
-    public void setNodeListTheso(ArrayList<NodeIdValue> nodeListTheso) {
-        this.nodeListTheso = nodeListTheso;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListThesoAsAdmin() {
-        return nodeListThesoAsAdmin;
-    }
-
-    public void setNodeListThesoAsAdmin(ArrayList<NodeIdValue> nodeListThesoAsAdmin) {
-        this.nodeListThesoAsAdmin = nodeListThesoAsAdmin;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListThesoAsAdminFiltered() {
-        return nodeListThesoAsAdminFiltered;
-    }
-
-    public void setNodeListThesoAsAdminFiltered(ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered) {
-        this.nodeListThesoAsAdminFiltered = nodeListThesoAsAdminFiltered;
-    }
-
-    public List<String> getSelectedThesoForSearch() {
-        return selectedThesoForSearch;
-    }
-
-    public void setSelectedThesoForSearch(List<String> selectedThesoForSearch) {
-        this.selectedThesoForSearch = selectedThesoForSearch;
-    }
-
-    public Thesaurus getThesoInfos() {
-        return thesoInfos;
-    }
-
-    public void setThesoInfos(Thesaurus thesoInfos) {
-        this.thesoInfos = thesoInfos;
-    }
-
-    public boolean isSuperAdmin() {
-        return isSuperAdmin;
-    }
-
-    public void setSuperAdmin(boolean superAdmin) {
-        isSuperAdmin = superAdmin;
-    }
-
-    public boolean isAdminOnThisTheso() {
-        return isAdminOnThisTheso;
-    }
-
-    public void setAdminOnThisTheso(boolean adminOnThisTheso) {
-        isAdminOnThisTheso = adminOnThisTheso;
-    }
-
-    public boolean isManagerOnThisTheso() {
-        return isManagerOnThisTheso;
-    }
-
-    public void setManagerOnThisTheso(boolean managerOnThisTheso) {
-        isManagerOnThisTheso = managerOnThisTheso;
-    }
-
-    public boolean isContributorOnThisTheso() {
-        return isContributorOnThisTheso;
-    }
-
-    public void setContributorOnThisTheso(boolean contributorOnThisTheso) {
-        isContributorOnThisTheso = contributorOnThisTheso;
-    }
-
-    public List<String> getAuthorizedTheso() {
-        return authorizedTheso;
-    }
-
-    public void setAuthorizedTheso(List<String> authorizedTheso) {
-        this.authorizedTheso = authorizedTheso;
-    }
-
-    public List<String> getAuthorizedThesoAsAdmin() {
-        return authorizedThesoAsAdmin;
-    }
-
-    public void setAuthorizedThesoAsAdmin(List<String> authorizedThesoAsAdmin) {
-        this.authorizedThesoAsAdmin = authorizedThesoAsAdmin;
-    }
-
-    public NodePreference getNodePreference() {
-        return nodePreference;
-    }
-
-    public void setNodePreference(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
-
-    public NodeUserRoleGroup getNodeUserRoleGroup() {
-        return nodeUserRoleGroup;
-    }
-
-    public void setNodeUserRoleGroup(NodeUserRoleGroup nodeUserRoleGroup) {
-        this.nodeUserRoleGroup = nodeUserRoleGroup;
     }
 }

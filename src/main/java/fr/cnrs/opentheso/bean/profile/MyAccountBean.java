@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.repositories.UserRepository;
-import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
@@ -41,7 +40,6 @@ public class MyAccountBean implements Serializable {
     private CurrentUser currentUser;
     private ApiKeyHelper apiKeyHelper;
     private UserRepository userRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
 
     private User user;
     private NodeUser nodeUser;
@@ -53,13 +51,11 @@ public class MyAccountBean implements Serializable {
     @Inject
     public MyAccountBean(CurrentUser currentUser,
                          ApiKeyHelper apiKeyHelper,
-                         UserRepository userRepository,
-                         UserRoleGroupRepository userRoleGroupRepository) {
+                         UserRepository userRepository) {
 
         this.currentUser = currentUser;
         this.apiKeyHelper = apiKeyHelper;
         this.userRepository = userRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
     }
 
     public void loadDataPage(){

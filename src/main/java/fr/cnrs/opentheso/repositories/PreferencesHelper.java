@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import javax.sql.DataSource;
 
 @Slf4j
 @Service
-public class PreferencesHelper {
+public class PreferencesHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;

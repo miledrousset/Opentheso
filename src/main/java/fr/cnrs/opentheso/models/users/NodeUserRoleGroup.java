@@ -20,4 +20,11 @@ public class NodeUserRoleGroup {
     private boolean isManager;
     private boolean isContributor;
 
+
+    public NodeUserRoleGroup(int idRole, String roleName, String groupName, int idGroup) {
+        this.idRole = idRole;
+        this.roleName = roleName;
+        this.idGroup = idGroup;
+        this.groupName = groupName;
+    }
 }

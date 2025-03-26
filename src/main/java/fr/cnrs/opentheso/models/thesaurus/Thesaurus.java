@@ -36,6 +36,29 @@ public class Thesaurus {
     private List <DcElement> dcElement = new ArrayList<>();
 
 
+    public Thesaurus(String idThesaurus, String idArk, boolean isPrivate,
+                     String title, String lang, String contributor, String coverage, String creator,
+                     String description, String format, String publisher, String relation,
+                     String rights, String source, String subject, String type) {
+
+        this.id_thesaurus = idThesaurus;
+        this.id_ark = idArk;
+        this.privateTheso = isPrivate;
+        this.title = title;
+        this.language = lang;
+        this.contributor = contributor;
+        this.coverage = coverage;
+        this.creator = creator;
+        this.description = description;
+        this.format = format;
+        this.publisher = publisher;
+        this.relation = relation;
+        this.rights = rights;
+        this.source = source;
+        this.subject = subject;
+        this.type = type;
+    }
+
     public Thesaurus(String contributor, String coverage, String creator, String description, String format, String id_langue, String publisher, String relation, String rights, String source, String subject, String title, String type) {
         this.contributor = contributor;
         this.coverage = coverage;

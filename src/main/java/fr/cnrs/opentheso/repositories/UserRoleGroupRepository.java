@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import fr.cnrs.opentheso.dto.GroupInfoDTO;
 import fr.cnrs.opentheso.entites.Roles;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
@@ -29,7 +28,7 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
     @Transactional
     @Modifying
     @Query("UPDATE UserRoleGroup urg SET urg.role = :newRole WHERE urg.user = :user AND urg.group = :group")
-    int updateUserRole(@Param("user") User user, @Param("group") UserGroupLabel group, @Param("newRole") Roles newRole);
+    void updateUserRole(@Param("user") User user, @Param("group") UserGroupLabel group, @Param("newRole") Roles newRole);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(" +
             "urg.role.id, r.name, urg.group.id, g.label, " +
@@ -42,23 +41,12 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
             "WHERE urg.user.id = :idUser")
     List<NodeUserRoleGroup> getUserRoleGroup(@Param("idUser") int idUser);
 
-    @Query(value = "SELECT DISTINCT ugr.id_group AS idGroup, u.label_group AS labelGroup " +
-            "FROM user_group_label u " +
-            "LEFT JOIN user_role_group ugr ON ugr.id_group = u.id_group " +
-            "LEFT JOIN user_role_only_on uro ON uro.id_group = u.id_group " +
-            "WHERE (ugr.id_user = :idUser OR uro.id_user = :idUser) " +
-            "ORDER BY u.label_group",
-            nativeQuery = true)
-    List<GroupInfoDTO> findGroupsOfUser(@Param("idUser") int idUser);
-
-    @Query(value = "SELECT r.id AS idRole, r.name AS roleName, u.label_group AS groupName, u.id_group AS idGroup " +
-            "FROM user_role_group ur " +
-            "JOIN roles r ON ur.id_role = r.id " +
-            "JOIN user_group_label u ON ur.id_group = u.id_group " +
-            "WHERE ur.id_user = :idUser AND ur.id_group = :idGroup", nativeQuery = true)
+    @Query(value = "SELECT new fr.cnrs.opentheso.models.users.NodeUserRoleGroup(r.id, r.name, u.label, u.id) " +
+            "FROM UserRoleGroup ur " +
+            "JOIN Roles r ON ur.role.id = r.id " +
+            "JOIN UserGroupLabel u ON ur.group.id = u.id " +
+            "WHERE ur.user.id = :idUser AND ur.group.id = :idGroup")
     Optional<NodeUserRoleGroup> findUserRoleOnThisGroup(@Param("idUser") int idUser, @Param("idGroup") int idGroup);
-
-    Optional<UserRoleGroup> findByUserAndGroup(User user, UserGroupLabel group);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupUser(u.id, u.username, g.id, g.label, r.id, r.name) " +
             "FROM UserRoleGroup urg " +

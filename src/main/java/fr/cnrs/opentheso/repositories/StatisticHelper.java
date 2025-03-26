@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ import javax.sql.DataSource;
 @Data
 @Slf4j
 @Service
-public class StatisticHelper {
+public class StatisticHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;

@@ -858,7 +858,8 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public String getUserName(int idUser) {
-        return userRepository.findById(idUser).get().getUsername();
+        var user = userRepository.findById(idUser);
+        return user.isPresent() ? userRepository.findById(idUser).get().getUsername() : "";
 
     }
 
