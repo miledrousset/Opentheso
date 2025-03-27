@@ -422,10 +422,11 @@ public class CurrentUser implements Serializable {
                 userPermissions.setRoleName(getRoleName(idRole));
             }
         }
-        
-        userPermissions.setProjectOfselectedTheso(idProject);
 
-        userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+        userPermissions.setProjectOfselectedTheso(idProject);
+        if (idProject != -1) {
+            userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+        }
     }
 
     private String getRoleName(int idRole) {
