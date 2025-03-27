@@ -14,7 +14,6 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -25,10 +24,10 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class PreferenceBean implements Serializable {
 
-    @Autowired @Lazy
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Autowired @Lazy
+    @Autowired
     private SelectedTheso selectedTheso;
 
     @Autowired

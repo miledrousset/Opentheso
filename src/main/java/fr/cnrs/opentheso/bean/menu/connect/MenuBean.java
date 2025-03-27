@@ -4,12 +4,10 @@ import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.graph.DataGraphView;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.menu.users.NewUserBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
-import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
@@ -32,9 +30,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "menuBean")
 @SessionScoped
 public class MenuBean implements Serializable {
-
-    @Autowired @Lazy 
-    private SearchBean searchBean;
 
     @Autowired @Lazy 
     private SuperAdminBean superAdminBean;
@@ -63,9 +58,6 @@ public class MenuBean implements Serializable {
     @Autowired @Lazy
     private StatistiqueBean statistiqueBean;
     
-    @Autowired @Lazy
-    private NewUserBean newUserBean;
-    
     @Autowired @Lazy 
     private SelectedTheso selectedTheso;
     
@@ -77,6 +69,7 @@ public class MenuBean implements Serializable {
     
     @Autowired @Lazy
     private PropositionBean propositionBean;
+
     @Autowired @Lazy
     private DataGraphView dataGraphView;    
     
@@ -158,7 +151,7 @@ public class MenuBean implements Serializable {
     public void redirectToMyProfilePage() throws IOException {
         activePageName = "myAccount";
         notificationPannelVisible = false;
-        myAccountBean.reset();
+        myAccountBean.loadDataPage();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
@@ -169,7 +162,6 @@ public class MenuBean implements Serializable {
         activePageName = "myProject";
         notificationPannelVisible = false;
         myProjectBean.init();
-        newUserBean.clear();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();

@@ -1,48 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.setting;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "settingAndToolsBean")
+
+@Data
 @SessionScoped
+@Named(value = "settingAndToolsBean")
 public class SettingAndToolsBean implements Serializable {
-    @Autowired @Lazy private PreferenceBean preferenceBean;
-    
-    private boolean isPreferenceActive;
-    private boolean isIdentifierActive;
-    private boolean isCorpusActive;    
-    private boolean isMaintenanceActive;
-    
-    private String preferenceColor;
-    private String identifierColor;
-    private String corpusColor;
-    private String maintenanceColor;
-    
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        preferenceColor = null;
-        identifierColor = null;        
-        corpusColor = null;
-        maintenanceColor = null;          
-    }     
-    
-    public SettingAndToolsBean() {
+
+    private final PreferenceBean preferenceBean;
+    private boolean isPreferenceActive, isIdentifierActive, isCorpusActive, isMaintenanceActive;
+    private String preferenceColor, identifierColor, corpusColor, maintenanceColor;
+
+
+    public SettingAndToolsBean(PreferenceBean preferenceBean) {
+        this.preferenceBean = preferenceBean;
     }
 
     public void reset() {
@@ -55,11 +30,6 @@ public class SettingAndToolsBean implements Serializable {
         resetColor();
         preferenceColor = "white";
         preferenceBean.init();
-      
-    }
-
-    public boolean isIsPreferenceActive() {
-        return isPreferenceActive;
     }
 
     public void setIsPreferenceActive(boolean isPreferenceActive) {
@@ -71,11 +41,6 @@ public class SettingAndToolsBean implements Serializable {
         preferenceColor = "white";         
     }
 
-   
-    public boolean isIsMaintenanceActive() {
-        return isMaintenanceActive;
-    }
-
     public void setIsMaintenanceActive(boolean isMaintenanceActive) {
         this.isMaintenanceActive = isMaintenanceActive;
         isPreferenceActive = false;
@@ -83,10 +48,6 @@ public class SettingAndToolsBean implements Serializable {
         isCorpusActive = false;
         resetColor();
         maintenanceColor = "white";   
-    }
-
-    public boolean isIsIdentifierActive() {
-        return isIdentifierActive;
     }
 
     public void setIsIdentifierActive(boolean isIdentifierActive) {
@@ -98,10 +59,6 @@ public class SettingAndToolsBean implements Serializable {
         identifierColor = "white";        
     }
 
-    public boolean isIsCorpusActive() {
-        return isCorpusActive;
-    }
-
     public void setIsCorpusActive(boolean isCorpusActive) {
         this.isCorpusActive = isCorpusActive;
         isPreferenceActive = false;
@@ -110,49 +67,11 @@ public class SettingAndToolsBean implements Serializable {
         resetColor();
         corpusColor = "white";          
     }
-    
-    
-    
-    
+
     private void resetColor(){
         preferenceColor = "#B3DDC4";
         maintenanceColor = "#B3DDC4";
         identifierColor = "#B3DDC4";   
         corpusColor = "#B3DDC4";
     }
-
-    public String getPreferenceColor() {
-        return preferenceColor;
-    }
-
-    public void setPreferenceColor(String preferenceColor) {
-        this.preferenceColor = preferenceColor;
-    }
-
-    public String getMaintenanceColor() {
-        return maintenanceColor;
-    }
-
-    public void setMaintenanceColor(String maintenanceColor) {
-        this.maintenanceColor = maintenanceColor;
-    }
-
-    public String getIdentifierColor() {
-        return identifierColor;
-    }
-
-    public void setIdentifierColor(String identifierColor) {
-        this.identifierColor = identifierColor;
-    }
-
-    public String getCorpusColor() {
-        return corpusColor;
-    }
-
-    public void setCorpusColor(String corpusColor) {
-        this.corpusColor = corpusColor;
-    }
-    
-    
-    
 }

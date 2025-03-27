@@ -1,12 +1,18 @@
 package fr.cnrs.opentheso.models.users;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeUser implements Serializable {
 
     private int idUser;

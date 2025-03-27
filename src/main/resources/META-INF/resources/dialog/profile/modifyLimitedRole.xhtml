@@ -61,7 +61,6 @@
                                                      styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                      style="width: 100%; background: none;  box-shadow: none;"
                                                      panelStyle="border: none; box-shadow: none; max-width: 300px">
-                                        <p:ajax event="valueChange" listener="#{modifyRoleBean.setSelectedRoleLimitedForTheso()}" />
                                         <f:selectItems value="#{modifyRoleBean.myAuthorizedRolesLimited}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
                                     </p:selectOneMenu> 
                                 </p:column>   

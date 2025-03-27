@@ -1,171 +1,84 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.models.users.NodeUser;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "superAdminBean")
+
+@Data
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "superAdminBean")
 public class SuperAdminBean implements Serializable {
 
-    @Value("${settings.workLanguage:fr}")
+    private UserRoleGroupRepository userRoleGroupRepository;
+    private UserRepository userRepository;
+    private ThesaurusRepository thesaurusRepository;
+    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private CurrentUser currentUser;
+    private SelectedTheso selectedTheso;
+
+    private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
+    private List<UserGroupLabel> allProjects;
+    private List<NodeUserGroupThesaurus> allThesoProject;
     private String workLanguage;
 
-    @Autowired
-    private UserHelper userHelper;
-    
-    @Autowired @Lazy 
-    private CurrentUser currentUser;
-    
-    @Autowired @Lazy 
-    private SelectedTheso selectedTheso;
-    
-    private ArrayList<NodeUser> allUsers;// la liste de tous les utilisateurs  
-    private ArrayList<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
-    
-    private ArrayList<NodeUserGroup> allProjects;
-    private ArrayList<NodeUserGroupThesaurus> allThesoProject;     
-    
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(allUsers!= null){
-            allUsers.clear();
-            allUsers = null;
-        }
-        if(allProjects!= null){
-            allProjects.clear();
-            allProjects = null;
-        }
-        if(allThesoProject!= null){
-            allThesoProject.clear();
-            allThesoProject = null;
-        }    
-        if(nodeUserGroupUsers!= null){
-            nodeUserGroupUsers.clear();
-            nodeUserGroupUsers = null;
-        }         
-        
-    }    
-    
-    public SuperAdminBean() {
-    }
 
-    public void init() {
-        allUsers = null;
-        allProjects = null;
-        allThesoProject = null;
-        nodeUserGroupUsers = null;
-        listAllUsers();
-        listAllUsersProjectRole();
-        listAllProjects();
-        listAllThesaurus();
-    }
-    
-    /**
-     * permet de récupérer la liste de tous les utilisateurs (Pour SuperAdmin)
-     */
-    private void listAllUsers(){
-        allUsers = userHelper.getAllUsers();
-    }    
-    
-    /**
-     * permet de récupérer la liste de tous les utilisateurs avec les roles pour chaque projet
-     */
-    private void listAllUsersProjectRole(){
-        String idLang = workLanguage;
-        if(selectedTheso.getCurrentLang() != null)
-            idLang = selectedTheso.getCurrentLang();
-        
-        if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserGroupUsers = userHelper.getAllGroupUser();
-            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup());
-            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin());
-        } 
-    }      
-    
-    /**
-     * permet de retourner la liste de tous les projets
-     */
-    private void listAllProjects(){
-        allProjects = userHelper.getAllProject();
-    }
-    
-    private void listAllThesaurus(){
-        allThesoProject = new ArrayList<>();
-        String idLang = workLanguage;
-        if(selectedTheso.getCurrentLang() != null)
-            idLang = selectedTheso.getCurrentLang();
-        ArrayList<NodeUserGroupThesaurus> allThesoWithProject = userHelper.getAllGroupTheso(idLang);
-        ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(idLang);
-        allThesoProject.addAll(allThesoWithProject);
-        allThesoProject.addAll(allThesoWithoutProject);
-    }
+    @Inject
+    public SuperAdminBean(@Value("${settings.workLanguage:fr}") String workLanguage,
+                          UserRoleGroupRepository userRoleGroupRepository,
+                          UserRepository userRepository,
+                          ThesaurusRepository thesaurusRepository,
+                          UserGroupThesaurusRepository userGroupThesaurusRepository,
+                          UserGroupLabelRepository2 userGroupLabelRepository,
+                          CurrentUser currentUser,
+                          SelectedTheso selectedTheso) {
 
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
+        this.workLanguage = workLanguage;
+        this.userRoleGroupRepository = userRoleGroupRepository;
+        this.userRepository = userRepository;
+        this.thesaurusRepository = thesaurusRepository;
+        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
+        this.userGroupLabelRepository = userGroupLabelRepository;
         this.currentUser = currentUser;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
         this.selectedTheso = selectedTheso;
     }
 
-    public ArrayList<NodeUser> getAllUsers() {
-        return allUsers;
-    }
+    public void init() {
 
-    public void setAllUsers(ArrayList<NodeUser> allUsers) {
-        this.allUsers = allUsers;
-    }
+        allProjects = userGroupLabelRepository.findAll();
 
-    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
-        return nodeUserGroupUsers;
-    }
+        if (currentUser.getNodeUser().isSuperAdmin()) {
+            nodeUserGroupUsers = userRoleGroupRepository.getAllGroupUser();
+            nodeUserGroupUsers.addAll(userRepository.getAllGroupUserWithoutGroup());
+            nodeUserGroupUsers.addAll(userRepository.getAllUsersSuperadmin());
+        }
 
-    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
-        this.nodeUserGroupUsers = nodeUserGroupUsers;
-    }
+        var idLang = StringUtils.isEmpty(selectedTheso.getCurrentLang())
+                ? workLanguage
+                : selectedTheso.getCurrentLang();
 
-    public ArrayList<NodeUserGroup> getAllProjects() {
-        return allProjects;
-    }
-
-    public void setAllProjects(ArrayList<NodeUserGroup> allProjects) {
-        this.allProjects = allProjects;
-    }
-
-    public ArrayList<NodeUserGroupThesaurus> getAllThesoProject() {
-        return allThesoProject;
-    }
-
-    public void setAllThesoProject(ArrayList<NodeUserGroupThesaurus> allThesoProject) {
-        this.allThesoProject = allThesoProject;
+        allThesoProject = new ArrayList<>();
+        allThesoProject.addAll(userGroupThesaurusRepository.getAllGroupTheso(idLang));
+        allThesoProject.addAll(thesaurusRepository.getAllThesaurusWithoutGroup(idLang));
     }
 }

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +27,7 @@ import javax.sql.DataSource;
 @Slf4j
 @Data
 @Service
-public class ThesaurusHelper {
+public class ThesaurusHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;
@@ -300,6 +301,7 @@ public class ThesaurusHelper {
      * @param idLang
      * @return 
      */
+    //TODO TO DELETE
     public String getTitleOfThesaurus(String idThesaurus, String idLang) {
         String title = "";
         try ( Connection conn = dataSource.getConnection()) {
