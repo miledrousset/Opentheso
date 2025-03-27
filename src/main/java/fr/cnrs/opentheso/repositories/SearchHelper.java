@@ -50,7 +50,6 @@ public class SearchHelper {
      */
     public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(String value, String idLang, String[] idGroups, String idTheso, boolean withNotes) {
         ArrayList<NodeAutoCompletion> nodeAutoCompletions = new ArrayList<>();
-        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         try (Connection conn = dataSource.getConnection()) {
