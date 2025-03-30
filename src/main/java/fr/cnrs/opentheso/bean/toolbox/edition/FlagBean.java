@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.repositories.LanguageHelper;
 import jakarta.enterprise.context.SessionScoped;
@@ -10,20 +9,17 @@ import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
-/**
- *
- * @author miledrousset
- */
 @Named(value = "flagBean")
 @SessionScoped
 public class FlagBean implements Serializable {
-    @Autowired
-    LanguageHelper languageHelper;
 
-    private ArrayList<Languages_iso639> allLangs;
+    @Autowired
+    private LanguageHelper languageHelper;
+
+    private List<Languages_iso639> allLangs;
 
     public FlagBean() {
     }

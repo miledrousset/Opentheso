@@ -83,7 +83,7 @@ public class ConceptAutocompleteController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                                @PathVariable("idLang") String idLang) throws JsonProcessingException {
 
-        var groups = groupHelper.getListRootConceptGroup(idThesaurus, idLang, true);
+        var groups = groupHelper.getListRootConceptGroup(idThesaurus, idLang, true, false);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
     }
 }

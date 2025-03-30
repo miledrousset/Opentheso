@@ -326,7 +326,7 @@ public class ExportRdf4jHelperNew {
     }
 
     public List<SKOSResource> exportCollectionsV2(String idTheso){
-        var rootGroupList = groupHelper.getListIdOfRootGroup(idTheso);
+        var rootGroupList = groupHelper.getListIdOfRootGroup(idTheso, false);
         List<SKOSResource> skosResourcesList = new ArrayList<>();
         for (String idGroup : rootGroupList) {
             var nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);

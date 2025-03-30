@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -57,7 +58,7 @@ import javax.sql.DataSource;
 
 @Slf4j
 @Service
-public class ConceptHelper {
+public class ConceptHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;

@@ -260,30 +260,6 @@ public class PreferencesHelper implements Serializable {
     }
 
     /**
-     * retourne l'id du thésaurus d'après son nom dans les préferances
-     *
-     * @param thesoName
-     * @return 
-     */
-    public String getIdThesaurusFromName(String thesoName) {
-        String idTheso = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
-                        + thesoName + "'")) {
-
-                    if (resultSet.next()) {
-                        idTheso = resultSet.getString("id_thesaurus");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idTheso;
-    }
-
-    /**
      * Cette fonction permet d'initialiser les préférences d'un thésaurus
      *
      * @param idThesaurus

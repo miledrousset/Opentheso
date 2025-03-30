@@ -27,12 +27,10 @@ import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 import fr.cnrs.opentheso.services.IpAddressService;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +46,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
+
 
 @Slf4j
 @SessionScoped
@@ -121,26 +120,6 @@ public class SelectedTheso implements Serializable {
 
     private boolean haveActiveCorpus;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-
-    public void clear(){
-        if(nodeLangs!= null){
-            nodeLangs.clear();
-            nodeLangs = null;
-        }
-        selectedIdTheso = null;
-        currentIdTheso = null;
-        selectedLang = null;
-        currentLang = null;
-        idThesoFromUri = null;      
-        thesoName = null;   
-        localUri = null;
-        projectIdSelected = "-1";
-    }
-
     @PostConstruct
     public void initializing() {
         isNetworkAvailable = true;
@@ -149,7 +128,6 @@ public class SelectedTheso implements Serializable {
 
         loadProject();
     }
-
 
     public void init() {
         selectedLang = null;

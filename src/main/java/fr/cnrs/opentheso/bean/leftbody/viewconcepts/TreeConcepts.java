@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -29,7 +30,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 
 /**
  *
@@ -80,7 +80,8 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation(),
+                ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),

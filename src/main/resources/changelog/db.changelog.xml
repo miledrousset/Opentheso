@@ -152,4 +152,5 @@
     </changeSet>
     <include file="/changelog/v25.02/25-02_02.xml"/>
     <include file="/changelog/v25.02/25-02_03.xml"/>
+    <include file="/changelog/v25.04/25-04_01.xml"/>
 </databaseChangeLog>

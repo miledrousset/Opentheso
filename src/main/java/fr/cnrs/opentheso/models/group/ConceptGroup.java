@@ -21,5 +21,6 @@ public class ConceptGroup {
     private int id;
     private Date created;
     private Date modified;
+    private boolean isPrivate;
     
 }

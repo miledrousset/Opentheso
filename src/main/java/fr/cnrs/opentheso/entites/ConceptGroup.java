@@ -64,6 +64,9 @@ public class ConceptGroup implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
 
+    @Column(name = "private", nullable = false)
+    private boolean isPrivate;
+
     @ManyToOne
     @JoinColumn(name = "idthesaurus", referencedColumnName = "id_thesaurus", nullable = false)
     private Thesaurus thesaurus;

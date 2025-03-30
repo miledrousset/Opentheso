@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +37,7 @@ import javax.sql.DataSource;
 @Slf4j
 @Data
 @Service
-public class GroupHelper {
+public class GroupHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;
@@ -1159,10 +1160,10 @@ public class GroupHelper {
      * @param isSortByNotation
      * @return
      */
-    public ArrayList<NodeGroup> getListRootConceptGroup(String idTheso, String idLang, boolean isSortByNotation) {
+    public ArrayList<NodeGroup> getListRootConceptGroup(String idTheso, String idLang, boolean isSortByNotation, boolean isPrivate) {
 
         ArrayList<NodeGroup> nodeConceptGroupList = new ArrayList<>();
-        ArrayList<String> tabIdConceptGroup = getListIdOfRootGroup(idTheso);
+        ArrayList<String> tabIdConceptGroup = getListIdOfRootGroup(idTheso, isPrivate);
 
         for (String idGroup : tabIdConceptGroup) {
             NodeGroup nodeConceptGroup = getThisConceptGroup(idGroup, idTheso, idLang);
@@ -1195,8 +1196,7 @@ public class GroupHelper {
      * @param idThesaurus
      * @return
      */
-    public ArrayList<String> getListIdOfRootGroup(
-            String idThesaurus) {
+    public ArrayList<String> getListIdOfRootGroup(String idThesaurus, boolean isPrivate) {
 
         Connection conn;
         Statement stmt;
@@ -1209,10 +1209,12 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select idgroup, notation from concept_group where idthesaurus = '"
-                            + idThesaurus
-                            + "' and  idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub' and id_thesaurus = '" + idThesaurus + "')"
-                            + " order by notation ASC";
+                    String query = String.format("select idgroup, notation "
+                            + "FROM concept_group "
+                            + "WHERE idthesaurus = '%s' "
+                            + (isPrivate ? "AND private = 'false'" : "")
+                            + "AND idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub' and id_thesaurus = '%s') "
+                            + "ORDER BY notation ASC", idThesaurus, idThesaurus);
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1269,6 +1271,7 @@ public class GroupHelper {
                             conceptGroup.setNotation(resultSet.getString("notation"));
                             conceptGroup.setCreated(resultSet.getDate("created"));
                             conceptGroup.setModified(resultSet.getDate("modified"));
+                            conceptGroup.setPrivate(resultSet.getBoolean("private"));
                         }
                     }
                 }
@@ -1289,6 +1292,7 @@ public class GroupHelper {
                             nodeConceptGroup.setLexicalValue("");
                             nodeConceptGroup.setIdLang(idLang);
                         }
+                        nodeConceptGroup.setGroupPrivate(conceptGroup.isPrivate());
                         nodeConceptGroup.setConceptGroup(conceptGroup);
                     }
                 } 

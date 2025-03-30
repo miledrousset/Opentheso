@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -87,7 +88,8 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, isSortByNotation(),
+                ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(

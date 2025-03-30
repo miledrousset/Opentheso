@@ -1,120 +1,102 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import java.io.IOException;
+import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+import java.io.Serializable;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+
+
 @Data
-@Named(value = "editThesoBean")
 @SessionScoped
+@NoArgsConstructor
+@Named(value = "editThesoBean")
 public class EditThesoBean implements Serializable {
 
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy private MenuBean menuBean;
-    @Autowired @Lazy private ThesaurusMetadataAdd thesaurusMetadataAdd;
-
-    @Autowired
+    private CurrentUser currentUser;
+    private RoleOnThesoBean roleOnThesoBean;
+    private MenuBean menuBean;
+    private ThesaurusMetadataAdd thesaurusMetadataAdd;
+    private ConceptGroupRepository conceptGroupRepository;
     private SelectedTheso selectedTheso;
-
-    @Autowired
     private PreferencesHelper preferencesHelper;
-
-    @Autowired
     private ThesaurusRepository thesaurusRepository;
-
-    @Autowired
     private LanguageHelper languageHelper;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
-
-    private NodeLangTheso langSelected;
-    private ArrayList<Languages_iso639> allLangs;
-    private ArrayList<NodeLangTheso> languagesOfTheso;
-    private boolean isPrivateTheso;
-    
-    private String title;
-    private String selectedLang;
-    private NodeIdValue nodeIdValueOfTheso;
-    private String preferredLang;
-    private String arkIdOfTheso;
-    private String newIdOfTheso;
-
-    @Autowired
     private ConceptHelper conceptHelper;
+    private GroupHelper groupHelper;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(allLangs!= null){
-            allLangs.clear();
-            allLangs = null;
-        }
-        if(languagesOfTheso!= null){
-            languagesOfTheso.clear();
-            languagesOfTheso = null;
-        }
-        langSelected = null;
-        title = null;
-        selectedLang = null;        
-        nodeIdValueOfTheso = null;
-        preferredLang = null;
-        arkIdOfTheso = null;
-    }      
-    
-    /**
-     * Creates a new instance of DeleteThesoBean
-     */
-    public EditThesoBean() {
+    private List<Languages_iso639> allLangs;
+    private List<NodeLangTheso> languagesOfTheso;
+    private TreeNode<NodeGroup> groupRoot;
+    private NodeLangTheso langSelected;
+    private NodeIdValue nodeIdValueOfTheso;
+    private boolean isPrivateTheso;
+    private int activeTabIndex;
+    private String title, selectedLang, preferredLang, arkIdOfTheso, newIdOfTheso;
+
+
+    @Inject
+    public EditThesoBean(CurrentUser currentUser, RoleOnThesoBean roleOnThesoBean, MenuBean menuBean,
+                         ThesaurusMetadataAdd thesaurusMetadataAdd, SelectedTheso selectedTheso,
+                         PreferencesHelper preferencesHelper, ThesaurusRepository thesaurusRepository,
+                         LanguageHelper languageHelper, ThesaurusHelper thesaurusHelper,
+                         ConceptHelper conceptHelper, GroupHelper groupHelper,
+                         ConceptGroupRepository conceptGroupRepository) {
+
+        this.currentUser = currentUser;
+        this.roleOnThesoBean = roleOnThesoBean;
+        this.menuBean = menuBean;
+        this.thesaurusMetadataAdd = thesaurusMetadataAdd;
+        this.selectedTheso = selectedTheso;
+        this.preferencesHelper = preferencesHelper;
+        this.thesaurusRepository = thesaurusRepository;
+        this.languageHelper = languageHelper;
+        this.thesaurusHelper = thesaurusHelper;
+        this.conceptHelper = conceptHelper;
+        this.groupHelper = groupHelper;
+        this.conceptGroupRepository = conceptGroupRepository;
     }
 
+
     public void init(String idTheso) {
-        nodeIdValueOfTheso = null;
+
+        activeTabIndex = 0;
         nodeIdValueOfTheso = new NodeIdValue();
-
-        this.nodeIdValueOfTheso.setId(idTheso);
+        nodeIdValueOfTheso.setId(idTheso);
         arkIdOfTheso = thesaurusHelper.getIdArkOfThesaurus(idTheso);
-
-        // toutes les langues Iso
-        allLangs = languageHelper.getAllLanguages();
-
-        isPrivateTheso = thesaurusHelper.isThesoPrivate(nodeIdValueOfTheso.getId());
-        // langue par defaut
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
-        preferredLang = nodePreference.getSourceLang();
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
-        selectedLang = null;
-        langSelected = null;
-        langSelected = new NodeLangTheso();
-        title = "";
+        init();
         try {
             menuBean.redirectToEditionPage();
         } catch (IOException ex) {
@@ -126,22 +108,91 @@ public class EditThesoBean implements Serializable {
     
     public void init(NodeIdValue nodeIdValueOfTheso) {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
-
-        // toutes les langues Iso
-        allLangs = languageHelper.getAllLanguages();
-        // les langues du thésaurus
-        isPrivateTheso = thesaurusHelper.isThesoPrivate(nodeIdValueOfTheso.getId());
-        // langue par defaut
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
-        preferredLang = nodePreference.getSourceLang();
-        
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
-        selectedLang = null;
-        langSelected = null;
-        langSelected = new NodeLangTheso();
-        title = "";
+        activeTabIndex = 0;
+        init();
         /// initialisation des métadonnées pour le thésaurus 
         thesaurusMetadataAdd.init(nodeIdValueOfTheso.getId());        
+    }
+
+    private void init() {
+
+        activeTabIndex = 0;
+        isPrivateTheso = thesaurusHelper.isThesoPrivate(nodeIdValueOfTheso.getId());
+
+        var nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
+        preferredLang = nodePreference.getSourceLang();
+        allLangs = languageHelper.getAllLanguages();
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
+        selectedLang = null;
+        langSelected = new NodeLangTheso();
+        title = "";
+
+        loadGroupsTree();
+    }
+
+    private void loadGroupsTree() {
+        groupRoot = new DefaultTreeNode<>(new NodeGroup(), null);
+        var elements = groupHelper.getListRootConceptGroup(nodeIdValueOfTheso.getId(), preferredLang, false, false);
+        setGroupTree(groupRoot, elements);
+    }
+
+    private void setGroupTree(TreeNode<NodeGroup> elementTree, List<NodeGroup> elements) {
+        for (NodeGroup nodeGroup : elements) {
+            var fils = new DefaultTreeNode(nodeGroup, elementTree);
+            var tmp = groupHelper.getListChildsOfGroup(nodeGroup.getConceptGroup().getIdgroup(),
+                    nodeIdValueOfTheso.getId(), preferredLang, false);
+
+            if (CollectionUtils.isNotEmpty(tmp)) {
+                setGroupTree(fils, tmp);
+            }
+        }
+    }
+
+    public void updateCollectionStatus(NodeGroup group) {
+
+        if(ObjectUtils.isEmpty(group) || ObjectUtils.isEmpty(group.getConceptGroup())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur : Groupe invalide");
+            return;
+        }
+
+        var isPrivate = group.isGroupPrivate();
+        conceptGroupRepository.updateVisibility(group.getConceptGroup().getIdgroup(), group.getConceptGroup().getIdthesaurus(), isPrivate);
+
+        if (group.isHaveChildren()) {
+            var nodes = getTreeNode(groupRoot.getChildren(), group);
+            updateCollectionsStatus(nodes, isPrivate);
+        }
+
+        var message = String.format("La collection %s est maintenant %s", group.getLexicalValue(), isPrivate ? "privée" : "publique");
+        showMessage(FacesMessage.SEVERITY_INFO, message);
+    }
+
+    private void updateCollectionsStatus(TreeNode<NodeGroup> element, boolean newStatus) {
+        for (TreeNode<NodeGroup> group : element.getChildren()) {
+            conceptGroupRepository.updateVisibility(group.getData().getConceptGroup().getIdgroup(),
+                    group.getData().getConceptGroup().getIdthesaurus(), newStatus);
+            group.getData().setGroupPrivate(newStatus);
+
+            if (CollectionUtils.isNotEmpty(element.getChildren())) {
+                for (TreeNode<NodeGroup> tmp : element.getChildren()) {
+                    updateCollectionsStatus(tmp, newStatus);
+                }
+            }
+        }
+    }
+
+    private TreeNode<NodeGroup> getTreeNode(List<TreeNode<NodeGroup>> nodes, NodeGroup group) {
+
+        TreeNode<NodeGroup> tmp = null;
+        for (TreeNode<NodeGroup> node : nodes) {
+            if (node.getData().getConceptGroup().getIdgroup().equals(group.getConceptGroup().getIdgroup())) {
+                return node;
+            }
+            if (CollectionUtils.isNotEmpty(node.getChildren())) {
+                tmp = getTreeNode(node.getChildren(), group);
+            }
+        }
+        return tmp;
     }
 
     public void reset() {
@@ -157,38 +208,33 @@ public class EditThesoBean implements Serializable {
     }
 
     public void modifyIdOfThesaurus(String oldId, String newId) {
-        FacesMessage msg;
-        if(!thesaurusHelper.changeIdOfThesaurus(oldId, newId)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'identifiant !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if(!thesaurusHelper.changeIdOfThesaurus(oldId, newId)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de changement d'identifiant !!!");
             return;
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le changement d'identifiant a réussi, veuillez recharger les thésaurus");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Le changement d'identifiant a réussi, veuillez recharger les thésaurus");
     }
 
     public void changeSourceLang(){
-       FacesMessage msg;
-        if (nodeIdValueOfTheso == null || nodeIdValueOfTheso.getId() == null || nodeIdValueOfTheso.getId().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de thésaurus sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (ObjectUtils.isEmpty(nodeIdValueOfTheso) || StringUtils.isEmpty(nodeIdValueOfTheso.getId())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Pas de thésaurus sélectionné !!!");
             return;
         }
 
-        if (preferredLang == null || preferredLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "la langue source est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(preferredLang)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "La langue source est obligatoire !!!");
             return;
         }
         
         if (!preferencesHelper.setWorkLanguageOfTheso(preferredLang, nodeIdValueOfTheso.getId())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification de la langue source !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la modification de la langue source !!!");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue source modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Langue source modifiée avec succès");
         init(nodeIdValueOfTheso);
     }
     
@@ -196,44 +242,40 @@ public class EditThesoBean implements Serializable {
      * permet de changer le status du thésaurus entre public et privé
      */
     public void changeStatus() {
-        FacesMessage msg;
+
         if (thesaurusRepository.updateVisibility(nodeIdValueOfTheso.getId(), isPrivateTheso) == 0) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "La modification a échoué !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "La modification a échoué !!!");
             return;
         }
-        if(isPrivateTheso)
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le thésaurus est maintenant privé");
-        else
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le thésaurus est maintenant public");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (isPrivateTheso) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Le thésaurus est maintenant privé");
+        } else {
+            showMessage(FacesMessage.SEVERITY_INFO, "Le thésaurus est maintenant public");
+        }
+
         init(nodeIdValueOfTheso);
         roleOnThesoBean.showListTheso(currentUser, selectedTheso);
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("toolBoxForm:idLangToModify");
-        }
+        PrimeFaces.current().ajax().update("toolBoxForm:idLangToModify");
     }
 
     /**
      * Permet de supprimer un thésaurus
      */
     public void addNewLang() {
-        FacesMessage msg;
-        if (nodeIdValueOfTheso == null || nodeIdValueOfTheso.getId() == null || nodeIdValueOfTheso.getId().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de thésaurus sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (ObjectUtils.isEmpty(nodeIdValueOfTheso) || StringUtils.isEmpty(nodeIdValueOfTheso.getId())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Pas de thésaurus sélectionné !!!");
             return;
         }
 
-        if (title == null || title.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "le label est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(title)) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Le label est obligatoire !!!");
             return;
         }
-        if (selectedLang == null || selectedLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "la langue est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (StringUtils.isEmpty(selectedLang)) {
+            showMessage(FacesMessage.SEVERITY_WARN, "La langue est obligatoire !!!");
             return;
         }
 
@@ -244,27 +286,23 @@ public class EditThesoBean implements Serializable {
         thesaurus.setTitle(title);
         thesaurus.setLanguage(selectedLang);
         if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout de la langue !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout de la langue !!!");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue ajoutée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Langue ajoutée avec succès");
         init(nodeIdValueOfTheso);
     }
     
-    public void updateLang(NodeLangTheso NodeLangThesoSelected){
-        FacesMessage msg;
-        if (nodeIdValueOfTheso == null || nodeIdValueOfTheso.getId() == null || nodeIdValueOfTheso.getId().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de thésaurus sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+    public void updateLang(NodeLangTheso nodeLangThesoSelected){
+
+        if (ObjectUtils.isEmpty(nodeIdValueOfTheso) || StringUtils.isEmpty(nodeIdValueOfTheso.getId())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Pas de thésaurus sélectionné !!!");
             return;
         }
 
-        if (NodeLangThesoSelected == null || NodeLangThesoSelected.getValue() == null || NodeLangThesoSelected.getValue().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Le label est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (ObjectUtils.isEmpty(nodeLangThesoSelected) || StringUtils.isEmpty(nodeLangThesoSelected.getValue())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Le label est obligatoire !!!");
             return;
         }
 
@@ -273,56 +311,53 @@ public class EditThesoBean implements Serializable {
         thesaurus.setContributor(currentUser.getNodeUser().getName());
         thesaurus.setId_thesaurus(nodeIdValueOfTheso.getId());
         thesaurus.setTitle(langSelected.getLabelTheso());
-        thesaurus.setLanguage(NodeLangThesoSelected.getCode());
+        thesaurus.setLanguage(nodeLangThesoSelected.getCode());
+
         if (!thesaurusHelper.UpdateThesaurus(thesaurus)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la modification !!!");
             return;
         }
 
         roleOnThesoBean.showListTheso(currentUser, selectedTheso);
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Langue modifiée avec succès");
+
         String sourceLang = preferencesHelper.getWorkLanguageOfTheso(nodeIdValueOfTheso.getId());
-        
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), sourceLang);
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:listLangThes");
-        }
+
+        PrimeFaces.current().ajax().update("containerIndex:listLangThes");
     }
     
     public void deleteLangFromTheso(String idLang){
-        FacesMessage msg;
-        if (nodeIdValueOfTheso == null || nodeIdValueOfTheso.getId() == null || nodeIdValueOfTheso.getId().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de thésaurus sélectionné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (ObjectUtils.isEmpty(nodeIdValueOfTheso) || StringUtils.isEmpty(nodeIdValueOfTheso.getId())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Pas de thésaurus sélectionné !!!");
             return;
-        }        
-        if (idLang == null || idLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de langue sélectionnée !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+
+        if (StringUtils.isEmpty(idLang)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Pas de langue sélectionnée !!!");
             return;
         }
 
         if (!thesaurusHelper.deleteThesaurusTraduction(nodeIdValueOfTheso.getId(), idLang)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression de la langue !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression de la langue !!!");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue supprimée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Langue supprimée avec succès");
         init(nodeIdValueOfTheso);
-       
     }
 
     public void setLangSelected(NodeLangTheso langSelected) {
         if(langSelected == null) 
             langSelected = new NodeLangTheso();
         this.langSelected = langSelected;
+    }
+
+    private void showMessage(FacesMessage.Severity messageType, String messageValue) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
     }
 
 }

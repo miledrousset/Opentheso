@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ import javax.sql.DataSource;
 
 @Slf4j
 @Service
-public class LanguageHelper {
+public class LanguageHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;
@@ -34,29 +35,6 @@ public class LanguageHelper {
                 return "pt";                  
         }
         return idLang;
-    }    
-    
-    /**
-     * Permet de retourner le code du drapeau d'un pays à partir du code de la langue
-     *
-     * @param idLang
-     * @return Objet Class Thesaurus
-     */
-    public String getFlagFromIdLang(String idLang) {
-        String flag = "";
-        try ( Connection conn = dataSource.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select code_pays from languages_iso639 where iso639_1 = '" + idLang + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        flag = resultSet.getString("code_pays");
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting Flag : " + idLang, sqle);
-        }
-        return flag;
     }
 
     public List<Languages_iso639> getLanguagesByProject(String idProject) {

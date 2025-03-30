@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.GpsHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.PathHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
@@ -23,27 +23,23 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.services.IpAddressService;
-import jakarta.faces.context.ExternalContext;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -66,7 +62,6 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
-    
     @Autowired @Lazy
     private IndexSetting indexSetting;
     @Autowired @Lazy
@@ -77,8 +72,9 @@ public class ConceptView implements Serializable {
     private Tree tree;
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy
-    private LanguageBean languageBean;
+
+    @Autowired
+    private LanguageRepository languageRepository;
 
     @Autowired
     private DaoResourceHelper daoResourceHelper;
@@ -102,7 +98,7 @@ public class ConceptView implements Serializable {
     private GpsHelper gpsHelper;
 
     @Autowired
-    private LanguageHelper languageHelper;
+    private LanguageBean languageBean;
 
     @Autowired
     private SelectedTheso selectedTheso;
@@ -256,9 +252,10 @@ public class ConceptView implements Serializable {
     }
     
     public String getFlagFromCodeLang(String idLang){
-        String flag = languageHelper.getFlagFromIdLang(idLang);
-        return FacesContext.getCurrentInstance().getExternalContext()
-                .getRequestContextPath() + "/resources/img/flag/" + flag + ".png";        
+        var language = languageRepository.findByIso6391(idLang);
+        return language.isPresent()
+            ? FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/resources/img/flag/" + language.get().getCodePays() + ".png"
+            : "";
     }
 
     /**

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -87,6 +88,8 @@ public class CurrentUser implements Serializable {
     @Autowired
     private UserGroupLabelRepository2 userGroupLabelRepository2;
 
+    @Autowired
+    private TreeGroups treeGroups;
 
     @Autowired
     private UserHelper userHelper;
@@ -179,13 +182,16 @@ public class CurrentUser implements Serializable {
                 indexSetting.setProjectSelected(false);
             }
         }
-        
+
+        treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
         } else {
             PrimeFaces.current().ajax().update("containerIndex:contentConcept");
             PrimeFaces.current().ajax().update("containerIndex:searchBar");
             PrimeFaces.current().ajax().update("containerIndex:header");
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
             PrimeFaces.current().ajax().update("menuBar");
             PrimeFaces.current().ajax().update("messageIndex");
         }
@@ -276,12 +282,13 @@ public class CurrentUser implements Serializable {
             projectBean.init();
         }
 
+        treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+
         PrimeFaces.current().executeScript("PF('login').hiden();");
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("idLogin");
-            pf.ajax().update("containerIndex:header");
-        }
+
+        PrimeFaces.current().ajax().update("idLogin");
+        PrimeFaces.current().ajax().update("containerIndex:header");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
     }
   
     /**
