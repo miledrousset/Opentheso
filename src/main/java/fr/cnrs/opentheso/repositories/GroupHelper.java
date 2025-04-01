@@ -1353,8 +1353,7 @@ public class GroupHelper implements Serializable {
      * @param isSortByNotation
      * @return #MR
      */
-    public ArrayList<NodeGroup> getListChildsOfGroup(
-            String idConceptGroup, String idTheso, String idLang, boolean isSortByNotation) {
+    public ArrayList<NodeGroup> getListChildsOfGroup(String idConceptGroup, String idTheso, String idLang, boolean isSortByNotation) {
 
         ArrayList<String> lisIdGroups = getListGroupChildIdOfGroup(idConceptGroup, idTheso);
         if (lisIdGroups == null) {

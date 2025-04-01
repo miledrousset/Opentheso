@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.repositories.CorpusHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -77,7 +77,7 @@ public class SelectedTheso implements Serializable {
     private CorpusHelper corpusHelper;
 
     @Autowired
-    private LanguageHelper languageHelper;
+    private LanguageRepository languageRepository;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -296,7 +296,7 @@ public class SelectedTheso implements Serializable {
     public void setSelectedProject() {
         projectBean.setLangCodeSelected(languageBean.getIdLangue());
         if (CollectionUtils.isEmpty(projectBean.getAllLangs())) {
-            projectBean.setAllLangs(languageHelper.getAllLanguages());
+            projectBean.setAllLangs(languageRepository.findAll());
         }
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();

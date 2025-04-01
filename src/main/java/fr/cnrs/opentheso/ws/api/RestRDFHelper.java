@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.api;
 
 import java.io.ByteArrayOutputStream;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,6 @@ import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 
-import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.json.Json;
@@ -413,8 +411,8 @@ public class RestRDFHelper {
      */
     private String getTopTerms__(String idTheso, String idLang) {
 
-        ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListOfTopConcepts(
-                idTheso, idLang, false);
+        List<NodeConceptTree> nodeConceptTrees = conceptHelper.getListOfTopConcepts(
+                idTheso, idLang, false, false);
         if (nodeConceptTrees == null) {
             return null;
         }

@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
@@ -52,12 +52,12 @@ public class EditThesoBean implements Serializable {
     private SelectedTheso selectedTheso;
     private PreferencesHelper preferencesHelper;
     private ThesaurusRepository thesaurusRepository;
-    private LanguageHelper languageHelper;
+    private LanguageRepository languageRepository;
     private ThesaurusHelper thesaurusHelper;
     private ConceptHelper conceptHelper;
     private GroupHelper groupHelper;
 
-    private List<Languages_iso639> allLangs;
+    private List<LanguageIso639> allLangs;
     private List<NodeLangTheso> languagesOfTheso;
     private TreeNode<NodeGroup> groupRoot;
     private NodeLangTheso langSelected;
@@ -71,7 +71,7 @@ public class EditThesoBean implements Serializable {
     public EditThesoBean(CurrentUser currentUser, RoleOnThesoBean roleOnThesoBean, MenuBean menuBean,
                          ThesaurusMetadataAdd thesaurusMetadataAdd, SelectedTheso selectedTheso,
                          PreferencesHelper preferencesHelper, ThesaurusRepository thesaurusRepository,
-                         LanguageHelper languageHelper, ThesaurusHelper thesaurusHelper,
+                         LanguageRepository languageRepository, ThesaurusHelper thesaurusHelper,
                          ConceptHelper conceptHelper, GroupHelper groupHelper,
                          ConceptGroupRepository conceptGroupRepository) {
 
@@ -82,7 +82,7 @@ public class EditThesoBean implements Serializable {
         this.selectedTheso = selectedTheso;
         this.preferencesHelper = preferencesHelper;
         this.thesaurusRepository = thesaurusRepository;
-        this.languageHelper = languageHelper;
+        this.languageRepository = languageRepository;
         this.thesaurusHelper = thesaurusHelper;
         this.conceptHelper = conceptHelper;
         this.groupHelper = groupHelper;
@@ -121,7 +121,7 @@ public class EditThesoBean implements Serializable {
 
         var nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
-        allLangs = languageHelper.getAllLanguages();
+        allLangs = languageRepository.findAll();
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
         selectedLang = null;
         langSelected = new NodeLangTheso();

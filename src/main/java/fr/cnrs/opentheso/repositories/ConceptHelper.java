@@ -941,30 +941,25 @@ public class ConceptHelper implements Serializable {
      * @param isSortByNotation
      * @return
      */
-    public ArrayList<NodeConceptTree> getListOfTopConcepts(String idThesaurus, String idLang, boolean isSortByNotation) {
+    public List<NodeConceptTree> getListOfTopConcepts(String idThesaurus, String idLang, boolean isSortByNotation, boolean isPrivate) {
 
-        ArrayList<NodeConceptTree> nodeConceptTree = null;
-        String query;
+        List<NodeConceptTree> nodeConceptTree = new ArrayList<>();
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                if (isSortByNotation) {
-                    query = "SELECT concept.notation, concept.status, concept.id_concept"
-                            + " FROM concept WHERE"
-                            + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                            + " concept.top_concept = true and status != 'CA'"
-                            + " ORDER BY concept.notation ASC limit 2000";
-                } else {
-                    query = "SELECT concept.status, concept.id_concept"
-                            + " FROM concept WHERE"
-                            + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                            + " concept.top_concept = true and status != 'CA' limit 2000";
-                }
+                String query = "SELECT c.notation, c.status, c.id_concept "
+                        + "FROM concept c "
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON c.id::text = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + "WHERE c.id_thesaurus = '" + idThesaurus + "' "
+                        + "AND c.top_concept = true "
+                        + "AND c.status != 'CA' "
+                        + (isPrivate ? "AND (cg.private = true OR cg.idgroup IS NULL) " : "")
+                        + (isSortByNotation ? "ORDER BY c.notation ASC LIMIT 2000" : "");
 
                 stmt.executeQuery(query);
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
-                    nodeConceptTree = new ArrayList<>();
                     while (resultSet.next()) {
                         NodeConceptTree nodeConceptTree1 = new NodeConceptTree();
                         nodeConceptTree1.setIdConcept(resultSet.getString("id_concept"));
@@ -1004,6 +999,9 @@ public class ConceptHelper implements Serializable {
         } catch (SQLException sqle) {
             log.error("Error while getting TopConcept sorted of theso  : " + idThesaurus, sqle);
         }
+
+        if (CollectionUtils.isEmpty(nodeConceptTree)) return nodeConceptTree;
+
         if (!isSortByNotation) {
             Collections.sort(nodeConceptTree);
         }

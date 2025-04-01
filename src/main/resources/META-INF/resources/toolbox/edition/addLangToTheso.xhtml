@@ -30,8 +30,8 @@
                                          style="width: 100%; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; width: 200px" >
 
-                        <f:selectItems value="#{editThesoBean.allLangs}" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" 
-                                       itemValue="#{lang.id_iso639_1}" var="lang" /> 
+                        <f:selectItems value="#{editThesoBean.allLangs}" itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"
+                                       itemValue="#{lang.iso6391}" var="lang" />
                         </p:selectOneMenu> 
                     </h:panelGroup>
                     <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable()}">
@@ -41,7 +41,7 @@
                                          panelStyle="border: none; box-shadow: none; width: 200px" >
 
                             <f:selectItems value="#{editThesoBean.allLangs}" itemValue="#{lang.codePays}"
-                                           itemLabelEscaped="false" var="lang" itemLabel="#{lang.french_name}" /> 
+                                           itemLabelEscaped="false" var="lang" itemLabel="#{lang.frenchName}" />
                         </p:selectOneMenu> 
                     </h:panelGroup>
                 </div>

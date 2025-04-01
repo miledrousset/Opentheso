@@ -3,13 +3,12 @@ package fr.cnrs.opentheso.bean.deepl;
 import com.deepl.api.Language;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.DeeplHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
@@ -55,8 +54,7 @@ public class DeeplTranslate implements Serializable {
 
     private List<Language> sourceLangs;
     private List<Language> targetLangs;
-    @Autowired
-    private LanguageHelper languageHelper;
+
 
     public void init() {
         String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
@@ -109,10 +107,24 @@ public class DeeplTranslate implements Serializable {
 
         this.fromLang = nodeNote1.getLang();
         fromLangLabel = getLanguage(fromLang);
-        if(fromLang.equalsIgnoreCase(languageHelper.normalizeIdLang(toLang))) {
+        if(fromLang.equalsIgnoreCase(normalizeIdLang(toLang))) {
             toLang = "fr";
         }
         retrieveExistingTranslatedText();
+    }
+
+    private String normalizeIdLang(String idLang){
+        switch (idLang) {
+            case "en-GB":
+                return "en";
+            case "en-US":
+                return "en";
+            case "pt-BR":
+                return "pt";
+            case "pt-PT":
+                return "pt";
+        }
+        return idLang;
     }
 
     private String getLanguage(String idLang) {

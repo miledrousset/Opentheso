@@ -40,21 +40,26 @@
                 <h:panelGroup id="header">
                     <ui:include src="../commun/header.xhtml"/>
                 </h:panelGroup>
+
                 <div class="d-sm-flex align-items-center justify-content-between mb-4"
                      style=" margin-top: 20px; margin-bottom: 15px">
                     <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.toolbox')} / <span
                             style="color: #f47b2a">#{langueBean.getMsg('toolbox.manageFlags')}</span></h1>
                 </div>
+
                 <div class="card mb-4 py-3 border-left-success"
                      style="margin-left: 30px; margin-right: 30px; margin-top: 10px;">
                         <!-- Afficher toutes les langues et asocier les drapeaux par langue -->
-                        <p:dataTable id="IdFalgTable" var="langs" value="#{flagBean.allLangs}" widgetVar="flagTable"
+                        <p:dataTable id="IdFalgTable" var="langs" value="#{flagBean.allLanguages}" widgetVar="flagTable"
                                      scrollable="true" scrollHeight="450" lazy="false"
                                      editMode="cell" editable="true">
+
                             <p:ajax event="cellEdit" listener="#{flagBean.updateLang(langs)}"/>
-                            <p:column width="50" headerText="iso1" filterBy="#{langs.id_iso639_1}">
-                                <h:outputText value="#{langs.id_iso639_1}"/>
+
+                            <p:column width="50" headerText="iso1" filterBy="#{langs.iso6391}">
+                                <h:outputText value="#{langs.iso6391}"/>
                             </p:column>
+
                             <p:column width="40" headerText="drapeau">
                                 <p:cellEditor>
                                     <f:facet name="output">
@@ -72,8 +77,10 @@
                             </p:column>
                         </p:dataTable>
                 </div>
+
                 <ui:include src="../commun/footer.xhtml"/>
                 <ui:include src="../dialog/login/logout.xhtml"/>
+
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </div>

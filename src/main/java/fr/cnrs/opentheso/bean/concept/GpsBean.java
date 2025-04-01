@@ -7,35 +7,43 @@ import fr.cnrs.opentheso.repositories.GpsHelper;
 
 import java.io.Serializable;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.NoArgsConstructor;
 import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 
 @Data
 @SessionScoped
+@NoArgsConstructor
 @Named(value = "gpsBean")
 public class GpsBean implements Serializable {
 
-    
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-
-    @Autowired
-    private GpsHelper gpsHelper;
+    private ConceptView conceptView;
+    private SelectedTheso selectedTheso;
+    private GpsHelper gpsRepository;
 
     private Gps gpsSelected;
 
 
+    @Inject
+    public GpsBean(ConceptView conceptView,
+                   SelectedTheso selectedTheso,
+                   GpsHelper gpsRepository) {
+
+        this.conceptView = conceptView;
+        this.selectedTheso = selectedTheso;
+        this.gpsRepository = gpsRepository;
+    }
+
     public void addNewCoordinateGps() {
 
-        gpsHelper.saveNewGps(gpsSelected);
+        gpsRepository.saveNewGps(gpsSelected);
 
-        conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
+        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -54,14 +62,14 @@ public class GpsBean implements Serializable {
      */
     public void updateCoordinateGps(Gps gps) {
 
-        gpsHelper.saveNewGps(Gps.builder()
+        gpsRepository.saveNewGps(Gps.builder()
                 .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idTheso(selectedTheso.getCurrentIdTheso())
                 .latitude(gps.getLatitude())
                 .longitude(gps.getLongitude())
                 .build());
 
-        conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
+        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -83,7 +91,7 @@ public class GpsBean implements Serializable {
 
         if(gps == null) return;
 
-        gpsHelper.removeGps(gps);
+        gpsRepository.removeGps(gps);
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 

@@ -38,8 +38,8 @@
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="width: 100%; background: none;  box-shadow: none; padding: 0rem 0.5rem;"
                                  panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                    <f:selectItems  value="#{newThesoBean.allLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
-                                    itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/> 
+                    <f:selectItems  value="#{newThesoBean.allLangs}" var="lang" itemValue="#{lang.iso6391}"
+                                    itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"/>
                 </p:selectOneMenu>  
             </div>
         </div>      

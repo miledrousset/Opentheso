@@ -32,9 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 
 import jakarta.enterprise.context.SessionScoped;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
@@ -98,6 +98,9 @@ public class Tree implements Serializable {
     @Autowired
     private DaoResourceHelper daoResourceHelper;
 
+    @Autowired
+    private DragAndDrop dragAndDrop;
+
     private DataService dataService;
     private TreeNode selectedNode;
     private List<TreeNode> clickselectedNodes;
@@ -107,10 +110,6 @@ public class Tree implements Serializable {
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
     private boolean manySiblings = false;
-    @Autowired
-    private DragAndDrop dragAndDrop;
-    @Autowired
-    private PrimeFaces primefaces;
 
 
     public void reset() {
@@ -136,13 +135,16 @@ public class Tree implements Serializable {
         selectedTheso.setSelectedLang(idLang);
         selectedTheso.setCurrentLang(idLang);
 
-        dataService = new DataService();
-        root = dataService.createRoot();
-
-        addFirstNodes();
+        loadConceptTree();
 
         selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");
+    }
+
+    public void loadConceptTree() {
+        dataService = new DataService();
+        root = dataService.createRoot();
+        addFirstNodes();
     }
 
     public boolean isDragAndDrop(NodeUser nodeUser) {
@@ -163,9 +165,8 @@ public class Tree implements Serializable {
 
         TreeNodeData data;
         // la liste est triée par alphabétique ou notation
-        ArrayList<NodeConceptTree> nodeConceptTrees
-                = conceptHelper.getListOfTopConcepts(
-                        idTheso, idLang, selectedTheso.isSortByNotation());
+        List<NodeConceptTree> nodeConceptTrees = conceptHelper
+                .getListOfTopConcepts(idTheso, idLang, selectedTheso.isSortByNotation(), ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         if (nodeConceptTrees.size() >= 2000) {
             manySiblings = true;
@@ -182,8 +183,7 @@ public class Tree implements Serializable {
                     true,//isTopConcept
                     "topTerm"
             );
-            if (conceptHelper.haveChildren(idTheso,
-                    nodeConceptTree.getIdConcept())) {
+            if (conceptHelper.haveChildren(idTheso, nodeConceptTree.getIdConcept())) {
                 if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
                     dataService.addNodeWithChild("deprecated", data, root);
                 } else {

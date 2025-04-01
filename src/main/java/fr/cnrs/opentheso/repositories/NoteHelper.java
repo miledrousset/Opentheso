@@ -24,9 +24,6 @@ public class NoteHelper {
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private LanguageHelper languageHelper;
        
     /**
      * Nouvelle méthode qui va avec la restructuration des notes
@@ -45,7 +42,7 @@ public class NoteHelper {
         note = StringEscapeUtils.unescapeXml(note);
         note = StringUtils.convertString(note);
 
-        idLang = languageHelper.normalizeIdLang(idLang);
+        idLang = normalizeIdLang(idLang);
         
         if(isNoteExistInThatLang(identifier, idThesaurus, idLang, noteTypeCode)) {
             try (Connection conn = dataSource.getConnection()) {
@@ -89,7 +86,7 @@ public class NoteHelper {
     public boolean updateNote(int idNote, String idConcept, String idLang, String idThesaurus,
                               String note, String noteSource, String noteTypeCode, int idUser) {
         
-        idLang = languageHelper.normalizeIdLang(idLang);
+        idLang = normalizeIdLang(idLang);
         
         boolean status = false;
         note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
@@ -113,7 +110,7 @@ public class NoteHelper {
      */
     public boolean isNoteExist(String identifier, String idThesaurus, String idLang, String note, String noteTypeCode) {
 
-        idLang = languageHelper.normalizeIdLang(idLang);        
+        idLang = normalizeIdLang(idLang);
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -162,7 +159,7 @@ public class NoteHelper {
      */
     public boolean isNoteExistInThatLang(String identifier, String idThesaurus, String idLang, String noteTypeCode) {
 
-        idLang = languageHelper.normalizeIdLang(idLang);
+        idLang = normalizeIdLang(idLang);
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -211,7 +208,7 @@ public class NoteHelper {
      */
     public String getSourceOfNote(String idConcept, String idThesaurus, String idLang, String noteType) {
 
-        idLang = languageHelper.normalizeIdLang(idLang);
+        idLang = normalizeIdLang(idLang);
         
         String source = null;
         try (Connection conn = dataSource.getConnection()){
@@ -249,10 +246,9 @@ public class NoteHelper {
      * @return 
      * #MR
      */
-    public String getLabelOfNote(
-            String idConcept, String idThesaurus, String idLang, String noteType) {
+    public String getLabelOfNote(String idConcept, String idThesaurus, String idLang, String noteType) {
 
-        idLang = languageHelper.normalizeIdLang(idLang);
+        idLang = normalizeIdLang(idLang);
         
         String label = null;
         try (Connection conn = dataSource.getConnection()){
@@ -290,9 +286,8 @@ public class NoteHelper {
      * @return 
      * #MR
      */
-    public NodeNote getNodeNote(
-            String idConcept, String idThesaurus, String idLang, String noteType) {
-        idLang = languageHelper.normalizeIdLang(idLang);
+    public NodeNote getNodeNote(String idConcept, String idThesaurus, String idLang, String noteType) {
+        idLang = normalizeIdLang(idLang);
         NodeNote nodeNote = null;
         try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()) {
@@ -893,6 +888,20 @@ public class NoteHelper {
     public int getNbrNoteByGroup(String idGroup, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteByGroupTypeConcept(idGroup, idThesaurus, idLang);
         return nbrNoteConcepts; //+ nbrNoteTerms;
+    }
+
+    private String normalizeIdLang(String idLang){
+        switch (idLang) {
+            case "en-GB":
+                return "en";
+            case "en-US":
+                return "en";
+            case "pt-BR":
+                return "pt";
+            case "pt-PT":
+                return "pt";
+        }
+        return idLang;
     }
 
 }

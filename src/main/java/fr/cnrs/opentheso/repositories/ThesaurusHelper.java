@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.models.languages.Languages_iso639;
+
+import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -328,7 +329,7 @@ public class ThesaurusHelper implements Serializable {
      */
     public NodeThesaurus getNodeThesaurus(String idThesaurus) {
 
-        ArrayList<Languages_iso639> listLangTheso = getLanguagesOfThesaurus(idThesaurus);
+        List<LanguageIso639> listLangTheso = getLanguagesOfThesaurus(idThesaurus);
         NodeThesaurus nodeThesaurus = new NodeThesaurus();
         ArrayList<Thesaurus> thesaurusTraductionsList = new ArrayList<>();
 
@@ -336,7 +337,7 @@ public class ThesaurusHelper implements Serializable {
             return null;
         }
         for (int i = 0; i < listLangTheso.size(); i++) {
-            Thesaurus thesaurus = getThisThesaurus(idThesaurus, listLangTheso.get(i).getId_iso639_1());
+            Thesaurus thesaurus = getThisThesaurus(idThesaurus, listLangTheso.get(i).getIso6391());
             if (thesaurus != null) {
                 thesaurusTraductionsList.add(thesaurus);
             }
@@ -447,9 +448,9 @@ public class ThesaurusHelper implements Serializable {
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<Languages_iso639> getLanguagesOfThesaurus(String idThesaurus) {
+    public ArrayList<LanguageIso639> getLanguagesOfThesaurus(String idThesaurus) {
 
-        ArrayList<Languages_iso639> lang = null;
+        ArrayList<LanguageIso639> lang = null;
         try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT languages_iso639.iso639_1, "
@@ -467,11 +468,11 @@ public class ThesaurusHelper implements Serializable {
                     if (resultSet != null) {
                         lang = new ArrayList<>();
                         while (resultSet.next()) {
-                            Languages_iso639 languages_iso639 = new Languages_iso639();
-                            languages_iso639.setId_iso639_1(resultSet.getString("iso639_1"));
-                            languages_iso639.setId_iso639_2(resultSet.getString("iso639_2"));
-                            languages_iso639.setFrench_name(resultSet.getString("french_name"));
-                            languages_iso639.setFrench_name(resultSet.getString("english_name"));
+                            LanguageIso639 languages_iso639 = new LanguageIso639();
+                            languages_iso639.setIso6391(resultSet.getString("iso639_1"));
+                            languages_iso639.setIso6392(resultSet.getString("iso639_2"));
+                            languages_iso639.setFrenchName(resultSet.getString("french_name"));
+                            languages_iso639.setFrenchName(resultSet.getString("english_name"));
 
                             lang.add(languages_iso639);
                         }

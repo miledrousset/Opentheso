@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentImport;
@@ -12,7 +13,6 @@ import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
@@ -29,7 +29,7 @@ import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.DeprecateHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.ImagesHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
@@ -119,7 +119,7 @@ public class ImportFileBean implements Serializable {
     private CsvImportHelper csvImportHelper;
 
     @Autowired
-    private LanguageHelper languageHelper;
+    private LanguageRepository languageRepository;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -199,7 +199,7 @@ public class ImportFileBean implements Serializable {
     private List<UserGroupLabel> nodeUserProjects;
     private String selectedUserProject;
 
-    private ArrayList<Languages_iso639> allLangs;
+    private List<LanguageIso639> allLangs;
     private String selectedLang;
 
     // pour les alignements
@@ -260,7 +260,7 @@ public class ImportFileBean implements Serializable {
         alignmentSource = null;
 
         // récupération des toutes les langues pour le choix de le langue source
-        allLangs = languageHelper.getAllLanguages();
+        allLangs = languageRepository.findAll();
         selectedLang = workLanguage;
         thesaurusName = null;
         if (roleOnThesoBean != null && roleOnThesoBean.getNodePreference() != null) {
@@ -3507,11 +3507,11 @@ public class ImportFileBean implements Serializable {
         this.importInProgress = importInProgress;
     }
 
-    public ArrayList<Languages_iso639> getAllLangs() {
+    public List<LanguageIso639> getAllLangs() {
         return allLangs;
     }
 
-    public void setAllLangs(ArrayList<Languages_iso639> allLangs) {
+    public void setAllLangs(List<LanguageIso639> allLangs) {
         this.allLangs = allLangs;
     }
 

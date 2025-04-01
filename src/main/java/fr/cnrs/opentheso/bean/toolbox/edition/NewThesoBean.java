@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
-import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
@@ -15,16 +15,15 @@ import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -37,46 +36,48 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NewThesoBean implements Serializable {
 
-    @Autowired
     private CurrentUser currentUser;
-
-    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired
     private ViewEditionBean viewEditionBean;
-
-    @Autowired
     private UserGroupLabelRepository2 userGroupLabelRepository;
-
-    @Autowired
     private SelectedTheso selectedTheso;
-
-    @Autowired
     private PreferencesHelper preferencesHelper;
-
-    @Autowired
     private UserHelper userHelper;
-
-    @Autowired
-    private LanguageHelper languageHelper;
-
-    @Autowired
+    private LanguageRepository languageRepository;
     private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
 
-    private String title;
-    private ArrayList<Languages_iso639> allLangs;
-    private String selectedLang;
-
+    private List<LanguageIso639> allLangs;
     private List<UserGroupLabel> nodeProjects;
-    private String selectedProject;
+    private String title, selectedLang, selectedProject;
 
+
+    @Inject
+    public NewThesoBean(UserHelper userHelper,
+                        CurrentUser currentUser,
+                        RoleOnThesoBean roleOnThesoBean,
+                        ViewEditionBean viewEditionBean,
+                        SelectedTheso selectedTheso,
+                        PreferencesHelper preferencesHelper,
+                        LanguageRepository languageRepository,
+                        ThesaurusHelper thesaurusHelper,
+                        UserGroupLabelRepository2 userGroupLabelRepository,
+                        UserGroupThesaurusRepository userGroupThesaurusRepository) {
+
+        this.userHelper = userHelper;
+        this.currentUser = currentUser;
+        this.roleOnThesoBean = roleOnThesoBean;
+        this.viewEditionBean = viewEditionBean;
+        this.selectedTheso = selectedTheso;
+        this.preferencesHelper = preferencesHelper;
+        this.languageRepository = languageRepository;
+        this.thesaurusHelper = thesaurusHelper;
+        this.userGroupLabelRepository = userGroupLabelRepository;
+        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
+    }
 
     public void init() {
-        allLangs = languageHelper.getAllLanguages();
+        allLangs = languageRepository.findAll();
         selectedLang = null;
         selectedProject = "";
         title = "";

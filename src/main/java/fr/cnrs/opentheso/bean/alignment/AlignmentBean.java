@@ -43,7 +43,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
