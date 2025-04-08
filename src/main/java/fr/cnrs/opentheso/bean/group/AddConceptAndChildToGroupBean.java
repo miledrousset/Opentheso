@@ -3,11 +3,11 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
-import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -39,7 +39,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -118,11 +118,12 @@ public class AddConceptAndChildToGroupBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
 
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);

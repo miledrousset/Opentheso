@@ -1,13 +1,12 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
 import fr.cnrs.opentheso.models.terms.NodeRT;
@@ -48,9 +47,6 @@ public class RelatedBean implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
-    private ValidateActionHelper validateActionHelper;
-
-    @Autowired
     private SearchHelper searchHelper;
 
     @Autowired
@@ -63,7 +59,7 @@ public class RelatedBean implements Serializable {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private DcElementHelper dcEelmentHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     private NodeSearchMini searchSelected;
     private List<NodeRT> nodeRTs;
@@ -170,12 +166,14 @@ public class RelatedBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-                ///// insert DcTermsData to add contributor
 
-        dcEelmentHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -217,12 +215,14 @@ public class RelatedBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcEelmentHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////         
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -251,8 +251,8 @@ public class RelatedBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        if (!validateActionHelper.isAddRelationRTValid(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), searchSelected.getIdConcept())) {
+        if (relationsHelper.isConceptHaveRelationNTorBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -285,12 +285,14 @@ public class RelatedBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcEelmentHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////       
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -354,12 +356,14 @@ public class RelatedBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcEelmentHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////          
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();

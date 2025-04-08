@@ -1,10 +1,10 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -43,7 +43,7 @@ public class TraductionBean implements Serializable {
     private TermHelper termHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -217,11 +217,13 @@ public class TraductionBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        /////////////// 
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", languageBean.getMsg("concept.translate.success"));
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -319,11 +321,13 @@ public class TraductionBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        /////////////// 
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -437,11 +441,13 @@ public class TraductionBean implements Serializable {
             conceptHelper.updateDateOfConcept(
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-            ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-            /////////////// 
+
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .build());
             
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -491,12 +497,13 @@ public class TraductionBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        /////////////// 
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

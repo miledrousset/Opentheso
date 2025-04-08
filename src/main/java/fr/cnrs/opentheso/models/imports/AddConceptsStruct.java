@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.models.imports;
 
 import fr.cnrs.opentheso.models.concept.Concept;
-import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;

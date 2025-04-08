@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.ExternalResource;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -28,6 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.RelationService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,7 +51,7 @@ public class CsvImportHelper {
     private DataSource dataSource;
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private TermHelper termHelper;
@@ -59,7 +63,7 @@ public class CsvImportHelper {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private GpsHelper gpsHelper;
+    private GpsService gpsService;
 
     @Autowired
     private AlignmentHelper alignmentHelper;
@@ -74,13 +78,16 @@ public class CsvImportHelper {
     private RelationsHelper relationsHelper;
 
     @Autowired
+    private RelationService relationService;
+
+    @Autowired
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
     private FacetHelper facetHelper;
 
     @Autowired
-    private ExternalResourcesHelper externalResourcesHelper;
+    private ExternalResourcesRepository externalResourcesRepository;
 
     @Autowired
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
@@ -731,8 +738,9 @@ public class CsvImportHelper {
             if(!fr.cnrs.opentheso.utils.StringUtils.urlValidator(externalResource)){
                 return;            
             }
-            if(!externalResourcesHelper.addExternalResource(idConcept, idTheso, "", externalResource)) {
-            }
+
+            externalResourcesRepository.save(ExternalResource.builder().idConcept(idConcept).idThesaurus(idTheso)
+                    .externalUri(externalResource).build());
         }
     }
 
@@ -950,32 +958,32 @@ public class CsvImportHelper {
     private boolean addRelations(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         for (String idConcept2 : conceptObject.getBroaders()) {
-            if (!relationsHelper.insertHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "BT", idConcept2)) {
+            if (relationService.addHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "BT", idConcept2) == null) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
             // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(idConcept2, idTheso, "NT", conceptObject.getIdConcept())) {
+            if (relationService.addHierarchicalRelation(idConcept2, idTheso, "NT", conceptObject.getIdConcept()) == null) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
             conceptHelper.setNotTopConcept(conceptObject.getIdConcept(), idTheso);
         }
 
         for (String idConcept2 : conceptObject.getNarrowers()) {
-            if (!relationsHelper.insertHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "NT", idConcept2)) {
+            if (relationService.addHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "NT", idConcept2) == null) {
                 message = message + "\n" + "erreur dans de la relation NT: " + conceptObject.getIdConcept();
             }
             // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(idConcept2, idTheso, "BT", conceptObject.getIdConcept())) {
+            if (relationService.addHierarchicalRelation(idConcept2, idTheso, "BT", conceptObject.getIdConcept()) == null) {
                 message = message + "\n" + "erreur dans de la relation NT: " + conceptObject.getIdConcept();
             }
         }
 
         for (String idConcept2 : conceptObject.getRelateds()) {
-            if (!relationsHelper.insertHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "RT", idConcept2)) {
+            if (relationService.addHierarchicalRelation(conceptObject.getIdConcept(), idTheso, "RT", idConcept2) == null) {
                 message = message + "\n" + "erreur dans de la relation RT: " + conceptObject.getIdConcept();
             }
-//            // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(idConcept2, idTheso, "RT", conceptObject.getIdConcept())) {
+            // pour créer la relation réciproque si elle n'existe pas
+            if (relationService.addHierarchicalRelation(idConcept2, idTheso, "RT", conceptObject.getIdConcept()) == null) {
                 message = message + "\n" + "erreur dans de la relation RT: " + conceptObject.getIdConcept();
             }
         }
@@ -1065,7 +1073,7 @@ public class CsvImportHelper {
             String[] values = conceptObject.getGps().split("##");
             for (String value1 : values) {
                 String[] gps = value1.split("@@");
-                gpsHelper.insertCoordonees(conceptObject.getIdConcept(), idTheso,
+                gpsService.insertCoordinates(conceptObject.getIdConcept(), idTheso,
                         Double.valueOf(gps[1]), Double.valueOf(gps[2]));
             }
             return true;
@@ -1073,10 +1081,7 @@ public class CsvImportHelper {
             return addPointGeoLocalisation(idTheso, conceptObject);
         }
     }
-    private boolean addPointGeoLocalisation(
-            
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addPointGeoLocalisation(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         Double latitude;
         Double longitude;
@@ -1094,7 +1099,7 @@ public class CsvImportHelper {
             return true;
         }
 
-        gpsHelper.insertCoordonees(conceptObject.getIdConcept(), idTheso, latitude, longitude);
+        gpsService.insertCoordinates(conceptObject.getIdConcept(), idTheso, latitude, longitude);
         return true;
     }
     
@@ -1573,10 +1578,8 @@ public class CsvImportHelper {
         }
 
         // nettoyege des ancienne valeurs
-        gpsHelper.deleteGpsCoordinate(conceptObject.getIdConcept(), idTheso);
-       
-        
-        String gps = null;
+        gpsService.deleteGpsByConceptIdAndThesaurusId(conceptObject.getIdConcept(), idTheso);
+
         List<NodeGps> nodeGpses = new ArrayList<>();
         
         if (StringUtils.isNotEmpty(conceptObject.getLatitude())) {
@@ -1589,7 +1592,7 @@ public class CsvImportHelper {
             } catch (Exception e) {
                 return true;
             }
-            gpsHelper.addGpsCoordinates(conceptObject.getIdConcept(), idTheso, nodeGpses);
+            gpsService.saveNewGps(conceptObject.getIdConcept(), idTheso, nodeGpses);
             
         } else {
             if (StringUtils.isNotEmpty(conceptObject.getGps())) {
@@ -1602,7 +1605,7 @@ public class CsvImportHelper {
                         nodeGps.setPosition(gpsValue.getPosition());
                         nodeGpses.add(nodeGps);                                            
                     }
-                    gpsHelper.addGpsCoordinates(conceptObject.getIdConcept(), idTheso, nodeGpses);
+                    gpsService.saveNewGps(conceptObject.getIdConcept(), idTheso, nodeGpses);
                 }
             }
         }
@@ -1615,15 +1618,16 @@ public class CsvImportHelper {
             return true;
         }
 
-        imagesHelper.deleteAllExternalImage(conceptObject.getIdConcept(), idTheso);
+        imageService.deleteImages(idTheso, conceptObject.getIdConcept(), null);
         
         for (NodeImage nodeImage : conceptObject.getImages()) {
-            if(nodeImage == null) continue;
-            if (StringUtils.isEmpty(nodeImage.getUri())) continue;            
 
-            if (imagesHelper.addExternalImage(conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser1)) {
-                return false;
-            }
+            if(nodeImage == null) continue;
+
+            if (StringUtils.isEmpty(nodeImage.getUri())) continue;
+
+            imageService.addExternalImage(conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(),
+                    nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser1);
         }
         return true;
     }

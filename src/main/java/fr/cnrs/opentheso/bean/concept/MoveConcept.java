@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -49,7 +50,7 @@ public class MoveConcept implements Serializable {
     private CandidatBean candidatBean;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private RelationsHelper relationsHelper;
@@ -113,14 +114,15 @@ public class MoveConcept implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            conceptHelper.updateDateOfConcept(idThesoTo, idConcept,
-                    currentUser.getNodeUser().getIdUser());
 
-            ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    idConcept, idThesoTo);
-            ///////////////
+            conceptHelper.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
+
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(idConcept)
+                    .idThesaurus(idThesoTo)
+                    .build());
         }
         PrimeFaces pf = PrimeFaces.current();
         candidatBean.initCandidatModule();
@@ -153,14 +155,14 @@ public class MoveConcept implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            conceptHelper.updateDateOfConcept(idThesoTo, idConcept,
-                    currentUser.getNodeUser().getIdUser());
+            conceptHelper.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
 
-            ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    idConcept, idThesoTo);
-            ///////////////
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(idConcept)
+                    .idThesaurus(idThesoTo)
+                    .build());
 
 
             lisIdGroup = groupHelper.getListIdGroupOfConcept(idThesoTo, idConcept);

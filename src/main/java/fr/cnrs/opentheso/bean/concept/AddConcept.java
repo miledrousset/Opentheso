@@ -1,13 +1,13 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -57,7 +56,7 @@ public class AddConcept implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private FacetHelper facetHelper;
@@ -244,15 +243,13 @@ public class AddConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
-        /////////////////////////
-        ///// insert DcTermsData
-        DcElement dcElement = new DcElement();
-        dcElement.setName(DCMIResource.CREATOR);
-        dcElement.setValue(currentUser.getNodeUser().getName());
-        dcElement.setLanguage(null);
-        dcElementHelper.addDcElementConcept(dcElement, idNewConcept, idTheso);
-        ///////////////
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CREATOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idNewConcept)
+                .idThesaurus(idTheso)
+                .build());
 
         if (isConceptUnderFacet) {
 

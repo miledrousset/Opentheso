@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.entites.Roles;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.RoleRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.repositories.UserRepository;
@@ -18,12 +18,12 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +44,7 @@ public class NewUserBean implements Serializable {
 
     private MyProjectBean myProjectBean;
     private SuperAdminBean superAdminBean;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private RoleRepository roleRepository;
     private UserRepository userRepository;
 
@@ -62,7 +62,7 @@ public class NewUserBean implements Serializable {
 
     @Inject
     public NewUserBean(MyProjectBean myProjectBean, SuperAdminBean superAdminBean,
-                       UserGroupLabelRepository2 userGroupLabelRepository,
+                       UserGroupLabelRepository userGroupLabelRepository,
                        RoleRepository roleRepository,
                        UserRepository userRepository,
                        ThesaurusService thesaurusService,
@@ -98,6 +98,7 @@ public class NewUserBean implements Serializable {
         limitOnTheso = false;
 
         nodeAllProjects = userGroupLabelRepository.findAll();
+        nodeAllProjects.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
         nodeAllRoles = roleRepository.findAll();
 
         selectedProject = CollectionUtils.isNotEmpty(nodeAllProjects) ? nodeAllProjects.get(0).getId().toString() : null;

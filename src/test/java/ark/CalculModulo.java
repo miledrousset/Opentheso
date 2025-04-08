@@ -1,7 +1,7 @@
 
 package ark;
 
-import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +17,8 @@ public class CalculModulo {
     @Test
     public void getModulo() {
         String prefix = "BLH-";
-        ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
-        idArk = toolsHelper.getNewId(8, true, true);
+        idArk = ToolsHelper.getNewId(8, true, true);
 
         System.out.println("arkCode = " + idArk);
         

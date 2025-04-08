@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
@@ -15,7 +16,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 
@@ -57,7 +57,7 @@ public class NoteBean implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private FacetHelper facetHelper;
@@ -79,29 +79,7 @@ public class NoteBean implements Serializable {
     private NodeGroup nodeGroup;
     private NodeNote noteToEdit;
 
-    ArrayList<NodeNote> nodeNotesByLanguage;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        if (noteTypes != null) {
-            noteTypes.clear();
-            noteTypes = null;
-        }
-        if (nodeLangs != null) {
-            nodeLangs.clear();
-            nodeLangs = null;
-        }
-        selectedLang = null;
-        selectedTypeNote = null;
-        noteValue = null;
-        selectedNodeNote = null;
-        nodeGroup = null;
-        nodeNotesByLanguage = null;
-    }
+    private ArrayList<NodeNote> nodeNotesByLanguage;
     
     /**
      * permet d'initialiser l'édition des notes pour les facettes
@@ -221,9 +199,13 @@ public class NoteBean implements Serializable {
             conceptHelper.updateDateOfConcept(
                     selectedTheso.getCurrentIdTheso(),
                     selectedNodeNote.getIdentifier(), idUser);
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
+
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(selectedNodeNote.getIdentifier())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .build());
         }
         if(isGroupNote) {
             groupView.getGroup(
@@ -293,19 +275,28 @@ public class NoteBean implements Serializable {
             return;
         }
         if(isGroupNote) {
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(groupView.getNodeGroup().getConceptGroup().getIdgroup())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .build());
         }
         if (isConceptNote){
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .build());
         }
         if(isFacetNote){
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    editFacet.getFacetSelected().getIdFacet(), selectedTheso.getCurrentIdTheso());
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(editFacet.getFacetSelected().getIdFacet())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .build());
         }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -421,9 +412,7 @@ public class NoteBean implements Serializable {
             }
         }
     }
-    
 
-    
     public void initNoteProp(String noteType) {
         reset();
         setSelectedTypeNote(noteType);
@@ -448,10 +437,6 @@ public class NoteBean implements Serializable {
                 selectedTheso.getCurrentLang(),
                 selectedTypeNote);
     }
-
-
-
-
 
 
     /**
@@ -488,13 +473,14 @@ public class NoteBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////  
-        
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -524,11 +510,14 @@ public class NoteBean implements Serializable {
         facetHelper.updateDateOfFacet(
                 selectedTheso.getCurrentIdTheso(),
                 nodeFacet.getIdFacet(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso());
-        ///////////////  
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(nodeFacet.getIdFacet())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         editFacet.initEditFacet(nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         noteValue = "";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
@@ -543,11 +532,14 @@ public class NoteBean implements Serializable {
         }
         groupHelper.updateModifiedDate(nodeGroup.getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso());
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
-        ///////////////  
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(nodeGroup.getConceptGroup().getIdgroup())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentLang());
         noteValue = "";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
@@ -724,11 +716,14 @@ public class NoteBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////        
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -758,11 +753,14 @@ public class NoteBean implements Serializable {
         facetHelper.updateDateOfFacet(
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getIdentifier(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
-        ///////////////  
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(nodeNote.getIdentifier())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         editFacet.initEditFacet(nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
@@ -789,12 +787,14 @@ public class NoteBean implements Serializable {
 
         groupHelper.updateModifiedDate(
                 nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
-        
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
-        ///////////////  
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(nodeNote.getIdentifier())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeNote.getIdentifier(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");

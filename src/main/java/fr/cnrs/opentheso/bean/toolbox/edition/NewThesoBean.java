@@ -8,7 +8,7 @@ import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -21,6 +21,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.Data;
@@ -39,7 +40,7 @@ public class NewThesoBean implements Serializable {
     private CurrentUser currentUser;
     private RoleOnThesoBean roleOnThesoBean;
     private ViewEditionBean viewEditionBean;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private SelectedTheso selectedTheso;
     private PreferencesHelper preferencesHelper;
     private UserHelper userHelper;
@@ -61,7 +62,7 @@ public class NewThesoBean implements Serializable {
                         PreferencesHelper preferencesHelper,
                         LanguageRepository languageRepository,
                         ThesaurusHelper thesaurusHelper,
-                        UserGroupLabelRepository2 userGroupLabelRepository,
+                        UserGroupLabelRepository userGroupLabelRepository,
                         UserGroupThesaurusRepository userGroupThesaurusRepository) {
 
         this.userHelper = userHelper;
@@ -83,6 +84,7 @@ public class NewThesoBean implements Serializable {
         title = "";
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userGroupLabelRepository.findAll();
+            nodeProjects.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
         } else {
             nodeProjects = userGroupLabelRepository.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
             for (UserGroupLabel userGroupLabel : nodeProjects) {

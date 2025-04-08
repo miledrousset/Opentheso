@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -30,7 +30,7 @@ public class MoveThesoToProjectBean implements Serializable {
     private MyProjectBean myProjectBean;
     private CurrentUser currentUser;
     private SuperAdminBean superAdminBean;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private UserRoleGroupRepository userRoleGroupRepository;
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
     
@@ -42,7 +42,7 @@ public class MoveThesoToProjectBean implements Serializable {
     public MoveThesoToProjectBean(MyProjectBean myProjectBean,
                                   CurrentUser currentUser,
                                   SuperAdminBean superAdminBean,
-                                  UserGroupLabelRepository2 userGroupLabelRepository,
+                                  UserGroupLabelRepository userGroupLabelRepository,
                                   UserRoleGroupRepository userRoleGroupRepository,
                                   UserGroupThesaurusRepository userGroupThesaurusRepository) {
 

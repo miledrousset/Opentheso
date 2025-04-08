@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
@@ -24,7 +24,7 @@ public class UserRoleGroupService {
     private final ThesaurusRepository thesaurusRepository;
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
-    private final UserGroupLabelRepository2 userGroupLabelRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
 
 
     @Transactional

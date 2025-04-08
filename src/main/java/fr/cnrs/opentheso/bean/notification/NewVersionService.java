@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,12 +37,16 @@ import fr.cnrs.opentheso.entites.Release;
 @Named(value = "newVersionBean")
 public class NewVersionService implements Serializable {
 
-    @Autowired
     private ReleaseRepository releaseRepository;
 
     private Release release;
     private boolean isAlreadyLoaded, newVersionExist;
 
+
+    @Inject
+    public NewVersionService (ReleaseRepository releaseRepository){
+        this.releaseRepository = releaseRepository;
+    }
 
     @PostConstruct
     public boolean searchNew() {
@@ -80,16 +85,22 @@ public class NewVersionService implements Serializable {
             return null;
         }
 
-        List<Release> releasesSaved = releaseRepository.getAllReleases();
+        List<Release> releasesSaved = releaseRepository.findAll();
 
         List<ReleaseDto> releases = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
             log.info("First project running ! Saving previous releases");
-            releaseRepository.saveAllReleases(releases.stream()
+            var releaseList = releases.stream()
                     .map(this::toRelease)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+            for (Release element : releaseList){
+                var tmp = releaseRepository.findByVersion(element.getVersion());
+                if (tmp.isEmpty()) {
+                    releaseRepository.save(element);
+                }
+            }
             log.info("All releases are saved in DB !");
             return null;
         } else {
@@ -108,7 +119,7 @@ public class NewVersionService implements Serializable {
                         .findFirst();
                 if (release.isPresent()) {
                     var newRelease = toRelease(release.get());
-                    releaseRepository.saveRelease(newRelease);
+                    releaseRepository.save(newRelease);
                     log.info("Save latest release in DB !");
                     return newRelease;
                 } else {

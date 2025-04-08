@@ -1,15 +1,14 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.candidats.CandidatService;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -54,7 +52,7 @@ public class ProcessCandidateBean implements Serializable {
     private CandidatService candidatService;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private CsvWriteHelper csvWriteHelper;
@@ -64,23 +62,7 @@ public class ProcessCandidateBean implements Serializable {
     
     private CandidatDto selectedCandidate;
     private String adminMessage;
-    
 
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        selectedCandidate = null;
-        adminMessage = null;
-    }
-
-    public ProcessCandidateBean() {
-    }
-    
-    public void action(){
-    }
 
     public void reset(CandidatDto candidatSelected) {
         this.selectedCandidate = candidatSelected;
@@ -134,13 +116,13 @@ public class ProcessCandidateBean implements Serializable {
         conceptHelper.updateDateOfConcept(selectedCandidate.getIdThesaurus(),
                 selectedCandidate.getIdConcepte(), idUser);
 
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
-        ///////////////             
-        
-        
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(selectedCandidate.getIdConcepte())
+                .idThesaurus(selectedCandidate.getIdThesaurus())
+                .build());
+
         printMessage("Canditat inséré avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
@@ -242,12 +224,13 @@ public class ProcessCandidateBean implements Serializable {
             }
             conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser);
-            
-            ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
-            ///////////////              
+
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(selectedCandidate1.getIdConcepte())
+                    .idThesaurus(selectedCandidate1.getIdThesaurus())
+                    .build());
             
             generateArk(nodePreference, selectedCandidate1);
             nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
@@ -286,12 +269,14 @@ public class ProcessCandidateBean implements Serializable {
             if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
             conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
-                    selectedCandidate1.getIdConcepte(), idUser); 
-            ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                    selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
-            ///////////////               
+                    selectedCandidate1.getIdConcepte(), idUser);
+
+            conceptDcTermRepository.save(ConceptDcTerm.builder()
+                    .name(DCMIResource.CONTRIBUTOR)
+                    .value(currentUser.getNodeUser().getName())
+                    .idConcept(selectedCandidate1.getIdConcepte())
+                    .idThesaurus(selectedCandidate1.getIdThesaurus())
+                    .build());
         }
 
         printMessage("Candidats insérés avec succès");

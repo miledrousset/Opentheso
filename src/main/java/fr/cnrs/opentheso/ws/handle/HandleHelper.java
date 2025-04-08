@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.handle;
 
 import java.util.ArrayList;
-import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class HandleHelper {
 
-    @Autowired
-    private ToolsHelper toolsHelper;
     @Autowired
     private HandleClient handleClient;
 
@@ -64,7 +62,7 @@ public class HandleHelper {
         String idHandle = null;
 
         while (duplicateId) {
-            idHandle = toolsHelper.getNewId(10, false, false);
+            idHandle = ToolsHelper.getNewId(10, false, false);
             if (!handleClient.isHandleExist(nodePreference.getUrlApiHandle(),
                     nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
                 duplicateId = false;

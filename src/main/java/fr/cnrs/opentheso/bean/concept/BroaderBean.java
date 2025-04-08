@@ -1,26 +1,21 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -50,10 +45,7 @@ public class BroaderBean implements Serializable {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
-
-    @Autowired
-    private ValidateActionHelper validateActionHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private SearchHelper searchHelper;
@@ -119,7 +111,7 @@ public class BroaderBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        if (!validateActionHelper.isAddRelationBTValid(selectedTheso.getCurrentIdTheso(),
+        if (isAddRelationBTValid(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), searchSelected.getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -160,12 +152,13 @@ public class BroaderBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////         
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -231,19 +224,18 @@ public class BroaderBean implements Serializable {
             }
         }
 
-        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////          
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -262,6 +254,14 @@ public class BroaderBean implements Serializable {
 
         PrimeFaces.current().executeScript("srollToSelected();");
         PrimeFaces.current().executeScript("PF('deleteBroaderLink').hide();");
+    }
+
+    private boolean isAddRelationBTValid(  String idTheso, String idConcept, String idConceptToAdd) {
+
+        return idConcept.equalsIgnoreCase(idConceptToAdd)
+                || relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)
+                || relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)
+                || relationsHelper.isConceptHaveBrother(idConcept, idConceptToAdd, idTheso);
     }
 
 }

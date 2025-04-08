@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
@@ -57,7 +57,7 @@ public class RoleOnThesoBean implements Serializable {
     private PreferencesHelper preferencesHelper;
     private RoleRepository roleRepository;
     private ThesaurusRepository thesaurusRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository2;
 
     private List<ThesoModel> listTheso;
     private Map<String, String> listThesoAsAdmin;
@@ -83,7 +83,7 @@ public class RoleOnThesoBean implements Serializable {
                            StatisticHelper statisticHelper,
                            PreferencesHelper preferencesHelper,
                            ThesaurusRepository thesaurusRepository,
-                           UserGroupLabelRepository2 userGroupLabelRepository2) {
+                           UserGroupLabelRepository userGroupLabelRepository2) {
 
         this.workLanguage = workLanguage;
         this.languageBean = languageBean;

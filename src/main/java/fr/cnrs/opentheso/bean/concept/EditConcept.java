@@ -1,22 +1,28 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.repositories.*;
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -55,7 +61,7 @@ public class EditConcept implements Serializable {
     @Autowired @Lazy private HandleService handleService;
 
     @Autowired
-    private DeprecateHelper deprecateHelper;
+    private DeprecateService deprecateHelper;
 
     @Autowired
     private TermHelper termHelper;
@@ -64,7 +70,7 @@ public class EditConcept implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private CsvWriteHelper csvWriteHelper;
@@ -302,11 +308,14 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////          
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
@@ -422,11 +431,14 @@ public class EditConcept implements Serializable {
 
         conceptHelper.updateDateOfConcept(idTheso,
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang, currentUser);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
@@ -573,11 +585,14 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConcept, selectedTheso.getCurrentIdTheso());
-        ///////////////        
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConcept)
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang(), currentUser);
         
         
@@ -620,14 +635,15 @@ public class EditConcept implements Serializable {
             }
         }
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                idConcept, idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConcept, selectedTheso.getCurrentIdTheso());
-        ///////////////        
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, idUser);
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConcept)
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang(), currentUser);
         
         if (tree.getSelectedNode() != null) {
@@ -668,12 +684,14 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConceptDeprecated, selectedTheso.getCurrentIdTheso());
-        ///////////////        
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConceptDeprecated)
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang(), currentUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -711,12 +729,14 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConceptDeprecated, selectedTheso.getCurrentIdTheso());
-        ///////////////        
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConceptDeprecated)
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
+
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang(), currentUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");

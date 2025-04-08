@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -27,7 +27,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.services.connexion.LdapService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -87,7 +86,7 @@ public class CurrentUser implements Serializable {
     private UserGroupLabelRepository userGroupLabelRepository;
 
     @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository2;
 
     @Autowired
     private TreeGroups treeGroups;
@@ -308,7 +307,8 @@ public class CurrentUser implements Serializable {
 
         // liste des projets de l'utilisateur
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListProjects(userGroupLabelRepository.getAllProjects());
+            //SELECT DISTINCT label.*, lower(label.label_group) AS sorted_label_group FROM user_group_label label ORDER BY lower(label.label_group) ASC
+            userPermissions.setListProjects(userGroupLabelRepository.findAll());
         } else {  
             userPermissions.setListProjects(userHelper.getProjectOfUser(nodeUser.getIdUser()));
             setListProjectForUser();
@@ -513,7 +513,7 @@ public class CurrentUser implements Serializable {
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
-        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByThesoStatus(false));
+        userPermissions.setListProjects(userGroupLabelRepository.findProjectsByThesaurusStatus(false));
         
         // contrôle si le projet actuel est dans la liste, sinon, on initialise le projet sélectionné à -1
         if(userPermissions.getSelectedProject() != -1){

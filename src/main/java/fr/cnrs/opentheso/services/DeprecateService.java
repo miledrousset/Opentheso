@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.repositories;
+package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,7 @@ import javax.sql.DataSource;
 @Data
 @Slf4j
 @Service
-public class DeprecateHelper {
+public class DeprecateService {
 
     @Autowired
     private DataSource dataSource;

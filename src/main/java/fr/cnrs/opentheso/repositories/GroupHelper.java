@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import jakarta.faces.model.SelectItem;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
@@ -41,9 +43,6 @@ public class GroupHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private ToolsHelper toolsHelper;
 
     @Autowired
     private HandleHelper handleHelper;
@@ -377,7 +376,7 @@ public class GroupHelper implements Serializable {
         String idArk = getIdArkOfGroup(idGroup, idTheso);
         
         if(StringUtils.isEmpty(idArk)) {
-            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+            idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
             idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
         }
         return updateArkIdOfGroup(idGroup, idTheso, idArk);

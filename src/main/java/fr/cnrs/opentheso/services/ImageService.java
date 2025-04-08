@@ -1,0 +1,91 @@
+package fr.cnrs.opentheso.services;
+
+import fr.cnrs.opentheso.entites.ImageExterne;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.repositories.ImagesRepository;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+
+@Service
+public class ImageService {
+
+    private ImagesRepository imagesRepository;
+
+
+    public ImageService(ImagesRepository imagesRepository) {
+        this.imagesRepository = imagesRepository;
+    }
+
+
+    public List<NodeImage> getAllExternalImages(String idThesaurus, String idConcept) {
+
+        var result = imagesRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        return CollectionUtils.isNotEmpty(result)
+                ? result.stream().map(element -> new NodeImage(element.getId(), element.getIdConcept(),
+                        element.getIdThesaurus(), element.getImageName(), element.getImageCreator(),
+                        element.getImageCopyright(), element.getExternalUri(), ""))
+                .toList()
+                : List.of();
+    }
+
+    public List<NodeImage> findAllByIdConceptAndIdThesaurus(String idConcept, String idThesaurus) {
+
+        var result = imagesRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+
+        return result.stream().map(element -> NodeImage.builder()
+                    .idConcept(element.getIdConcept())
+                    .idThesaurus(element.getIdThesaurus())
+                    .imageName(element.getImageName())
+                    .copyRight(element.getImageCopyright())
+                    .uri(element.getExternalUri())
+                    .build()).
+                toList();
+    }
+
+    public void deleteImages(String idThesaurus, String idConcept, String url) {
+        if (StringUtils.isEmpty(url)) {
+            imagesRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
+        } else {
+            imagesRepository.deleteByIdThesaurusAndIdConceptAndExternalUri(idThesaurus, idConcept, url);
+        }
+    }
+
+    public void updateExternalImage(String idConcept, String idThesaurus, NodeImage nodeImage) {
+
+        nodeImage.setUri(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getUri().trim()));
+        nodeImage.setImageName(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getImageName()));
+        nodeImage.setCopyRight(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getCopyRight()));
+        nodeImage.setCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getCreator()));
+
+        var image = ImageExterne.builder()
+                .id(nodeImage.getId())
+                .imageCreator(nodeImage.getCreator())
+                .externalUri(nodeImage.getUri())
+                .imageName(nodeImage.getImageName())
+                .imageCopyright(nodeImage.getCopyRight())
+                .idThesaurus(idThesaurus)
+                .idConcept(idConcept)
+                .build();
+
+        imagesRepository.save(image);
+    }
+
+    public ImageExterne addExternalImage(String idConcept, String idThesaurus, String imageName, String copyRight,
+                                 String uri, String creator, int idUser) {
+
+        var image = ImageExterne.builder()
+                .imageCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(creator))
+                .idUser(idUser)
+                .idConcept(idConcept)
+                .idThesaurus(idThesaurus)
+                .imageName(fr.cnrs.opentheso.utils.StringUtils.convertString(imageName))
+                .imageCopyright(fr.cnrs.opentheso.utils.StringUtils.convertString(copyRight))
+                .externalUri(uri.trim())
+                .build();
+
+        return imagesRepository.save(image);
+    }
+}

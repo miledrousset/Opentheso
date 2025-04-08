@@ -7,21 +7,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import fr.cnrs.opentheso.entites.ExternalResource;
+import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.DeprecateHelper;
-import fr.cnrs.opentheso.repositories.ExternalResourcesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
+import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -59,6 +59,10 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.RelationService;
+
 import java.sql.Statement;
 import java.util.Date;
 
@@ -66,7 +70,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,19 +93,16 @@ public class ImportRdf4jHelper {
     private DataSource dataSource;
 
     @Autowired
-    private DeprecateHelper deprecateHelper;
+    private DeprecateService deprecateHelper;
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private CandidatDao candidatDao;
 
     @Autowired
     private GroupHelper groupHelper;
-
-    @Autowired
-    private GpsHelper gpsHelper;
 
     @Autowired
     private AlignmentHelper alignmentHelper;
@@ -123,13 +123,13 @@ public class ImportRdf4jHelper {
     private PreferencesHelper preferencesHelper;
 
     @Autowired
-    private ExternalResourcesHelper externalResourcesHelper;
+    private ExternalResourcesRepository externalResourcesRepository;
 
     @Autowired
     private UserHelper userHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ThesaurusDcTermRepository thesaurusDcTermRepository;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -138,7 +138,13 @@ public class ImportRdf4jHelper {
     private FacetHelper facetHelper;
 
     @Autowired
+    private RelationService relationService;
+
+    @Autowired
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
+
+    @Autowired
+    private GpsService gpsService;
 
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
@@ -246,7 +252,13 @@ public class ImportRdf4jHelper {
 
             // intégration des métadonnées DC
             for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
-                dcElementHelper.addDcElementThesaurus(dcElement, idTheso1);
+                thesaurusDcTermRepository.save(ThesaurusDcTerm.builder()
+                        .idThesaurus(idTheso1)
+                        .name(dcElement.getName())
+                        .value(dcElement.getValue())
+                        .language(dcElement.getLanguage())
+                        .dataType(dcElement.getType())
+                        .build());
             }
 
             // boucler pour les traductions
@@ -935,8 +947,9 @@ public class ImportRdf4jHelper {
             if (!fr.cnrs.opentheso.utils.StringUtils.urlValidator(externalRelation)) {
                 return;
             }
-            if (!externalResourcesHelper.addExternalResource(idConcept, idTheso, "", externalRelation)) {
-            }
+
+            externalResourcesRepository.save(ExternalResource.builder().idThesaurus(idTheso).idConcept(idConcept)
+                    .externalUri(externalRelation).build());
         }
     }
 
@@ -1175,11 +1188,11 @@ public class ImportRdf4jHelper {
         for (HierarchicalRelationship hierarchicalRelationship : acs.hierarchicalRelationships) {
             switch (hierarchicalRelationship.getRole()) {
                 case "NT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1188,11 +1201,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1202,11 +1215,11 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "BT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1215,11 +1228,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "NT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1229,11 +1242,11 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "RT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1242,11 +1255,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "RT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1256,11 +1269,11 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTP":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1269,11 +1282,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTP",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1283,11 +1296,11 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTG":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1296,11 +1309,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTG",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1310,11 +1323,11 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTI":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1323,11 +1336,11 @@ public class ImportRdf4jHelper {
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTI",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
@@ -1363,7 +1376,7 @@ public class ImportRdf4jHelper {
             for (NodeGps nodeGps : acs.nodeGps) {
                 if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
                     // insertion des données GPS
-                    gpsHelper.insertCoordonees(acs.concept.getIdConcept(), idTheso,
+                    gpsService.insertCoordinates(acs.concept.getIdConcept(), idTheso,
                             nodeGps.getLatitude(), nodeGps.getLongitude());
                 }
             }
@@ -1377,7 +1390,7 @@ public class ImportRdf4jHelper {
 
         // ajout des images externes URI
         for (NodeImage nodeImage : acs.nodeImages) {
-            imagesHelper.addExternalImage(acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
+            imageService.addExternalImage(acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
         }
 
         if (acs.conceptStatus.equalsIgnoreCase("dep")) {

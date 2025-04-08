@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.users.UserRoleGroupService;
@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 
 import jakarta.faces.application.FacesMessage;
@@ -35,7 +36,7 @@ public class NewProjectBean implements Serializable {
     private MyProjectBean myProjectBean;
     private CurrentUser currentUser;
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private UserRoleGroupService userRoleGroupService;
  
     private String projectName;
@@ -45,7 +46,7 @@ public class NewProjectBean implements Serializable {
     @Inject
     public NewProjectBean(MyProjectBean myProjectBean, CurrentUser currentUser,
                           UserGroupThesaurusRepository userGroupThesaurusRepository,
-                          UserGroupLabelRepository2 userGroupLabelRepository,
+                          UserGroupLabelRepository userGroupLabelRepository,
                           UserRoleGroupService userRoleGroupService) {
 
         this.myProjectBean = myProjectBean;
@@ -59,6 +60,7 @@ public class NewProjectBean implements Serializable {
         projectName = null;
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeProjectOfUser = userGroupLabelRepository.findAll();
+            listeProjectOfUser.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             return;
         }
         listeProjectOfUser = userGroupLabelRepository.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);

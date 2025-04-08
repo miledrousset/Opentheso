@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.RoleRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
@@ -34,7 +34,7 @@ public class MyProjectBean implements Serializable {
     private UserHelper userHelper;
     private RoleRepository roleRepository;
     private UserRoleGroupRepository userRoleGroupRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
 
     private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
     private Map<String, String> listeGroupsOfUser;
@@ -45,7 +45,7 @@ public class MyProjectBean implements Serializable {
 
     @Inject
     public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage,
-                         UserGroupLabelRepository2 userGroupLabelRepository,
+                         UserGroupLabelRepository userGroupLabelRepository,
                          RoleRepository roleRepository,
                          UserRoleGroupRepository userRoleGroupRepository,
                          CurrentUser currentUser, UserHelper userHelper) {

@@ -1,9 +1,6 @@
 package fr.cnrs.opentheso.bean.importexport;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -24,27 +21,23 @@ import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.DeprecateHelper;
+import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.event.PhaseId;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -56,28 +49,37 @@ import fr.cnrs.opentheso.services.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.event.ActionEvent;
-import jakarta.faces.event.AjaxBehaviorEvent;
+import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+
+import jakarta.inject.Named;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.PhaseId;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ActionEvent;
+import jakarta.faces.event.AjaxBehaviorEvent;
+import jakarta.faces.application.FacesMessage;
 
 /**
  *
@@ -125,7 +127,7 @@ public class ImportFileBean implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -134,13 +136,13 @@ public class ImportFileBean implements Serializable {
     private PreferencesHelper preferencesHelper;
 
     @Autowired
-    private DeprecateHelper deprecateHelper;
+    private DeprecateService deprecateHelper;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private TermHelper termHelper;
@@ -152,7 +154,7 @@ public class ImportFileBean implements Serializable {
     private ImportRdf4jHelper importRdf4jHelper;
 
     @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository2;
 
     private double progress = 0;
     private double progressStep = 0;
@@ -1458,14 +1460,14 @@ public class ImportFileBean implements Serializable {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
                 if (csvImportHelper.updateConcept(idTheso, conceptObject, idUser1)) {
                     total++;
-                    conceptHelper.updateDateOfConcept(
-                            idTheso, conceptObject.getIdConcept(), idUser1);
+                    conceptHelper.updateDateOfConcept(idTheso, conceptObject.getIdConcept(), idUser1);
 
-                    ///// insert DcTermsData to add contributor
-                    dcElementHelper.addDcElementConcept(
-                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                            conceptObject.getIdConcept(), idTheso);
-                    ///////////////
+                    conceptDcTermRepository.save(ConceptDcTerm.builder()
+                            .name(DCMIResource.CONTRIBUTOR)
+                            .value(currentUser.getNodeUser().getName())
+                            .idConcept(conceptObject.getIdConcept())
+                            .idThesaurus(idTheso)
+                            .build());
                 }
             }
 
@@ -1768,11 +1770,13 @@ public class ImportFileBean implements Serializable {
                         selectedTheso.getCurrentIdTheso(),
                         idConcept, idUser1);
 
-                ///// insert DcTermsData to add contributor
-                dcElementHelper.addDcElementConcept(
-                        new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                        idConcept, selectedTheso.getCurrentIdTheso());
-                ///////////////
+                conceptDcTermRepository.save(ConceptDcTerm.builder()
+                        .name(DCMIResource.CONTRIBUTOR)
+                        .value(currentUser.getNodeUser().getName())
+                        .idConcept(idConcept)
+                        .idThesaurus(selectedTheso.getCurrentIdTheso())
+                        .build());
+
                 total++;
             }
             log.error(csvImportHelper.getMessage());
@@ -1871,13 +1875,14 @@ public class ImportFileBean implements Serializable {
                 }
                 if (csvImportHelper.updateConceptValueByNewValue(idTheso, nodeReplaceValueByValue, idUser1)) {
                     total++;
-                    conceptHelper.updateDateOfConcept(idTheso, idConcept,
-                            currentUser.getNodeUser().getIdUser());
-                    ///// insert DcTermsData to add contributor
-                    dcElementHelper.addDcElementConcept(
-                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                            idConcept, idTheso);
-                    ///////////////
+                    conceptHelper.updateDateOfConcept(idTheso, idConcept, currentUser.getNodeUser().getIdUser());
+
+                    conceptDcTermRepository.save(ConceptDcTerm.builder()
+                            .name(DCMIResource.CONTRIBUTOR)
+                            .value(currentUser.getNodeUser().getName())
+                            .idConcept(idConcept)
+                            .idThesaurus(idTheso)
+                            .build());
                 }
             }
             log.error(csvImportHelper.getMessage());
@@ -2475,16 +2480,9 @@ public class ImportFileBean implements Serializable {
                         error.append(uri);
                         continue;
                     }
-                    if (!imagesHelper.addExternalImage(
-                            idConcept, selectedTheso.getCurrentIdTheso(),
-                            nodeImage.getImageName(),
-                            nodeImage.getCopyRight(),
-                            nodeImage.getUri(),
-                            nodeImage.getCreator(),
-                            currentUser.getNodeUser().getIdUser())) {
-                        error.append("image non insérée: ");
-                        error.append(nodeImage.getUri());
-                    }
+                    imageService.addExternalImage(idConcept, selectedTheso.getCurrentIdTheso(), nodeImage.getImageName(),
+                            nodeImage.getCopyRight(), nodeImage.getUri(), nodeImage.getCreator(),
+                            currentUser.getNodeUser().getIdUser());
                     total++;
                 }
             }

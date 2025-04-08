@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -74,7 +74,7 @@ public class PropositionService implements Serializable {
     private MailBean mailBean;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -507,14 +507,14 @@ public class PropositionService implements Serializable {
 
         }
 
-        conceptHelper.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(),
-                currentUser.getNodeUser().getIdUser());
+        conceptHelper.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(), currentUser.getNodeUser().getIdUser());
 
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
-        ///////////////  
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(propositionSelected.getIdConcept())
+                .idThesaurus(propositionSelected.getIdTheso())
+                .build());
 
         propositionHelper.updateProposition(PropositionStatusEnum.APPROUVER.name(), currentUser.getNodeUser().getName(),
                 propositionSelected.getId(), commentaireAdmin);

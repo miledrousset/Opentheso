@@ -1,14 +1,12 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.ExternalImagesHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -19,7 +17,6 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -34,6 +31,8 @@ import fr.cnrs.opentheso.client.alignement.IdRefHelper;
 import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
 
 import jakarta.inject.Named;
@@ -76,6 +75,9 @@ public class AlignmentBean implements Serializable {
     private ConceptView conceptView;
 
     @Autowired
+    private ImageService imageService;
+
+    @Autowired
     private SelectedTheso selectedTheso;
 
     @Autowired
@@ -89,9 +91,6 @@ public class AlignmentBean implements Serializable {
 
     @Autowired
     private CurrentUser currentUser;
-
-    @Autowired
-    private ExternalImagesHelper externalImagesHelper;
 
     @Autowired
     private TermHelper termHelper;
@@ -109,13 +108,13 @@ public class AlignmentBean implements Serializable {
     private AlignmentHelper alignmentHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
-    private GpsHelper gpsHelper;
+    private GpsService gpsService;
 
     private boolean withLang;
     private boolean withNote;
@@ -163,9 +162,9 @@ public class AlignmentBean implements Serializable {
     private String conceptValueForAlignment;
     private int counter = 0; // initialisation du compteur
 
-    private ArrayList<NodeTermTraduction> nodeTermTraductions;
-    private ArrayList<NodeNote> nodeNotes;
-    private ArrayList<NodeImage> nodeImages;
+    private List<NodeTermTraduction> nodeTermTraductions;
+    private List<NodeNote> nodeNotes;
+    private List<NodeImage> nodeImages;
 
     // résultat des alignements
     private ArrayList<SelectedResource> traductionsOfAlignment;
@@ -546,13 +545,14 @@ public class AlignmentBean implements Serializable {
         //addImages__(idTheso, idConcept, idUser);
         if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
             for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
-                externalImagesHelper.addExternalImage(idConcept, idTheso, selectedResource.getLocalValue(),
-                        alignementSource.getSource(), selectedResource.getGettedValue(), "");
+                imageService.addExternalImage(idConcept, idTheso, selectedResource.getLocalValue(),
+                        alignementSource.getSource(), selectedResource.getGettedValue(), "",
+                        currentUser.getNodeUser().getIdUser());
             }
         }
 
         if (alignment.getThesaurus_target().equalsIgnoreCase("GeoNames")) {
-            gpsHelper.insertCoordonees(idConcept, idTheso, alignment.getLat(), alignment.getLng());
+            gpsService.insertCoordinates(idConcept, idTheso, alignment.getLat(), alignment.getLng());
         }
     }
 
@@ -1200,7 +1200,7 @@ public class AlignmentBean implements Serializable {
     private void getValuesOfLocalConcept(String idTheso, String idConcept) {
         nodeTermTraductions = termHelper.getAllTraductionsOfConcept(idConcept, idTheso);
         nodeNotes = noteHelper.getListNotesAllLang(idConcept, idTheso);
-        nodeImages = externalImagesHelper.getExternalImages(idConcept, idTheso);
+        nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idTheso);
         nodeAlignmentSmall = alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idTheso);
     }
 
@@ -1513,10 +1513,13 @@ public class AlignmentBean implements Serializable {
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
         conceptHelper.updateDateOfConcept(idTheso, idConcept, idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConcept, idTheso);
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConcept)
+                .idThesaurus(idTheso)
+                .build());
     }
 
     /**
@@ -1525,9 +1528,7 @@ public class AlignmentBean implements Serializable {
     private boolean addGps__(String idTheso, String idConcept) {
 
         // ajout de l'alignement séléctionné
-        if (!gpsHelper.insertCoordonees(idConcept, idTheso, selectedNodeAlignment.getLat(),
-                selectedNodeAlignment.getLng())) {
-
+        if (!gpsService.insertCoordinates(idConcept, idTheso, selectedNodeAlignment.getLat(), selectedNodeAlignment.getLng())) {
             alignementResult = "Erreur pendant l'ajout des coordonnées GPS : ";
             alignmentInProgress = false;
             selectedNodeAlignment = null;
@@ -1638,12 +1639,9 @@ public class AlignmentBean implements Serializable {
 
         for (SelectedResource selectedResource : imagesOfAlignment) {
             if (selectedResource.isSelected()) {
-                if (!externalImagesHelper.addExternalImage(
-                        idConcept, idTheso,
-                        conceptValueForAlignment,
-                        selectedAlignement,
-                        selectedResource.getGettedValue(),
-                        "")) {
+                if (ObjectUtils.isEmpty(imageService.addExternalImage(idConcept, idTheso, conceptValueForAlignment,
+                        selectedAlignement, selectedResource.getGettedValue(), "",
+                         currentUser.getNodeUser().getIdUser()))) {
                     error = true;
                     alignementResult = alignementResult + ": Erreur dans l'ajout des images";
                 }

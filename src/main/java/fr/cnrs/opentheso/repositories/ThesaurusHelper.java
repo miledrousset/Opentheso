@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.utils.StringUtils;
 
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,6 @@ public class ThesaurusHelper implements Serializable {
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private ToolsHelper toolsHelper;
 
     @Autowired
     private PreferencesHelper preferencesHelper;
@@ -120,9 +118,9 @@ public class ThesaurusHelper implements Serializable {
 
         try (var conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
             if (identifierType.equalsIgnoreCase("1")) { // identifiants types alphanumérique
-                idThesaurus = toolsHelper.getNewId(10, false, false);
+                idThesaurus = ToolsHelper.getNewId(10, false, false);
                 while (isThesaurusExiste(conn, idThesaurus)) {
-                    idThesaurus = toolsHelper.getNewId(10, false, false);
+                    idThesaurus = ToolsHelper.getNewId(10, false, false);
                 }
             } else {
               //  stmt.executeQuery("select max(id) from thesaurus");

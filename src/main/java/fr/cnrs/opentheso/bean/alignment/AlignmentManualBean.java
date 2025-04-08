@@ -1,14 +1,13 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -43,7 +42,7 @@ public class AlignmentManualBean implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private AlignmentHelper alignmentHelper;
@@ -273,14 +272,14 @@ public class AlignmentManualBean implements Serializable {
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(
-                idTheso,
-                idConcept, idUser);      
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                idConcept, idTheso);
-        ///////////////        
+        conceptHelper.updateDateOfConcept(idTheso, idConcept, idUser);
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(idConcept)
+                .idThesaurus(idTheso)
+                .build());
     }
     
 

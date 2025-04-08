@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -29,5 +31,14 @@ public class UserGroupLabel implements Serializable {
 
     @Column(name = "label_group")
     private String label;
+
+    @OneToMany(mappedBy = "idGroup")
+    private List<UserGroupThesaurus> thesaurusLinks;
+
+
+    public UserGroupLabel(Integer id, String label) {
+        this.id = id;
+        this.label = label;
+    }
 
 }

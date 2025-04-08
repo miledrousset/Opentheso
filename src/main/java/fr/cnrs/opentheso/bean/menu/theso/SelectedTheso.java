@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import fr.cnrs.opentheso.services.IpAddressService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
@@ -39,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,8 +84,6 @@ public class SelectedTheso implements Serializable {
 
     @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
-
-    @Autowired private IpAddressService ipAddressService;
 
     private List<UserGroupLabel> projects;
 
@@ -280,12 +278,13 @@ public class SelectedTheso implements Serializable {
             currentUser.initAllTheso();
             projectIdSelected = ""+currentUser.getUserPermissions().getSelectedProject();
             selectedIdTheso = currentUser.getUserPermissions().getSelectedTheso();
-            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+            projectsList = userGroupLabelRepository.findProjectsByThesaurusStatus(false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
-                projectsList = userGroupLabelRepository.getAllProjects();
+                projectsList = userGroupLabelRepository.findAll();
+                projectsList.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             } else {
-                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+                projectsList = userGroupLabelRepository.findProjectsByUserId(currentUser.getNodeUser().getIdUser());
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {

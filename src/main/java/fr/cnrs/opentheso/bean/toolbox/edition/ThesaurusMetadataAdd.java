@@ -1,41 +1,47 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.collections4.CollectionUtils;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.RowEditEvent;
 
 
 @Data
-@Named(value = "thesaurusMetadataAdd")
 @SessionScoped
+@AllArgsConstructor
+@Named(value = "thesaurusMetadataAdd")
 public class ThesaurusMetadataAdd implements Serializable{
-    private List<DcElement> dcElements;
-    private List<String> dcmiResource; 
-    private List<String> dcmiTypes;     
-    private String idTheso;
-    
-    
 
-    @Autowired
-    private DcElementHelper dcElementHelper;
-    
+    private final ThesaurusDcTermRepository thesaurusDcTermRepository;
+
+    private List<DcElement> dcElements;
+    private List<String> dcmiResource, dcmiTypes;
+    private String idTheso;
+
+
+    @Inject
+    public ThesaurusMetadataAdd(ThesaurusDcTermRepository thesaurusDcTermRepository) {
+        this.thesaurusDcTermRepository = thesaurusDcTermRepository;
+    }
+
     public void init(String idTheso1) {
 
-        dcElements = dcElementHelper.getDcElementOfThesaurus(idTheso1);
-        if(dcElements == null || dcElements.isEmpty())
-            dcElements = new ArrayList<>();
+        dcElements = getThesaurusMetadata(idTheso1);
         dcmiResource = new DCMIResource().getAllResources();
         dcmiTypes = new DCMIResource().getAllTypes();        
         this.idTheso = idTheso1;
@@ -47,20 +53,32 @@ public class ThesaurusMetadataAdd implements Serializable{
      * @return 
      */
     public List<DcElement> getThesaurusMetadata(String idTheso){
-        return dcElementHelper.getDcElementOfThesaurus(idTheso);
+        var tmp = thesaurusDcTermRepository.findAllByIdThesaurus(idTheso);
+        if (CollectionUtils.isNotEmpty(tmp)) {
+            return tmp.stream().map(element -> DcElement.builder()
+                    .id(element.getId().intValue())
+                    .name(element.getName())
+                    .value(element.getValue())
+                    .language(element.getLanguage())
+                    .type(element.getDataType())
+                    .build()).toList();
+        } else {
+            return new ArrayList<>();
+        }
     }
     
     public void initlanguage(DcElement dcElement){
         if(!StringUtils.isEmpty(dcElement.getType()))
             dcElement.setLanguage("");
     }
+
     public void initType(DcElement dcElement){
         if(!StringUtils.isEmpty(dcElement.getLanguage()))
             dcElement.setType("");
     }
 
     public void deleteThesoMetadata(DcElement dcElement){
-        dcElementHelper.deleteDcElementThesaurus(dcElement, idTheso);
+        thesaurusDcTermRepository.deleteDcElementThesaurus(dcElement.getId(), idTheso);
         init(idTheso);
         FacesMessage msg = new FacesMessage("Dcterms deleted", "");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
@@ -75,27 +93,30 @@ public class ThesaurusMetadataAdd implements Serializable{
         }
 
         if(dcElementTemp.getId() == -1) {
-            int id = dcElementHelper.addDcElementThesaurus(dcElementTemp, idTheso);
-            if(id != -1) {
-                dcElementTemp.setId(id);
-            } else {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Dcterms update failed", dcElementTemp.getValue());
-                FacesContext.getCurrentInstance().addMessage(null, msg);                
-            }
+            var tmp = thesaurusDcTermRepository.save(ThesaurusDcTerm.builder()
+                    .idThesaurus(idTheso)
+                    .name(dcElementTemp.getName())
+                    .value(dcElementTemp.getValue())
+                    .language(dcElementTemp.getLanguage())
+                    .dataType(dcElementTemp.getType())
+                    .build());
+            dcElementTemp.setId(tmp.getId().intValue());
         } else {
-            dcElementHelper.updateDcElementThesaurus(dcElementTemp, idTheso);
+            var tmp = thesaurusDcTermRepository.findById(dcElementTemp.getId());
+            if (tmp.isPresent()) {
+                tmp.get().setName(dcElementTemp.getName());
+                tmp.get().setLanguage(dcElementTemp.getLanguage());
+                tmp.get().setValue(dcElementTemp.getValue());
+                tmp.get().setDataType(dcElementTemp.getType());
+                thesaurusDcTermRepository.save(tmp.get());
+            }
         } 
         FacesMessage msg = new FacesMessage("Dcterms updated", dcElementTemp.getValue());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void onRowCancel(RowEditEvent<DcElement> event) {
-    }
-
     public void onAddNew() {
         DcElement dcElement = new DcElement("", "", "","");
         dcElements.add(dcElement);
-    }    
-
-
+    }
 }

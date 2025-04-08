@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.PathHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -28,6 +27,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
 import jakarta.inject.Named;
@@ -95,7 +95,7 @@ public class ConceptView implements Serializable {
     private PathHelper pathHelper;
 
     @Autowired
-    private GpsHelper gpsHelper;
+    private GpsService gpsService;
 
     @Autowired
     private LanguageBean languageBean;
@@ -909,7 +909,7 @@ public class ConceptView implements Serializable {
         gps.setIdConcept(nodeFullConcept.getIdentifier());
         gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
-        gpsHelper.saveNewGps(gps);
+        gpsService.saveNewGps(gps);
         mapScripte = createMap(idThesaurus);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
@@ -922,16 +922,16 @@ public class ConceptView implements Serializable {
 
         if (StringUtils.isEmpty(gpsList)) {
             nodeFullConcept.setGps(null);
-            gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
+            gpsService.deleteGpsByConceptIdAndThesaurusId(nodeFullConcept.getIdentifier(), idThesaurus);
         } else {
             List<Gps> gpsListTmps = readGps(gpsList, idThesaurus, nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
                 nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
                 gpsModeSelected = getGpsMode(gpsListTmps);
-                gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
+                gpsService.deleteGpsByConceptIdAndThesaurusId(nodeFullConcept.getIdentifier(), idThesaurus);
                 for (Gps gps : gpsListTmps) {
-                    gpsHelper.saveNewGps(gps);
+                    gpsService.saveNewGps(gps);
                 }
             } else {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");

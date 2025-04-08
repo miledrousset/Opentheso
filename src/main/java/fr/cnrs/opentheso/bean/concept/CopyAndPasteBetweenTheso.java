@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.CopyAndPasteBetweenThesoHelper;
+import fr.cnrs.opentheso.services.CopyAndPasteBetweenThesoService;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 
@@ -37,7 +37,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
 
     @Autowired
-    private CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper;
+    private CopyAndPasteBetweenThesoService copyAndPasteBetweenThesoHelper;
 
     @Autowired
     private ConceptHelper conceptHelper;

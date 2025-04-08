@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.forgetpassword;
 
-import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -20,15 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 public class ForgetPassBean implements Serializable {
 
     private MailBean mailBean;
-    private ToolsHelper toolsHelper;
     private UserRepository userRepository;
     private String sendTo;
 
 
-    public ForgetPassBean(MailBean mailBean, ToolsHelper toolsHelper, UserRepository userRepository) {
+    public ForgetPassBean(MailBean mailBean, UserRepository userRepository) {
 
         this.mailBean = mailBean;
-        this.toolsHelper = toolsHelper;
         this.userRepository = userRepository;
     }
 
@@ -42,7 +40,7 @@ public class ForgetPassBean implements Serializable {
         var user = userRepository.findByMail(sendTo);
         if (user.isPresent()) {
 
-            var password = toolsHelper.getNewId(10, false, false);
+            var password = ToolsHelper.getNewId(10, false, false);
             var passwordMD5 = MD5Password.getEncodedPassword(password);
             var message = "Veuillez-trouver ci-joint vos coordonnées pour vous connecter à opentheso : " + "\n"
                     + "Votre pseudo : " + user.get().getUsername() + "\n votre passe : " + password;

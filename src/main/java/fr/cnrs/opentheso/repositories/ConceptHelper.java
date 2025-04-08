@@ -10,12 +10,13 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.*;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.nodes.*;
-import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.terms.*;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
@@ -27,6 +28,9 @@ import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
+import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
@@ -64,7 +68,7 @@ public class ConceptHelper implements Serializable {
     private DataSource dataSource;
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private CandidatDao candidatDao;
@@ -94,19 +98,19 @@ public class ConceptHelper implements Serializable {
     private NoteHelper noteHelper;
 
     @Autowired
-    private DeprecateHelper deprecateHelper;
+    private DeprecateService deprecateHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
-    private ExternalResourcesHelper externalResourcesHelper;
+    private ExternalResourcesRepository externalResourcesRepository;
 
     @Autowired
     private MessageCandidatHelper messageCandidatHelper;
 
     @Autowired
-    private GpsHelper gpsHelper;
+    private GpsService gpsService;
 
     @Autowired
     private FacetHelper facetHelper;
@@ -4217,12 +4221,17 @@ public class ConceptHelper implements Serializable {
         nodeConceptExport.setNodeNotes(nodeNotes);
 
         //récupération des coordonnées GPS
-        List<NodeGps> nodeGps = gpsHelper.getCoordinate(idConcept, idThesaurus);
+        List<Gps> nodeGps = gpsService.findByIdConceptAndIdThesoOrderByPosition(idConcept, idThesaurus);
         if (CollectionUtils.isNotEmpty(nodeGps)) {
-            nodeConceptExport.setNodeGps(nodeGps);
+            nodeConceptExport.setNodeGps(nodeGps.stream().map(element -> NodeGps.builder()
+                            .position(element.getPosition())
+                            .longitude(element.getLongitude())
+                            .latitude(element.getLatitude())
+                            .build())
+                    .toList());
         }
 
-        ArrayList<NodeImage> nodeImages = imagesHelper.getExternalImages(idConcept, idThesaurus);
+        List<NodeImage> nodeImages = imageService.getAllExternalImages(idConcept, idThesaurus);
         if (nodeImages != null) {
             nodeConceptExport.setNodeImages(nodeImages);
         }
@@ -4322,10 +4331,20 @@ public class ConceptHelper implements Serializable {
 
         nodeConcept.setNodeAlignments(alignmentHelper.getAllAlignmentOfConcept(idConcept, idThesaurus));
 
-        nodeConcept.setNodeimages(imagesHelper.getExternalImages(idConcept, idThesaurus));
+        nodeConcept.setNodeimages(imageService.getAllExternalImages(idConcept, idThesaurus));
 
         //gestion des ressources externes
-        nodeConcept.setNodeExternalResources(externalResourcesHelper.getExternalResources(idConcept, idThesaurus));
+        var externalResources = externalResourcesRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        if (CollectionUtils.isNotEmpty(externalResources)) {
+            nodeConcept.setNodeExternalResources(externalResources.stream()
+                    .map(element -> NodeImage.builder()
+                            .idConcept(element.getIdConcept())
+                            .idThesaurus(element.getIdThesaurus())
+                            .imageName(element.getDescription())
+                            .uri(element.getExternalUri())
+                            .build())
+                    .toList());
+        }
 
         // concepts qui remplacent un concept déprécié
         nodeConcept.setReplacedBy(deprecateHelper.getAllReplacedBy(idThesaurus, idConcept, idLang, this));
@@ -4333,7 +4352,21 @@ public class ConceptHelper implements Serializable {
         nodeConcept.setReplaces(deprecateHelper.getAllReplaces(idThesaurus, idConcept, idLang, this));
 
         /// récupération des Méta-données DC_terms
-        nodeConcept.setDcElements(dcElementHelper.getDcElementOfConcept(idThesaurus, idConcept));
+        var conceptDcTerms = conceptDcTermRepository.findAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
+        if (CollectionUtils.isNotEmpty(conceptDcTerms)) {
+            nodeConcept.setDcElements(conceptDcTerms.stream()
+                    .map(element -> {
+                        DcElement dcElement = new DcElement();
+                        dcElement.setName(element.getName());
+                        dcElement.setValue(element.getValue());
+                        dcElement.setLanguage(element.getLanguage());
+                        dcElement.setType(element.getDataType());
+                        return dcElement;
+                    })
+                    .toList());
+        }
+
+
 
         return nodeConcept;
     }

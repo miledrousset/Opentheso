@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -9,8 +11,6 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.CandidateHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
@@ -23,7 +23,6 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.repositories.UserRepository;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
 import fr.cnrs.opentheso.repositories.candidats.RelationDao;
@@ -33,11 +32,11 @@ import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.concept.ImageBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.candidats.CandidatService;
 
 import java.io.Serializable;
@@ -61,7 +60,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.annotation.PreDestroy;
+
 import jakarta.faces.context.ExternalContext;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -123,13 +122,13 @@ public class CandidatBean implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private CandidateHelper candidateHelper;
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private DomaineDao domaineDao;
@@ -679,17 +678,15 @@ public class CandidatBean implements Serializable {
 
             }
         }
-        /////////////////////////
-        ///// insert DcTermsData
-        var dcElement = DcElement.builder()
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CREATOR)
                 .value(currentUser.getNodeUser().getName())
-                .build();
-        dcElementHelper.addDcElementConcept(dcElement, candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus());
-        ///////////////        
+                .idConcept(candidatSelected.getIdConcepte())
+                .idThesaurus(candidatSelected.getIdThesaurus())
+                .build());
 
-        candidatService.updateDetailsCondidat(candidatSelected, currentUser.getNodeUser().getIdUser());
+        candidatService.updateDetailsCondidat(candidatSelected);
 
         //getAllCandidatsByThesoAndLangue();
         candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(),
@@ -1122,20 +1119,10 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        if (!imagesHelper.addExternalImage(
-                candidatSelected.getIdConcepte(),
-                selectedTheso.getCurrentIdTheso(),
-                imageBean.getName(),
-                imageBean.getCopyright(),
-                imageBean.getUri(),
-                imageBean.getCreator(),
-                idUser)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout de l'image !");
-            return;
-        }
+        imageService.addExternalImage(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(), imageBean.getName(),
+                imageBean.getCopyright(), imageBean.getUri(), imageBean.getCreator(), idUser);
 
-        candidatSelected.setImages(imagesHelper.getExternalImages(
-                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
         initImageDialog();
@@ -1194,11 +1181,10 @@ public class CandidatBean implements Serializable {
 
     public void deleteImage(String imageUri) {
 
-        imagesHelper.deleteExternalImage(candidatSelected.getIdConcepte(),
-                selectedTheso.getSelectedIdTheso(), imageUri);
+        imageService.deleteImages(candidatSelected.getIdConcepte(), selectedTheso.getSelectedIdTheso(), imageUri);
 
-        candidatSelected.setImages(imagesHelper.getExternalImages(
-                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdThesaurus(),
+                candidatSelected.getIdConcepte()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image supprimée avec succès");
     }

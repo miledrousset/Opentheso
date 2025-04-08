@@ -1,19 +1,17 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -62,10 +60,7 @@ public class DragAndDrop implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private ValidateActionHelper validateActionHelper;
-
-    @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private RelationsHelper relationsHelper;
@@ -476,13 +471,11 @@ public class DragAndDrop implements Serializable {
                 return;
             }
         }
-        if(!validateActionHelper.isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
+        if(isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
             isValidPaste = false;
             return;
         }
@@ -550,13 +543,11 @@ public class DragAndDrop implements Serializable {
                     selectedTheso.getCurrentLang(), -1, -1);
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             if(nodeConceptDrop != null) {
-                if(!validateActionHelper.isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
+                if(isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
                         nodeConceptDrag.getConcept().getIdConcept(),
                         nodeConceptDrop.getConcept().getIdConcept())) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
 
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     isValidPaste = false;
                     reloadTree();
@@ -706,10 +697,8 @@ public class DragAndDrop implements Serializable {
                         selectedTheso.getCurrentLang(), -1, -1);
                 /// Vérifier si le dépalcement est valide (controle des relations interdites)
                 if (nodeConceptDrop != null) {
-                    if (!validateActionHelper.isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
+                    if (isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
                             nodeConceptDrag.getConcept().getIdConcept(), nodeConceptDrop.getConcept().getIdConcept())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "Relation non permise : " + validateActionHelper.getMessage());
                         isValidPaste = false;
                         reloadTree();
                         return;
@@ -821,12 +810,11 @@ public class DragAndDrop implements Serializable {
             }
             
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
-            if(!validateActionHelper.isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
+            if(isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
                     nodeConceptDrag.getConcept().getIdConcept(), nodeConceptDrop.getConcept().getIdConcept())) {
 
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 isValidPaste = false;
                 reloadTree();
@@ -1150,11 +1138,13 @@ public class DragAndDrop implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        /////////////// 
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(nodeConceptDrag.getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
         
         // si le concept n'est pas déployé à doite, alors on ne fait rien
         if(conceptBean.getNodeConcept() != null){
@@ -1413,5 +1403,12 @@ public class DragAndDrop implements Serializable {
         public void setNodeBT(NodeBT nodeBT) {
             this.nodeBT = nodeBT;
         }
+    }
+
+    public boolean isMoveConceptToConceptValid(String idTheso, String idConcept, String idConceptToAdd) {
+
+        return idConcept.equalsIgnoreCase(idConceptToAdd)
+                || relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)
+                || relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso);
     }
 }

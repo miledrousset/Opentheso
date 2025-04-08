@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services.exports.rdf4j;
 
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -26,10 +27,10 @@ import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,12 +67,10 @@ public class ExportRdf4jHelperNew {
     private NoteHelper noteHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ThesaurusDcTermRepository thesaurusDcTermRepository;
 
     private NodePreference nodePreference;
     private SKOSXmlDocument skosXmlDocument;
-
-    private ArrayList<NodeUri> nodeTTs;
    
     private String messages;
     
@@ -296,7 +295,16 @@ public class ExportRdf4jHelperNew {
         }
 
         /// ajout des DCMI
-        conceptScheme.getThesaurus().setDcElement(dcElementHelper.getDcElementOfThesaurus(idTheso));
+        var tmp = thesaurusDcTermRepository.findAllByIdThesaurus(idTheso);
+        if (CollectionUtils.isNotEmpty(tmp)) {
+            conceptScheme.getThesaurus().setDcElement(tmp.stream().map(element -> DcElement.builder()
+                    .id(element.getId().intValue())
+                    .name(element.getName())
+                    .value(element.getValue())
+                    .language(element.getLanguage())
+                    .type(element.getDataType())
+                    .build()).toList());
+        }
 
         //liste top concept
         var nodeTTs = conceptHelper.getAllTopConcepts(idTheso);

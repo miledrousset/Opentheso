@@ -1,8 +1,10 @@
-package fr.cnrs.opentheso.repositories;
+package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
  * @author miled.rousset
  */
 @Service
-public class CopyAndPasteBetweenThesoHelper {
+public class CopyAndPasteBetweenThesoService {
 
     @Autowired
     private DataSource dataSource;

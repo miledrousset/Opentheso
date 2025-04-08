@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.candidats.NodeCandidateOld;
@@ -22,6 +21,8 @@ import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 
 import java.io.Serializable;
+
+import fr.cnrs.opentheso.services.ImageService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.sql.SQLException;
@@ -40,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CandidatService implements Serializable {
 
     @Autowired
-    private ImagesHelper imagesHelper;
+    private ImageService imageService;
 
     @Autowired
     private NoteDao noteDao;
@@ -118,7 +119,7 @@ public class CandidatService implements Serializable {
         termeDao.updateIntitule(intitule, idTerm, idThesaurus, lang);
     }
 
-    public void updateDetailsCondidat(CandidatDto candidatSelected, int idUser) {
+    public void updateDetailsCondidat(CandidatDto candidatSelected) {
 
         //update domaine
         domaineDao.deleteAllDomaine(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
@@ -198,7 +199,7 @@ public class CandidatService implements Serializable {
         candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
                 candidatSelected.getIdConcepte(), idThesaurus));
 
-        candidatSelected.setImages(imagesHelper.getExternalImages(
+        candidatSelected.setImages(imageService.getAllExternalImages(
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
     }
 

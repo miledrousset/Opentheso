@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.repositories.RoleRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
@@ -43,7 +43,7 @@ public class ModifyRoleBean implements Serializable {
     private MyProjectBean myProjectBean;
     private RoleRepository roleRepository;
     private UserRepository userRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository2;
     private UserRoleGroupRepository userRoleGroupRepository;
     private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
@@ -66,7 +66,7 @@ public class ModifyRoleBean implements Serializable {
 
     @Inject
     public ModifyRoleBean(MyProjectBean myProjectBean, RoleRepository roleRepository, UserRepository userRepository,
-                          UserGroupLabelRepository2 userGroupLabelRepository2, UserRoleGroupRepository userRoleGroupRepository,
+                          UserGroupLabelRepository userGroupLabelRepository2, UserRoleGroupRepository userRoleGroupRepository,
                           UserRoleOnlyOnRepository userRoleOnlyOnRepository,
                           ThesaurusService thesaurusService, UserRoleGroupService userRoleGroupService) {
 

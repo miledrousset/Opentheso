@@ -1,11 +1,17 @@
 package fr.cnrs.opentheso.bean;
 
 import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.utils.DateUtils;
 
 import java.io.BufferedWriter;
@@ -26,12 +32,15 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 
+@Slf4j
 @Data
 @Named(value = "restoreTheso")
 @RequestScoped
@@ -47,13 +56,22 @@ public class RestoreTheso implements Serializable {
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
-    private ToolsHelper toolsHelper;
+    private ThesaurusRepository thesaurusRepository;
 
     @Autowired
     private GroupHelper groupHelper;
 
     @Autowired
     private TermHelper termHelper;
+
+    @Autowired
+    private ConceptRepository conceptRepository;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private RelationService relationService;
 
     private boolean overwrite, overwriteLocalArk;
     private String naan, prefix;
@@ -189,7 +207,11 @@ public class RestoreTheso implements Serializable {
         ArrayList<String> listIds = conceptHelper.getIdsOfBranchWithoutLoop(idConcept, idTheso);
 
         for (String id : listIds) {
-            toolsHelper.removeLoopRelation(idTheso, id);
+            NodeRelation nodeRelation = relationsHelper.getLoopRelation(idTheso, idConcept);
+            if(nodeRelation!= null){
+                relationsHelper.deleteThisRelation(nodeRelation.getIdConcept2(), idTheso, "BT", nodeRelation.getIdConcept1());
+                relationsHelper.deleteThisRelation(nodeRelation.getIdConcept1(), idTheso, "NT", nodeRelation.getIdConcept2());
+            }
         }
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction terminée"));
 
@@ -232,22 +254,42 @@ public class RestoreTheso implements Serializable {
     }
 
     private boolean reorganizingTopTerm(String idTheso) {
-        return toolsHelper.reorganizingTopTerm(idTheso);
-    }
-    private boolean reorganizingTheso(String idTheso) {
-        return toolsHelper.reorganizingTheso(idTheso);
+        return reorganizingTopTermInThesaurus(idTheso);
     }
 
-    private boolean removeTopTermForConceptWithBT(String idTheso){
-        return toolsHelper.removeTopTermForConceptWithBT(idTheso);
+    private boolean reorganizingTopTermInThesaurus(String idThesaurus) {
+
+        // récupération des TopTerms en tenant compte des éventuelles erreurs donc par déduction
+        ArrayList<String> listIds = relationsHelper.getListIdOfTopTermForRepair(idThesaurus);
+
+        for (String idConcept : listIds) {
+            conceptRepository.setTopConceptTag(true, idConcept, idThesaurus);
+        }
+        return true;
+    }
+
+    private boolean reorganizingTheso(String idTheso) {
+        return reorganizingThesaurus(idTheso);
+    }
+
+    private boolean removeTopTermForConceptWithBT(String idThesaurus){
+        // récupération de tous les Id TT du thésaurus
+        var thesaurus = thesaurusRepository.findById(idThesaurus);
+        var tabIdTT = conceptRepository.findAllByThesaurusAndTopConceptAndStatusNotLike(thesaurus.get(), true, "CA");
+        for (var concept : tabIdTT) {
+            if (relationsHelper.isConceptHaveRelationBT(concept.getIdConcept(), idThesaurus)) {
+                conceptRepository.setTopConceptTag(false, concept.getIdConcept(), idThesaurus);
+            }
+        }
+        return true;
     }
 
     private boolean removeSameRelations(String idTheso) {
-        if(!toolsHelper.removeSameRelations("BT", idTheso))
+        if(!removeSameRelations("BT", idTheso))
             return false;
-        if(!toolsHelper.removeSameRelations("NT", idTheso))
+        if(!removeSameRelations("NT", idTheso))
             return false;
-        return toolsHelper.removeSameRelations("RT", idTheso);
+        return removeSameRelations("RT", idTheso);
     }
 
     public void switchRolesFromTermToConcept(String idTheso) {
@@ -340,14 +382,14 @@ public class RestoreTheso implements Serializable {
         for (String conceptId : allConcepts) {
             if(!overwriteLocalArk) {
                 if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
-                    idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                    idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
                     conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                             nodePreference.getNaanArkLocal() + "/" +
                                     nodePreference.getPrefixArkLocal() + idArk);
                     count++;
                 }
             } else {
-                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
                 conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                         nodePreference.getNaanArkLocal() + "/" +
                                 nodePreference.getPrefixArkLocal() + idArk);
@@ -355,5 +397,63 @@ public class RestoreTheso implements Serializable {
             }
         }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
+    }
+
+    private boolean removeSameRelations(String role, String idThesaurus) {
+
+        // récupération des relations en Loop
+        ArrayList<HierarchicalRelationship> tabRelations = relationsHelper.getListLoopRelations(role, idThesaurus);
+        if (!tabRelations.isEmpty()) {
+            for (HierarchicalRelationship relation : tabRelations) {
+                relationsHelper.deleteThisRelation(relation.getIdConcept1(), idThesaurus,
+                        role, relation.getIdConcept2());
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Fonction qui permet de restructurer le thésaurus en ajoutant les NT et les BT qui manquent
+     * elle permet aussi de sortir les termes orphelins si nécessaire
+     */
+    @Transactional
+    public boolean reorganizingThesaurus(String idThesaurus) {
+
+        ArrayList<String> idBT;
+        ArrayList<String> idConcept1WhereIsNT;
+
+        // récupération de tous les Id concepts du thésaurus
+        ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurus(idThesaurus);
+
+        for (String idConcept : tabIdConcept) {
+            idBT = relationsHelper.getListIdBT(idConcept, idThesaurus);
+            idConcept1WhereIsNT = relationsHelper.getListIdWhichHaveNt(idConcept, idThesaurus);
+            if (idBT.isEmpty() && idConcept1WhereIsNT.isEmpty()) {
+                if (!conceptHelper.isTopConcept(idConcept, idThesaurus)) {
+                    // le concept est orphelin
+                    conceptRepository.setTopConceptTag(true, idConcept, idThesaurus);
+                }
+            } else {
+                if (!(idBT.containsAll(idConcept1WhereIsNT))) {
+                    //alors il manque des BT
+                    ArrayList<String> BTmiss = new ArrayList<>(idConcept1WhereIsNT);
+                    BTmiss.removeAll(idBT);
+                    //on ajoute la différence
+                    for (String miss : BTmiss) {
+                        relationService.addHierarchicalRelation(idConcept, idThesaurus, "BT", miss);
+                    }
+                }
+                if (!(idConcept1WhereIsNT.containsAll(idBT))) {
+                    //il manque des NT pour certain idBT
+                    ArrayList<String> NTmiss = new ArrayList<>(idBT);
+                    NTmiss.removeAll(idConcept1WhereIsNT);
+                    //on jaoute la différence
+                    for (String miss : NTmiss) {
+                        relationService.addHierarchicalRelation(miss, idThesaurus, "NT", idConcept);
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

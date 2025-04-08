@@ -1,13 +1,12 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -52,16 +51,13 @@ public class NarrowerBean implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private ValidateActionHelper validateActionHelper;
-
-    @Autowired
     private RelationsHelper relationsHelper;
 
     @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private DcElementHelper dcElementHelper;
+    private ConceptDcTermRepository conceptDcTermRepository;
 
     private NodeSearchMini searchSelected;
     private List<NodeNT> nodeNTs;
@@ -133,7 +129,7 @@ public class NarrowerBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        if (!validateActionHelper.isAddRelationNTValid(selectedTheso.getCurrentIdTheso(),
+        if (isAddRelationNTValid(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), searchSelected.getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -163,12 +159,13 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        /////////////// 
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
@@ -232,11 +229,13 @@ public class NarrowerBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////        
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -329,11 +328,13 @@ public class NarrowerBean implements Serializable {
         conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////
+
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .build());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -344,6 +345,14 @@ public class NarrowerBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:changeRelationForm");
         }
+    }
+
+    private boolean isAddRelationNTValid(String idTheso, String idConcept, String idConceptToAdd) {
+
+        return idConcept.equalsIgnoreCase(idConceptToAdd)
+                || relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)
+                || relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso)
+                || relationsHelper.isConceptHaveBrother(idConcept, idConceptToAdd, idTheso);
     }
 }
 

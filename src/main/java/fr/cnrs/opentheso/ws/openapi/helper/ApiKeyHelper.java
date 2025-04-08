@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
-import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,9 +22,6 @@ import javax.sql.DataSource;
 public class ApiKeyHelper {
 
     @Autowired
-    private ToolsHelper toolsHelper;
-
-    @Autowired
     private DataSource dataSource;
 
     /**
@@ -35,7 +32,7 @@ public class ApiKeyHelper {
      */
     public String generateApiKey(String header, int keyLength) {
         final String timestamp = String.valueOf(System.currentTimeMillis());
-        final String randomKey = header.length() + timestamp.length() < keyLength ? toolsHelper.getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
+        final String randomKey = header.length() + timestamp.length() < keyLength ? ToolsHelper.getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
         String apiKey= header + timestamp + randomKey;
         if (apiKey.length() > keyLength) {
             apiKey = apiKey.substring(0, keyLength);

@@ -1,24 +1,28 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.entites.ThesaurusHomePage;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.HtmlPageHelper;
 import fr.cnrs.opentheso.repositories.StatisticHelper;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHomePageRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -33,32 +37,34 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
-
-    @Autowired
-    private DcElementHelper dcElementHelper;
-
-    @Autowired
-    private StatisticHelper statisticHelper;
-
-    @Autowired
-    private HtmlPageHelper htmlPageHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private UserHelper userHelper;
+    private ConceptHelper conceptHelper;
+    private StatisticHelper statisticHelper;
+    private UserGroupLabelRepository userGroupLabelRepository;
+    private ThesaurusDcTermRepository thesaurusDcTermRepository;
+    private ThesaurusHomePageRepository thesaurusHomePageRepository;
 
-    @Autowired
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private boolean isViewPlainText, isInEditing;
+    private String text, colorOfHtmlButton, colorOfTextButton;
 
-    private boolean isViewPlainText;
-    private boolean isInEditing;
 
-    private String text;
-    private String colorOfHtmlButton;
-    private String colorOfTextButton;
+    @Inject
+    public ViewEditorThesoHomeBean(@Value("${settings.workLanguage:fr}") String workLanguage,
+                                   StatisticHelper statisticHelper,
+                                   ConceptHelper conceptHelper,
+                                   UserHelper userHelper,
+                                   ThesaurusHomePageRepository thesaurusHomePageRepository,
+                                   ThesaurusDcTermRepository thesaurusDcTermRepository,
+                                   UserGroupLabelRepository userGroupLabelRepository) {
 
+        this.workLanguage = workLanguage;
+        this.thesaurusDcTermRepository = thesaurusDcTermRepository;
+        this.thesaurusHomePageRepository = thesaurusHomePageRepository;
+        this.conceptHelper = conceptHelper;
+        this.userHelper = userHelper;
+        this.statisticHelper = statisticHelper;
+        this.userGroupLabelRepository = userGroupLabelRepository;
+    }
 
     public void reset(){
         isInEditing = false;
@@ -67,11 +73,8 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
     
     public void initText(String idLanguage, String idThesaurus) {
-        if(idLanguage == null || idLanguage.isEmpty()) {
-            idLanguage = workLanguage;
-        }
 
-        text = htmlPageHelper.getThesoHomePage(idThesaurus, idLanguage);
+        text = getHtmlPage(idLanguage, idThesaurus);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
@@ -80,67 +83,83 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     public String getThesoHomePage(String idLanguage, String idThesaurus){
 
-        if(idLanguage == null || idLanguage.isEmpty()) {
-            idLanguage = workLanguage;
-        }
-        String homePage = htmlPageHelper.getThesoHomePage(idThesaurus, idLanguage);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
-            PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
-        }        
-
+        var homePage = getHtmlPage(idLanguage, idThesaurus);
+        PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
+        PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
         return homePage;
     }
     
     public List<DcElement> meta(String idThesaurus){
 
-        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(idThesaurus);
-        if(dcElements == null || dcElements.isEmpty())
-            dcElements = new ArrayList<>();           
-        return dcElements;
+        var dcElements = thesaurusDcTermRepository.findAllByIdThesaurus(idThesaurus);
+        return CollectionUtils.isNotEmpty(dcElements)
+                ? dcElements.stream().map(element -> DcElement.builder()
+                    .id(element.getId().intValue())
+                    .name(element.getName())
+                    .value(element.getValue())
+                    .language(element.getLanguage())
+                    .type(element.getDataType())
+                    .build()).toList()
+                : new ArrayList<>();
     }
     /**
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on applique une mise à jour 
      */
     public void updateThesoHomePage(String idLanguage, String idThesaurus) {
-        FacesMessage msg;
-        if(idLanguage == null || idLanguage.isEmpty()) {
+
+        if(StringUtils.isEmpty(idLanguage)) {
             idLanguage = workLanguage;
         }
 
-        if (!htmlPageHelper.setThesoHomePage(text, idThesaurus, idLanguage)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
+        var thesaurusHomePage = thesaurusHomePageRepository.findByIdThesoAndLang(idThesaurus, idLanguage);
+        ThesaurusHomePage thesaurusToSave;
+        if (thesaurusHomePage.isEmpty()) {
+            thesaurusToSave = ThesaurusHomePage.builder()
+                    .idTheso(idThesaurus)
+                    .lang(idLanguage)
+                    .htmlCode(text)
+                    .build();
+        } else {
+            thesaurusHomePage.get().setHtmlCode(text);
+            thesaurusToSave = thesaurusHomePage.get();
+        }
+
+        var result = thesaurusHomePageRepository.save(thesaurusToSave);
+
+        if (ObjectUtils.isEmpty(result)){
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "L'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;               
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "texte ajouté avec succès");
+
+        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Texte ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
         isInEditing = false;
         isViewPlainText = false;
     }
 
-    public String getTotalConceptOfTheso(String idThesaurus){
+    private String getHtmlPage(String idLanguage, String idThesaurus) {
+        idLanguage = StringUtils.isEmpty(idLanguage) ? workLanguage : idLanguage;
+        var thesaurusHomePage = thesaurusHomePageRepository.findByIdThesoAndLang(idThesaurus, idLanguage);
+        return thesaurusHomePage.isPresent() ? thesaurusHomePage.get().getHtmlCode() : "";
+    }
 
-        int count = statisticHelper.getNbCpt(idThesaurus);
-        return "" + count;
+    public String getTotalConceptOfTheso(String idThesaurus){
+        return String.valueOf(statisticHelper.getNbCpt(idThesaurus));
     }
 
     public String getLastModifiedDate(String idThesaurus){
-        Date date = conceptHelper.getLastModification(idThesaurus);
-        if(date != null)
-            return date.toString();
-        return "";
+        var date = conceptHelper.getLastModification(idThesaurus);
+        return ObjectUtils.isEmpty(date) ? "" : date.toString();
     }
 
     public String getProjectName(String idThesaurus){
-        int idProject = userHelper.getGroupOfThisTheso(idThesaurus);
-        if(idProject != -1) {
-            return userGroupLabelRepository.findById(idProject).get().getLabel();
-        } else
-            return "";
+        var idProject = userHelper.getGroupOfThisTheso(idThesaurus);
+        return (idProject != -1) ? userGroupLabelRepository.findById(idProject).get().getLabel() : "";
     }
 
-    public ArrayList<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
+    public List<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
         return conceptHelper.getLastModifiedConcept(idThesaurus, idLanguage);
     }        
     

@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository2;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
@@ -16,6 +16,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,7 @@ public class SuperAdminBean implements Serializable {
     private UserRepository userRepository;
     private ThesaurusRepository thesaurusRepository;
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private UserGroupLabelRepository2 userGroupLabelRepository;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private CurrentUser currentUser;
     private SelectedTheso selectedTheso;
 
@@ -49,7 +50,7 @@ public class SuperAdminBean implements Serializable {
                           UserRepository userRepository,
                           ThesaurusRepository thesaurusRepository,
                           UserGroupThesaurusRepository userGroupThesaurusRepository,
-                          UserGroupLabelRepository2 userGroupLabelRepository,
+                          UserGroupLabelRepository userGroupLabelRepository,
                           CurrentUser currentUser,
                           SelectedTheso selectedTheso) {
 
@@ -66,6 +67,7 @@ public class SuperAdminBean implements Serializable {
     public void init() {
 
         allProjects = userGroupLabelRepository.findAll();
+        allProjects.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
 
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserGroupUsers = userRoleGroupRepository.getAllGroupUser();
