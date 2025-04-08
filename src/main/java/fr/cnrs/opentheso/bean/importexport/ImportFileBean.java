@@ -646,9 +646,9 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-
+          //  ArrayList<String> headerSourceAlignList;
             try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
-
+            //    headerSourceAlignList = csvReadHelper.readHeadersFileAlignment(reader);
                 if (!csvReadHelper.readFileAlignmentToDelete(reader)) {
                     error.append(csvReadHelper.getMessage());
                 }
@@ -2699,10 +2699,12 @@ public class ImportFileBean implements Serializable {
                 }
 
                 if (idConcept == null || idConcept.isEmpty()) {
+                    log.info("identifiant mal renseigné " + nodeAlignmentImport.getLocalId() + " " + nodeAlignmentImport.getNodeAlignmentSmalls().get(0));
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
                 if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                    log.info("identifiant n'existe pas " + nodeAlignmentImport.getLocalId());
                     continue;
                 }
 

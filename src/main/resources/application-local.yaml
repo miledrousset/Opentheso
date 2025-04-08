@@ -8,7 +8,7 @@ server:
   servlet:
     context-path: /
     session:
-      timeout: 120m
+      timeout: 30m
   error:
     path: /errorPages/error500.xhtml
     whitelabel:

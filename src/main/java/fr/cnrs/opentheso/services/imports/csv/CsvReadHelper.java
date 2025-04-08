@@ -8,8 +8,11 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.notes.NodeNote;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
@@ -34,7 +37,7 @@ public class CsvReadHelper {
     private char delimiter = ',';
 
     private ArrayList<String> langs;
-    private ArrayList<String> customRelations;    
+    private ArrayList<String> customRelations;
     private String idLang;
 
     private ArrayList<ConceptObject> conceptObjects;
@@ -42,25 +45,25 @@ public class CsvReadHelper {
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
-    private ArrayList<NodeCompareTheso> nodeCompareThesos;    
-    
-    
+    private ArrayList<NodeCompareTheso> nodeCompareThesos;
+
+
     private ArrayList<NodeDeprecated> nodeDeprecateds;
 
-    private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;    
-    
+    private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;
+
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
-        
+
     public boolean readFileCsvForGetIdFromPrefLabelSetLang(Reader in) {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader()
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
 
             CSVParser cSVParser = cSVFormat.parse(in);
-           
+
             Map<String, Integer> headers = cSVParser.getHeaderMap();
 
             if(headers.keySet().size()>1) {
@@ -77,20 +80,20 @@ public class CsvReadHelper {
                     }
                 } else {
                     message = "Erreur, La langue doit être précisée exemple : skos:prefLabel@fr";
-                    return false;                    
+                    return false;
                 }
             }
             if(idLang == null){
                 message = "Erreur, La langue n'a pas été trouvée";
-                return false;                  
+                return false;
             }
             return true;
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }              
-    
+    }
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -114,7 +117,7 @@ public class CsvReadHelper {
                     }
                 }
             }
-            
+
             String value;
             nodeDeprecateds = new ArrayList<>();
             for (CSVRecord record : cSVParser) {
@@ -144,7 +147,7 @@ public class CsvReadHelper {
                         nodeDeprecated.setNoteLang(lang);
                     }
                 } catch (Exception e) {
-                }                
+                }
                 nodeDeprecateds.add(nodeDeprecated);
             }
             return true;
@@ -152,8 +155,8 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }         
-    
+    }
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -256,7 +259,7 @@ public class CsvReadHelper {
         }
         return false;
     }
-    
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -320,6 +323,79 @@ public class CsvReadHelper {
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localid");
+                } catch (Exception e) {
+                    try {
+                        value = record.get("\uFEFFlocalid");
+                    } catch (Exception e1) {
+                        continue;
+                    }
+                }
+                if (value == null) {
+                    continue;
+                }
+                conceptObject.setLocalId(value);
+
+                // on récupère les uris à supprimer
+                try {
+                    value = record.get("uri");
+                } catch (Exception e) {
+                    try {
+                        value = record.get("\uFEFFuri");
+                    } catch (Exception e1) {
+                        continue;
+                    }
+                }
+                if (value == null) {
+                    continue;
+                }
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId("");
+                nodeIdValue.setValue(value.trim());
+                conceptObject.alignments.add(nodeIdValue);
+                conceptObjects.add(conceptObject);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+
+
+
+
+
+/*
+
+    public boolean readFileAlignmentToDelete(Reader in) {
+        try {
+            // Définition du format CSV avec les options de configuration
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader()
+                    .setDelimiter(delimiter)  // Assurez-vous de définir la variable `delimiter` ailleurs
+                    .setIgnoreEmptyLines(true)
+                    .setIgnoreHeaderCase(true)
+                    .setTrim(true)
+                    .build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+
+            String value;
+
+            Map<String, Integer> headerMap = cSVParser.getHeaderMap();
+            for (String header : headerMap.keySet()) {
+                if (header != null && header.startsWith("\uFEFF")) {
+                    // Si le BOM est présent, ignorer le premier caractère
+                    header = header.substring(1);
+                }
+            }
+
+            for (CSVRecord record : cSVParser) {
+                ConceptObject conceptObject = new ConceptObject();
+
+                // Récupération du localId avec normalisation (accents, majuscules)
+                try {
+                    value = record.get("localid");
                     if (value == null) {
                         continue;
                     }
@@ -327,9 +403,10 @@ public class CsvReadHelper {
                 } catch (Exception e) {
                     continue;
                 }
-                // on récupère les uris à supprimer
+
+                // Récupération de l'URI et ajout à alignments
                 try {
-                    value = record.get("Uri");
+                    value = record.get("uri");
                     if (value == null) {
                         continue;
                     }
@@ -341,6 +418,7 @@ public class CsvReadHelper {
                     continue;
                 }
 
+                // Ajout de l'objet conceptObject à la liste conceptObjects
                 conceptObjects.add(conceptObject);
             }
             return true;
@@ -388,7 +466,7 @@ public class CsvReadHelper {
         }
         return false;
     }
-    
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -441,7 +519,7 @@ public class CsvReadHelper {
         }
         return false;
 
-    }    
+    }
 
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -486,8 +564,8 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }       
-    
+    }
+
     public ArrayList<String > readHeadersFileAlignment (Reader in){
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
@@ -506,7 +584,7 @@ public class CsvReadHelper {
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;        
+        return null;
     }
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -528,18 +606,22 @@ public class CsvReadHelper {
             }
             for (CSVRecord record : cSVParser) {
                 NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
-                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL
                 try {
                     value = record.get("localid");
-                    if (value == null) {
+                } catch (Exception e) {
+                    try {
+                        value = record.get("\uFEFFlocalid");
+                    } catch (Exception e1) {
                         continue;
                     }
-                    nodeAlignmentImport.setLocalId(value);
-                } catch (Exception e) {
+                }
+                if (value == null) {
                     continue;
                 }
+                nodeAlignmentImport.setLocalId(value);
 
-                // on récupère les alignements 
+                // on récupère les alignements
                 nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record, headerSourceAlign);
                 if (nodeAlignmentImport != null) {
                     nodeAlignmentImports.add(nodeAlignmentImport);
@@ -563,7 +645,7 @@ public class CsvReadHelper {
                 uri1 = record.get(alignSource);
                 nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, alignSource, uri1);
             } catch (Exception e) {
-            }            
+            }
         }
         return nodeAlignmentImport;
     }
@@ -601,7 +683,7 @@ public class CsvReadHelper {
         }
         return null;
     }
-    
+
     /**
      * permet de lire un fichier CSV complet pour importer les altLabels avec option
      * de vider les notes avant
@@ -641,7 +723,7 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
+    }
 
     /**
      * permet de lire un fichier CSV complet pour importer les notes avec option
@@ -683,10 +765,10 @@ public class CsvReadHelper {
         }
         return false;
     }
-    
+
     /**
      * permet de lire un fichier CSV complet pour récupérer données
-     * pour la valeur à remplacer par la nouvelle valeur 
+     * pour la valeur à remplacer par la nouvelle valeur
      *
      * @param in
      * @param usedLangs
@@ -710,47 +792,47 @@ public class CsvReadHelper {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     continue;
-                }                
+                }
                 for (String idLang1 : usedLangs) {
                     NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
                     // on récupère les prefLabels 
-                    nodeReplaceValueByValue = getValueAndPropertyPrefLabel(nodeReplaceValueByValue, record, idLang1);     
+                    nodeReplaceValueByValue = getValueAndPropertyPrefLabel(nodeReplaceValueByValue, record, idLang1);
                     if (nodeReplaceValueByValue != null) {
                         nodeReplaceValueByValue.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue);
                     }
                     NodeReplaceValueByValue nodeReplaceValueByValue2 = new NodeReplaceValueByValue();
                     // on récupère les altLabels 
-                    nodeReplaceValueByValue2 = getValueAndPropertyAltLabel(nodeReplaceValueByValue2, record, idLang1);     
+                    nodeReplaceValueByValue2 = getValueAndPropertyAltLabel(nodeReplaceValueByValue2, record, idLang1);
                     if (nodeReplaceValueByValue2 != null) {
                         nodeReplaceValueByValue2.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue2);
-                    }   
+                    }
                     NodeReplaceValueByValue nodeReplaceValueByValue3 = new NodeReplaceValueByValue();
                     // on récupère les définitions
-                    nodeReplaceValueByValue3 = getValueAndPropertyDefinition(nodeReplaceValueByValue3, record, idLang1);     
+                    nodeReplaceValueByValue3 = getValueAndPropertyDefinition(nodeReplaceValueByValue3, record, idLang1);
                     if (nodeReplaceValueByValue3 != null) {
                         nodeReplaceValueByValue3.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue3);
-                    }                     
-                    
+                    }
+
                 }
-                 // on récupère les BTs 
+                 // on récupère les BTs
                 NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
-                nodeReplaceValueByValue = getValueAndPropertyBT(nodeReplaceValueByValue, record);     
+                nodeReplaceValueByValue = getValueAndPropertyBT(nodeReplaceValueByValue, record);
                 if (nodeReplaceValueByValue != null) {
                     nodeReplaceValueByValue.setIdConcept(idConcept);
                     nodeReplaceValueByValues.add(nodeReplaceValueByValue);
-                }                  
-                 
+                }
+
             }
             return true;
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
-    
+    }
+
     private NodeReplaceValueByValue getValueAndPropertyPrefLabel(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
             String idLang) {
         String value;
@@ -773,7 +855,7 @@ public class CsvReadHelper {
             }
         } catch (Exception e) {
             //System.err.println("");
-        }      
+        }
         return null;
     }
     private NodeReplaceValueByValue getValueAndPropertyAltLabel(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
@@ -793,15 +875,15 @@ public class CsvReadHelper {
                 value = record.get("skos:altlabel@"+ idLang);
                 if(value != null && !value.isEmpty()) {
                     nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                }
             } catch (Exception e) {
             }
             return nodeReplaceValueByValue;
         } catch (Exception e) {
             //System.err.println("");
-        }      
+        }
         return null;
-    }   
+    }
     private NodeReplaceValueByValue getValueAndPropertyDefinition(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
             String idLang) {
         String value;
@@ -815,20 +897,20 @@ public class CsvReadHelper {
             } else {
                 return null;
             }
-            try { 
+            try {
                 value = record.get("skos:definition@"+ idLang);
                 if(value != null && !value.isEmpty()) {
                     nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                }
             } catch (Exception e) {
-            }                
+            }
             return nodeReplaceValueByValue;
         } catch (Exception e) {
             //System.err.println("");
-        }      
+        }
         return null;
-    }     
-    
+    }
+
     private NodeReplaceValueByValue getValueAndPropertyBT(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record) {
         String value;
         try {
@@ -849,17 +931,17 @@ public class CsvReadHelper {
             }
         } catch (Exception e) {
             //System.err.println("");
-        }      
+        }
         return null;
-    }    
-    
+    }
 
-////////////////////////////////////////////////////////////////////////////////    
+
+////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
     public boolean setLangs(Reader in) {
         langs = new ArrayList<>();
-        customRelations = new ArrayList<>();        
+        customRelations = new ArrayList<>();
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -884,7 +966,7 @@ public class CsvReadHelper {
                             customRelations.add(values[1]);//.toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
                         }
                     }
-                }                
+                }
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -903,7 +985,7 @@ public class CsvReadHelper {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
-            CSVParser cSVParser = cSVFormat.parse(in);  
+            CSVParser cSVParser = cSVFormat.parse(in);
             String uri1 = null;
             //          boolean first = true;
 
@@ -955,7 +1037,7 @@ public class CsvReadHelper {
 
                 // on récupère les images
                 conceptObject = getImages(conceptObject, record);
-                
+
                 // on récupère la localisation
                 conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, false);
@@ -977,8 +1059,8 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
-    
+    }
+
     /**
      * permet de lire un fichier CSV complet pour charger un thésaurus
      *
@@ -990,7 +1072,7 @@ public class CsvReadHelper {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
-            CSVParser cSVParser = cSVFormat.parse(in);            
+            CSVParser cSVParser = cSVFormat.parse(in);
 
             String uri1 = null;
             String uri_forId;
@@ -1038,7 +1120,7 @@ public class CsvReadHelper {
 
                 // on récupère le type de l'enregistrement (concept, collection)
                 conceptObject.setType(getType(record));
-                
+
                 // on récupérer du concept (People, qualifier ...)
                 conceptObject.setConceptType(getConceptType(record));
 
@@ -1049,8 +1131,8 @@ public class CsvReadHelper {
                 conceptObject = getRelations(conceptObject, record);
 
                 // on récupère les relations (BT, NT, RT)
-                conceptObject = getCustomRelations(conceptObject, record);                
-                
+                conceptObject = getCustomRelations(conceptObject, record);
+
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
@@ -1058,41 +1140,41 @@ public class CsvReadHelper {
                 conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, readEmptyData);
 
-                
-                
+
+
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
-                if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){                
+                if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){
                     conceptObject = getMembers(conceptObject, record);
                 }
-                if("skos:collection".equalsIgnoreCase(conceptObject.getType())){                
+                if("skos:collection".equalsIgnoreCase(conceptObject.getType())){
                     conceptObject = getMembers(conceptObject, record);
-                }                
-                
+                }
+
                 // récupération des sous groupes
                 if("skos:Collection".equalsIgnoreCase(conceptObject.getType())){
                     conceptObject = getSubGroups(conceptObject, record);
                 }
-                
+
                 // récupération des membres d'une Facette
                 if("skos-thes:ThesaurusArray".equalsIgnoreCase(conceptObject.getType())){
                     conceptObject = getMembersOfFacet(conceptObject, record);
-                    
+
                     // récupération du parent de la facette
                     conceptObject = getSuperOrdinate(conceptObject, record);
-                }                
-                
+                }
+
                 // définir si le concept est déprécié (Obsolète) et s'il a un concept de remplacement 
                 if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){
                     conceptObject = setDeprecatedConcept(conceptObject, record);
-                }                
-                
+                }
+
                 // récupération des resources Externes
                 conceptObject = getExternalResources(conceptObject, record);
-                
-                
+
+
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
-                
+
                 // on récupère les images 
                 conceptObject = getFoafImages(conceptObject, record);
 
@@ -1116,7 +1198,7 @@ public class CsvReadHelper {
     private ConceptObject getExternalResources(ConceptObject conceptObject, CSVRecord record) {
         String value;
         String values[];
-        
+
         try {
             value = record.get("dcterms:source");
             values = value.split("##");
@@ -1128,8 +1210,8 @@ public class CsvReadHelper {
         } catch (Exception e) {
         }
         return conceptObject;
-    }    
-    
+    }
+
     /**
      * permet de récupérer les URI des images
      *
@@ -1140,7 +1222,7 @@ public class CsvReadHelper {
     private ConceptObject getFoafImages(ConceptObject conceptObject, CSVRecord record) {
         String value;
         String values[];
-        
+
         try {
             value = record.get("foaf:Image");
             values = value.split("##");
@@ -1153,13 +1235,13 @@ public class CsvReadHelper {
         }
         return conceptObject;
     }
-    
+
     /**
      * Permet de récupérer les URI des images
      */
     private NodeImage getNodeImage(String value) {
         String values[];
-        
+
         NodeImage nodeImage = new NodeImage();
         try {
             values = value.split("@@");
@@ -1173,19 +1255,19 @@ public class CsvReadHelper {
                     }
                     if(StringUtils.startsWith(value1, "dcterms:title=")){
                         nodeImage.setImageName(StringUtils.substringAfter(value1, "dcterms:title="));
-                    }          
+                    }
                     if(StringUtils.startsWith(value1, "dcterms:creator=")){
                         nodeImage.setCreator(StringUtils.substringAfter(value1, "dcterms:creator="));
-                    }                     
+                    }
                 }
             }
         } catch (Exception e) {
         }
         if(StringUtils.isEmpty(nodeImage.getUri())) return null;
         return nodeImage;
-    }   
-    
-    
+    }
+
+
     /**
      * permet de savoir si le concept est déprécié et s'il a des concepts de remplacement
      *
@@ -1210,8 +1292,8 @@ public class CsvReadHelper {
         }
 
         return conceptObject;
-    }      
-    
+    }
+
     /**
      * permet de récupérer des dcterms:isReplacedBy les concepts de rempalacement
      *
@@ -1235,8 +1317,8 @@ public class CsvReadHelper {
         }
 
         return conceptObject;
-    }      
-    
+    }
+
     /**
      * permet de récupérer le parent de la Facette
      *
@@ -1256,9 +1338,9 @@ public class CsvReadHelper {
         }
 
         return conceptObject;
-    }      
-    
-    
+    }
+
+
     /**
      * permet de récupérer les concepts qui sont membre de cette Facette
      *
@@ -1269,7 +1351,7 @@ public class CsvReadHelper {
     private ConceptObject getMembersOfFacet(ConceptObject conceptObject, CSVRecord record) {
         String value;
         String values[];
-        
+
         if (record.isMapped("memberid")) {
             try {
                 value = record.get("memberid");
@@ -1283,7 +1365,7 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-        } else {        
+        } else {
             try {
                 value = record.get("skos:member");
                 values = value.split("##");
@@ -1298,8 +1380,8 @@ public class CsvReadHelper {
         }
 
         return conceptObject;
-    }       
-    
+    }
+
     /**
      * permet de récupérer les sous groupes d'un groupe
      *
@@ -1323,8 +1405,8 @@ public class CsvReadHelper {
         }
 
         return conceptObject;
-    }    
-    
+    }
+
     /**
      * permet de charger tous les alignements d'un concept
      *
@@ -1383,13 +1465,13 @@ public class CsvReadHelper {
                     } else {
                         if(uri.contains("ark:/")){
                             id = uri.substring(uri.indexOf("ark:/")+5 , uri.length());
-                        } else 
+                        } else
                             id = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
                     }
                 }
             }
         }
-        
+
         return fr.cnrs.opentheso.utils.StringUtils.normalizeStringForIdentifier(id);
     }
 
@@ -1406,10 +1488,10 @@ public class CsvReadHelper {
         } catch (Exception e) {
             //System.err.println("");
         }
-  
+
         return type.trim().toLowerCase();
     }
-    
+
     /**
      * permet de récupérer le type du concept (People, qualifier, place ...)
      *
@@ -1424,7 +1506,7 @@ public class CsvReadHelper {
             //System.err.println("");
         }
         return conceptType.trim().toLowerCase();
-    }    
+    }
 
     /**
      * permet de récupérer la notation du concept
@@ -1463,7 +1545,7 @@ public class CsvReadHelper {
                     conceptObject.setCreated(value.trim());
                 }
             }
-            
+
         } catch (Exception e) {
         }
 
@@ -1476,8 +1558,8 @@ public class CsvReadHelper {
                 value = record.get("dct:modified");
                 if (!value.isEmpty()) {
                     conceptObject.setModified(value.trim());
-                }                
-            }           
+                }
+            }
         } catch (Exception e) {
         }
         return conceptObject;
@@ -1495,7 +1577,7 @@ public class CsvReadHelper {
         String value;
         String values[];
         // skos:member
-        if (record.isMapped("memberid")) {        
+        if (record.isMapped("memberid")) {
             try {
                 value = record.get("memberid");
                 values = value.split("##");
@@ -1506,7 +1588,7 @@ public class CsvReadHelper {
                 }
             } catch (Exception e) {
                 //System.err.println("");
-            }            
+            }
         } else {
             try {
                 value = record.get("skos:member");
@@ -1595,7 +1677,7 @@ public class CsvReadHelper {
                 } else {
                     if (!value1.isEmpty()) {
                         conceptObject.exactMatchs.add(value1.trim());
-                    }                    
+                    }
                 }
             }
         } catch (Exception e) {
@@ -1628,7 +1710,7 @@ public class CsvReadHelper {
                 } else {
                     if (!value1.isEmpty()) {
                         conceptObject.broadMatchs.add(value1.trim());
-                    }                    
+                    }
                 }
             }
         } catch (Exception e) {
@@ -1644,7 +1726,7 @@ public class CsvReadHelper {
                 } else {
                     if (!value1.isEmpty()) {
                         conceptObject.narrowMatchs.add(value1.trim());
-                    }                    
+                    }
                 }
             }
         } catch (Exception e) {
@@ -1660,7 +1742,7 @@ public class CsvReadHelper {
                 } else {
                     if (!value1.isEmpty()) {
                         conceptObject.relatedMatchs.add(value1.trim());
-                    }                    
+                    }
                 }
             }
         } catch (Exception e) {
@@ -1669,7 +1751,7 @@ public class CsvReadHelper {
 
         return conceptObject;
     }
-    
+
     /**
      * permet de charger toutes les images d'un concept
      *
@@ -1700,9 +1782,9 @@ public class CsvReadHelper {
    <foaf:maker rdf:resource="#peter"/>   
 
  </foaf:Image>        */
-        
-        
-        
+
+
+
         try {
             value = record.get("foaf:Image");
             values = value.split("##");
@@ -1712,16 +1794,16 @@ public class CsvReadHelper {
                 } else {
                     if (!value1.isEmpty()) {
                         conceptObject.exactMatchs.add(value1.trim());
-                    }                    
+                    }
                 }
             }
         } catch (Exception e) {
             //System.err.println("");
         }
         return conceptObject;
-    }    
-    
-    
+    }
+
+
 
     /**
      * permet de charger toutes les relations d'un concept
@@ -1829,7 +1911,7 @@ public class CsvReadHelper {
         }
         return conceptObject;
     }
-    
+
     /**
      * permet de charger toutes les relations d'un concept
      *
@@ -1842,7 +1924,7 @@ public class CsvReadHelper {
             CSVRecord record) {
         String value;
         String values[];
-        
+
         // liste des relations personnalisées (Qualifier, Poeple, Place ...) 
         for (String customRelation : customRelations) {
             if (record.isMapped("customRelationId:"+ customRelation )) {
@@ -1861,11 +1943,11 @@ public class CsvReadHelper {
                 } catch (Exception e) {
                     //System.err.println("");
                 }
-            }             
-        }        
+            }
+        }
 
         return conceptObject;
-    }    
+    }
 
     /**
      * permet de charger tous les labels d'un concept dans toutes les langues
@@ -1887,7 +1969,7 @@ public class CsvReadHelper {
                     label = new Label();
                     label.setLabel(value);
                     label.setLang(idLang2);
-                    conceptObject.prefLabels.add(label);                    
+                    conceptObject.prefLabels.add(label);
                 } else {
                     if (!value.isEmpty()) {
                         label = new Label();
@@ -1909,7 +1991,7 @@ public class CsvReadHelper {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang2);
-                        conceptObject.altLabels.add(label);                        
+                        conceptObject.altLabels.add(label);
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
@@ -1932,7 +2014,7 @@ public class CsvReadHelper {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang2);
-                        conceptObject.hiddenLabels.add(label);                        
+                        conceptObject.hiddenLabels.add(label);
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
@@ -1962,7 +2044,7 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.note.add(label);                        
+                        conceptObject.note.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
@@ -1985,8 +2067,8 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.definitions.add(label);                        
-                    } else {                 
+                        conceptObject.definitions.add(label);
+                    } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
@@ -2009,14 +2091,14 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.scopeNotes.add(label);                        
+                        conceptObject.scopeNotes.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
                             label.setLang(idLang1);
                             conceptObject.scopeNotes.add(label);
-                        }                        
+                        }
                     }
                 }
 
@@ -2033,14 +2115,14 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.examples.add(label);                        
+                        conceptObject.examples.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
                             label.setLang(idLang1);
                             conceptObject.examples.add(label);
-                        }                        
+                        }
                     }
                 }
 
@@ -2057,14 +2139,14 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.historyNotes.add(label);                        
+                        conceptObject.historyNotes.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
                             label.setLang(idLang1);
                             conceptObject.historyNotes.add(label);
-                        }                        
+                        }
                     }
                 }
 
@@ -2081,14 +2163,14 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.changeNotes.add(label);                        
+                        conceptObject.changeNotes.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
                             label.setLang(idLang1);
                             conceptObject.changeNotes.add(label);
-                        }                        
+                        }
                     }
                 }
 
@@ -2105,14 +2187,14 @@ public class CsvReadHelper {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang1);
-                        conceptObject.editorialNotes.add(label);                        
+                        conceptObject.editorialNotes.add(label);
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
                             label.setLang(idLang1);
                             conceptObject.editorialNotes.add(label);
-                        }                        
+                        }
                     }
                 }
 
@@ -2122,7 +2204,7 @@ public class CsvReadHelper {
         }
         return conceptObject;
     }
-    
+
     private ConceptObject getImages(ConceptObject conceptObject, CSVRecord record) {
         String value;
         String values[];
@@ -2138,7 +2220,7 @@ public class CsvReadHelper {
                     nodeImages.add(nodeImage);
                 }
             }
-            conceptObject.setImages(nodeImages);            
+            conceptObject.setImages(nodeImages);
         } catch (Exception e) {
             //System.err.println("");
         }
@@ -2212,9 +2294,9 @@ public class CsvReadHelper {
         private ArrayList<String> broaders;
         private ArrayList<String> narrowers;
         private ArrayList<String> relateds;
-        
+
         // pour les relations personnalisées
-        private ArrayList<NodeIdValue> customRelations;        
+        private ArrayList<NodeIdValue> customRelations;
 
         // les aligenements 
         private ArrayList<String> exactMatchs;
@@ -2231,10 +2313,10 @@ public class CsvReadHelper {
 
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
-        
+
         // les Facettes d'un Concept
-        private String superOrdinate;         
-        
+        private String superOrdinate;
+
         // iso-thes:subGroup
         private ArrayList<String> subGroups;
         private ArrayList<String> replacedBy;
@@ -2244,7 +2326,7 @@ public class CsvReadHelper {
 
         // l'appartenance du concept à une facette
         private ArrayList<String> memberOfFacets;
-        
+
         // dates 
         //dct:created, dct:modified
         private String created;
@@ -2279,7 +2361,7 @@ public class CsvReadHelper {
 
             members = new ArrayList<>();
             alignments = new ArrayList<>();
-            
+
             subGroups = new ArrayList<>();
             replacedBy = new ArrayList<>();
             images = new ArrayList<>();
@@ -2330,7 +2412,7 @@ public class CsvReadHelper {
             }
             if(customRelations != null)
                 customRelations.clear();
-            
+
             if (exactMatchs != null) {
                 exactMatchs.clear();
             }
