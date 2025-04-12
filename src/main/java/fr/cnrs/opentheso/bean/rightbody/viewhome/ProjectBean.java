@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.entites.LanguageIso639;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -34,7 +35,8 @@ public class ProjectBean implements Serializable {
     private SelectedTheso selectedTheso;
     private LanguageBean languageBean;
     private LanguageRepository languageRepository;
-    private StatisticHelper statisticHelper;
+    private ConceptRepository conceptRepository;
+    private ConceptStatusRepository conceptStatusRepository;
     private ProjectDescriptionRepository projectDescriptionRepository;
 
     private String workLanguage, description, langCode, langCodeSelected, projectIdSelected;
@@ -48,14 +50,12 @@ public class ProjectBean implements Serializable {
     public ProjectBean(@Value("${settings.workLanguage:fr}") String workLanguage,
                        SelectedTheso selectedTheso,
                        LanguageBean languageBean,
-                       StatisticHelper statisticHelper,
                        LanguageRepository languageRepository,
                        ProjectDescriptionRepository projectDescriptionRepository) {
 
         this.workLanguage = workLanguage;
         this.languageBean = languageBean;
         this.selectedTheso = selectedTheso;
-        this.statisticHelper = statisticHelper;
         this.languageRepository = languageRepository;
         this.projectDescriptionRepository = projectDescriptionRepository;
     }
@@ -96,7 +96,7 @@ public class ProjectBean implements Serializable {
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {
-                element.setNbrConcepts(statisticHelper.getNbCpt(element.getId()));
+                element.setNbrConcepts(conceptStatusRepository.countValidConceptsByThesaurus(element.getId()));
             } catch(Exception ex) {
                 element.setNbrConcepts(0);
             }

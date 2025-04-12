@@ -3,7 +3,8 @@ package fr.cnrs.opentheso.bean.rightbody.viewhome;
 import fr.cnrs.opentheso.entites.ThesaurusHomePage;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHomePageRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
@@ -39,10 +40,11 @@ public class ViewEditorThesoHomeBean implements Serializable {
     private String workLanguage;
     private UserHelper userHelper;
     private ConceptHelper conceptHelper;
-    private StatisticHelper statisticHelper;
     private UserGroupLabelRepository userGroupLabelRepository;
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
     private ThesaurusHomePageRepository thesaurusHomePageRepository;
+    private ConceptRepository conceptRepository;
+    private ConceptStatusRepository conceptStatusRepository;
 
     private boolean isViewPlainText, isInEditing;
     private String text, colorOfHtmlButton, colorOfTextButton;
@@ -50,20 +52,22 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     @Inject
     public ViewEditorThesoHomeBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                                   StatisticHelper statisticHelper,
                                    ConceptHelper conceptHelper,
                                    UserHelper userHelper,
                                    ThesaurusHomePageRepository thesaurusHomePageRepository,
                                    ThesaurusDcTermRepository thesaurusDcTermRepository,
-                                   UserGroupLabelRepository userGroupLabelRepository) {
+                                   UserGroupLabelRepository userGroupLabelRepository,
+                                   ConceptRepository conceptRepository,
+                                   ConceptStatusRepository conceptStatusRepository) {
 
         this.workLanguage = workLanguage;
         this.thesaurusDcTermRepository = thesaurusDcTermRepository;
         this.thesaurusHomePageRepository = thesaurusHomePageRepository;
         this.conceptHelper = conceptHelper;
         this.userHelper = userHelper;
-        this.statisticHelper = statisticHelper;
+        this.conceptRepository = conceptRepository;
         this.userGroupLabelRepository = userGroupLabelRepository;
+        this.conceptStatusRepository = conceptStatusRepository;
     }
 
     public void reset(){
@@ -146,7 +150,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getTotalConceptOfTheso(String idThesaurus){
-        return String.valueOf(statisticHelper.getNbCpt(idThesaurus));
+        return String.valueOf(conceptStatusRepository.countValidConceptsByThesaurus(idThesaurus));
     }
 
     public String getLastModifiedDate(String idThesaurus){

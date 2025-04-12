@@ -43,7 +43,7 @@ public class ModifyRoleBean implements Serializable {
     private MyProjectBean myProjectBean;
     private RoleRepository roleRepository;
     private UserRepository userRepository;
-    private UserGroupLabelRepository userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository;
     private UserRoleGroupRepository userRoleGroupRepository;
     private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
@@ -66,14 +66,14 @@ public class ModifyRoleBean implements Serializable {
 
     @Inject
     public ModifyRoleBean(MyProjectBean myProjectBean, RoleRepository roleRepository, UserRepository userRepository,
-                          UserGroupLabelRepository userGroupLabelRepository2, UserRoleGroupRepository userRoleGroupRepository,
+                          UserGroupLabelRepository userGroupLabelRepository, UserRoleGroupRepository userRoleGroupRepository,
                           UserRoleOnlyOnRepository userRoleOnlyOnRepository,
                           ThesaurusService thesaurusService, UserRoleGroupService userRoleGroupService) {
 
         this.myProjectBean = myProjectBean;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
-        this.userGroupLabelRepository2 = userGroupLabelRepository2;
+        this.userGroupLabelRepository = userGroupLabelRepository;
         this.userRoleGroupRepository = userRoleGroupRepository;
         this.userRoleOnlyOnRepository = userRoleOnlyOnRepository;
         this.thesaurusService = thesaurusService;
@@ -162,7 +162,7 @@ public class ModifyRoleBean implements Serializable {
         
         // suppression de tous les rôles
         var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
-        var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        var userGroupLabel = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get();
         userRoleOnlyOnRepository.deleteByUserAndGroup(user, userGroupLabel);
         
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
@@ -204,7 +204,7 @@ public class ModifyRoleBean implements Serializable {
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
             var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
-            var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+            var userGroupLabel = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get();
 
             userRoleOnlyOnRepository.deleteByUserAndGroup(user, userGroupLabel);
 
@@ -231,7 +231,7 @@ public class ModifyRoleBean implements Serializable {
 
         var user = userRepository.findById(selectedNodeUserRole.getIdUser()).get();
         var role = roleRepository.findById(selectedNodeUserRole.getIdRole()).get();
-        var group = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        var group = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get();
         var thesaurus = thesaurusService.getThesaurusById(selectedNodeUserRole.getIdTheso());
         userRoleOnlyOnRepository.deleteByUserAndGroupAndRoleAndTheso(user, group, role, thesaurus);
 
@@ -281,7 +281,7 @@ public class ModifyRoleBean implements Serializable {
         }
 
         var user = userRepository.findById(nodeSelectedUser.getId()).get();
-        var userGroupLabel = userGroupLabelRepository2.findById(Integer.parseInt(selectedProject)).get();
+        var userGroupLabel = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get();
         userRoleGroupRepository.deleteByUserAndGroup(user, userGroupLabel);
 
         showMessage(FacesMessage.SEVERITY_INFO, "L'utilisateur a été supprimé du projet !!!");

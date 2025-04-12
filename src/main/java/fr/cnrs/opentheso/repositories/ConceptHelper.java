@@ -953,12 +953,12 @@ public class ConceptHelper implements Serializable {
             try (Statement stmt = conn.createStatement()) {
                 String query = "SELECT c.notation, c.status, c.id_concept "
                         + "FROM concept c "
-                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON c.id::text = cgc.idconcept " : "")
-                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + "LEFT JOIN concept_group_concept cgc ON c.id::text = cgc.idconcept "
+                        + "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup "
                         + "WHERE c.id_thesaurus = '" + idThesaurus + "' "
                         + "AND c.top_concept = true "
                         + "AND c.status != 'CA' "
-                        + (isPrivate ? "AND (cg.private = true OR cg.idgroup IS NULL) " : "")
+                        + (isPrivate ? "" : "AND (cg.private = false OR cg.idgroup IS NULL) ")
                         + (isSortByNotation ? "ORDER BY c.notation ASC LIMIT 2000" : "");
 
                 stmt.executeQuery(query);
@@ -1401,64 +1401,6 @@ public class ConceptHelper implements Serializable {
             log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
         }
         return nodeUris;
-    }
-
-    /**
-     * permet de retourner la liste des concepts pour un group donné retour au
-     * format de NodeConceptTree (informations pour construire l'arbre
-     */
-    public int getCountOfConceptsOfGroup(String idThesaurus, String idGroup) {
-
-        int count = 0;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT count(concept.id_concept)"
-                        + " FROM concept, concept_group_concept"
-                        + " WHERE"
-                        + " concept.id_concept = concept_group_concept.idconcept AND"
-                        + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                        + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                        + " concept.status != 'CA' AND "
-                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        count = resultSet.getInt(1);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
-        }
-        return count;
-    }
-
-    /**
-     * permet de retourner le nombre des concepts dans un thesaurus rattaché à
-     * aucun groupe
-     *
-     * @param idThesaurus
-     * @return
-     */
-    public int getCountOfConceptsSansGroup(String idThesaurus) {
-
-        int count = 0;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT count(id_concept) FROM concept "
-                        + " WHERE id_thesaurus = '" + idThesaurus + "' "
-                        + " AND concept.status != 'CA'"
-                        + " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        count = resultSet.getInt(1);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
-        }
-        return count;
     }
 
     /**

@@ -1,7 +1,5 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
-
-
 import fr.cnrs.opentheso.bean.concept.DragAndDrop;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.FacetHelper;
@@ -19,7 +17,6 @@ import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
@@ -165,8 +162,8 @@ public class Tree implements Serializable {
 
         TreeNodeData data;
         // la liste est triée par alphabétique ou notation
-        List<NodeConceptTree> nodeConceptTrees = conceptHelper
-                .getListOfTopConcepts(idTheso, idLang, selectedTheso.isSortByNotation(), ObjectUtils.isEmpty(currentUser.getNodeUser()));
+        List<NodeConceptTree> nodeConceptTrees = conceptHelper.getListOfTopConcepts(idTheso, idLang,
+                selectedTheso.isSortByNotation(), ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         if (nodeConceptTrees.size() >= 2000) {
             manySiblings = true;

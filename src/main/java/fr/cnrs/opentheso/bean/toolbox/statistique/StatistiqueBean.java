@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
@@ -16,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.stream.Collectors;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import jakarta.inject.Inject;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,37 +33,27 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 
 
 
+@Data
 @Named(value = "statistiqueBean")
 @SessionScoped
+@NoArgsConstructor
 public class StatistiqueBean implements Serializable {
     
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private LanguageBean languageBean;
-
-    @Autowired
+    private SelectedTheso selectedTheso;
+    private LanguageBean languageBean;
     private GroupHelper groupHelper;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
-
-    @Autowired
     private StatistiqueService statistiqueService;
 
-    @Autowired
-    private StatisticHelper statisticHelper;
-
     private boolean genericTypeVisible, conceptTypeVisible;
-    private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
+    private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat, selectedLanguage;
     private int nbrCanceptByThes, nbrCandidateByThes, nbrDeprecatedByThes;
     private Date dateDebut, dateFin, derniereModification;
-    private String selectedLanguage;
     private ConceptStatisticData canceptStatistiqueSelected;
 
     private List<GenericStatistiqueData> genericStatistiques;
-    private List<ConceptStatisticData> conceptStatistic;
+    private List<ConceptStatisticData> canceptStatistiques;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
 
@@ -75,37 +64,22 @@ public class StatistiqueBean implements Serializable {
             "rgb(0, 255, 0)", "rgb(135, 233, 144)", "rgb(9, 106, 9)", "rgb(112, 141, 35)",
             "rgb(255, 205, 86)"));
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
 
-    public void clear(){
-        if(genericStatistiques!= null){
-            genericStatistiques.clear();
-            genericStatistiques = null;
-        }
-        if(conceptStatistic!= null){
-            conceptStatistic.clear();
-            conceptStatistic = null;
-        }
-        if(languagesOfTheso!= null){
-            languagesOfTheso.clear();
-            languagesOfTheso = null;
-        }
-        if(groupList!= null){
-            groupList.clear();
-            groupList = null;
-        }        
-        selectedStatistiqueTypeCode = null;
-        selectedCollection = null;        
-        nbrResultat = null;
-        dateDebut = null;
-        dateFin = null;        
-        derniereModification = null;
-        selectedLanguage = null;
-        canceptStatistiqueSelected = null;        
-    }    
+    @Inject
+    public StatistiqueBean(SelectedTheso selectedTheso,
+                           LanguageBean languageBean,
+                           GroupHelper groupHelper,
+                           ThesaurusHelper thesaurusHelper,
+                           ConceptHelper conceptHelper,
+                           StatistiqueService statistiqueService) {
+
+        this.selectedTheso = selectedTheso;
+        this.languageBean = languageBean;
+        this.groupHelper = groupHelper;
+        this.thesaurusHelper = thesaurusHelper;
+        this.conceptHelper = conceptHelper;
+        this.statistiqueService = statistiqueService;
+    }
     
     public void init() {
 
@@ -113,29 +87,26 @@ public class StatistiqueBean implements Serializable {
         conceptTypeVisible = false;
 
         genericStatistiques = new ArrayList<>();
-        conceptStatistic = new ArrayList<>();
+        canceptStatistiques = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
             return;
         }
+
         selectedLanguage = selectedTheso.getCurrentLang();
         initChamps();
     }
+
     public void clearFilter(){
         dateDebut = null;
         dateFin = null;
         selectedCollection = "";
-        conceptStatistic = new ArrayList<>();
+        canceptStatistiques = new ArrayList<>();
         genericStatistiques = new ArrayList<>();
     }
 
     public DonutChartModel createChartModel(int model) {
-
-        DonutChartModel donutModel = new DonutChartModel();
-        ChartData data = new ChartData();
-
-        DonutChartDataSet dataSet = new DonutChartDataSet();
 
         List<Number> values = new ArrayList<>();
         List<String> labels = new ArrayList<>();
@@ -163,26 +134,29 @@ public class StatistiqueBean implements Serializable {
             if (pos == colors.size()) pos = 0;
         }
 
+        var dataSet = new DonutChartDataSet();
         dataSet.setData(values);
         dataSet.setBackgroundColor(bgColors);
+
+        var data = new ChartData();
         data.addChartDataSet(dataSet);
         data.setLabels(labels);
-        donutModel.setData(data);
 
+        var donutModel = new DonutChartModel();
+        donutModel.setData(data);
         return donutModel;
     }
     
     private void initChamps() {
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
-        groupList = groupHelper.getAllGroupsByThesaurusAndLang(selectedTheso.getSelectedIdTheso(),
-                languageBean.getIdLangue());
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
+        groupList = groupHelper.getAllGroupsByThesaurusAndLang(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
     }
 
     public void onSelectStatType() {
         
         genericStatistiques = new ArrayList<>();
-        conceptStatistic = new ArrayList<>();
+        canceptStatistiques = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
@@ -200,27 +174,24 @@ public class StatistiqueBean implements Serializable {
     public List<String> searchDomaineName(String enteredValue) {
 
         if ("%".equals(enteredValue)) {
-            return groupList.stream().map(group -> group.getName()).collect(Collectors.toList());
+            return groupList.stream()
+                    .map(group -> group.getName())
+                    .collect(Collectors.toList());
+        } else {
+            return groupList.stream()
+                    .filter((s) -> (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())))
+                    .map(element -> element.getName())
+                    .toList();
         }
-
-        List<String> matches = new ArrayList<>();
-
-        groupList.stream().filter((s) -> (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase()))).forEachOrdered((s) -> {
-            matches.add(s.getName());
-        });
-
-        return matches;
     }
 
     private String searchGroupIdFromLabel(String label) {
-        String groupId = "";
-        for (DomaineDto group : groupList) {
-            if (group.getName().equals(label)) {
-                groupId = group.getId();
-                break;
-            }
+
+        if (CollectionUtils.isNotEmpty(groupList)) {
+            var groupLabel = groupList.stream().filter(element -> element.getName().equals(label)).findFirst();
+            return groupLabel.isPresent() ? groupLabel.get().getId() : "";
         }
-        return groupId;
+        return "";
     }
 
     public String formatLanguage(String langLabel) {
@@ -228,6 +199,7 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void onSelectLanguageType() {
+
         onSelectStatType();
         clearFilter();
 
@@ -235,36 +207,33 @@ public class StatistiqueBean implements Serializable {
 
             genericStatistiques = statistiqueService.searchAllCollectionsByThesaurus(selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
-            nbrCanceptByThes = statisticHelper.getNbCpt(selectedTheso.getCurrentIdTheso());
-            
-            nbrCandidateByThes = statisticHelper.getNbCandidate(selectedTheso.getCurrentIdTheso());
-            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(selectedTheso.getCurrentIdTheso());
-            
+            nbrCanceptByThes = statistiqueService.countValidConceptsByThesaurus(selectedTheso.getCurrentIdTheso());
+
+            var conceptsList = statistiqueService.findAllByThesaurusIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "CA");
+            nbrCandidateByThes = CollectionUtils.isNotEmpty(conceptsList) ? conceptsList.size() : 0;
+
+            var deprecatedConceptsList = statistiqueService.findAllByThesaurusIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "DEP");
+            nbrDeprecatedByThes = CollectionUtils.isNotEmpty(deprecatedConceptsList) ? deprecatedConceptsList.size() : 0;
 
             derniereModification = conceptHelper.getLastModification(selectedTheso.getCurrentIdTheso());
 
             genericTypeVisible = true;
             conceptTypeVisible = false;
-
         } else {
-
             genericTypeVisible = false;
             conceptTypeVisible = true;
         }
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
     
     public boolean isExportVisible() {
-        return !CollectionUtils.isEmpty(genericStatistiques) || !CollectionUtils.isEmpty(conceptStatistic);
+        return !CollectionUtils.isEmpty(genericStatistiques) || !CollectionUtils.isEmpty(canceptStatistiques);
     }
 
     public void getStatisticByConcept() {
-        conceptStatistic = statistiqueService.searchAllConceptsByThesaurus(this,
+        canceptStatistiques = statistiqueService.searchAllConceptsByThesaurus(this,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLanguage, dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
@@ -272,11 +241,11 @@ public class StatistiqueBean implements Serializable {
 
     public StreamedContent exportStatiqituque() {
 
-        StatistiquesRapportCSV statistiquesRapportCSV = new StatistiquesRapportCSV();
+        var statistiquesRapportCSV = new StatistiquesRapportCSV();
         if (genericTypeVisible) {
             statistiquesRapportCSV.createGenericStatitistiquesRapport(genericStatistiques);
         } else {
-            statistiquesRapportCSV.createConceptsStatitistiquesRapport(conceptStatistic);
+            statistiquesRapportCSV.createConceptsStatitistiquesRapport(canceptStatistiques);
         }
 
         return DefaultStreamedContent.builder()
@@ -296,122 +265,4 @@ public class StatistiqueBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
     }
-
-    public boolean showExportButton() {
-        return genericTypeVisible || conceptTypeVisible;
-    }
-
-    public Date getDerniereModification() {
-        return derniereModification;
-    }
-
-    public int getNbrCanceptByThes() {
-        return nbrCanceptByThes;
-    }
-
-    public String getSelectedStatistiqueTypeCode() {
-        return selectedStatistiqueTypeCode;
-    }
-
-    public void setSelectedStatistiqueTypeCode(String selectedStatistiqueTypeCode) {
-        this.selectedStatistiqueTypeCode = selectedStatistiqueTypeCode;
-    }
-
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
-        return languagesOfTheso;
-    }
-
-    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
-        this.languagesOfTheso = languagesOfTheso;
-    }
-
-    public String getSelectedLanguage() {
-        return selectedLanguage;
-    }
-
-    public void setSelectedLanguage(String selectedLanguage) {
-        this.selectedLanguage = selectedLanguage;
-    }
-
-    public boolean isGenericTypeVisible() {
-        return genericTypeVisible;
-    }
-
-    public boolean isConceptTypeVisible() {
-        return conceptTypeVisible;
-    }
-
-    public Date getDateDebut() {
-        return dateDebut;
-    }
-
-    public void setDateDebut(Date dateDebut) {
-        this.dateDebut = dateDebut;
-    }
-
-    public Date getDateFin() {
-        return dateFin;
-    }
-
-    public void setDateFin(Date dateFin) {
-        this.dateFin = dateFin;
-    }
-
-    public List<GenericStatistiqueData> getGenericStatistiques() {
-        return genericStatistiques;
-    }
-
-    public void setGenericStatistiques(List<GenericStatistiqueData> genericStatistiques) {
-        this.genericStatistiques = genericStatistiques;
-    }
-
-    public List<ConceptStatisticData> getCanceptStatistiques() {
-        return conceptStatistic;
-    }
-
-    public void setCanceptStatistiques(List<ConceptStatisticData> canceptStatistiques) {
-        this.conceptStatistic = canceptStatistiques;
-    }
-
-    public String getSelectedCollection() {
-        return selectedCollection;
-    }
-
-    public void setSelectedCollection(String selectedCollection) {
-        this.selectedCollection = selectedCollection;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public String getNbrResultat() {
-        return nbrResultat;
-    }
-
-    public void setNbrResultat(String nbrResultat) {
-        this.nbrResultat = nbrResultat;
-    }
-
-    public ConceptStatisticData getCanceptStatistiqueSelected() {
-        return canceptStatistiqueSelected;
-    }
-
-    public int getNbrCandidateByThes() {
-        return nbrCandidateByThes;
-    }
-
-    public void setNbrCandidateByThes(int nbrCandidateByThes) {
-        this.nbrCandidateByThes = nbrCandidateByThes;
-    }
-
-    public int getNbrDeprecatedByThes() {
-        return nbrDeprecatedByThes;
-    }
-
-    public void setNbrDeprecatedByThes(int nbrDeprecatedByThes) {
-        this.nbrDeprecatedByThes = nbrDeprecatedByThes;
-    }
-    
-    
 }

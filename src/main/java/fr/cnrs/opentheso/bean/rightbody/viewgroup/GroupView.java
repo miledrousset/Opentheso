@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupType;
@@ -25,13 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 @Data
-/**
- *
- * @author miledrousset
- */
-@Named(value = "groupView")
-@SessionScoped
 @Slf4j
+@SessionScoped
+@Named(value = "groupView")
 public class GroupView implements Serializable {
 
     
@@ -46,6 +43,9 @@ public class GroupView implements Serializable {
 
     @Autowired
     private ConceptHelper conceptHelper;
+
+    @Autowired
+    private ConceptStatusRepository conceptStatusRepository;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -122,7 +122,7 @@ public class GroupView implements Serializable {
         logGroup();
         setNotes(idTheso, idGroup, idLang);
 
-        count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
+        count = conceptStatusRepository.countConceptsInGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();

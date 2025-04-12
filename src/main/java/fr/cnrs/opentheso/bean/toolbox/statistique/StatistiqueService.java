@@ -1,120 +1,172 @@
 package fr.cnrs.opentheso.bean.toolbox.statistique;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.entites.Alignement;
+import fr.cnrs.opentheso.entites.Concept;
+import fr.cnrs.opentheso.models.ConceptGroupProjection;
+import fr.cnrs.opentheso.repositories.AlignementRepository;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
-import fr.cnrs.opentheso.models.group.NodeGroup;
 
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import jakarta.faces.application.FacesMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 
+@Data
 @Service
 public class StatistiqueService {
 
-    @Autowired
+    private AlignementRepository alignementRepository;
+    private ConceptRepository conceptRepository;
+    private ConceptStatusRepository conceptStatusRepository;
     private GroupHelper groupHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private StatisticHelper statisticHelper;
-
-    @Autowired
     private NoteHelper noteHelper;
 
+
+    public StatistiqueService(AlignementRepository alignementRepository,
+                              GroupHelper groupHelper,
+                              ConceptRepository conceptRepository,
+                              ConceptStatusRepository conceptStatusRepository,
+                              NoteHelper noteHelper) {
+
+        this.alignementRepository = alignementRepository;
+        this.groupHelper = groupHelper;
+        this.noteHelper = noteHelper;
+        this.conceptRepository = conceptRepository;
+        this.conceptStatusRepository = conceptStatusRepository;
+    }
 
     public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idTheso, String idLang) {
 
         List<GenericStatistiqueData> result = new ArrayList<>();
         
-        ArrayList<NodeGroup> listGroup = groupHelper.getListConceptGroup(idTheso, idLang);
+        var listGroup = groupHelper.getListConceptGroup(idTheso, idLang);
 
-        listGroup.stream().forEach(group -> {
-            GenericStatistiqueData data = new GenericStatistiqueData();
-            data.setIdCollection(group.getConceptGroup().getIdgroup());
-            data.setCollection(group.getLexicalValue());
+        listGroup.forEach(group -> {
 
-            data.setNotesNbr(noteHelper.getNbrNoteByGroup(
-                    group.getConceptGroup().getIdgroup(), idTheso, idLang));
-
-            data.setSynonymesNbr(statisticHelper.getNbSynonymesByGroup(idTheso,
-                    group.getConceptGroup().getIdgroup(), idLang));
-
-            data.setConceptsNbr(conceptHelper.getCountOfConceptsOfGroup(idTheso,
-                    group.getConceptGroup().getIdgroup()));
-
-            data.setTermesNonTraduitsNbr(
-                    data.getConceptsNbr() - 
-                    statisticHelper.getNbTradOfGroup(idTheso, group.getConceptGroup().getIdgroup(), idLang));//getNbrTermNonTraduit(group, idTheso, idLang));
-
-            data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(idTheso, group.getConceptGroup().getIdgroup()));
+            var noteNbr = noteHelper.getNbrNoteByGroup(group.getConceptGroup().getIdgroup(), idTheso, idLang);
+            var conceptNbr = conceptStatusRepository.countConceptsInGroup(idTheso, group.getConceptGroup().getIdgroup());
+            var traductionOfGroupNbr = conceptStatusRepository.countNonPreferredTermsByLangAndGroup(idTheso,
+                    group.getConceptGroup().getIdgroup(), idLang);
+            var WikidataAlignNbr = getNbAlignWikidata(idTheso, group.getConceptGroup().getIdgroup());
+            var totalAlignmentNbr = getAlignementsSize(idTheso, group.getConceptGroup().getIdgroup()).size();
+            var termesNonTraduitsNbr = conceptNbr - traductionOfGroupNbr;
             
-            data.setTotalAlignment(statisticHelper.getNbAlign(idTheso, group.getConceptGroup().getIdgroup()));
-            
-            result.add(data);
+            result.add(GenericStatistiqueData.builder()
+                    .idCollection(group.getConceptGroup().getIdgroup())
+                    .collection(group.getLexicalValue())
+                    .notesNbr(noteNbr)
+                    .synonymesNbr(traductionOfGroupNbr)
+                    .conceptsNbr(conceptNbr)
+                    .termesNonTraduitsNbr(conceptNbr - traductionOfGroupNbr)
+                    .wikidataAlignNbr(WikidataAlignNbr)
+                    .totalAlignment(totalAlignmentNbr)
+                    .termesNonTraduitsNbr(termesNonTraduitsNbr)
+                    .build());
         });
 
-        // Ajout de la dernier ligne réservé aux concepts sans collection
-        GenericStatistiqueData data = new GenericStatistiqueData();
-        data.setCollection("Sans collection");
-        data.setConceptsNbr(conceptHelper.getCountOfConceptsSansGroup(idTheso));
-        data.setNotesNbr(noteHelper.getNbrNoteSansGroup(idTheso, idLang));
-        data.setSynonymesNbr(statisticHelper.getNbDesSynonimeSansGroup(idTheso, idLang));
-        data.setTermesNonTraduitsNbr(data.getConceptsNbr() - statisticHelper.getNbTradWithoutGroup(idTheso, idLang));
-        
-        data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(idTheso, null));  
-        data.setTotalAlignment(statisticHelper.getNbAlign(idTheso, null));          
-        
-        result.add(data);
+        var conceptNbr = conceptStatusRepository.countConceptsWithoutGroup(idTheso);
+        result.add(GenericStatistiqueData.builder()
+                .collection("Sans collection")
+                .conceptsNbr(conceptNbr)
+                .notesNbr(noteHelper.getNbrNoteSansGroup(idTheso, idLang))
+                .synonymesNbr(conceptStatusRepository.countNonPreferredTermsNotInGroup(idTheso, idLang))
+                .termesNonTraduitsNbr(conceptNbr - conceptStatusRepository.countConceptsWithoutGroupByLangAndThesaurus(idTheso, idLang))
+                .wikidataAlignNbr(getNbAlignWikidata(idTheso, null))
+                .totalAlignment(getAlignementsSize(idTheso, null).size())
+                .build());
 
         return result;
-
     }
 
-    public List<ConceptStatisticData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean,
-                         String idTheso, String idLang, Date dateDebut, Date dateFin, String collectionId, String nbrResultat) {
+    public int getNbAlignWikidata(String thesaurusId, String groupId) {
+        return getAlignementsSize(thesaurusId, groupId).stream()
+                .filter(element -> StringUtils.isNotEmpty(element.getUriTarget()) && element.getUriTarget().contains("wikidata.org"))
+                .toList()
+                .size();
+    }
 
-        List<ConceptStatisticData> result = new ArrayList<>();
+    private List<Alignement> getAlignementsSize(String thesaurusId, String groupId) {
 
-        if (dateDebut == null && dateFin != null) {
+        var alignements = StringUtils.isEmpty(groupId)
+                ? alignementRepository.findAlignementsNotInConceptGroup(thesaurusId)
+                : alignementRepository.findAlignementsByGroupAndThesaurus(groupId, thesaurusId);
+
+        return CollectionUtils.isNotEmpty(alignements) ? alignements : List.of();
+    }
+
+    public List<ConceptStatisticData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean, String idTheso,
+                                                                   String idLang, Date dateDebut, Date dateFin,
+                                                                   String collectionId, String nbrResultat) {
+
+        if (ObjectUtils.isEmpty(dateDebut) && ObjectUtils.isEmpty(dateFin)) {
             statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "Il faut préciser la date de fin !");
-            return result;
+            return List.of();
         }
 
-        if (dateDebut != null && dateFin != null && dateDebut.after(dateFin)) {
+        if (!ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin) && dateDebut.after(dateFin)) {
             statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "La date de début est plus récente que la date de fin !");
-            return result;
+            return List.of();
         }
 
-        if (dateDebut != null && dateFin == null) {
+        if (!ObjectUtils.isEmpty(dateDebut) && ObjectUtils.isEmpty(dateFin)) {
             dateFin = new Date();
         }
+
         int limit;
         try {
             limit = Integer.parseInt(nbrResultat);
         } catch (Exception e) {
             limit = 100;
         }
-        if(dateDebut == null || dateFin == null) {
-            if(collectionId == null || collectionId.isEmpty()) {
-                result = statisticHelper.getStatConcept(idTheso, idLang, limit);
-            } else {
-                result = statisticHelper.getStatConceptLimitCollection(idTheso, collectionId, idLang, limit);
-            }
+
+        if(!ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin)) {
+
+            var result = StringUtils.isEmpty(collectionId)
+                    ? conceptStatusRepository.findRecentConceptsByLangAndThesaurus(idTheso, idLang, limit)
+                    : conceptStatusRepository.findConceptsByGroupAndLang(idTheso, idLang, collectionId, limit);
+            return conceptStatisticDataMapper(result);
         } else {
-            result = statisticHelper.getStatConceptByDateAndCollection(idTheso, collectionId, idLang,
-                    dateDebut.toString(), dateFin.toString(), limit);
+            var result = (StringUtils.isEmpty(collectionId))
+                ? conceptStatusRepository.findConceptsModifiedBetween(idTheso, idLang, dateDebut, dateFin, limit)
+                : conceptStatusRepository.findConceptsByGroupLangDate(idTheso, idLang, collectionId, dateDebut, dateFin, limit);
+
+            return conceptStatisticDataMapper(result);
         }
-        return result;
+    }
+
+    public int countValidConceptsByThesaurus(String idThesaurus) {
+        return conceptStatusRepository.countValidConceptsByThesaurus(idThesaurus);
+    }
+
+    public List<Concept> findAllByThesaurusIdThesaurusAndStatus(String idThesaurus, String status) {
+        return conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idThesaurus, status);
+    }
+
+    private List<ConceptStatisticData> conceptStatisticDataMapper(List<ConceptGroupProjection> conceptGroupProjectionsList) {
+
+        var dataFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return CollectionUtils.isEmpty(conceptGroupProjectionsList)
+                ? List.of()
+                : conceptGroupProjectionsList.stream()
+                    .map(element -> ConceptStatisticData.builder()
+                        .idConcept(element.getIdConcept())
+                        .dateCreation(dataFormat.format(element.getCreated()))
+                        .dateModification(dataFormat.format(element.getModified()))
+                        .label(element.getLexicalValue())
+                        .utilisateur(element.getUsername())
+                        .build())
+                    .toList();
     }
 
 }

@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -32,7 +31,6 @@ import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
@@ -115,9 +113,6 @@ public class ImportFileBean implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
     private CsvImportHelper csvImportHelper;
 
     @Autowired
@@ -154,7 +149,7 @@ public class ImportFileBean implements Serializable {
     private ImportRdf4jHelper importRdf4jHelper;
 
     @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository;
 
     private double progress = 0;
     private double progressStep = 0;
@@ -273,9 +268,9 @@ public class ImportFileBean implements Serializable {
 
         selectedUserProject = "";
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserProjects = userGroupLabelRepository2.findAll();
+            nodeUserProjects = userGroupLabelRepository.findAll();
         } else {
-            nodeUserProjects = userGroupLabelRepository2.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
+            nodeUserProjects = userGroupLabelRepository.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
             for (UserGroupLabel nodeUserProject : nodeUserProjects) {
                 selectedUserProject = "" + nodeUserProject.getId();
             }

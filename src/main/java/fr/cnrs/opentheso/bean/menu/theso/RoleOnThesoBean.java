@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
@@ -8,7 +10,6 @@ import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -19,6 +20,7 @@ import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.TreeNode;
@@ -53,11 +55,12 @@ public class RoleOnThesoBean implements Serializable {
     private UserRoleGroupRepository userRoleGroupRepository;
     private UserHelper userHelper;
     private ThesaurusHelper thesaurusHelper;
-    private StatisticHelper statisticHelper;
     private PreferencesHelper preferencesHelper;
     private RoleRepository roleRepository;
     private ThesaurusRepository thesaurusRepository;
-    private UserGroupLabelRepository userGroupLabelRepository2;
+    private UserGroupLabelRepository userGroupLabelRepository;
+    private ConceptRepository conceptRepository;
+    private ConceptStatusRepository conceptStatusRepository;
 
     private List<ThesoModel> listTheso;
     private Map<String, String> listThesoAsAdmin;
@@ -80,10 +83,10 @@ public class RoleOnThesoBean implements Serializable {
                            LanguageBean languageBean,
                            UserHelper userHelper,
                            ThesaurusHelper thesaurusHelper,
-                           StatisticHelper statisticHelper,
                            PreferencesHelper preferencesHelper,
                            ThesaurusRepository thesaurusRepository,
-                           UserGroupLabelRepository userGroupLabelRepository2) {
+                           UserGroupLabelRepository userGroupLabelRepository,
+                           ConceptRepository conceptRepository) {
 
         this.workLanguage = workLanguage;
         this.languageBean = languageBean;
@@ -92,11 +95,11 @@ public class RoleOnThesoBean implements Serializable {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.thesaurusHelper = thesaurusHelper;
-        this.statisticHelper = statisticHelper;
+        this.conceptRepository = conceptRepository;
         this.thesaurusRepository = thesaurusRepository;
         this.preferencesHelper = preferencesHelper;
         this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupLabelRepository2 = userGroupLabelRepository2;
+        this.userGroupLabelRepository = userGroupLabelRepository;
     }
 
     public void initNodePref(SelectedTheso selectedTheso) {
@@ -348,7 +351,7 @@ public class RoleOnThesoBean implements Serializable {
             setRole();
         } else {
             var user = userRepository.findById(currentUser.getNodeUser().getIdUser()).get();
-            var group = userGroupLabelRepository2.findById(idGroup).get();
+            var group = userGroupLabelRepository.findById(idGroup).get();
             var thesaurus = thesaurusRepository.findById(selectedTheso.getCurrentIdTheso()).get();
             var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
             if(ObjectUtils.isNotEmpty(tmp)) {
@@ -429,14 +432,18 @@ public class RoleOnThesoBean implements Serializable {
     
     public void showInfosOfTheso(String idTheso) {
 
-        var conceptsCount = statisticHelper.getNbCpt(idTheso);
-        var candidatesCount = statisticHelper.getNbCandidate(idTheso);
-        var deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(idTheso);
+        var conceptsCount = conceptStatusRepository.countValidConceptsByThesaurus(idTheso);
+
+        var conceptsList = conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idTheso, "CA");
+        var candidatesCount = CollectionUtils.isNotEmpty(conceptsList) ? conceptsList.size() : 0;
+
+        var deprecatedConceptsList = conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idTheso, "DEP");
+        var deprecatedCount = CollectionUtils.isNotEmpty(deprecatedConceptsList) ? deprecatedConceptsList.size() : 0;
 
         var message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
                 languageBean.getMsg("candidat.total_concepts") + " = " + conceptsCount + "\n" 
                 + languageBean.getMsg("candidat.titre") + " = " + candidatesCount + "\n"
-                + languageBean.getMsg("search.deprecated") + " = " + deprecatedsCount);
+                + languageBean.getMsg("search.deprecated") + " = " + deprecatedCount);
         
         PrimeFaces.current().dialog().showMessageDynamic(message);
     }

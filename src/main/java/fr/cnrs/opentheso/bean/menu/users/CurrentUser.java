@@ -86,9 +86,6 @@ public class CurrentUser implements Serializable {
     private UserGroupLabelRepository userGroupLabelRepository;
 
     @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository2;
-
-    @Autowired
     private TreeGroups treeGroups;
 
     @Autowired
@@ -438,7 +435,7 @@ public class CurrentUser implements Serializable {
 
         userPermissions.setProjectOfselectedTheso(idProject);
         if (idProject != -1) {
-            userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+            userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository.findById(idProject).get().getLabel());
         }
     }
 
@@ -463,7 +460,7 @@ public class CurrentUser implements Serializable {
         }
 
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userGroupLabelRepository2.findById(idProject).get().getLabel());
+        userPermissions.setSelectedProjectName(userGroupLabelRepository.findById(idProject).get().getLabel());
         userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
