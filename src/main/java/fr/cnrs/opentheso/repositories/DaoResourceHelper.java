@@ -227,8 +227,7 @@ public class DaoResourceHelper {
      * @param isSortByNotation
      * @return 
      */
-    public List<NodeConceptTree> getConceptsNTForTree(String idTheso,
-            String idConceptBT, String idLang, boolean isSortByNotation) {
+    public List<NodeConceptTree> getConceptsNTForTree(String idTheso, String idConceptBT, String idLang, boolean isSortByNotation, boolean isPrivate) {
 
         // on récupère les concepts fils et les facettes
         List<NodeConceptTree> nodeConceptTrees = new ArrayList<>();
@@ -236,7 +235,7 @@ public class DaoResourceHelper {
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_list_narrower_fortree"
-                        + "('" + idTheso + "', '" + idConceptBT + "', '" + idLang + "') "
+                        + "('" + idTheso + "', '" + idConceptBT + "', '" + idLang + "', " + isPrivate + ") "
                         + " as x(idconcept2 Character varying, notation Character varying,"
                         + " status Character varying,  label VARCHAR, havechildren boolean);"
                 );

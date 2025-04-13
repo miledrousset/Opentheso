@@ -243,11 +243,7 @@ public class Tree implements Serializable {
             if ("facet".equals(node.getType())) {
                 addMembersOfFacet(node);
             } else {
-                // if (facetHelper.isConceptHaveFacet(idConceptParent, idTheso)) {
-                //     addConceptsChildWithFacets(node);
-                // } else {
                 addConceptsChild(node);
-                // }
             }
         }
     }
@@ -338,7 +334,7 @@ public class Tree implements Serializable {
     private boolean addConceptsChild(TreeNode parent) {
 
         List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, ((TreeNodeData) parent.getData()).getNodeId(),
-                selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+                selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation(), !ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         if (nodeConceptTrees.size() >= 2000) {
             manySiblings = true;

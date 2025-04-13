@@ -142,21 +142,6 @@ public class Export {
     //    NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, -1, -1);
     }
     
-    @Test
-    public void getListConceptFils(){
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-        
-        String idTheso = "th42";
-        String idConcept = "38559";
-        String idLang = "fr";
-        
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        System.out.println("start");
-    //    List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false);
-        System.out.println("stop");
-    }    
-    
     
     @Test
     public void getOneConcept() {

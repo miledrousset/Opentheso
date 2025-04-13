@@ -951,15 +951,24 @@ public class ConceptHelper implements Serializable {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                String query = "SELECT c.notation, c.status, c.id_concept "
-                        + "FROM concept c "
-                        + "LEFT JOIN concept_group_concept cgc ON c.id::text = cgc.idconcept "
-                        + "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup "
-                        + "WHERE c.id_thesaurus = '" + idThesaurus + "' "
-                        + "AND c.top_concept = true "
-                        + "AND c.status != 'CA' "
-                        + (isPrivate ? "" : "AND (cg.private = false OR cg.idgroup IS NULL) ")
-                        + (isSortByNotation ? "ORDER BY c.notation ASC LIMIT 2000" : "");
+                String query;
+                if (!isPrivate) {
+                    query = "SELECT concept.notation,concept.status, concept.id_concept "
+                            + "FROM concept "
+                            + "WHERE concept.top_concept = true "
+                            + "AND concept.status != 'CA' "
+                            + "AND concept.id_thesaurus = '" + idThesaurus + "';";
+                } else {
+                    query = "SELECT concept.notation,concept.status, concept.id_concept "
+                            + "FROM concept "
+                            + "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept "
+                            + "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup "
+                            + "WHERE concept.top_concept = true "
+                            + "AND concept.status != 'CA' "
+                            + "AND concept.id_thesaurus = '" + idThesaurus + "' "
+                            + "GROUP BY concept.notation,concept.status, concept.id_concept "
+                            + "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false);";
+                }
 
                 stmt.executeQuery(query);
 

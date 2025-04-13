@@ -365,7 +365,7 @@ public class RestRDFHelper {
      */
     private String getNarrower__(String idTheso, String idConcept, String idLang) {
 
-        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false);
+        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false, false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
