@@ -68,12 +68,6 @@
 
         <div class="formLogin">
             <h:form class="login-form">
-                <!--
-                <div style="height: auto; margin-top: -40px; margin-bottom: 7px; text-align: right; vertical-align: central">
-                    <p:outputLabel value="LDAP" styleClass="formLogin-label" />
-                    <p:inputSwitch id="activeLDAP" value="# {currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 10px" />
-                </div>
-                -->
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
                 <p:commandButton value="#{langueBean.getMsg('menu.connect')}" styleClass="ui-button-success" icon="fa-solid fa-key"
@@ -81,10 +75,19 @@
                                  update="containerIndex:header containerIndex:notificationProp 
                                  menuBar containerIndex:searchBar containerIndex:contentConcept messageIndex">
                 </p:commandButton>
+
+                <p:spacer/>
+
+                <!-- Nouveau bouton Keycloak -->
+                <p:button rendered="dd" value="Connexion via Keycloak" icon="fa-brands fa-keycdn" styleClass="ui-button-secondary"
+                          onclick="window.location.href='#{loginBean.keycloakUrl}'; return false;" />
+
+
                 <p class="message">
                     <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"
                                    value="#{langueBean.getMsg('menu.forgotten_pass')}" style="font-size: 12px;"/>
                 </p>
+
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>
         </div>

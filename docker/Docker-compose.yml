@@ -1,17 +1,32 @@
+version: '3.8'
+
 services:
-  opentheso-db:
-    image: postgres:17
-    restart: always
+  db:
+    image: postgres:15
+    container_name: postgres-theso
     environment:
+      POSTGRES_DB: opentheso
       POSTGRES_USER: opentheso
       POSTGRES_PASSWORD: opentheso
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   opentheso:
-    image: opentheso:local
-    build: .
-    restart: always
+    build:
+      context: .
+    container_name: opentheso-app
     depends_on:
-      - opentheso-db
+      - db
     ports:
-      - 8090:8099
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/opentheso
+      SPRING_DATASOURCE_USERNAME: opentheso
+      SPRING_DATASOURCE_PASSWORD: opentheso
+    # si on veut passer les profils Spring directement
+    command: ["java", "-jar", "-Dlogging.config=./logback-spring.xml", "opentheso.jar", "--spring.profiles.active=prod", "--spring.config.additional-location=application-prod.yaml"]
 
+volumes:
+  pgdata:
