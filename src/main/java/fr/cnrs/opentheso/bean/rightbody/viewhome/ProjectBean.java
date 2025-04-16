@@ -67,9 +67,9 @@ public class ProjectBean implements Serializable {
         selectedLangs = languageRepository.findLanguagesByProject(projectIdSelected);
         projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
 
-        projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, getLang()).get();
+        var tmp = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, getLang());
 
-        if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
+        if (tmp.isEmpty()) {
             if (CollectionUtils.isNotEmpty(selectedLangs)) {
                 projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected,
                         selectedLangs.get(0).getIso6391()).get();
@@ -88,7 +88,8 @@ public class ProjectBean implements Serializable {
             }
         }
 
-        if (ObjectUtils.isNotEmpty(projectDescriptionSelected)) {
+        if (tmp.isPresent()) {
+            projectDescriptionSelected = tmp.get();
             description = projectDescriptionSelected.getDescription();
             langCodeSelected = projectDescriptionSelected.getLang();
         }
