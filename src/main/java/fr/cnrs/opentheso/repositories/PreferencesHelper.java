@@ -34,8 +34,7 @@ public class PreferencesHelper implements Serializable {
         boolean status = false;
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("update preferences set use_ark = '" + useArk
-                        + "' where id_thesaurus = '" + idTheso + "'");
+                stmt.executeUpdate("update preferences set use_ark = '" + useArk + "' where id_thesaurus = '" + idTheso + "'");
                 status = true;
             }
         } catch (SQLException ex) {
@@ -85,43 +84,6 @@ public class PreferencesHelper implements Serializable {
             Logger.getLogger(PreferencesHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return status;
-    }     
-    
-    /**
-     * permet de retourner le code JavaScript de GoogleAnalytics
-     */
-    public String getCodeGoogleAnalytics() {
-        String codeAnalytics = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
-                    if (resultSet.next()) {
-                        codeAnalytics = resultSet.getString("googleanalytics");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return codeAnalytics;
-    }
-
-    /**
-     * Permet de mettre à jour le code javaScript de GoogleAnalytics
-     * @param codeJavaScript
-     * @return 
-     */
-    public boolean setCodeGoogleAnalytics(String codeJavaScript) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("update info set googleanalytics = '" + fr.cnrs.opentheso.utils.StringUtils.addQuotes(codeJavaScript) + "'");
-                return true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
     }
 
     /**

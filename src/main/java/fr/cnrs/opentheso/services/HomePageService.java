@@ -2,8 +2,11 @@ package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.entites.HomePage;
+import fr.cnrs.opentheso.entites.Info;
 import fr.cnrs.opentheso.repositories.HomePageRepository;
+import fr.cnrs.opentheso.repositories.InfoRepository;
 import jakarta.inject.Inject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,18 +16,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class HomePageService {
 
-    private String workLanguage;
-    private LanguageBean languageBean;
-    private HomePageRepository homePageRepository;
+    private final String workLanguage;
+    private final LanguageBean languageBean;
+    private final InfoRepository infoRepository;
+    private final HomePageRepository homePageRepository;
 
 
     @Inject
     public HomePageService(@Value("${settings.workLanguage:fr}") String workLanguage,
                            LanguageBean languageBean,
+                           InfoRepository infoRepository,
                            HomePageRepository homePageRepository) {
 
         this.workLanguage = workLanguage;
         this.languageBean = languageBean;
+        this.infoRepository = infoRepository;
         this.homePageRepository = homePageRepository;
     }
 
@@ -54,6 +60,21 @@ public class HomePageService {
 
         var homePage = homePageRepository.findByLang(getLanguage());
         return homePage.isPresent() ? homePage.get().getHtmlCode() : "";
+    }
+
+    public void setCodeGoogleAnalytics(String codeGoogleAnalytics) {
+        var informations = infoRepository.findAll();
+        if (CollectionUtils.isNotEmpty(informations)) {
+            informations.get(0).setGoogleanalytics(codeGoogleAnalytics);
+            infoRepository.save(informations.get(0));
+        } else {
+            infoRepository.save(Info.builder().versionOpentheso("0.0.0").versionBdd("xyz").googleanalytics(codeGoogleAnalytics).build());
+        }
+    }
+
+    public String getCodeGoogleAnalytics() {
+        var informations = infoRepository.findAll();
+        return informations.isEmpty() ? "" : informations.get(0).getGoogleanalytics();
     }
 
 }

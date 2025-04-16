@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.services.HomePageService;
 
@@ -19,6 +20,7 @@ import org.primefaces.PrimeFaces;
 public class ViewEditorHomeBean implements Serializable {
 
     private HomePageService homePageService;
+    private SelectedTheso selectedTheso;
     private PreferencesHelper preferencesHelper;
 
     private boolean isViewPlainText, isInEditing, isInEditingHomePage, isInEditingGoogleAnalytics;
@@ -26,8 +28,9 @@ public class ViewEditorHomeBean implements Serializable {
 
 
     @Inject
-    public ViewEditorHomeBean(HomePageService homePageService, PreferencesHelper preferencesHelper) {
+    public ViewEditorHomeBean(HomePageService homePageService, SelectedTheso selectedTheso, PreferencesHelper preferencesHelper) {
 
+        this.selectedTheso = selectedTheso;
         this.homePageService = homePageService;
         this.preferencesHelper = preferencesHelper;
     }
@@ -39,6 +42,7 @@ public class ViewEditorHomeBean implements Serializable {
         codeGoogleAnalitics = null;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
+
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
@@ -56,7 +60,7 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void initGoogleAnalytics() {
 
-        codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics();
+        codeGoogleAnalitics = homePageService.getCodeGoogleAnalytics();
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
@@ -65,11 +69,15 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void updateGoogleAnalytics() {
 
-        preferencesHelper.setCodeGoogleAnalytics(codeGoogleAnalitics);
+        homePageService.setCodeGoogleAnalytics(codeGoogleAnalitics);
+
         isInEditing = false;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
+
+        selectedTheso.setOptionThesoSelected("Option1");
+
         reset();
 
         PrimeFaces.current().ajax().update("messageIndex");

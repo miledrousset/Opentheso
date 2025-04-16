@@ -37,17 +37,16 @@
                     <p:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="width: 100%; min-height: 300px;"/>
 
                     <div style="width: 100%; display: flex;">
-                        <div style="width: 50%;" />
-                        <div style="width: 50%; text-align: right; margin-top: 20px">
-                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
+                        <div style="width: 100%; text-align: right; margin-top: 20px">
+                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
                                              styleClass="ui-button-secondary button"
                                              update="containerIndex" icon="fas fa-undo-alt"
                                              style="font-size: 14px; margin-right: 20px" actionListener="#{viewEditorHomeBean.reset()}"/>
 
-                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
+                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
                                              icon="pi pi-check"
                                              update="containerIndex" styleClass="ui-button-success"
-                                             actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
+                                             actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}"/>
                         </div>
                     </div>
 
