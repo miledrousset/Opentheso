@@ -12,47 +12,45 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
 import java.util.List;
+
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
 @Data
-@Named(value = "imageBean")
 @SessionScoped
+@Named(value = "imageBean")
 public class ImageBean implements Serializable {
 
-    
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final ConceptHelper conceptHelper;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ImageService imageService;
 
-    @Autowired
-    private ConceptHelper conceptHelper;
+    private String uri, copyright, name, creator;
+    private List<NodeImage> nodeImages, nodeImagesForEdit;
 
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
 
-    @Autowired
-    private ImageService imageService;
+    @Inject
+    public ImageBean(ConceptView conceptBean, SelectedTheso selectedThes, CurrentUser currentUser,
+                     ConceptHelper conceptHelper, ConceptDcTermRepository conceptDcTermRepository,
+                     ImageService imageService) {
 
-    private String uri;
-    private String copyright;
-    private String name;
-    private String creator;
-    
-    private List<NodeImage> nodeImages;
-    private List<NodeImage> nodeImagesForEdit;
-
+        this.conceptBean = conceptBean;
+        this.selectedTheso = selectedThes;
+        this.currentUser = currentUser;
+        this.conceptHelper = conceptHelper;
+        this.conceptDcTermRepository = conceptDcTermRepository;
+        this.imageService = imageService;
+    }
 
     public void reset() {
         nodeImages = conceptBean.getNodeConcept().getNodeimages();
@@ -86,8 +84,7 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
@@ -107,12 +104,8 @@ public class ImageBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().ajax().update("messageIndex");
     }
-    
-    /**
-     * permet d'ajouter un
-     * @param nodeImage
-     * @param idUser 
-     */
+
+
     public void updateImage(NodeImage nodeImage, int idUser) {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();    
@@ -144,33 +137,23 @@ public class ImageBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
     }       
-    
-    /**
-     * permet d'ajouter un
-     * @param nodeImage
-     * @param idUser 
-     */
+
+
     public void deleteImage(NodeImage nodeImage, int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();    
         
         if(nodeImage == null || nodeImage.getUri().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", "Aucune sélection !"));
             return;
         }
 
         imageService.deleteImages(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeImage.getUri());
         
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -178,15 +161,14 @@ public class ImageBean implements Serializable {
                 .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès"));
+
         reset();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }        
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
 }

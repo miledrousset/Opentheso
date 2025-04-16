@@ -55,11 +55,6 @@ public class ImageService {
 
     public void updateExternalImage(String idConcept, String idThesaurus, NodeImage nodeImage) {
 
-        nodeImage.setUri(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getUri().trim()));
-        nodeImage.setImageName(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getImageName()));
-        nodeImage.setCopyRight(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getCopyRight()));
-        nodeImage.setCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeImage.getCreator()));
-
         var image = ImageExterne.builder()
                 .id(nodeImage.getId())
                 .imageCreator(nodeImage.getCreator())
@@ -77,12 +72,12 @@ public class ImageService {
                                  String uri, String creator, int idUser) {
 
         var image = ImageExterne.builder()
-                .imageCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(creator))
+                .imageCreator(creator)
                 .idUser(idUser)
                 .idConcept(idConcept)
                 .idThesaurus(idThesaurus)
-                .imageName(fr.cnrs.opentheso.utils.StringUtils.convertString(imageName))
-                .imageCopyright(fr.cnrs.opentheso.utils.StringUtils.convertString(copyRight))
+                .imageName(imageName)
+                .imageCopyright(copyRight)
                 .externalUri(uri.trim())
                 .build();
 
