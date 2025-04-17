@@ -1633,13 +1633,13 @@ public class ImportFileBean implements Serializable {
                         nodeSearchMinis = searchHelper.searchExactTermForAutocompletion(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
                         break;
                     case "containsExactWord":
-                        nodeSearchMinis = searchHelper.searchExactMatch(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        nodeSearchMinis = searchHelper.searchExactMatch(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     case "startWith":
-                        nodeSearchMinis = searchHelper.searchStartWith(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        nodeSearchMinis = searchHelper.searchStartWith(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     case "elastic":
-                        nodeSearchMinis = searchHelper.searchFullTextElastic(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        nodeSearchMinis = searchHelper.searchFullTextElastic(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     default:
                         break;

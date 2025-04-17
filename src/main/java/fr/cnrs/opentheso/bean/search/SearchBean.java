@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
@@ -169,29 +170,21 @@ public class SearchBean implements Serializable {
                 idLang = selectedTheso.getSelectedLang();
             }
 
+            var isCollectionPrivate = ObjectUtils.isEmpty(currentUser.getNodeUser());
             if (exactMatch) {
-                listResultAutoComplete = searchHelper.searchExactMatch(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchHelper.searchExactMatch(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
+
             if (indexMatch) {
-                listResultAutoComplete = searchHelper.searchStartWith(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchHelper.searchStartWith(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
 
             if (withId) {
-                listResultAutoComplete = searchHelper.searchByAllId(value,
-                        idLang, selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchHelper.searchByAllId(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }                
                          
             if (!withId && !withNote && !indexMatch && !exactMatch) {
-                listResultAutoComplete = searchHelper.searchFullTextElastic(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchHelper.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
         }
         searchValue = value;
@@ -360,9 +353,10 @@ public class SearchBean implements Serializable {
             }
         }
 
+        var isCollectionPrivate = ObjectUtils.isEmpty(currentUser.getNodeUser());
+
         if (exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(
-                    searchValue, idLang, idTheso);
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(searchValue, idLang, idTheso, isCollectionPrivate);
 
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
                 nodeConceptSearch = conceptHelper.getConceptForSearch(
@@ -375,10 +369,7 @@ public class SearchBean implements Serializable {
         }
 
         if (indexMatch || searchValue.isEmpty()) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(
-                    searchValue,
-                    idLang,
-                    idTheso);
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(searchValue, idLang, idTheso, isCollectionPrivate);
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
                 nodeConceptSearch = conceptHelper.getConceptForSearch(
                         nodeSearchMini.getIdConcept(), idTheso, idLang);

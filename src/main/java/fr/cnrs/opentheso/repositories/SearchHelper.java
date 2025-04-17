@@ -969,7 +969,7 @@ public class SearchHelper {
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchByAllId(String identifier, String idLang, String idTheso) {
+    public ArrayList<NodeSearchMini> searchByAllId(String identifier, String idLang, String idTheso, boolean isPrivate) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         if (StringUtils.isEmpty(identifier)) return nodeSearchMinis;
@@ -977,25 +977,24 @@ public class SearchHelper {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " +
-                        " from term, preferred_term, concept" +
-                        " where " +
-                        " concept.id_concept = preferred_term.id_concept " +
-                        " and concept.id_thesaurus = preferred_term.id_thesaurus " +
-                        " and preferred_term.id_term = term.id_term " +
-                        " and preferred_term.id_thesaurus = term.id_thesaurus " +
-                        " and concept.id_thesaurus = '" + idTheso + "' " +
-                        " and term.lang = '" + idLang + "' " +
-                        " and concept.status != 'CA' " +
-                        " and (	" +
-                        "	concept.id_concept = '" + identifier + "'" +
-                        "	or	" +
-                        "	concept.id_ark = '" + identifier + "'" +
-                        "	or " +
-                        "	concept.id_handle = '" + identifier + "'" +
-                        "	or concept.notation = '" + identifier + "'" +
-                        " ) " +
-                        " order by unaccent(lower(lexical_value))");
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
+                        +" FROM term, preferred_term, concept"
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + " WHERE concept.id_concept = preferred_term.id_concept "
+                        + " AND concept.id_thesaurus = preferred_term.id_thesaurus "
+                        + " AND preferred_term.id_term = term.id_term "
+                        + " AND preferred_term.id_thesaurus = term.id_thesaurus "
+                        + " AND concept.id_thesaurus = '" + idTheso + "' "
+                        + " AND term.lang = '" + idLang + "' "
+                        + " AND concept.status != 'CA' "
+                        + " AND (concept.id_concept = '" + identifier + "' "
+                            + " OR	concept.id_ark = '" + identifier + "'"
+                            + "	OR concept.id_handle = '" + identifier + "'"
+                            + " OR concept.notation = '" + identifier + "') "
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
+                        + " ORDER BY unaccent(lower(lexical_value))");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -1084,7 +1083,7 @@ public class SearchHelper {
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchExactMatch(String value, String idLang, String idTheso) {
+    public ArrayList<NodeSearchMini> searchExactMatch(String value, String idLang, String idTheso, boolean isPrivate) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1097,46 +1096,32 @@ public class SearchHelper {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and"
-                        + " preferred_term.id_term = term.id_term"
-                        + " and"
-                        + " preferred_term.id_thesaurus = term.id_thesaurus"
-                        + " and"
-                        + " term.id_thesaurus = '" + idTheso + "'"
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status"
+                        + " FROM term, preferred_term, concept "
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + " WHERE concept.id_concept = preferred_term.id_concept"
+                        + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " AND preferred_term.id_term = term.id_term"
+                        + " AND preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " AND term.id_thesaurus = '" + idTheso + "'"
                         + lang
-                        + " and concept.status != 'CA'"
-                        + " and ("
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + " %'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('% " + value + "'))"
-                        + "	or"
-                        // pour les tirets pour trouver victor exp: saint-victor
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "-%'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "-%'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "'))"
-                        + "	or"
-                        // pour les sous_tirets pour trouver victor exp: saint_victor
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "\\_%'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "'))"
-                        + "	or"
-                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "'))"
-                        // pour les parenthèses pour trouver monstre exp: (monstre)
-                        + "     or"
-                        + "     unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + ")%'))"
-                        + "     or"
-                        + "     unaccent(lower(lexical_value)) like unaccent(lower('" + value + "(%'))"
-                        + "	)"
-                        + " order by lexical_value");
+                        + " AND concept.status != 'CA'"
+                        + " AND (unaccent(lower(lexical_value)) like unaccent(lower('" + value + "'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('" + value + " %'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('% " + value + "'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('" + value + "-%'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "-%'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('" + value + "\\_%'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "'))"
+                            + "	OR unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "'))"
+                            + " OR unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + ")%'))"
+                            + " OR unaccent(lower(lexical_value)) like unaccent(lower('" + value + "(%')))"
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
+                        + " ORDER BY lexical_value");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -1160,48 +1145,33 @@ public class SearchHelper {
             }
 
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
-                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
-                        + " from non_preferred_term, term, preferred_term, concept where"
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and"
-                        + " preferred_term.id_term = term.id_term"
-                        + " and"
-                        + " preferred_term.id_thesaurus = term.id_thesaurus"
-                        + " and"
-                        + " preferred_term.id_term = non_preferred_term.id_term"
-                        + " and"
-                        + " term.lang = non_preferred_term.lang"
-                        + " and"
-                        + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
-                        + " and"
-                        + " term.id_thesaurus = '" + idTheso + "'"
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
+                        + " FROM non_preferred_term, term, preferred_term, concept"
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + " WHERE concept.id_concept = preferred_term.id_concept"
+                        + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " AND preferred_term.id_term = term.id_term"
+                        + " AND preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " AND preferred_term.id_term = non_preferred_term.id_term"
+                        + " AND term.lang = non_preferred_term.lang"
+                        + " AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " AND term.id_thesaurus = '" + idTheso + "'"
                         + lang
-                        + " and concept.status != 'CA'"
-                        + " and ("
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + " %'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value + "'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "-%'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value + "'))"
-                        + "	or"
-                        // pour les sous_tirets pour trouver victor exp: saint_victor
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "\\_%'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "'))"
-                        + "	or"
-                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "'))"
-                        + "     or"
-                        + "     unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value + ")%'))"
-                        + "	)"
-                        + "order by non_preferred_term.lexical_value");
+                        + " AND concept.status != 'CA'"
+                        + " AND (unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + " %'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value + "'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "-%'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value + "'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "\\_%'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "'))"
+                            + "	OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "'))"
+                            + " OR unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value + ")%')))"
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
+                        + "ORDER BY non_preferred_term.lexical_value");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -1243,9 +1213,7 @@ public class SearchHelper {
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSearchMini> searchStartWith(
-            String value, String idLang, String idTheso) {
-
+    public ArrayList<NodeSearchMini> searchStartWith(String value, String idLang, String idTheso, boolean isPrivate) {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -1258,8 +1226,11 @@ public class SearchHelper {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
-                        + " concept.id_concept = preferred_term.id_concept"
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status" +
+                        " from term, preferred_term, concept"
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + " where concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
                         + " and"
                         + " preferred_term.id_term = term.id_term"
@@ -1288,6 +1259,8 @@ public class SearchHelper {
                         + " or"
                         + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value + "%')) "
                         + "	)"
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
                         + " order by"
                         + " CASE "
                         + " WHEN unaccent(lower(lexical_value)) ilike '" + value + "' THEN 1"
@@ -1317,10 +1290,11 @@ public class SearchHelper {
             }
 
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
-                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
-                        + " from non_preferred_term, term, preferred_term, concept where"
-                        + " concept.id_concept = preferred_term.id_concept"
+                stmt.executeQuery("select preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
+                        + " from non_preferred_term, term, preferred_term, concept "
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + "where concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
                         + " and"
                         + " preferred_term.id_term = term.id_term"
@@ -1355,6 +1329,8 @@ public class SearchHelper {
                         + " or"
                         + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%[" + value + "%')) "
                         + "	)"
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
                         + "order by non_preferred_term.lexical_value limit 50");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1996,7 +1972,7 @@ public class SearchHelper {
      * @param idThesaurus
      * @return #MR
      */
-    public ArrayList<NodeSearchMini> searchFullTextElastic(String value, String idLang, String idThesaurus) {
+    public ArrayList<NodeSearchMini> searchFullTextElastic(String value, String idLang, String idThesaurus, boolean isPrivate) {
         if (value == null) {
             return null;
         }
@@ -2029,24 +2005,28 @@ public class SearchHelper {
             lang = "";
             langSynonyme = "";
         } else {
-            lang = " and term.lang ='" + idLang + "'";
-            langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
+            lang = " AND term.lang ='" + idLang + "'";
+            langSynonyme = " AND non_preferred_term.lang ='" + idLang + "'";
         }
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
-                        + " FROM term, preferred_term, concept "
-                        + " WHERE "
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and preferred_term.id_term = term.id_term AND"
-                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                var sql = "SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
+                        + "FROM term, preferred_term, concept "
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + "WHERE concept.id_concept = preferred_term.id_concept "
+                        + "AND concept.id_thesaurus = preferred_term.id_thesaurus "
+                        + "AND preferred_term.id_term = term.id_term "
+                        + "AND preferred_term.id_thesaurus = term.id_thesaurus "
                         + preparedValuePT
-                        + " and term.id_thesaurus = '" + idThesaurus + "'"
+                        + " AND term.id_thesaurus = '" + idThesaurus + "' "
                         + lang
-                        + " and concept.status != 'CA'"
-                        + orderByPT
-                );
+                        + " AND concept.status != 'CA' "
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
+                        + orderByPT;
+
+                stmt.executeQuery(sql);
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -2068,24 +2048,23 @@ public class SearchHelper {
                 }
             }
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, "
-                        + " non_preferred_term.lexical_value as npt,"
-                        + " term.lexical_value as pt, concept.status"
-                        + " FROM"
-                        + " non_preferred_term, term, preferred_term, concept"
-                        + " WHERE"
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and"
-                        + "  preferred_term.id_term = term.id_term AND"
-                        + "  preferred_term.id_thesaurus = term.id_thesaurus AND"
-                        + "   preferred_term.id_term = non_preferred_term.id_term AND"
-                        + "   term.lang = non_preferred_term.lang AND"
-                        + "   preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.statu "
+                        + "FROM non_preferred_term, term, preferred_term, concept "
+                        + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
+                        + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
+                        + "WHERE concept.id_concept = preferred_term.id_concept "
+                        + "AND concept.id_thesaurus = preferred_term.id_thesaurus "
+                        + "AND preferred_term.id_term = term.id_term "
+                        + "AND preferred_term.id_thesaurus = term.id_thesaurus "
+                        + "AND preferred_term.id_term = non_preferred_term.id_term "
+                        + "AND term.lang = non_preferred_term.lang "
+                        + "AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
                         + preparedValueNPT
-                        + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                        + " AND non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                         + langSynonyme
-                        + " and concept.status != 'CA'"
+                        + " AND concept.status != 'CA'"
+                        + (isPrivate ? "GROUP BY preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " : "")
+                        + (isPrivate ? "HAVING BOOL_OR(cg.private IS NULL OR cg.private = false) " : "")
                         + orderByNPT
                 );
 

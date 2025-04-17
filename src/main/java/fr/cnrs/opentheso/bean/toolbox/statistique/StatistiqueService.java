@@ -109,7 +109,7 @@ public class StatistiqueService {
                                                                    String idLang, Date dateDebut, Date dateFin,
                                                                    String collectionId, String nbrResultat) {
 
-        if (ObjectUtils.isEmpty(dateDebut) && ObjectUtils.isEmpty(dateFin)) {
+        if (ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin)) {
             statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "Il faut préciser la date de fin !");
             return List.of();
         }
@@ -130,7 +130,7 @@ public class StatistiqueService {
             limit = 100;
         }
 
-        if(!ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin)) {
+        if(ObjectUtils.isEmpty(dateDebut) || ObjectUtils.isEmpty(dateFin)) {
 
             var result = StringUtils.isEmpty(collectionId)
                     ? conceptStatusRepository.findRecentConceptsByLangAndThesaurus(idTheso, idLang, limit)
@@ -140,7 +140,6 @@ public class StatistiqueService {
             var result = (StringUtils.isEmpty(collectionId))
                 ? conceptStatusRepository.findConceptsModifiedBetween(idTheso, idLang, dateDebut, dateFin, limit)
                 : conceptStatusRepository.findConceptsByGroupLangDate(idTheso, idLang, collectionId, dateDebut, dateFin, limit);
-
             return conceptStatisticDataMapper(result);
         }
     }
@@ -161,10 +160,11 @@ public class StatistiqueService {
                 : conceptGroupProjectionsList.stream()
                     .map(element -> ConceptStatisticData.builder()
                         .idConcept(element.getIdConcept())
-                        .dateCreation(dataFormat.format(element.getCreated()))
-                        .dateModification(dataFormat.format(element.getModified()))
+                        .dateCreation(ObjectUtils.isEmpty(element.getCreated()) ? null : dataFormat.format(element.getCreated()))
+                        .dateModification(ObjectUtils.isEmpty(element.getModified()) ? null : dataFormat.format(element.getModified()))
                         .label(element.getLexicalValue())
                         .utilisateur(element.getUsername())
+                        .type("skos:prefLabel")
                         .build())
                     .toList();
     }

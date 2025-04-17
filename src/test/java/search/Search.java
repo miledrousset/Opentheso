@@ -27,7 +27,7 @@ public class Search {
 
         System.out.println("Avant  : " + LocalTime.now());
         for(int i=0; i<1000; i++){
-            nodeSearchMinis = searchHelper.searchExactMatch("amphore", "fr", "TH_1");
+            nodeSearchMinis = searchHelper.searchExactMatch("amphore", "fr", "TH_1", false);
             //nodeSearchMinis = searchHelper.searchFullTextElastic("amphore", "fr", "TH_1");
         }
         System.out.println("Après  : " + LocalTime.now());
