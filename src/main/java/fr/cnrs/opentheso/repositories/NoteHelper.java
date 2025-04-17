@@ -44,6 +44,7 @@ public class NoteHelper {
         note = StringUtils.clearValue(note);
         note = StringEscapeUtils.unescapeXml(note);
         note = StringUtils.convertString(note);
+        noteSource = fr.cnrs.opentheso.utils.StringUtils.convertString(noteSource);
 
         idLang = languageHelper.normalizeIdLang(idLang);
         
@@ -90,9 +91,11 @@ public class NoteHelper {
                               String note, String noteSource, String noteTypeCode, int idUser) {
         
         idLang = languageHelper.normalizeIdLang(idLang);
-        
+
         boolean status = false;
         note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
+        noteSource = fr.cnrs.opentheso.utils.StringUtils.convertString(noteSource);
+
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "',"

@@ -254,7 +254,7 @@ public class NoteBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
                 nodeNote.getNoteTypeCode(),
-                "",
+                fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()),
                 idUser)){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de création de note !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
