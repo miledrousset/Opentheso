@@ -3328,8 +3328,7 @@ public class ConceptHelper implements Serializable {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from concept where id_thesaurus = '" + idThesaurus + "'"
-                        + " and id_concept = '" + idConcept + "'");
+                stmt.executeQuery("select * from concept where id_thesaurus = '" + idThesaurus + "' and id_concept = '" + idConcept + "'");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     resultSet.next();
@@ -3353,18 +3352,11 @@ public class ConceptHelper implements Serializable {
                 }
 
                 if (concept != null) {
-                    String contributor = userRepository.findById(concept.getContributor()).get().getUsername();
-                    String creator = userRepository.findById(concept.getCreator()).get().getUsername();
-                    if (contributor != null && !contributor.isEmpty()) {
-                        concept.setContributorName(contributor);
-                    } else {
-                        concept.setContributorName("");
-                    }
-                    if (creator != null && !creator.isEmpty()) {
-                        concept.setCreatorName(creator);
-                    } else {
-                        concept.setCreatorName("");
-                    }
+                    var contributor = userRepository.findById(concept.getContributor());
+                    concept.setContributorName(contributor.isPresent() ? contributor.get().getUsername() : "");
+
+                    var creator = userRepository.findById(concept.getCreator());
+                    concept.setCreatorName(creator.isPresent() ? creator.get().getUsername() : "");
                 }
             }
         } catch (SQLException sqle) {
