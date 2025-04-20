@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.models.propositions.Proposition;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -15,16 +14,16 @@ import fr.cnrs.opentheso.models.propositions.PropositionDao;
 import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.bean.search.SearchBean;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,55 +31,49 @@ import org.primefaces.PrimeFaces;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Data
 @SessionScoped
 @Named(value = "propositionBean")
+@AllArgsConstructor
+@NoArgsConstructor
 public class PropositionBean implements Serializable {
 
-    
-
-    @Autowired @Lazy
     private IndexSetting indexSetting;
-
-    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
-
-    @Autowired @Lazy
     private PropositionService propositionService;
-
-    @Autowired @Lazy
-    private SearchBean searchBean;
-
-    @Autowired @Lazy
     private LanguageBean languageBean;
-
-    @Autowired
     private PreferencesHelper preferencesHelper;
 
-
-    private boolean isRubriqueVisible, isNewProposition, isConsultation;
     private Proposition proposition;
-    private String nom, email, commentaire, commentaireAdmin;
-    private String message;
-    private String actionNom;
+    private PropositionDao propositionSelected;
+    private List<PropositionDao> propositions;
+    private boolean isRubriqueVisible, isNewProposition, isConsultation, prefTermeAccepted, varianteAccepted,
+            traductionAccepted, noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
+            editorialNotesAccepted, examplesAccepted, historyAccepted;
+    private String nom, email, commentaire, commentaireAdmin, message, actionNom;
     private String filter2 = "3";
     private String showAllPropositions = "1";
     private int nbrNewPropositions;
 
-    private PropositionDao propositionSelected;
-    private List<PropositionDao> propositions;
-    private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
-            noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
-            editorialNotesAccepted, examplesAccepted, historyAccepted;
+
+    @Inject
+    public PropositionBean(IndexSetting indexSetting, RoleOnThesoBean roleOnThesoBean, SelectedTheso selectedTheso,
+                           RightBodySetting rightBodySetting, PropositionService propositionService,
+                           LanguageBean languageBean, PreferencesHelper preferencesHelper) {
+
+        this.indexSetting = indexSetting;
+        this.roleOnThesoBean = roleOnThesoBean;
+        this.selectedTheso = selectedTheso;
+        this.rightBodySetting = rightBodySetting;
+        this.propositionService = propositionService;
+        this.languageBean = languageBean;
+        this.preferencesHelper = preferencesHelper;
+    }
 
     public void init() {
         nom = "";
@@ -133,7 +126,6 @@ public class PropositionBean implements Serializable {
         editorialNotesAccepted = false;
         examplesAccepted = false;
         historyAccepted = false;
-
         isConsultation = true;
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
@@ -200,7 +192,6 @@ public class PropositionBean implements Serializable {
                 historyAccepted = true;
             }
         }
-
     }
 
     public void annuler() {
@@ -217,15 +208,11 @@ public class PropositionBean implements Serializable {
     public void chercherProposition() {
         String idTheso = selectedTheso.getSelectedIdTheso();//"2".equals(filter2) ? selectedTheso.getSelectedIdTheso() : "%";
         if(StringUtils.isEmpty(idTheso)) return;
-        switch (showAllPropositions) {
-            case "1":
-                propositions = propositionService.searchPropositionsNonTraitter(idTheso);
-                break;
-           /* case "2":
-                propositions = propositionService.searchOldPropositions(idTheso);
-                break;*/
-            default:
-                propositions = propositionService.searchAllPropositions(idTheso);
+
+        if ("1".equalsIgnoreCase(showAllPropositions)) {
+            propositions = propositionService.searchPropositionsNonTraitee(idTheso);
+        } else {
+            propositions = propositionService.searchAllPropositions(idTheso);
         }
     }
 

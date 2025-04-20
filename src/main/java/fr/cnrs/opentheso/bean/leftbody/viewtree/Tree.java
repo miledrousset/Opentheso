@@ -44,13 +44,16 @@ import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "tree")
 @SessionScoped
+@Named(value = "tree")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Tree implements Serializable {
 
     @Autowired @Lazy

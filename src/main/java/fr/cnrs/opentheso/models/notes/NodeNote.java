@@ -1,11 +1,15 @@
 package fr.cnrs.opentheso.models.notes;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.sql.Date;
 
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeNote implements Serializable {
     
     private int idNote;

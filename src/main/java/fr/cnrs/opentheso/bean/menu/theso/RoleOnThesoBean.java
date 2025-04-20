@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import jakarta.inject.Inject;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import java.io.Serializable;
 import java.io.IOException;
@@ -45,6 +47,7 @@ import java.util.Map;
 @Data
 @SessionScoped
 @Named(value = "roleOnTheso")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RoleOnThesoBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")

@@ -50,6 +50,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 
 /**
@@ -60,6 +62,7 @@ import org.primefaces.model.ResponsiveOption;
 @SessionScoped
 @Slf4j
 @Named(value = "conceptView")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ConceptView implements Serializable {
 
     @Autowired @Lazy

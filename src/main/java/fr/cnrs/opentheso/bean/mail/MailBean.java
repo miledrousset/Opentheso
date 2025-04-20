@@ -15,6 +15,9 @@ import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -28,6 +31,7 @@ import javax.mail.internet.MimeMessage;
 @Data
 @Named(value = "mailBean")
 @RequestScoped
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MailBean implements Serializable {
 
     @Value("${smpt.protocol}")

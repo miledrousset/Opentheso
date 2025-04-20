@@ -1,8 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.repositories.PropositionApiHelper;
-
 import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
+import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
@@ -32,7 +31,7 @@ public class PropositionsController {
     private ApiKeyHelper apiKeyHelper;
 
     @Autowired
-    private PropositionApiHelper propositionApiHelper;
+    private PropositionService propositionService;
 
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON)
@@ -47,7 +46,7 @@ public class PropositionsController {
 
         var userId = apiKeyHelper.getIdUser(apiKey);
 
-        propositionApiHelper.createProposition(proposition, userId);
+        propositionService.createProposition(proposition, userId);
         return ResponseEntity.status(201).build();
     }
 }

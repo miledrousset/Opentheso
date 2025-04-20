@@ -46,11 +46,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 
 @Slf4j
 @SessionScoped
 @Named(value = "selectedTheso")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SelectedTheso implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
