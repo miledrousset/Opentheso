@@ -2,6 +2,7 @@
 /.idea/
 /nbproject/
 /src/test/java/deepl/
+/src/main/resources/application-local.yaml
 /src/main/resources/hibernate.cfg.xml
 /src/main/resources/hikari.properties
 /src/main/resources/certificats/cacerts2
