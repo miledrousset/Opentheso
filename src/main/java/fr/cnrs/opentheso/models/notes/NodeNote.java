@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.models.notes;
 
 import lombok.Data;
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -25,5 +27,13 @@ public class NodeNote implements Serializable {
     private String user;
     private boolean voted;
     private String identifier;
-    
+
+    public String getLexicalValue() {
+        // Si le texte est HTML-encodé, on le "déséchappe"
+        return StringEscapeUtils.unescapeHtml4(lexicalValue);
+    }
+
+    public void setLexicalValue(String texte) {
+        this.lexicalValue = texte;
+    }
 }

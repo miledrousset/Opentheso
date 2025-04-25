@@ -27,11 +27,10 @@ spring:
     url: jdbc:postgresql://localhost:5433/pactols
     password: opentheso
     username: opentheso
-    hikari.maximum-pool-size: 1000
-    hikari.connection-timeout: 10000
-    hikari.idle-timeout: 30000
-#    hikari.max-lifetime: 60000
-
+    hikari:
+      maximum-pool-size: 50
+      connection-timeout: 10000
+      idle-timeout: 30000
   jpa:
     show-sql: false
     generate-ddl: true

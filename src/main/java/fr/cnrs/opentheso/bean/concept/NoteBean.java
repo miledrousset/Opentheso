@@ -200,7 +200,6 @@ public class NoteBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(selectedNodeNote.getLexicalValue());
         noteValue = StringEscapeUtils.unescapeXml(selectedNodeNote.getLexicalValue());
         if(noteHelper.isNoteExistInThatLang(selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode())){
             // update Note
@@ -276,7 +275,7 @@ public class NoteBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
+       // nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
         nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
         nodeNote.setNoteSource(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()));
         if (!noteHelper.updateNote(
