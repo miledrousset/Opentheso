@@ -65,7 +65,7 @@ public class NoteHelper {
                     stmt.executeUpdate("Insert into note (notetypecode, id_thesaurus, lang, lexicalvalue, id_user, notesource, identifier)"
                             + " values ('" + noteTypeCode + "','" + idThesaurus + "','" + idLang + "','"
                             + note + "'," + idUser
-                            + ",'" + noteSource + "','" + identifier + "'" 
+                            + ",'" + StringUtils.convertString(noteSource) + "','" + identifier + "'"
                             + ")");
                     status = true;
                 }
@@ -93,7 +93,7 @@ public class NoteHelper {
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "',"
-                        + " notesource = '" + noteSource + "',"
+                        + " notesource = '" + StringUtils.convertString(noteSource) + "',"
                         + " modified = current_date WHERE id = " + idNote + " AND id_thesaurus = '" + idThesaurus + "'");
                 addConceptNoteHistorique(idConcept, idLang, idThesaurus, note, noteTypeCode, "update", idUser);
                 status = true;
