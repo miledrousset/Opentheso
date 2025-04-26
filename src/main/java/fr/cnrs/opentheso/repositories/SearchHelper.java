@@ -2048,7 +2048,7 @@ public class SearchHelper {
                 }
             }
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.statu "
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status "
                         + "FROM non_preferred_term, term, preferred_term, concept "
                         + (isPrivate ? "LEFT JOIN concept_group_concept cgc ON concept.id_concept = cgc.idconcept " : "")
                         + (isPrivate ? "LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup " : "")
