@@ -32,7 +32,7 @@
 
             <!-- Langue de la note -->
             <div class="row" style="margin-top: 10px">
-                <div class="col-5">
+                <div class="col-5" style="text-align: right">
                     <h:outputText value="#{langueBean.getMsg('candidat.language')} : " />
                 </div>
                 <div class="col-7">
@@ -48,7 +48,7 @@
             <!-- type note -->
             <h:panelGroup id="listNoteTypes">
                 <div class="row" style="margin-top: 10px">
-                    <div class="col-5">
+                    <div class="col-5" style="text-align: right">
                         <h:outputText value="Type : " />
                     </div>
                     <div class="col-7">
@@ -63,6 +63,7 @@
             </h:panelGroup>
 
             <h:panelGroup id="groupNoteEditor">
+
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12">
                         <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.selectedNodeNote.lexicalValue}" allowLinks="true" height="100" secure="false"
@@ -72,7 +73,7 @@
 
                 <!-- Source de la note -->
                 <div class="row" style="margin-top: 10px">
-                    <div class="col-5">
+                    <div class="col-5" style="text-align: right">
                         <h:outputText value="#{langueBean.getMsg('alignment.source')} : " />
                     </div>
                     <div class="col-7">
