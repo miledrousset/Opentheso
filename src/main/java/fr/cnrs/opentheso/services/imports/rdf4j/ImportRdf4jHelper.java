@@ -7,28 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import fr.cnrs.opentheso.entites.ExternalResource;
-import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
-import fr.cnrs.opentheso.entites.UserGroupThesaurus;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.entites.*;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.services.DeprecateService;
-import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
@@ -146,6 +131,9 @@ public class ImportRdf4jHelper {
     @Autowired
     private GpsService gpsService;
 
+    @Autowired
+    private StatusRepository statusRepository;
+
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
     private String langueSource;
@@ -170,6 +158,8 @@ public class ImportRdf4jHelper {
     private SKOSXmlDocument skosXmlDocument;
 
     boolean isFirst = true;
+    @Autowired
+    private CandidatStatusRepository candidatStatusRepository;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -1401,7 +1391,13 @@ public class ImportRdf4jHelper {
             deprecateHelper.addReplacedBy(acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
         }
         if (isCandidatImport) {
-            candidatDao.setStatutForCandidat(1, acs.concept.getIdConcept(), idTheso, "" + idUser);
+            candidatStatusRepository.save(CandidatStatus.builder()
+                    .idConcept(acs.concept.getIdConcept())
+                    .idThesaurus(idTheso)
+                    .idUser(idUser)
+                    .date(new Date())
+                    .status(statusRepository.findById(1).orElse(null))
+                    .build());
         }
 
         // initialisation des variables

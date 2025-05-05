@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.services.candidats;
 
+import fr.cnrs.opentheso.entites.CandidatMessages;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
+import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -14,15 +15,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,25 +32,16 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+
 @Data
 @Named(value = "discussionService")
 @SessionScoped
 public class DiscussionService implements Serializable {
 
-    @Autowired @Lazy
     private CandidatBean candidatBean;
-
-    @Autowired @Lazy
-    private LanguageBean langueBean;
-
-    @Autowired @Lazy
     private LanguageBean languageBean;
-
-    @Autowired
-    private MessageCandidatHelper messageCandidatHelper;
-
-    @Autowired @Lazy
     private MailBean mailBean;
+    private CandidatMessageRepository candidatMessageRepository;
 
     @Value("${smpt.protocol}")
     private String protocolMail;
@@ -77,6 +65,14 @@ public class DiscussionService implements Serializable {
     private List<NodeUser> nodeUsers;
 
 
+    public DiscussionService(CandidatBean candidatBean, LanguageBean langueBean, MailBean mailBean, CandidatMessageRepository candidatMessageRepository) {
+
+        this.candidatBean = candidatBean;
+        this.languageBean = langueBean;
+        this.mailBean = mailBean;
+        this.candidatMessageRepository = candidatMessageRepository;
+    }
+
     public void clear() {
         if (nodeUsers != null) {
             nodeUsers.clear();
@@ -97,14 +93,19 @@ public class DiscussionService implements Serializable {
     
     private void setListUsersForMail(){
         if (candidatBean.getCandidatSelected() != null) {
-            nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
+            var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatBean.getCandidatSelected().getIdConcepte(),
                     candidatBean.getCandidatSelected().getIdThesaurus());
+            if (CollectionUtils.isNotEmpty(candidatMessages)) {
+                nodeUsers = candidatMessages.stream()
+                        .map(element -> NodeUser.builder().idUser(element.getIdUser()).build())
+                        .toList();
+            } else {
+                nodeUsers = new ArrayList<>();
+            }
         } else {
             nodeUsers = new ArrayList<>();
         }
     }
-
-
 
     public void sendMessage() {
         if (candidatBean.getInitialCandidat() == null) {
@@ -113,27 +114,24 @@ public class DiscussionService implements Serializable {
         }
 
         if (StringUtils.isEmpty(candidatBean.getMessage())) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg1"));
             return;
         }
 
-        MessageDto messageDto = new MessageDto();
-        messageDto.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
-        messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
-        messageDto.setMsg(candidatBean.getMessage());
-
-        messageCandidatHelper.addNewMessage(
-                candidatBean.getMessage(),
-                candidatBean.getCurrentUser().getNodeUser().getIdUser(),
-                candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getIdThesaurus());
+        candidatMessageRepository.save(CandidatMessages.builder()
+                        .value(candidatBean.getMessage())
+                        .idConcept(candidatBean.getCandidatSelected().getIdConcepte())
+                        .idThesaurus(candidatBean.getCandidatSelected().getIdThesaurus())
+                        .idUser(candidatBean.getCurrentUser().getNodeUser().getIdUser())
+                        .date(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()))
+                .build());
 
         sendNotificationMail();
 
         reloadMessage();
 
         candidatBean.setMessage("");
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.send_message.msg2"));
     }
 
     private void sendNotificationMail() {
@@ -161,10 +159,23 @@ public class DiscussionService implements Serializable {
     }
 
     public void reloadMessage() {
-        candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(
+        var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(
                 candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getIdThesaurus(),
-                candidatBean.getCurrentUser().getNodeUser().getIdUser()));
+                candidatBean.getCandidatSelected().getIdThesaurus());
+
+        if (CollectionUtils.isNotEmpty(candidatMessages)) {
+            candidatBean.getCandidatSelected().setMessages(candidatMessages.stream().map(element ->
+                            MessageDto.builder()
+                                    .msg(element.getValue())
+                                    .nom(element.getUsername())
+                                    .idUser(element.getIdUser())
+                                    .mine(candidatBean.getCurrentUser().getNodeUser().getIdUser() == element.getIdUser())
+                                    .date(element.getDate())
+                                    .build())
+                    .toList());
+        } else {
+            candidatBean.getCandidatSelected().setMessages(List.of());
+        }
     }
 
     private Properties getPrefMail() {
@@ -182,26 +193,22 @@ public class DiscussionService implements Serializable {
         Properties props = getPrefMail();
 
         if (StringUtils.isEmpty(email)) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg3"));
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg3"));
         } else if (!EmailUtils.isValidEmailAddress(email)) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg4"));
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg4"));
         } else {
             Properties properties = System.getProperties();
             properties.setProperty("mail.smtp.host", props.getProperty("hostMail"));
-
-            Session session = Session.getDefaultInstance(properties);
-
             try {
-                MimeMessage message = new MimeMessage(session);
+                MimeMessage message = new MimeMessage(Session.getDefaultInstance(properties));
                 message.setFrom(new InternetAddress(props.getProperty("mailFrom")));
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
                 message.setSubject("Invitation à une conversation !");
                 message.setText("C'est le body du message");
-                // Send message
                 Transport.send(message);
-                candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg5"));
+                candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.send_message.msg5"));
             } catch (MessagingException mex) {
-                candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg6"));
+                candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg6"));
             }
         }
     }

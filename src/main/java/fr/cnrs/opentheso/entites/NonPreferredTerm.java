@@ -1,15 +1,16 @@
 package fr.cnrs.opentheso.entites;
 
+import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import java.util.Date;
 
 
 @Setter
@@ -18,20 +19,28 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "proposition_modification_detail")
-public class PropositionModificationDetail {
+@Table(name = "non_preferred_term")
+public class NonPreferredTerm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer idProposition;
-    private String categorie;
-    private String value;
-    private String action;
-    private String lang;
-    private String oldValue;
-    private boolean hiden;
-    private String status;
+    private String idThesaurus;
+
     private String idTerm;
+
+    private String lexicalValue;
+
+    private String lang;
+
+    private String source;
+
+    private String status;
+
+    private boolean hiden;
+
+    private Date created;
+
+    private Date modified;
 }

@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.candidats.MessageDto;
+import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.models.concept.*;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -22,10 +24,7 @@ import fr.cnrs.opentheso.models.terms.*;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
-import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.services.DeprecateService;
@@ -71,9 +70,6 @@ public class ConceptHelper implements Serializable {
     private ImageService imageService;
 
     @Autowired
-    private CandidatDao candidatDao;
-
-    @Autowired
     private RelationsHelper relationsHelper;
 
     @Autowired
@@ -107,13 +103,16 @@ public class ConceptHelper implements Serializable {
     private ExternalResourcesRepository externalResourcesRepository;
 
     @Autowired
-    private MessageCandidatHelper messageCandidatHelper;
-
-    @Autowired
     private GpsService gpsService;
 
     @Autowired
     private FacetHelper facetHelper;
+
+    @Autowired
+    private CandidatMessageRepository candidatMessageRepository;
+
+    @Autowired
+    private CandidatVoteRepository candidatVoteRepository;
 
     //identifierType  1=numericId ; 2=alphaNumericId
     private NodePreference nodePreference;
@@ -3271,28 +3270,6 @@ public class ConceptHelper implements Serializable {
         return false;
     }
 
-    public NodeStatus getNodeStatus(String idConcept, String idThesaurus) {
-        NodeStatus nodeStatus = new NodeStatus();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT * FROM candidat_status WHERE id_concept = '" + idConcept + "';");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeStatus.setIdConcept(resultSet.getString("id_concept"));
-                        nodeStatus.setIdStatus(resultSet.getString("id_status"));
-                        nodeStatus.setDate(resultSet.getString("date"));
-                        nodeStatus.setIdUser(resultSet.getString("id_user"));
-                        nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
-                        nodeStatus.setMessage(resultSet.getString("message"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting NodeStatus  du Concept : " + idConcept, sqle);
-        }
-        return nodeStatus;
-    }
-
     private String getNewId(int length, boolean isUpperCase, boolean isUseNoidCheck) {
         String chars = "0123456789bcdfghjklmnpqrstvwxz";
         StringBuilder pass = new StringBuilder();
@@ -4180,8 +4157,28 @@ public class ConceptHelper implements Serializable {
         }
 
         if (isCandidatExport) {
-            nodeConceptExport.setMessages(messageCandidatHelper.getAllMessagesByCandidat(idConcept, idThesaurus));
-            nodeConceptExport.setVotes(candidatDao.getAllVotesByCandidat(idConcept, idThesaurus));
+
+            var messages = candidatMessageRepository.findMessagesByConceptAndThesaurus(idConcept, idThesaurus);
+            if (CollectionUtils.isNotEmpty(messages)) {
+                nodeConceptExport.setMessages(messages.stream().map(element -> MessageDto.builder()
+                                .msg(element.getValue())
+                                .date(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(element.getDate()))
+                                .idUser(element.getIdUser())
+                                .build())
+                        .toList());
+            }
+
+            var votes = candidatVoteRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+            if (CollectionUtils.isNotEmpty(votes)) {
+                nodeConceptExport.setVotes(votes.stream().map(element -> VoteDto.builder()
+                                .idConcept(element.getIdConcept())
+                                .idThesaurus(element.getIdThesaurus())
+                                .idUser(element.getIdUser())
+                                .idNote(element.getIdNote())
+                                .typeVote(element.getTypeVote())
+                                .build())
+                        .toList());
+            }
         }
 
         // pour les facettes

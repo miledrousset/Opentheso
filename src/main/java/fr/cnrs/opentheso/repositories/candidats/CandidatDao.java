@@ -1,12 +1,9 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
 import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.models.candidats.NodeVote;
 import fr.cnrs.opentheso.models.candidats.NodeCandidateOld;
-import fr.cnrs.opentheso.models.candidats.NodeProposition;
 import fr.cnrs.opentheso.models.candidats.NodeTraductionCandidat;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
-import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.utils.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +15,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +27,6 @@ public class CandidatDao {
 
     @Autowired
     private DataSource dataSource;
-
-
-    protected final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     
     /**
@@ -202,315 +194,8 @@ public class CandidatDao {
 
         return request.toString();
 
+
     }
-
-    public String searchCondidatStatus(String idCouncepte, String idThesaurus) {
-
-        String status = null;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery(new StringBuffer("SELECT sta.value FROM candidat_status can_sta, status sta ")
-                        .append("WHERE can_sta.id_status = sta.id_status AND can_sta.id_concept = '")
-                        .append(idCouncepte).append("' AND can_sta.id_thesaurus = '")
-                        .append(idThesaurus).append("'").toString());
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        status = resultSet.getString("value");
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting LexicalValue of Concept : " +  sqle);
-        }
-
-        return status;
-    }
-
-    public int searchParticipantCount(String idCouncepte, String idThesaurus) {
-        int nbrParticipant = 0;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_messages WHERE id_concept = '")
-                        .append(idCouncepte).append("' AND id_thesaurus = '")
-                        .append(idThesaurus).append("'").toString());
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        nbrParticipant = resultSet.getInt("count");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-
-        return nbrParticipant;
-    }
-
-    public int searchDemandeCount(String idCouncepte, String idThesaurus) {
-        int nbrDemande = 0;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery(new StringBuffer("SELECT count(*) FROM proposition WHERE id_concept = '")
-                        .append(idCouncepte).append("' AND id_thesaurus = '")
-                        .append(idThesaurus).append("'").toString());
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        nbrDemande = resultSet.getInt("count");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-
-        return nbrDemande;
-    }
-
-    public void setStatutForCandidat(int status, String idConcepte, String idThesaurus, String idUser, String date) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus) "
-                        + "VALUES ('" + idConcepte + "', " + status + ", '"+date+"', " + idUser + ", '" + idThesaurus + "')");
-            }
-        } catch (Exception e) {
-
-        }
-    }
-
-    public void setStatutForCandidat(int status, String idConcepte, String idThesaurus, String idUser) {
-
-        setStatutForCandidat(status, idConcepte, idThesaurus, idUser, sdf.format(new Date()));
-    }
-    
-/////// ajouté par Miled
-    
-    public int searchVoteCount(String idCouncepte, String idThesaurus, String typeVote) {
-        int nbrDemande = 0;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_vote WHERE id_concept = '")
-                    .append(idCouncepte).append("' AND id_thesaurus = '").append(idThesaurus)
-                    .append("' AND type_vote = '").append(typeVote).append("'").toString());
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        nbrDemande = resultSet.getInt("count");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-        return nbrDemande;
-    }    
-    
-    public void addVote(String idThesaurus, String idConcept,
-            int idUser, String idNote, String typeVote) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate(
-                    "INSERT INTO candidat_vote(id_user, id_concept, id_thesaurus, id_note, type_vote) "
-                            + "VALUES (" + idUser + ",'" + idConcept + "','" + idThesaurus + "', '"+idNote+"', '" + typeVote + "')");
-            }
-        } catch (Exception e) {
-        }
-    }
-    
-    public boolean removeVote(String idThesaurus, String idConcept, int idUser, String idNote, String typeVote) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                String requet = "delete from candidat_vote where id_user = " + idUser
-                        + " and id_concept = '" + idConcept + "'"
-                        + " and id_thesaurus = '" + idThesaurus + "'"
-                        + " and type_vote = '" + typeVote + "'";
-
-                if (idNote != null) {
-                    requet += " and id_note = '" + idNote + "'";
-                }
-
-                stmt.executeUpdate(requet);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        return true;
-    }    
-    
-    /**
-     * Permet de trouver tous les votes pour les notes par candidat
-     * @param idConcept
-     * @param idTheso
-     * @return
-     * #MR
-     */
-    public ArrayList<NodeVote> getAllVoteNotes(String idConcept, String idTheso) {
-        ArrayList<NodeVote> nodeVotes = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select id_user, id_note from candidat_vote where" +
-                        " id_concept = '" + idConcept + "'" +
-                        " and id_thesaurus = '" + idTheso + "'"+
-                        " and type_vote = 'NT'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeVote nodeVote = new NodeVote();
-                        nodeVote.setIdUser(resultSet.getInt("id_user"));
-                        nodeVote.setIdNote(resultSet.getString("id_note"));
-                        nodeVotes.add(nodeVote);
-                    }             
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CandidatDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeVotes;
-    }
-    
-    public boolean getVote(int userId, String idConcept, String idTheso, String idNote, String typeVote) {
-        boolean voted = false;
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-
-                String requet = "select id_concept from candidat_vote where" +
-                        " id_user = " + userId +
-                        " and id_concept = '" + idConcept + "'" +
-                        " and id_thesaurus = '" + idTheso + "'"+
-                        " and type_vote = '" + typeVote + "' ";
-                if (idNote != null){
-                    requet += " and id_note = '" + idNote + "' ";
-                }
-
-                stmt.executeQuery(requet);
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if(resultSet.next()) {
-                        voted = resultSet.getRow() != 0;
-                    }
-                }
-            }
-        }catch (Exception e) {
-
-        }
-
-        return voted;
-    }
-
-
-
-    public List<VoteDto> getAllVotesByCandidat(String idConcept, String idTheso) {
-        List<VoteDto> votes = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-
-                stmt.executeQuery("SELECT id_user, id_concept, id_thesaurus, type_vote, id_note FROM candidat_vote " +
-                        " WHERE id_concept = '"+idConcept+"' AND id_thesaurus = '"+idTheso+"'");
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while(resultSet.next()) {
-                        VoteDto voteDto = new VoteDto();
-                        voteDto.setIdUser(resultSet.getInt("id_user"));
-                        voteDto.setIdConcept(resultSet.getString("id_concept"));
-                        voteDto.setIdThesaurus(resultSet.getString("id_thesaurus"));
-                        voteDto.setTypeVote(resultSet.getString("type_vote"));
-                        voteDto.setIdNote(resultSet.getString("id_note"));
-                        votes.add(voteDto);
-                    }
-                }
-            }
-        } catch (Exception e) {
-
-        }
-
-        return votes;
-    }
-
-    public boolean insertCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-            try (Statement stmt = conn.createStatement()){
-                if(!updateCandidateStatus(candidatDto, stmt, adminMessage, 2, idUser)){ // 2 = insérée
-                    conn.rollback();
-                    return false;
-                }
-
-                if(!changeCandidateToConcept(candidatDto, stmt)){
-                    conn.rollback();
-                    return false;
-                }
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            return false;
-        }
-        if(candidatDto.getTermesGenerique().isEmpty()) {
-            if(!setTopConcept(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
-                return false;
-            }
-        } else {
-            if(!setNotTopConcept(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
-                return false;
-            }                    
-        }        
-        return true;
-    }
-
-    private boolean setTopConcept(String idConcept, String idThesaurus) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set top_concept = true WHERE id_concept ='"
-                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
-                return true;
-            }
-        } catch (SQLException sqle) {
-
-        }
-        return false;
-    }
-
-    private boolean setNotTopConcept(String idConcept, String idThesaurus) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set top_concept = false WHERE id_concept ='" + idConcept
-                        + "' AND id_thesaurus='" + idThesaurus + "'");
-                return true;
-            }
-        } catch (SQLException sqle) {}
-        return false;
-    }
-    
-    public boolean rejectCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-
-            try (Statement stmt = conn.createStatement()){
-                if(!updateCandidateStatus(candidatDto, stmt, adminMessage, 3, idUser)){ // 3 = rejeté
-                    conn.rollback();
-                    return false;
-                }
-            }
-
-            conn.commit();
-            return true;            
-        } catch (SQLException e) {
-            return false;
-        }
-    }      
-    
-////////// import des candidats 
     
     public ArrayList<NodeCandidateOld> getCandidatesIdFromOldModule (String idTheso) throws SQLException{
        
@@ -518,12 +203,7 @@ public class CandidatDao {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select concept_candidat.id_concept, concept_candidat.status"
-                        + " from concept_candidat"
-                        + " where"
-                        + " concept_candidat.id_thesaurus = '" + idTheso +"'"
-                        + " and concept_candidat.status = 'a'");
-
+                stmt.executeQuery("select concept_candidat.id_concept, concept_candidat.status from concept_candidat where concept_candidat.id_thesaurus = '" + idTheso +"' and concept_candidat.status = 'a'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeCandidateOld nodeCandidateOld = new NodeCandidateOld();
@@ -566,61 +246,4 @@ public class CandidatDao {
 
         return nodeTraductionCandidats;
     }
-    
-    public ArrayList<NodeProposition> getCandidatesMessagesFromOldModule(String idOldCandidat, String idTheso) {
-       
-        ArrayList<NodeProposition> nodePropositions = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-
-                stmt.executeQuery("select proposition.note, proposition.id_user "
-                        + " from proposition where"
-                        + " proposition.id_concept = '" + idOldCandidat + "'"
-                        + " and proposition.id_thesaurus = '" + idTheso + "'"
-                        + " ORDER BY created ASC");
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeProposition nodeProposition  = new NodeProposition();
-                        nodeProposition.setNote(resultSet.getString("note"));
-                        nodeProposition.setIdUser(resultSet.getInt("id_user"));
-                        nodePropositions.add(nodeProposition);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-        }
-
-        return nodePropositions;
-    }     
-////////// fin import des candidats 
-    
-    
-    
-    private boolean updateCandidateStatus(CandidatDto candidatDto, Statement stmt,
-            String adminMessage, int status, int idUser) throws SQLException{
-        
-        adminMessage = StringUtils.convertString(adminMessage);
-
-        stmt.executeUpdate("update candidat_status set id_status = " + status +
-                ", message = '" + adminMessage + "', id_user_admin = " + idUser +
-                " where id_concept = '" + candidatDto.getIdConcepte() + "'" +
-                " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
-        return true;
-    }
-    
-    private boolean changeCandidateToConcept(CandidatDto candidatDto, Statement stmt) throws SQLException{
-        stmt.execute("update concept set status = 'D' where id_concept = '" + candidatDto.getIdConcepte()
-                + "' and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
-        return true;
-    }
-    
-    private boolean setTopTermToConcept(CandidatDto candidatDto, Statement stmt) throws SQLException{
-        stmt.execute("update concept set top_concept = true where id_concept = '" + candidatDto.getIdConcepte()
-                + "' and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
-        return true;
-    }
-            
 }

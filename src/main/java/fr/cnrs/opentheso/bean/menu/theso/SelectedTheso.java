@@ -1,8 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
-import fr.cnrs.opentheso.repositories.CorpusHelper;
-import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -23,7 +21,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -77,7 +74,7 @@ public class SelectedTheso implements Serializable {
     @Autowired @Lazy private ProjectBean projectBean;
 
     @Autowired
-    private CorpusHelper corpusHelper;
+    private CorpusLinkRepository corpusLinkRepository;
 
     @Autowired
     private LanguageRepository languageRepository;
@@ -188,7 +185,7 @@ public class SelectedTheso implements Serializable {
      */
     public void setSelectedTheso() throws IOException {
 
-        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
+        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -546,7 +543,7 @@ public class SelectedTheso implements Serializable {
                 currentLang = idLang;
                 selectedLang = idLang;
             }
-            haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
+            haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang, currentUser);
             isActionFromConcept = true;
             idConceptFromUri = null;
@@ -566,7 +563,7 @@ public class SelectedTheso implements Serializable {
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");
-                haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
+                haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang, currentUser);
@@ -584,7 +581,7 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
-        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(getSelectedIdTheso());
+        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
         currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         idConceptFromUri = null;
         idThesoFromUri = null;

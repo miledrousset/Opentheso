@@ -24,6 +24,14 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     @Query("UPDATE Concept c SET c.gps = :status WHERE c.idConcept = :idConcept AND c.thesaurus.idThesaurus = :idThesaurus")
     int setGpstTag(@Param("status") boolean status, @Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Concept c SET c.status = :status WHERE c.idConcept = :idConcept AND c.thesaurus.idThesaurus = :idThesaurus")
+    int setStatus(@Param("status") String status, @Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
+
     List<Concept> findAllByThesaurusIdThesaurusAndStatus(String idThesaurus, String status);
+
+    @Query(value = "SELECT nextval('concept__id_seq')", nativeQuery = true)
+    Long getNextConceptNumericId();
 
 }

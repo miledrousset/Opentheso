@@ -3,21 +3,20 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.ImageExterne;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.repositories.ImagesRepository;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 
+@Slf4j
 @Service
+@AllArgsConstructor
 public class ImageService {
 
-    private ImagesRepository imagesRepository;
-
-
-    public ImageService(ImagesRepository imagesRepository) {
-        this.imagesRepository = imagesRepository;
-    }
+    private final ImagesRepository imagesRepository;
 
 
     public List<NodeImage> getAllExternalImages(String idThesaurus, String idConcept) {

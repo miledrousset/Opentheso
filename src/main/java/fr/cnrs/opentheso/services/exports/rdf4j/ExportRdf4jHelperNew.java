@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services.exports.rdf4j;
 
+import fr.cnrs.opentheso.entites.CandidatStatus;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
@@ -14,7 +15,6 @@ import fr.cnrs.opentheso.models.concept.NodeConceptExport;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
@@ -26,15 +26,11 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -68,6 +64,10 @@ public class ExportRdf4jHelperNew {
 
     @Autowired
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
+
+    @Autowired
+    private CandidatStatusRepository candidatStatusRepository;
+
 
     private NodePreference nodePreference;
     private SKOSXmlDocument skosXmlDocument;
@@ -120,7 +120,10 @@ public class ExportRdf4jHelperNew {
 
         // pour l'export des données du module candidat
         if (isCandidatExport) {
-            sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(idConcept, idTheso)));
+            var candidatStatus = candidatStatusRepository.findByIdConcept(idConcept);
+            if (candidatStatus.isPresent()) {
+                sKOSResource.setSkosStatus(addStatut(candidatStatus.get()));
+            }
             addDiscussions(nodeConcept.getMessages(), sKOSResource);
             addVotes(nodeConcept.getVotes(), sKOSResource);
         }
@@ -574,14 +577,14 @@ public class ExportRdf4jHelperNew {
         }
         
     }
-    private SKOSStatus addStatut(NodeStatus nodeStatus) {
+    private SKOSStatus addStatut(CandidatStatus nodeStatus) {
         SKOSStatus skosStatus = new SKOSStatus();
-        skosStatus.setDate(nodeStatus.getDate());
+        skosStatus.setDate(new SimpleDateFormat("yyyy-MM-dd").format(nodeStatus.getDate()));
         skosStatus.setIdConcept(nodeStatus.getIdConcept());
-        skosStatus.setIdStatus(nodeStatus.getIdStatus());
+        skosStatus.setIdStatus(String.valueOf(nodeStatus.getStatus().getIdStatus()));
         skosStatus.setMessage(nodeStatus.getMessage());
         skosStatus.setIdThesaurus(nodeStatus.getIdThesaurus());
-        skosStatus.setIdUser(nodeStatus.getIdUser());
+        skosStatus.setIdUser(String.valueOf(nodeStatus.getIdUser()));
         return skosStatus;
     }
 

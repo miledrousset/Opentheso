@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Setter
@@ -69,17 +67,5 @@ public class User implements Serializable {
 
     @Column(name = "key_description")
     private String keyDescription;
-
-    @OneToMany(mappedBy = "user")
-    private List<CandidatMessages> candidatMessages;
-
-    @OneToMany(mappedBy = "user")
-    private List<CandidatStatus> candidatStatuses;
-
-    @OneToMany(mappedBy = "userAdmin")
-    private List<CandidatStatus> candidatStatusesAdmin;
-
-    @OneToMany(mappedBy = "user")
-    private List<CandidatVote> candidatVotes;
 
 }

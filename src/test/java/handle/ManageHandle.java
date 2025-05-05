@@ -36,9 +36,6 @@ public class ManageHandle {
             if(!hs.createHandle("testtest3", "http://www.mouad223.fr/")){
                 System.out.println(hs.getResponseMsg());
             }
-            System.out.println(hs.getResponseMsg());
-            //hs.updateHandleUrl("mom16", "www.mom.fr");
-            //hs.deleteHandle("mom16");
         } catch (UnsupportedEncodingException | HandleException ex) {
             System.out.println("handle.ManageHandle.testCreateHandle()" + ex.getMessage());
         }

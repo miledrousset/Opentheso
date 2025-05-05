@@ -1,14 +1,8 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.CorpusHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.PathHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
@@ -67,12 +61,16 @@ public class ConceptView implements Serializable {
 
     @Autowired @Lazy
     private IndexSetting indexSetting;
+
     @Autowired @Lazy
     private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+
     @Autowired @Lazy
     private ViewEditorHomeBean viewEditorHomeBean;
+
     @Autowired @Lazy
     private Tree tree;
+
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
 
@@ -92,9 +90,6 @@ public class ConceptView implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private CorpusHelper corpusHelper;
-
-    @Autowired
     private PathHelper pathHelper;
 
     @Autowired
@@ -106,6 +101,9 @@ public class ConceptView implements Serializable {
     @Autowired
     private SelectedTheso selectedTheso;
 
+    @Autowired
+    private CorpusLinkRepository corpusLinkRepository;
+
     @Autowired private IpAddressService ipAddressService;
 
     private NodeConcept nodeConcept;
@@ -115,7 +113,7 @@ public class ConceptView implements Serializable {
     
     private String selectedLang;
     private GpsMode gpsModeSelected;
-    private ArrayList<NodeCorpus> nodeCorpuses;
+    private List<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
     
     private List<List<NodePath>> pathLabel2;    
@@ -357,7 +355,23 @@ public class ConceptView implements Serializable {
     public void searchCorpus(String idThesaurus) {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(idThesaurus);
+
+        var corpusList = corpusLinkRepository.findAllByIdThesoOrderBySortAsc(selectedTheso.getCurrentIdTheso());
+        if (corpusList.isEmpty()) {
+            nodeCorpuses = List.of();
+        } else {
+            nodeCorpuses = corpusList.stream()
+                    .map(element -> NodeCorpus.builder()
+                            .corpusName(element.getCorpusName())
+                            .active(element.isActive())
+                            .omekaS(element.isOmekaS())
+                            .isOnlyUriLink(element.isOnlyUriLink())
+                            .uriLink(element.getUriLink())
+                            .uriCount(element.getUriCount())
+                            .build())
+                    .toList();
+        }
+
         nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {

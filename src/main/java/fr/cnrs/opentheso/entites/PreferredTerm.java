@@ -2,12 +2,13 @@ package fr.cnrs.opentheso.entites;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 
 
 @Setter
@@ -16,14 +17,15 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "info")
-public class Info {
+@IdClass(PreferredTermId.class)
+@Table(name = "preferred_term")
+public class PreferredTerm {
 
     @Id
-    private String versionOpentheso;
+    private String idThesaurus;
 
-    private String versionBdd;
+    @Id
+    private String idConcept;
 
-    private String googleanalytics;
-
+    private String idTerm;
 }

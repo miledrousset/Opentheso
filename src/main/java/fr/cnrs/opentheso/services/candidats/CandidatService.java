@@ -1,74 +1,78 @@
 package fr.cnrs.opentheso.services.candidats;
 
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.entites.Note;
+import fr.cnrs.opentheso.entites.CandidatMessages;
+import fr.cnrs.opentheso.entites.CandidatStatus;
+import fr.cnrs.opentheso.entites.CandidatVote;
+import fr.cnrs.opentheso.entites.NonPreferredTerm;
+import fr.cnrs.opentheso.entites.PreferredTerm;
+import fr.cnrs.opentheso.entites.ConceptGroupConcept;
+import fr.cnrs.opentheso.models.candidats.CandidatDto;
+import fr.cnrs.opentheso.models.candidats.TraductionDto;
+import fr.cnrs.opentheso.models.candidats.MessageDto;
+import fr.cnrs.opentheso.models.candidats.NodeCandidateOld;
+import fr.cnrs.opentheso.models.candidats.NodeTraductionCandidat;
+import fr.cnrs.opentheso.models.candidats.NodeProposition;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.models.candidats.NodeCandidateOld;
-import fr.cnrs.opentheso.models.candidats.NodeProposition;
-import fr.cnrs.opentheso.models.candidats.NodeTraductionCandidat;
+import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.TermeDao;
-import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
 import fr.cnrs.opentheso.repositories.candidats.RelationDao;
-import fr.cnrs.opentheso.models.candidats.CandidatDto;
-import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
-
-import java.io.Serializable;
-
 import fr.cnrs.opentheso.services.ImageService;
-import jakarta.enterprise.context.SessionScoped;
+import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
+import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
+
 import jakarta.inject.Named;
+
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 
 @Slf4j
+@Service
 @Named(value = "candidatService")
-@SessionScoped
-public class CandidatService implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+public class CandidatService {
 
-    @Autowired
     private ImageService imageService;
-
-    @Autowired
     private NoteDao noteDao;
-
-    @Autowired
     private CandidatDao candidatDao;
-
-    @Autowired
     private DomaineDao domaineDao;
-
-    @Autowired
     private TermHelper termHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
-
-    @Autowired
     private TermeDao termeDao;
-
-    @Autowired
     private AlignmentHelper alignmentHelper;
-
-    @Autowired
     private RelationDao relationDao;
-
-    @Autowired
-    private MessageCandidatHelper messageCandidatHelper;
+    private StatusRepository statusRepository;
+    private ConceptRepository conceptRepository;
+    private PropositionRepository propositionRepository;
+    private CandidatVoteRepository candidatVoteRepository;
+    private CandidatStatusRepository candidatStatusRepository;
+    private CandidatMessageRepository candidatMessageRepository;
+    private ThesaurusRepository thesaurusRepository;
+    private NonPreferredTermRepository nonPreferredTermRepository;
+    private PreferredTermRepository preferredTermRepository;
+    private ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private TermRepository termRepository;
+    private NoteRepository noteRepository;
 
 
     /**
@@ -77,10 +81,18 @@ public class CandidatService implements Serializable {
     public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int etat) {
         List<CandidatDto> candidatList = candidatDao.getCandidatsByStatus(idThesaurus, lang, etat);
         candidatList.forEach(candidatDto -> {
-            candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(candidatDto.getIdConcepte(), idThesaurus));
-            candidatDto.setNbrDemande(candidatDao.searchDemandeCount(candidatDto.getIdConcepte(), idThesaurus));
-            candidatDto.setNbrVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel()));
-            candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel()));
+            var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
+            candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
+
+            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(candidatDto.getIdConcepte(), idThesaurus);
+            candidatDto.setNbrDemande(CollectionUtils.isEmpty(proposition) ? 0 : proposition.size());
+
+            var candidatVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel());
+            candidatDto.setNbrVote(CollectionUtils.isEmpty(candidatVotes) ? 0 : candidatVotes.size());
+
+            var noteVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel());
+            candidatDto.setNbrNoteVote(CollectionUtils.isEmpty(noteVotes) ? 0 : noteVotes.size());
+
             candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatDto.getIdConcepte(), idThesaurus));
         });
         return candidatList;
@@ -93,11 +105,21 @@ public class CandidatService implements Serializable {
 
         List<CandidatDto> temps = candidatDao.searchCandidatsByValue(value, idThesaurus, lang, etat, statut);
         temps.forEach(candidatDto -> {
-            candidatDto.setStatut(candidatDao.searchCondidatStatus(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus()));
-            candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus()));
-            candidatDto.setNbrDemande(candidatDao.searchDemandeCount(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus()));
-            candidatDto.setNbrVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
-            candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
+
+            var candidatStatus = candidatStatusRepository.findAllByIdConceptAndIdThesaurus(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
+            candidatStatus.ifPresent(status -> candidatDto.setStatut(status.getStatus().getValue()));
+
+            var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
+            candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
+
+            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(candidatDto.getIdConcepte(), idThesaurus);
+            candidatDto.setNbrDemande(CollectionUtils.isEmpty(proposition) ? 0 : proposition.size());
+
+            var candidatVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel());
+            candidatDto.setNbrVote(CollectionUtils.isEmpty(candidatVotes) ? 0 : candidatVotes.size());
+
+            var noteVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel());
+            candidatDto.setNbrNoteVote(CollectionUtils.isEmpty(noteVotes) ? 0 : noteVotes.size());
         });
         return temps;
     }
@@ -105,9 +127,28 @@ public class CandidatService implements Serializable {
     public String saveNewCondidat(Concept concept) throws SQLException {
 
         var idNewCondidat = conceptHelper.addConceptInTable(concept, concept.getIdUser());
-        candidatDao.setStatutForCandidat(1, idNewCondidat, concept.getIdThesaurus(),
-                concept.getIdUser() + "");
+        var status = statusRepository.findById(1);
+        candidatStatusRepository.save(CandidatStatus.builder()
+                        .idConcept(idNewCondidat)
+                        .idThesaurus(concept.getIdThesaurus())
+                        .idUser(concept.getIdUser())
+                        .date(new Date())
+                        .status(status.orElse(null))
+                .build());
         return idNewCondidat;
+    }
+
+    public boolean updateCandidatStatus(String idConcept, String idThesaurus, int statusId) {
+        var candidatStatus = candidatStatusRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        if (candidatStatus.isPresent()) {
+            var newStatus = statusRepository.findById(statusId);
+            if (newStatus.isPresent()) {
+                candidatStatus.get().setStatus(newStatus.get());
+                candidatStatusRepository.save(candidatStatus.get());
+                return true;
+            }
+        }
+        return false;
     }
 
     public String saveNewTerm(Term term, String idConcept, int idUser) throws SQLException {
@@ -133,14 +174,14 @@ public class CandidatService implements Serializable {
 
         //update terme générique
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
-            candidatSelected.getTermesGenerique().stream().forEach(nodeBT -> {
+            candidatSelected.getTermesGenerique().forEach(nodeBT -> {
                 relationDao.addRelationBT(candidatSelected.getIdConcepte(), nodeBT.getId(), candidatSelected.getIdThesaurus());
             });
         }
 
         //update terme associés
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
-            candidatSelected.getTermesAssocies().stream().forEach(nodeRT -> {
+            candidatSelected.getTermesAssocies().forEach(nodeRT -> {
                 relationDao.addRelationRT(candidatSelected.getIdConcepte(), nodeRT.getId(), candidatSelected.getIdThesaurus());
             });
         }
@@ -150,7 +191,7 @@ public class CandidatService implements Serializable {
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
-            candidatSelected.getEmployePourList().stream().forEach(employe -> {
+            candidatSelected.getEmployePourList().forEach(employe -> {
                 termeDao.addNewEmployePour(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
                         candidatSelected.getIdTerm());
             });
@@ -175,60 +216,90 @@ public class CandidatService implements Serializable {
 
         candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
-        candidatSelected.getNodeNotes().forEach(note -> {
-            try {
-                note.setVoted(getVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                        candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        candidatSelected.getNodeNotes().forEach(note -> note.setVoted(getVote(candidatSelected.getIdThesaurus(),
+                candidatSelected.getIdConcepte(), candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE)));
 
         candidatSelected.setTraductions(termHelper.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                 term -> new TraductionDto(term.getLang(),
                         term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
 
-        candidatSelected.setMessages(messageCandidatHelper.getAllMessagesByCandidat(candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));
+        var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
+        if (CollectionUtils.isNotEmpty(candidatMessages)) {
+            candidatSelected.setMessages(candidatMessages.stream().map(element ->
+                            MessageDto.builder()
+                                    .msg(element.getValue())
+                                    .nom(element.getUsername())
+                                    .idUser(element.getIdUser())
+                                    .mine(candidatSelected.getUserId() == element.getIdUser())
+                                    .date(element.getDate())
+                                    .build())
+                    .toList());
+        } else {
+            candidatSelected.setMessages(List.of());
+        }
 
-        candidatSelected.setVoted(candidatDao.getVote(candidatSelected.getUserId(),
-                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), null,
-                VoteType.CANDIDAT.getLabel()));
+        var votes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndIdUserAndTypeVote(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getUserId(), VoteType.CANDIDAT.getLabel());
+        candidatSelected.setVoted(CollectionUtils.isNotEmpty(votes));
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
-                candidatSelected.getIdConcepte(), idThesaurus));
-
-        candidatSelected.setImages(imageService.getAllExternalImages(
-                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatSelected.getIdConcepte(), idThesaurus));
+        candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
     }
 
 
 ///////// ajouté par Miled
-    public void addVote(String idThesaurus, String idConcept, int idUser,
-            String idNote, VoteType voteType) throws SQLException {
-        candidatDao.addVote(idThesaurus, idConcept, idUser, idNote,
-                voteType.getLabel());
+    public void addVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) {
+
+        candidatVoteRepository.save(CandidatVote.builder()
+                .idConcept(idConcept)
+                .idThesaurus(idThesaurus)
+                .idUser(idUser)
+                .idNote(idNote)
+                .typeVote(voteType.getLabel())
+                .build());
     }
 
-    public boolean getVote(String idThesaurus, String idConcept, int idUser, String idNote,
-            VoteType voteType) throws SQLException {
-        return candidatDao.getVote(idUser, idConcept, idThesaurus,
-                idNote, voteType.getLabel());
+    public boolean getVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) {
+
+        return CollectionUtils.isNotEmpty(candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndIdUserAndIdNoteAndTypeVote(idConcept,
+                idThesaurus, idUser, idNote, voteType.getLabel()));
     }
 
-    public void removeVote(String idThesaurus, String idConcept, int idUser, String idNote,
-            VoteType voteType) throws SQLException {
-        candidatDao.removeVote(idThesaurus, idConcept, idUser, idNote,
-                voteType.getLabel());
+    public void removeVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) throws SQLException {
+
+        candidatVoteRepository.deleteAllByIdUserAndIdConceptAndIdThesaurusAndTypeVoteAndIdNote(idUser, idConcept,
+                idThesaurus, voteType.getLabel(), idNote);
     }
     
     public boolean insertCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.insertCandidate(candidatDto, adminMessage, idUser);
+
+        var candidatStatus = candidatStatusRepository.findByIdConcept(candidatDto.getIdConcepte());
+        if (candidatStatus.isPresent()) {
+            candidatStatus.get().setStatus(statusRepository.findById(2).orElse(null));
+            candidatStatus.get().setMessage(adminMessage);
+            candidatStatus.get().setIdUserAdmin(idUser);
+            candidatStatusRepository.save(candidatStatus.get());
+
+            conceptRepository.setStatus("D", candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
+            conceptRepository.setTopConceptTag(candidatDto.getTermesGenerique().isEmpty(), candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
+
+            return true;
+        }
+        return false;
     }
     
     public boolean rejectCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.rejectCandidate(candidatDto, adminMessage, idUser);
+        var candidatStatus = candidatStatusRepository.findByIdConcept(candidatDto.getIdConcepte());
+        if (candidatStatus.isPresent()) {
+            candidatStatus.get().setStatus(statusRepository.findById(3).orElse(null));
+            candidatStatus.get().setMessage(adminMessage);
+            candidatStatus.get().setIdUserAdmin(idUser);
+            candidatStatusRepository.save(candidatStatus.get());
+            return true;
+        }
+        return false;
     }     
     
     /**
@@ -252,7 +323,16 @@ public class CandidatService implements Serializable {
         
         for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
             nodeCandidateOld.setNodeTraductions(candidatDao.getCandidatesTraductionsFromOldModule(nodeCandidateOld.getIdCandidate(), idTheso));
-            nodeCandidateOld.setNodePropositions(candidatDao.getCandidatesMessagesFromOldModule(nodeCandidateOld.getIdCandidate(), idTheso));
+
+            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(nodeCandidateOld.getIdCandidate(), idTheso);
+            if (CollectionUtils.isNotEmpty(proposition)) {
+                nodeCandidateOld.setNodePropositions(proposition.stream()
+                        .map(element-> NodeProposition.builder()
+                                .note(element.getNote())
+                                .idUser(element.getIdUser())
+                                .build())
+                        .toList());
+            }
         }
         
         //// ajout des anciens candidats au nouveau module
@@ -272,7 +352,6 @@ public class CandidatService implements Serializable {
                         idTheso,
                         nodeTraduction.getIdLang())) {
                     messages.append("Candidat existe : ").append(nodeTraduction.getTitle());
-                    System.out.println("Candidat existe : " + nodeTraduction.getTitle());
                     exist = true;
                     break;
                 }
@@ -283,7 +362,6 @@ public class CandidatService implements Serializable {
                 concept.setIdThesaurus(idTheso);
                 concept.setTopConcept(false);
                 concept.setIdUser(idUser);
-               // concept.setUserName(currentUser.getUsername());
                 concept.setStatus("CA");
 
                 conceptHelper.setNodePreference(nodePreference);
@@ -318,26 +396,22 @@ public class CandidatService implements Serializable {
                         first = false;
                     } else {
                         // ajout des traductions
-                        if(!termHelper.addTraduction(
-                                nodeTraduction.getTitle(),
-                                idNewTerm,
-                                nodeTraduction.getIdLang(),
-                                "candidat",
-                                "D",
-                                idTheso, idUser)) {
+                        if(!termHelper.addTraduction(nodeTraduction.getTitle(), idNewTerm, nodeTraduction.getIdLang(),
+                                "candidat", "D", idTheso, idUser)) {
                             messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
-                            System.out.println(messages.toString());                            
                         }
                     }
                 }
                 first = true;
                 // ajout des messages  
                 for (NodeProposition nodeProposition : nodeCandidateOld.getNodePropositions()) {
-                    messageCandidatHelper.addNewMessage(
-                            nodeProposition.getNote(),
-                            nodeProposition.getIdUser(),
-                            idNewConcept,
-                            idTheso);
+                    candidatMessageRepository.save(CandidatMessages.builder()
+                            .value(nodeProposition.getNote())
+                            .idUser(nodeProposition.getIdUser())
+                            .idThesaurus(idTheso)
+                            .idConcept(idNewConcept)
+                            .date(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()))
+                            .build());
                 }
                 
                 idNewConcept = null;
@@ -347,5 +421,119 @@ public class CandidatService implements Serializable {
         }
 
         return "Import réussi\n" + messages;
+    }
+
+
+    //Sauvegarde un candidat en base à partir d'un JSON
+    public boolean saveCandidat(Candidate candidate, int userId) {
+
+        var idTerm = String.valueOf(conceptRepository.getNextConceptNumericId());
+        var idConcept = String.valueOf(conceptRepository.getNextConceptNumericId());
+
+        if (CollectionUtils.isNotEmpty(candidate.getTerme())) {
+            for (Element term : candidate.getTerme()) {
+                termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                        .idTerm(idTerm)
+                        .lexicalValue(term.getValue())
+                        .lang(term.getLang())
+                        .idThesaurus(candidate.getThesoId())
+                        .created(new Date())
+                        .status("D")
+                        .source("candidat")
+                        .creator(userId)
+                        .build());
+            }
+        }
+
+        log.error("Création du nouveau concept dans la base");
+        var thesaurus = thesaurusRepository.findById(candidate.getThesoId());
+        conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()
+                .idConcept(idConcept)
+                .created(new Date())
+                .status("CA")
+                .conceptType("concept")
+                .creator(userId)
+                .topConcept(false)
+                .thesaurus(thesaurus.get())
+                .build());
+
+        conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
+                .idGroup(candidate.getCollectionId())
+                .idThesaurus(candidate.getThesoId())
+                .idConcept(idConcept)
+                .build());
+
+        if (CollectionUtils.isNotEmpty(candidate.getDefinition())) {
+            for (Element definition : candidate.getDefinition()) {
+                insertNoteInCandidat("definition", candidate.getThesoId(), idTerm, definition.getLang(),
+                        definition.getValue(), userId, candidate.getSource(), idConcept);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(candidate.getNote())) {
+            for (Element note : candidate.getNote()) {
+                insertNoteInCandidat("note", candidate.getThesoId(), idTerm, note.getLang(),
+                        note.getValue(), userId, candidate.getSource(), idConcept);
+            }
+        }
+
+        if (StringUtils.isNotEmpty(candidate.getComment())) {
+            candidatMessageRepository.save(CandidatMessages.builder()
+                    .value(candidate.getComment())
+                    .idUser(userId)
+                    .date(new SimpleDateFormat("yyyy-MM-dd mm:HH").format(new Date()))
+                    .idConcept(idConcept)
+                    .idThesaurus(candidate.getThesoId())
+                    .build());
+        }
+
+        if (CollectionUtils.isNotEmpty(candidate.getSynonymes())) {
+            for (Element synonyme : candidate.getSynonymes()) {
+                nonPreferredTermRepository.save(NonPreferredTerm.builder()
+                        .lexicalValue(synonyme.getValue())
+                        .lang(synonyme.getLang())
+                        .idThesaurus(candidate.getThesoId())
+                        .idTerm(idTerm)
+                        .build());
+            }
+        }
+
+        if (StringUtils.isNotEmpty(candidate.getConceptGenericId())) {
+            relationDao.addRelationBT(idConcept, candidate.getConceptGenericId(), candidate.getThesoId());
+        }
+
+        preferredTermRepository.save(PreferredTerm.builder()
+                .idConcept(idConcept)
+                .idTerm(idTerm)
+                .idThesaurus(candidate.getThesoId())
+                .build());
+
+        var cadiadatStatus = statusRepository.findById(1);
+        cadiadatStatus.ifPresent(status -> candidatStatusRepository.save(CandidatStatus.builder()
+                .idConcept(idConcept)
+                .status(status)
+                .date(new Date(System.currentTimeMillis()))
+                .idUser(userId)
+                .idThesaurus(candidate.getThesoId())
+                .build()));
+
+        return true;
+    }
+
+    private void insertNoteInCandidat(String type, String thesoId, String idTerm, String lang, String description,
+                                      int userId, String source, String idConcept) {
+
+        noteRepository.save(Note.builder()
+                .notetypecode(type)
+                .idThesaurus(thesoId)
+                .idTerm(idTerm)
+                .lang(lang)
+                .lexicalvalue(description)
+                .created(new Date())
+                .modified(new Date())
+                .idUSer(userId)
+                .notesource(source)
+                .idConcept(idConcept)
+                .build());
     }
 }

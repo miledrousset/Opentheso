@@ -6,10 +6,8 @@ import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.CandidateHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -51,9 +49,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.primefaces.event.TabChangeEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import java.io.IOException;
@@ -79,124 +75,85 @@ public class CandidatBean implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired
-    private NoteDao noteDao;
-
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired @Lazy
-    private LanguageBean languageBean;
-
-    @Autowired @Lazy
-    private ConceptView conceptView;
-
-    @Autowired @Lazy
-    private ImageBean imageBean;
-
-    @Autowired @Lazy
-    private AlignmentBean alignmentBean;
-
-    @Autowired @Lazy
-    private AlignmentManualBean alignmentManualBean;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private RelationDao relationDao;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private CandidateHelper candidateHelper;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private DomaineDao domaineDao;
-
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private CandidatService candidatService;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
-    private TermeDao termeDao;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private final UserRepository userRepository;
+    private final SelectedTheso selectedTheso;
+    private final NoteDao noteDao;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final CurrentUser currentUser;
+    private final LanguageBean languageBean;
+    private final ConceptView conceptView;
+    private final ImageBean imageBean;
+    private final AlignmentBean alignmentBean;
+    private final AlignmentManualBean alignmentManualBean;
+    private final NoteHelper noteHelper;
+    private final RelationsHelper relationsHelper;
+    private final RelationDao relationDao;
+    private final SearchHelper searchHelper;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ImageService imageService;
+    private final DomaineDao domaineDao;
+    private final TermHelper termHelper;
+    private final GroupHelper groupHelper;
+    private final ConceptHelper conceptHelper;
+    private final CandidatService candidatService;
+    private final AlignmentHelper alignmentHelper;
+    private final UserHelper userHelper;
+    private final TermeDao termeDao;
+    private final ThesaurusHelper thesaurusHelper;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
     private boolean isRejectCandidatsActivate, isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate;
     private boolean myCandidatsSelected1, myCandidatsSelected2, myCandidatsSelected3;
-
+    private boolean listSelected, traductionVisible, isModifiedLabel;
     private int tabViewIndexSelected, progressBarStep, progressBarValue;
 
     private NodeAlignment alignementSelected;
-
-    private String employePour;
-    private String message, definition, selectedExportFormat;
-    private String searchValue1, searchValue2, searchValue3;
-
+    private String employePour, message, definition, selectedExportFormat, searchValue1, searchValue2, searchValue3;
     private CandidatDto candidatSelected, initialCandidat;
     private List<String> exportFormat;
-    private List<CandidatDto> candidatList, rejetCadidat, acceptedCadidat, allTermes;
+    private List<CandidatDto> selectedCandidates, candidatList, rejetCadidat, acceptedCadidat, allTermes;
     private List<DomaineDto> domaines;
-    private List<NodeLangTheso> selectedLanguages;
-    private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies;
-    private ArrayList<NodeLangTheso> languagesOfTheso;
-    private List<CandidatDto> selectedCandidates;
-    private boolean listSelected;
-    private boolean traductionVisible;
-    private boolean isModifiedLabel;
+    private List<NodeLangTheso> selectedLanguages, languagesOfTheso;
+    private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies, collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
 
-    private List<NodeIdValue> collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
 
-    public void clear() {
-        candidatSelected = null;
-        initialCandidat = null;
-        exportFormat = null;
-        candidatList = null;
-        rejetCadidat = null;
-        acceptedCadidat = null;
-        allTermes = null;
-        domaines = null;
-        selectedLanguages = null;
-        languagesOfTheso = null;
-        definition = null;
-        isModifiedLabel = false;
+    public CandidatBean(UserRepository userRepository, SelectedTheso selectedTheso, NoteDao noteDao,
+                        RoleOnThesoBean roleOnThesoBean, CurrentUser currentUser, LanguageBean languageBean,
+                        ConceptView conceptView, ImageBean imageBean, AlignmentBean alignmentBean,
+                        AlignmentManualBean alignmentManualBean, NoteHelper noteHelper, RelationsHelper relationsHelper,
+                        RelationDao relationDao, SearchHelper searchHelper, ConceptDcTermRepository conceptDcTermRepository,
+                        ImageService imageService, DomaineDao domaineDao,
+                        TermHelper termHelper, GroupHelper groupHelper, ConceptHelper conceptHelper,
+                        CandidatService candidatService, AlignmentHelper alignmentHelper, UserHelper userHelper,
+                        TermeDao termeDao, ThesaurusHelper thesaurusHelper) {
+
+        this.userRepository = userRepository;
+        this.selectedTheso = selectedTheso;
+        this.noteDao = noteDao;
+        this.roleOnThesoBean = roleOnThesoBean;
+        this.currentUser = currentUser;
+        this.languageBean = languageBean;
+        this.conceptView = conceptView;
+        this.imageBean = imageBean;
+        this.alignmentBean = alignmentBean;
+        this.alignmentManualBean = alignmentManualBean;
+        this.noteHelper = noteHelper;
+        this.relationsHelper = relationsHelper;
+        this.relationDao = relationDao;
+        this.searchHelper = searchHelper;
+        this.conceptDcTermRepository = conceptDcTermRepository;
+        this.imageService = imageService;
+        this.domaineDao = domaineDao;
+        this.termHelper = termHelper;
+        this.groupHelper = groupHelper;
+        this.conceptHelper = conceptHelper;
+        this.candidatService = candidatService;
+        this.alignmentHelper = alignmentHelper;
+        this.userHelper = userHelper;
+        this.termeDao = termeDao;
+        this.thesaurusHelper = thesaurusHelper;
     }
+
 
     public void setStateForSelectedCandidate() {
         if (selectedCandidates != null) {
@@ -228,8 +185,6 @@ public class CandidatBean implements Serializable {
         selectedCandidates = new ArrayList<>();
 
         getAllCandidatsByThesoAndLangue();
-        //getRejectCandidatByThesoAndLangue();
-        //getAcceptedCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
 
         alignementSelected = new NodeAlignment();
@@ -317,11 +272,11 @@ public class CandidatBean implements Serializable {
         if (candidatSelected == null) {
             return;
         }
-        if (!conceptHelper.deleteConcept(candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), idUser)) {
+        if (!conceptHelper.deleteConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), idUser)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
             return;
         }
+
         initCandidatModule();
         getAllCandidatsByThesoAndLangue();
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat supprimé");
@@ -342,11 +297,11 @@ public class CandidatBean implements Serializable {
      * @return
      */
     private String getIdLang() {
-        String idLang = workLanguage;
+
         if (roleOnThesoBean.getNodePreference() != null) {
-            idLang = roleOnThesoBean.getNodePreference().getSourceLang();
+            return roleOnThesoBean.getNodePreference().getSourceLang();
         }
-        return idLang;
+        return workLanguage;
     }
 
     public void selectMyCandidats() {
@@ -610,19 +565,19 @@ public class CandidatBean implements Serializable {
         if (initialCandidat == null) {
 
             // en cas d'un nouveau candidat, verification dans les prefLabels
-            if (termHelper.isPrefLabelExist(candidatSelected.getNomPref().trim(),
-                    selectedTheso.getCurrentIdTheso(), getIdLang())) {
+            if (termHelper.isPrefLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg3"));
                 return;
             }
             // verification dans les altLabels
-            if (termHelper.isAltLabelExist(candidatSelected.getNomPref().trim(),
-                    selectedTheso.getCurrentIdTheso(), getIdLang())) {
+            if (termHelper.isAltLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg4"));
                 return;
             }
 
-            var concept = Concept.builder()
+            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+
+            var idNewConcept = candidatService.saveNewCondidat(Concept.builder()
                     .idConcept(candidatSelected.getIdConcepte())
                     .idThesaurus(selectedTheso.getCurrentIdTheso())
                     .topConcept(false)
@@ -630,11 +585,8 @@ public class CandidatBean implements Serializable {
                     .idUser(currentUser.getNodeUser().getIdUser())
                     .userName(currentUser.getUsername())
                     .status("CA")
-                    .build();
+                    .build());
 
-            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-            var idNewConcept = candidatService.saveNewCondidat(concept);
             if (idNewConcept == null) {
                 showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg5"));
                 return;
@@ -658,7 +610,6 @@ public class CandidatBean implements Serializable {
                     definition, "definition", "", currentUser.getNodeUser().getIdUser());
 
             setIsListCandidatsActivate(true);
-
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
                 if (termHelper.isTermExistInThisLang(candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
@@ -688,9 +639,7 @@ public class CandidatBean implements Serializable {
 
         candidatService.updateDetailsCondidat(candidatSelected);
 
-        //getAllCandidatsByThesoAndLangue();
-        candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus()));
+        candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
         definition = "";
         isNewCandidatActivate = false;
         isListCandidatsActivate = false;
@@ -860,24 +809,18 @@ public class CandidatBean implements Serializable {
 
     }
 
-    public void reactivateRejectedCandidat() {
+    public void reactivateRejectedCandidat() throws IOException {
         if (candidatSelected == null || candidatSelected.getIdConcepte() == null || candidatSelected.getIdConcepte().isEmpty()) {
             return;
         }
 
-        if (!candidateHelper.reactivateRejectedCandidat(
-                candidatSelected.getIdThesaurus(),
-                candidatSelected.getIdConcepte())) {
+        if (!candidatService.updateCandidatStatus(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 1)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "l'action a échoué");
         } else {
-            try {
-                showMessage(FacesMessage.SEVERITY_INFO, "l'action a réussi");
-                initCandidatModule();
-                getAllCandidatsByThesoAndLangue();
-                setIsListCandidatsActivate(true);
-            } catch (IOException ex) {
-                Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            showMessage(FacesMessage.SEVERITY_INFO, "l'action a réussi");
+            initCandidatModule();
+            getAllCandidatsByThesoAndLangue();
+            setIsListCandidatsActivate(true);
         }
     }
 
@@ -922,7 +865,6 @@ public class CandidatBean implements Serializable {
                     candidatSelected.getEmployePourList().add(employePour);
                     employePour = "";
                     PrimeFaces.current().ajax().update("tabViewCandidat");
-
                     showMessage(FacesMessage.SEVERITY_INFO, "Synonyme ajouté avec succès !");
                 } catch (Exception ex) {
                     showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout du nouveau synonyme !");

@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.diagram;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import org.abego.treelayout.TreeLayout;
@@ -24,6 +23,7 @@ import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -31,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.util.*;
-import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 
 @Named("conceptsDiagramBean")
@@ -140,7 +143,7 @@ public class ConceptsDiagramBean implements Serializable {
                 String idConcept = conceptHelper.getConceptIdFromPrefLabel(elements.get(i).name,
                         selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
 
-                ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(
+                List<NodeConceptTree> childs = conceptHelper.getListConcepts(
                         idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
                 if (!CollectionUtils.isEmpty(childs)) {
@@ -270,7 +273,7 @@ public class ConceptsDiagramBean implements Serializable {
 
         Iterable<TextInBox> iterable = panel.getTreeLayout().getTree().getChildren(textInBox);
 
-        if (iterable instanceof Collection<?>) {
+        if (iterable instanceof Collection<TextInBox>) {
             return !((Collection<?>)iterable).isEmpty();
         } else {
             return false;
@@ -358,7 +361,7 @@ public class ConceptsDiagramBean implements Serializable {
                 return;
             }
             
-            ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(
+            List<NodeConceptTree> childs = conceptHelper.getListConcepts(
                     idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
             if (CollectionUtils.isEmpty(childs)) {

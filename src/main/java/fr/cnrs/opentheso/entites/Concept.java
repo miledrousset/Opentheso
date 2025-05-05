@@ -1,21 +1,32 @@
 package fr.cnrs.opentheso.entites;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.EntityListeners;
 import lombok.Setter;
+import lombok.Getter;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
 
 @Setter
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "concept")
@@ -69,15 +80,6 @@ public class Concept implements Serializable {
 
     @Column(name = "concept_type", nullable = false)
     private String conceptType = "concept";
-
-    @OneToMany(mappedBy = "concept")
-    private List<CandidatMessages> candidatMessages;
-
-    @OneToMany(mappedBy = "concept")
-    private List<CandidatStatus> candidatStatuses;
-
-    @OneToMany(mappedBy = "concept")
-    private List<CandidatVote> candidatVotes;
 
     @OneToOne(mappedBy = "concept")
     private ConceptFacet conceptFacet;

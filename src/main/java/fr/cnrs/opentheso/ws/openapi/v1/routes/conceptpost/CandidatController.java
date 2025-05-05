@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
-import fr.cnrs.opentheso.repositories.CandidateHelper;
+import fr.cnrs.opentheso.services.candidats.CandidatService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
@@ -8,9 +8,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,16 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/openapi/v1/candidate")
 @CrossOrigin(methods = { RequestMethod.POST })
 @Tag(name = "Candidat", description = "Ajouter des candidats")
 public class CandidatController {
 
-    @Autowired
-    private CandidateHelper candidateHelper;
-
-    @Autowired
-    private ApiKeyHelper apiKeyHelper;
+    private final CandidatService candidatService;
+    private final ApiKeyHelper apiKeyHelper;
 
 
     /**
@@ -58,7 +56,7 @@ public class CandidatController {
 
         var userId = apiKeyHelper.getIdUser(apiKey);
 
-        if (!candidateHelper.saveCandidat(candidate, userId)){
+        if (!candidatService.saveCandidat(candidate, userId)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("");
         }
 
