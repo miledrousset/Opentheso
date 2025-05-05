@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
 import fr.cnrs.opentheso.repositories.ToolsHelper;
-import fr.cnrs.opentheso.utils.MD5Password;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,7 +102,7 @@ public class ApiKeyHelper {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement stmt = connection.prepareStatement("SELECT id_user, key_expires_at FROM users WHERE apikey =?")) {
-                stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+                stmt.setString(1, apiKey);
                 ResultSet result = stmt.executeQuery();
                 if (result.next()) {
                     return result.getInt("id_user");
@@ -124,8 +123,8 @@ public class ApiKeyHelper {
         if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
 
         try (Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire  FROM users WHERE apikey =?")){
-                stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+            try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire FROM users WHERE apikey =?")){
+                stmt.setString(1, apiKey);
                 ResultSet result = stmt.executeQuery();
                 if (!result.next()) {return ApiKeyState.INVALID;}
                 if (!result.getBoolean("key_never_expire")) {
