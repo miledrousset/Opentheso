@@ -83,12 +83,13 @@ public class UserController {
                     .password(userDto.getPassword())
                     .isSuperAdmin(userDto.isSuperAdmin())
                     .alertMail(userDto.isAlertMail())
+                    .active(true)
+                    .apiKey(apiKeyHelper.generateApiKey("ot_", 64))
+                    .keyNeverExpire(false)
+                    .isServiceAccount(false)
+                    .passToModify(false)
+                    .alertMail(false)
                     .build());
-
-            var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
-            if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), userCreated.getId())){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
-            }
 
             if (!ObjectUtils.isEmpty(userDto.getIdRole()) && !ObjectUtils.isEmpty(userDto.getIdThesaurus())) {
                 var idGroup = userHelper.getGroupOfThisTheso(userDto.getIdThesaurus());
