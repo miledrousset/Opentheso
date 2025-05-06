@@ -50,12 +50,6 @@ public class CandidatController {
     )
     public ResponseEntity addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody Candidate candidate) {
 
-        var keyState = apiKeyHelper.checkApiKey(apiKey);
-
-        if (keyState != ApiKeyState.VALID){
-            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
-        }
-
         var userId = apiKeyHelper.getIdUser(apiKey);
 
         if (!candidateHelper.saveCandidat(candidate, userId)){

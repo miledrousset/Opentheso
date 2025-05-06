@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+
+import fr.cnrs.opentheso.utils.MD5Password;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -124,7 +126,7 @@ public class ApiKeyHelper {
 
         try (Connection connection = dataSource.getConnection()) {
             try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire FROM users WHERE apikey =?")){
-                stmt.setString(1, apiKey);
+                stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
                 ResultSet result = stmt.executeQuery();
                 if (!result.next()) {return ApiKeyState.INVALID;}
                 if (!result.getBoolean("key_never_expire")) {

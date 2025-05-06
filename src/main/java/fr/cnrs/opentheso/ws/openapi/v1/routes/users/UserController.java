@@ -50,7 +50,7 @@ public class UserController {
 
     @PostMapping("/authentification")
     @Operation(summary = "Authentification d'un utilisateur")
-    public ResponseEntity createUser(@RequestBody @Valid AuthentificationDto authentificationDto) {
+    public ResponseEntity authentification(@RequestBody @Valid AuthentificationDto authentificationDto) {
 
         var user = userHelper.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
         if (ObjectUtils.isEmpty(user)) {
@@ -170,21 +170,16 @@ public class UserController {
     public ResponseEntity generateApiKey(@RequestHeader(value = "API-KEY") String apiKey,
                                          @PathVariable("idUser") Integer idUser) {
 
-        var userRequest = getUser(apiKey);
-        if (userRequest != null) {
-            var user = userHelper.getUser(idUser);
-            if (!ObjectUtils.isEmpty(user)) {
-                var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
-                if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
-                }
-                user.setApiKey(apiKeyValue);
-                return ResponseEntity.status(HttpStatus.OK).body(user);
+        var user = userHelper.getUser(idUser);
+        if (!ObjectUtils.isEmpty(user)) {
+            var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
+            if(!apiKeyHelper.saveApiKey(apiKeyValue, idUser)){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+            user.setApiKey(apiKeyValue);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
     }
 
     private User getUser(String apiKey) {
@@ -192,6 +187,6 @@ public class UserController {
         if (keyState != ApiKeyState.VALID){
             return null;
         }
-        return userRepository.findByApiKey(apiKey).get();
+        return userRepository.findByApiKey(MD5Password.getEncodedPassword(apiKey)).get();
     }
 }
