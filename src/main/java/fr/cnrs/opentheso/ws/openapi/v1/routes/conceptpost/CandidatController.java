@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
 import fr.cnrs.opentheso.repositories.CandidateHelper;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
@@ -56,7 +57,7 @@ public class CandidatController {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var userId = apiKeyHelper.getIdUser(apiKey);
+        var userId = apiKeyHelper.getIdUser(MD5Password.getEncodedPassword(apiKey));
 
         if (!candidateHelper.saveCandidat(candidate, userId)){
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("");

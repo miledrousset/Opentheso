@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import fr.cnrs.opentheso.repositories.PropositionApiHelper;
 
 import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
@@ -45,7 +46,7 @@ public class PropositionsController {
             return apiKeyHelper.errorResponse(keyState);
         }
 
-        var userId = apiKeyHelper.getIdUser(apiKey);
+        var userId = apiKeyHelper.getIdUser(MD5Password.getEncodedPassword(apiKey));
 
         propositionApiHelper.createProposition(proposition, userId);
         return ResponseEntity.status(201).build();
