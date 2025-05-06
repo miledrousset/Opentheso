@@ -50,7 +50,7 @@ public class UserController {
 
     @PostMapping("/authentification")
     @Operation(summary = "Authentification d'un utilisateur")
-    public ResponseEntity authentification(@RequestBody @Valid AuthentificationDto authentificationDto) {
+    public ResponseEntity createUser(@RequestBody @Valid AuthentificationDto authentificationDto) {
 
         var user = userHelper.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
         if (ObjectUtils.isEmpty(user)) {
@@ -78,14 +78,15 @@ public class UserController {
 
         if (getUser(apiKey).getIsSuperAdmin()) {
 
+            var newApiKey = apiKeyHelper.generateApiKey("ot_", 64);
             var userCreated = userRepository.save(User.builder().username(userDto.getLogin())
                     .mail(userDto.getMail())
                     .password(userDto.getPassword())
                     .isSuperAdmin(userDto.isSuperAdmin())
                     .alertMail(userDto.isAlertMail())
                     .active(true)
-                    .apiKey(apiKeyHelper.generateApiKey("ot_", 64))
-                    .keyNeverExpire(false)
+                    .apiKey(MD5Password.getEncodedPassword(newApiKey))
+                    .keyNeverExpire(true)
                     .isServiceAccount(false)
                     .passToModify(false)
                     .alertMail(false)
@@ -96,6 +97,7 @@ public class UserController {
                 userRoleGroupService.addUserRoleOnGroup(userCreated.getId(), userDto.getIdRole(), idGroup);
             }
 
+            userCreated.setApiKey(newApiKey);
             return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
@@ -170,16 +172,21 @@ public class UserController {
     public ResponseEntity generateApiKey(@RequestHeader(value = "API-KEY") String apiKey,
                                          @PathVariable("idUser") Integer idUser) {
 
-        var user = userHelper.getUser(idUser);
-        if (!ObjectUtils.isEmpty(user)) {
-            var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
-            if(!apiKeyHelper.saveApiKey(apiKeyValue, idUser)){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
+        var userRequest = getUser(apiKey);
+        if (userRequest != null) {
+            var user = userHelper.getUser(idUser);
+            if (!ObjectUtils.isEmpty(user)) {
+                var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
+                if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
+                }
+                user.setApiKey(apiKeyValue);
+                return ResponseEntity.status(HttpStatus.OK).body(user);
             }
-            user.setApiKey(apiKeyValue);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
     }
 
     private User getUser(String apiKey) {
