@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.users.NodeUserResource;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
-import fr.cnrs.opentheso.services.users.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;

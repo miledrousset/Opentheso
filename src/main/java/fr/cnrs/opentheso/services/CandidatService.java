@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.services.candidats;
+package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.Note;
 import fr.cnrs.opentheso.entites.CandidatMessages;
@@ -24,11 +24,8 @@ import fr.cnrs.opentheso.repositories.candidats.TermeDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
 import fr.cnrs.opentheso.repositories.candidats.RelationDao;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
-import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
-
-import jakarta.inject.Named;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -38,7 +35,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,32 +43,31 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Named(value = "candidatService")
 @AllArgsConstructor
-@NoArgsConstructor
 public class CandidatService {
 
-    private ImageService imageService;
-    private NoteDao noteDao;
-    private CandidatDao candidatDao;
-    private DomaineDao domaineDao;
-    private TermHelper termHelper;
-    private ConceptHelper conceptHelper;
-    private TermeDao termeDao;
-    private AlignmentHelper alignmentHelper;
-    private RelationDao relationDao;
-    private StatusRepository statusRepository;
-    private ConceptRepository conceptRepository;
-    private PropositionRepository propositionRepository;
-    private CandidatVoteRepository candidatVoteRepository;
-    private CandidatStatusRepository candidatStatusRepository;
-    private CandidatMessageRepository candidatMessageRepository;
-    private ThesaurusRepository thesaurusRepository;
-    private NonPreferredTermRepository nonPreferredTermRepository;
-    private PreferredTermRepository preferredTermRepository;
-    private ConceptGroupConceptRepository conceptGroupConceptRepository;
-    private TermRepository termRepository;
-    private NoteRepository noteRepository;
+    private final NoteDao noteDao;
+    private final CandidatDao candidatDao;
+    private final DomaineDao domaineDao;
+    private final TermHelper termHelper;
+    private final ConceptHelper conceptHelper;
+    private final TermeDao termeDao;
+    private final AlignmentHelper alignmentHelper;
+    private final RelationDao relationDao;
+
+    private final ImageService imageService;
+    private final StatusRepository statusRepository;
+    private final ConceptRepository conceptRepository;
+    private final PropositionRepository propositionRepository;
+    private final CandidatVoteRepository candidatVoteRepository;
+    private final CandidatStatusRepository candidatStatusRepository;
+    private final CandidatMessageRepository candidatMessageRepository;
+    private final ThesaurusRepository thesaurusRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final PreferredTermRepository preferredTermRepository;
+    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final TermRepository termRepository;
+    private final NoteRepository noteRepository;
 
 
     /**
@@ -174,16 +169,12 @@ public class CandidatService {
 
         //update terme générique
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
-            candidatSelected.getTermesGenerique().forEach(nodeBT -> {
-                relationDao.addRelationBT(candidatSelected.getIdConcepte(), nodeBT.getId(), candidatSelected.getIdThesaurus());
-            });
+            candidatSelected.getTermesGenerique().forEach(nodeBT -> relationDao.addRelationBT(candidatSelected.getIdConcepte(), nodeBT.getId(), candidatSelected.getIdThesaurus()));
         }
 
         //update terme associés
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
-            candidatSelected.getTermesAssocies().forEach(nodeRT -> {
-                relationDao.addRelationRT(candidatSelected.getIdConcepte(), nodeRT.getId(), candidatSelected.getIdThesaurus());
-            });
+            candidatSelected.getTermesAssocies().forEach(nodeRT -> relationDao.addRelationRT(candidatSelected.getIdConcepte(), nodeRT.getId(), candidatSelected.getIdThesaurus()));
         }
 
         // Employé pour
@@ -191,10 +182,8 @@ public class CandidatService {
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
-            candidatSelected.getEmployePourList().forEach(employe -> {
-                termeDao.addNewEmployePour(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
-                        candidatSelected.getIdTerm());
-            });
+            candidatSelected.getEmployePourList().forEach(employe -> termeDao.addNewEmployePour(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
+                    candidatSelected.getIdTerm()));
         }
     }
 
@@ -245,7 +234,7 @@ public class CandidatService {
         candidatSelected.setVoted(CollectionUtils.isNotEmpty(votes));
 
         candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatSelected.getIdConcepte(), idThesaurus));
-        candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte()));
     }
 
 
@@ -370,11 +359,9 @@ public class CandidatService {
                     idNewConcept = saveNewCondidat(concept);
                 } catch (SQLException e) {
                     messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
-                    System.out.println(messages.toString());
                 }
                 if (idNewConcept == null) {
                     messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
-                    System.out.println(messages.toString());                    
                     continue;
                 }
 
@@ -390,7 +377,6 @@ public class CandidatService {
                             idNewTerm = saveNewTerm(terme, idNewConcept, idUser);                            
                         } catch (SQLException e) {
                             messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
-                            System.out.println(messages.toString());                            
                             continue;                            
                         }
                         first = false;
@@ -531,7 +517,7 @@ public class CandidatService {
                 .lexicalvalue(description)
                 .created(new Date())
                 .modified(new Date())
-                .idUSer(userId)
+                .idUser(userId)
                 .notesource(source)
                 .idConcept(idConcept)
                 .build());

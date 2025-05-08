@@ -24,6 +24,7 @@ import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
+import fr.cnrs.opentheso.services.PathService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -90,7 +91,7 @@ public class ConceptView implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private PathHelper pathHelper;
+    private PathService pathService;
 
     @Autowired
     private GpsService gpsService;
@@ -254,9 +255,9 @@ public class ConceptView implements Serializable {
     
     public String getFlagFromCodeLang(String idLang){
         var language = languageRepository.findByIso6391(idLang);
-        return language.isPresent()
-            ? FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/resources/img/flag/" + language.get().getCodePays() + ".png"
-            : "";
+        return language.map(languageIso639 ->
+                FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+                        + "/resources/img/flag/" + languageIso639.getCodePays() + ".png").orElse("");
     }
 
     /**
@@ -609,9 +610,9 @@ public class ConceptView implements Serializable {
      * #MR
      */
     private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
-        List<String> graphPaths = pathHelper.getGraphOfConcept(idConcept, idTheso);
-        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);
-        pathLabel2 = pathHelper.getPathWithLabel2(paths, idTheso, idLang);
+        List<String> graphPaths = pathService.getGraphOfConcept(idConcept, idTheso);
+        List<List<String>> paths = pathService.getPathFromGraph(graphPaths);
+        pathLabel2 = pathService.getPathWithLabel2(paths, idTheso, idLang);
     }    
     
     private void setRoles() {

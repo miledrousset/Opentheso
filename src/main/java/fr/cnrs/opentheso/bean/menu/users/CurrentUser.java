@@ -27,7 +27,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.services.connexion.LdapService;
+import fr.cnrs.opentheso.services.LdapService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;

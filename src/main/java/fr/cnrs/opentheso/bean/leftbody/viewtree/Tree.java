@@ -7,7 +7,7 @@ import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -53,53 +54,25 @@ import org.springframework.context.annotation.ScopedProxyMode;
  */
 @SessionScoped
 @Named(value = "tree")
+@RequiredArgsConstructor
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Tree implements Serializable {
 
-    @Autowired @Lazy
-    private RightBodySetting rightBodySetting;
-
-    @Autowired @Lazy
-    private LeftBodySetting leftBodySetting;
-
-    @Autowired @Lazy
-    private ConceptView conceptBean;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-
-    @Autowired @Lazy
-    private EditFacet editFacet;
-
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired @Lazy
-    private AlignmentBean alignmentBean;
-
-    @Autowired @Lazy
-    private PropositionBean propositionBean;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private PathHelper pathHelper;
-
-    @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
-    private DaoResourceHelper daoResourceHelper;
-
-    @Autowired
-    private DragAndDrop dragAndDrop;
+    private final RightBodySetting rightBodySetting;
+    private final LeftBodySetting leftBodySetting;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final IndexSetting indexSetting;
+    private final EditFacet editFacet;
+    private final CurrentUser currentUser;
+    private final AlignmentBean alignmentBean;
+    private final PropositionBean propositionBean;
+    private final ConceptHelper conceptHelper;
+    private final PathService pathService;
+    private final FacetHelper facetHelper;
+    private final DaoResourceHelper daoResourceHelper;
+    private final DragAndDrop dragAndDrop;
 
     private DataService dataService;
     private TreeNode selectedNode;
@@ -108,7 +81,6 @@ public class Tree implements Serializable {
     private String idTheso, idConceptParent, idLang, idConceptSelected;
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
-
     private boolean manySiblings = false;
 
 
@@ -659,8 +631,8 @@ public class Tree implements Serializable {
      * @param idLang #MR
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
-        List<String> graphPaths = pathHelper.getGraphOfConcept(idConcept, idTheso);
-        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);  
+        List<String> graphPaths = pathService.getGraphOfConcept(idConcept, idTheso);
+        List<List<String>> paths = pathService.getPathFromGraph(graphPaths);
 
         if (root == null) {
             initialise(idTheso, idLang);
@@ -712,7 +684,7 @@ public class Tree implements Serializable {
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 
-        List<Path> paths = pathHelper.getPathOfConcept(idConcept, idTheso);
+        List<Path> paths = pathService.getPathOfConcept(idConcept, idTheso);
         
         paths.get(0).getPath().add(idFacette);
 
@@ -784,7 +756,7 @@ public class Tree implements Serializable {
      */
     public void initAndExpandTreeToPath(String idConcept, String idTheso, String idLang) {
 
-        List<Path> paths = pathHelper.getPathOfConcept(idConcept, idTheso);
+        List<Path> paths = pathService.getPathOfConcept(idConcept, idTheso);
 
         initialise(idTheso, idLang);
 

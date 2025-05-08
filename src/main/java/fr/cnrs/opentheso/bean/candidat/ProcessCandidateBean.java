@@ -11,7 +11,7 @@ import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.services.candidats.CandidatService;
+import fr.cnrs.opentheso.services.CandidatService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 
 import java.io.ByteArrayInputStream;

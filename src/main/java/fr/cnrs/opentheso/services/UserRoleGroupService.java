@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.services.users;
+package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;

@@ -7,7 +7,7 @@ import java.util.List;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -62,7 +62,7 @@ public class TreeGroups implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private PathHelper pathHelper;
+    private PathService pathService;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
@@ -205,7 +205,7 @@ public class TreeGroups implements Serializable {
 
     public void expandGroupToPath(String idGroup, String idTheso, String idLang) {
 
-        ArrayList<String> path = pathHelper.getPathOfGroup(idGroup, idTheso);
+        ArrayList<String> path = pathService.getPathOfGroup(idGroup, idTheso);
 
         if (root == null) {
             initialise(idTheso, idLang);

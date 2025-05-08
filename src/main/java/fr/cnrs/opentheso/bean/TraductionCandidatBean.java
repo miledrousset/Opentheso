@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.services.candidats;
+package fr.cnrs.opentheso.bean;
 
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -9,85 +9,35 @@ import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
-import jakarta.inject.Named;
-import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
+import java.util.List;
+
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
+import jakarta.inject.Named;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "traductionService")
 @SessionScoped
-public class TraductionService implements Serializable {
+@RequiredArgsConstructor
+@Named(value = "traductionCandidatBean")
+public class TraductionCandidatBean implements Serializable {
 
-    @Autowired
-    private CandidatBean candidatBean;
+    private final CandidatBean candidatBean;
+    private final LanguageBean languageBean;
+    private final SelectedTheso selectedTheso;
+    private final TermHelper termHelper;
+    private final TermeDao termeDao;
 
-    @Autowired
-    private LanguageBean languageBean;
+    private String langage, traduction, langageOld, traductionOld, newLangage, newTraduction;
+    private List<NodeLangTheso> nodeLangs, nodeLangsFiltered;
+    private StringBuilder messages = new StringBuilder();
 
-    @Autowired
-    private SelectedTheso selectedTheso;
 
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private TermeDao termeDao;
-
-    private String langage;
-    private String traduction;
-
-    private String langageOld;
-    private String traductionOld;
-
-    private String newLangage;
-    private String newTraduction;
-
-    private ArrayList<NodeLangTheso> nodeLangs;
-    private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
-
-    private StringBuilder messages;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        if (nodeLangs != null) {
-            nodeLangs.clear();
-            nodeLangs = null;
-        }
-        if (nodeLangsFiltered != null) {
-            nodeLangsFiltered.clear();
-            nodeLangsFiltered = null;
-        }
-        langage = null;
-        traduction = null;
-        langageOld = null;
-        traductionOld = null;
-        newLangage = null;
-        newTraduction = null;
-        messages = null;
-    }
-
-    public TraductionService() {
-        langage = null;
-        traduction = null;
-        messages = new StringBuilder();
-    }
-
-    /**
-     * set pour la modification d'une tradcution
-     *
-     * @param traductionDto
-     */
     public void init(TraductionDto traductionDto) {
         langage = traductionDto.getLangue();
         traduction = traductionDto.getTraduction();
@@ -96,9 +46,6 @@ public class TraductionService implements Serializable {
         traductionOld = traduction;
     }
 
-    /**
-     * set pour une nouvelle traduction
-     */
     public void init() {
         newLangage = "";
         newTraduction = "";
@@ -114,7 +61,7 @@ public class TraductionService implements Serializable {
         });
 
         // les langues à ignorer
-        ArrayList<String> langsToRemove = new ArrayList<>();
+        List<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(candidatBean.getCandidatSelected().getLang());
         for (TraductionDto traductionDto : candidatBean.getCandidatSelected().getTraductions()) {
             langsToRemove.add(traductionDto.getLangue());
@@ -131,14 +78,14 @@ public class TraductionService implements Serializable {
      * permet de supprimer une tradcution #MR
      */
     public void deleteTraduction() {
+
         termeDao.deleteTermByIdTermAndLang(candidatBean.getCandidatSelected().getIdTerm(), langage,
                 candidatBean.getCandidatSelected().getIdThesaurus());
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
 
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-        pf.ajax().update("containerIndex");
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**
@@ -150,12 +97,12 @@ public class TraductionService implements Serializable {
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg3"));
 
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-        pf.ajax().update("containerIndex");
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     public void addTraductionCandidat() {
+
         if (termHelper.isTermExistIgnoreCase(newTraduction, candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
             messages = new StringBuilder();
             messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
@@ -175,12 +122,12 @@ public class TraductionService implements Serializable {
         term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
 
         termeDao.addNewTerme(term);
+
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
 
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-        pf.ajax().update("containerIndex");
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
 
     }
 }

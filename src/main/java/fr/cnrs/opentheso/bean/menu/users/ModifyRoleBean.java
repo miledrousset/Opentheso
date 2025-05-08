@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.services.ThesaurusService;
-import fr.cnrs.opentheso.services.users.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;

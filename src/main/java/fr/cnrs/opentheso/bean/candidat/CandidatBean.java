@@ -13,7 +13,6 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -33,9 +32,8 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.services.ImageService;
-import fr.cnrs.opentheso.services.candidats.CandidatService;
+import fr.cnrs.opentheso.services.CandidatService;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -48,6 +46,10 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ExternalContext;
+import jakarta.servlet.http.HttpServletRequest;
+
+import lombok.RequiredArgsConstructor;
 import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
@@ -56,9 +58,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jakarta.faces.context.ExternalContext;
-import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,6 +68,7 @@ import org.primefaces.event.SelectEvent;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
 
@@ -81,7 +81,6 @@ public class CandidatBean implements Serializable {
     private final RoleOnThesoBean roleOnThesoBean;
     private final CurrentUser currentUser;
     private final LanguageBean languageBean;
-    private final ConceptView conceptView;
     private final ImageBean imageBean;
     private final AlignmentBean alignmentBean;
     private final AlignmentManualBean alignmentManualBean;
@@ -97,7 +96,6 @@ public class CandidatBean implements Serializable {
     private final ConceptHelper conceptHelper;
     private final CandidatService candidatService;
     private final AlignmentHelper alignmentHelper;
-    private final UserHelper userHelper;
     private final TermeDao termeDao;
     private final ThesaurusHelper thesaurusHelper;
 
@@ -116,43 +114,6 @@ public class CandidatBean implements Serializable {
     private List<NodeLangTheso> selectedLanguages, languagesOfTheso;
     private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies, collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
 
-
-    public CandidatBean(UserRepository userRepository, SelectedTheso selectedTheso, NoteDao noteDao,
-                        RoleOnThesoBean roleOnThesoBean, CurrentUser currentUser, LanguageBean languageBean,
-                        ConceptView conceptView, ImageBean imageBean, AlignmentBean alignmentBean,
-                        AlignmentManualBean alignmentManualBean, NoteHelper noteHelper, RelationsHelper relationsHelper,
-                        RelationDao relationDao, SearchHelper searchHelper, ConceptDcTermRepository conceptDcTermRepository,
-                        ImageService imageService, DomaineDao domaineDao,
-                        TermHelper termHelper, GroupHelper groupHelper, ConceptHelper conceptHelper,
-                        CandidatService candidatService, AlignmentHelper alignmentHelper, UserHelper userHelper,
-                        TermeDao termeDao, ThesaurusHelper thesaurusHelper) {
-
-        this.userRepository = userRepository;
-        this.selectedTheso = selectedTheso;
-        this.noteDao = noteDao;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.currentUser = currentUser;
-        this.languageBean = languageBean;
-        this.conceptView = conceptView;
-        this.imageBean = imageBean;
-        this.alignmentBean = alignmentBean;
-        this.alignmentManualBean = alignmentManualBean;
-        this.noteHelper = noteHelper;
-        this.relationsHelper = relationsHelper;
-        this.relationDao = relationDao;
-        this.searchHelper = searchHelper;
-        this.conceptDcTermRepository = conceptDcTermRepository;
-        this.imageService = imageService;
-        this.domaineDao = domaineDao;
-        this.termHelper = termHelper;
-        this.groupHelper = groupHelper;
-        this.conceptHelper = conceptHelper;
-        this.candidatService = candidatService;
-        this.alignmentHelper = alignmentHelper;
-        this.userHelper = userHelper;
-        this.termeDao = termeDao;
-        this.thesaurusHelper = thesaurusHelper;
-    }
 
 
     public void setStateForSelectedCandidate() {
@@ -317,15 +278,15 @@ public class CandidatBean implements Serializable {
     }
 
     public String getCountOfCandidats() {
-        return "" + candidatList.size();
+        return CollectionUtils.isEmpty(candidatList) ? "0" : String.valueOf(candidatList.size());
     }
 
     public String getCountOfAcceptedCandidats() {
-        return "" + acceptedCadidat.size();
+        return CollectionUtils.isEmpty(acceptedCadidat) ? "0" : String.valueOf(acceptedCadidat.size());
     }
 
     public String getCountOfRejectedCandidats() {
-        return "" + rejetCadidat.size();
+        return CollectionUtils.isEmpty(rejetCadidat) ? "0" : String.valueOf(rejetCadidat.size());
     }
 
     public void selectMyRejectCandidats() {
@@ -1123,7 +1084,7 @@ public class CandidatBean implements Serializable {
 
     public void deleteImage(String imageUri) {
 
-        imageService.deleteImages(candidatSelected.getIdConcepte(), selectedTheso.getSelectedIdTheso(), imageUri);
+        imageService.deleteImages(selectedTheso.getSelectedIdTheso(), candidatSelected.getIdConcepte(), imageUri);
 
         candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte()));

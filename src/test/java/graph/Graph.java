@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PathHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
@@ -36,9 +35,6 @@ import org.junit.jupiter.api.Test;
  * @author miledrousset
  */
 public class Graph {
-
-    public Graph() {
-    }
 
     private NodeGraphD3js nodeGraphD3js;
     private String defaultLang;
@@ -435,23 +431,7 @@ public class Graph {
     
     @Test
     public void getChildren() {
-        String idTheso = "th5";
-        String idConcept = "31";
 
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-
-        PathHelper pathHelper = new PathHelper();
-
-        List<String> paths = pathHelper.getGraphOfConcept(idConcept, idTheso);
-        for (String path : paths) {
-            System.out.println(path);
-        }
-
-        List<List<String>> allPaths = pathHelper.getPathFromGraph(paths);
-        for (List path : allPaths) {
-            System.out.println(path.toString());
-        }
     }
 
 

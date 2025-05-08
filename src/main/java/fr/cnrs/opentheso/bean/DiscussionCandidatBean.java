@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.services.candidats;
+package fr.cnrs.opentheso.bean;
 
 import fr.cnrs.opentheso.entites.CandidatMessages;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -18,9 +18,10 @@ import java.util.Properties;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -34,14 +35,15 @@ import javax.mail.internet.MimeMessage;
 
 
 @Data
-@Named(value = "discussionService")
 @SessionScoped
-public class DiscussionService implements Serializable {
+@RequiredArgsConstructor
+@Named(value = "discussionCandidatBean")
+public class DiscussionCandidatBean implements Serializable {
 
-    private CandidatBean candidatBean;
-    private LanguageBean languageBean;
-    private MailBean mailBean;
-    private CandidatMessageRepository candidatMessageRepository;
+    private final CandidatBean candidatBean;
+    private final LanguageBean languageBean;
+    private final MailBean mailBean;
+    private final CandidatMessageRepository candidatMessageRepository;
 
     @Value("${smpt.protocol}")
     private String protocolMail;
@@ -64,14 +66,6 @@ public class DiscussionService implements Serializable {
     private String email;
     private List<NodeUser> nodeUsers;
 
-
-    public DiscussionService(CandidatBean candidatBean, LanguageBean langueBean, MailBean mailBean, CandidatMessageRepository candidatMessageRepository) {
-
-        this.candidatBean = candidatBean;
-        this.languageBean = langueBean;
-        this.mailBean = mailBean;
-        this.candidatMessageRepository = candidatMessageRepository;
-    }
 
     public void clear() {
         if (nodeUsers != null) {

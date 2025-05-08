@@ -394,7 +394,7 @@
                             <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_traduction')}"
                                              update="idNewTraduction newTraductionForm"
                                              oncomplete="PF('newTraduction').show();"
-                                             actionListener="#{traductionService.init()}"
+                                             actionListener="#{traductionCandidatBean.init()}"
                                              styleClass="rounded-button ui-button-outlined"
                                              style="color: #f47b2a;" />
                         </div>
@@ -439,7 +439,7 @@
                                                      style="color: #43B572"
                                                      update=":manage-traduction-content"
                                                      oncomplete="PF('editTraduction').show();"
-                                                     actionListener="#{traductionService.init(traduction)}" process="@this"
+                                                     actionListener="#{traductionCandidatBean.init(traduction)}" process="@this"
                                                      styleClass="rounded-button ui-button-outlined">
                                         <p:resetInput target=":manage-traduction-content"/>
                                     </p:commandButton>
@@ -447,7 +447,7 @@
 
                                 <div class="col-2" style="margin-top: -5px">
                                     <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
-                                                     actionListener="#{traductionService.init(traduction)}" update="confirmDeleteForm"
+                                                     actionListener="#{traductionCandidatBean.init(traduction)}" update="confirmDeleteForm"
                                                      oncomplete="PF('confirmDeleteTraduction').show();" />
                                 </div>
                             </div>

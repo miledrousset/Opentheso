@@ -24,13 +24,13 @@ public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Integer id;
 
     private String notetypecode;
 
     private String idThesaurus;
 
-    private Integer idUSer;
+    private Integer idUser;
 
     private String idTerm;
 

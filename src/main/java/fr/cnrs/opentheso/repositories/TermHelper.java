@@ -181,8 +181,7 @@ public class TermHelper {
     /**
      * Permet de modifier le status du synonyme (caché ou non)
      */
-    public boolean updateStatus(String idTerm, String value, String idLang,
-            String idTheso, boolean isHidden, int idUser) {
+    public boolean updateStatus(String idTerm, String value, String idLang, String idTheso, boolean isHidden, int idUser) {
 
         Connection conn = null;
         Statement stmt;
@@ -281,7 +280,7 @@ public class TermHelper {
      * Cette fonction permet de rajouter des Termes Non descripteurs ou synonymes
      */
     public boolean addNonPreferredTerm(String idTerm, String value, String idLang, String idTheso,
-            String source, String status, boolean isHidden, int idUser) {
+                                       String source, String status, boolean isHidden, int idUser) {
 
         boolean isPassed = false;
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -308,7 +307,7 @@ public class TermHelper {
     }
 
     private boolean addNonPreferredTermHistorique(Connection conn, String idTerm, String value, String idLang,
-            String idTheso, String source, String status, boolean isHidden, String action, int idUser) {
+                                                  String idTheso, String source, String status, boolean isHidden, String action, int idUser) {
 
         try (Statement stmt = conn.createStatement()){
             stmt.executeUpdate("Insert into non_preferred_term_historique (id_term, lexical_value, lang, id_thesaurus, source, status, id_user, action, hiden)"
@@ -327,8 +326,7 @@ public class TermHelper {
     /**
      * Cette fonction permet de supprimer une traduction
      */
-    public boolean deleteTraductionOfTerm(String idTerm, String oldLabel,
-            String idLang, String idTheso, int idUser) {
+    public boolean deleteTraductionOfTerm(String idTerm, String oldLabel, String idLang, String idTheso, int idUser) {
 
         boolean status = false;
         try ( Connection conn = dataSource.getConnection()) {
@@ -348,15 +346,7 @@ public class TermHelper {
     /**
      * Permet d'ajouter une traduction à un Terme #MR
      */
-    public boolean addTraduction(
-            
-            String label,
-            String idTerm,
-            String idLang,
-            String source,
-            String status,
-            String idTheso,
-            int idUser) {
+    public boolean addTraduction(String label, String idTerm, String idLang, String source, String status, String idTheso, int idUser) {
 
         boolean passed = false;
         label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
@@ -502,14 +492,7 @@ public class TermHelper {
     }
 
 
-    public boolean addNewTermHistorique(Connection conn,
-            String idTerm,
-            String lexicalValue,
-            String idLang,
-            String idTheso,
-            String source,
-            String action,
-            int idUser) {
+    public boolean addNewTermHistorique(Connection conn, String idTerm, String lexicalValue, String idLang, String idTheso, String source, String action, int idUser) {
 
         Statement stmt;
         boolean isPassed = false;
@@ -608,8 +591,7 @@ public class TermHelper {
      * Cette fonction permet d'ajouter un Terme à la table Term, en paramètre un
      * objet Classe Term
      */
-    public boolean insertTerm(
-            NodeTerm nodeTerm, int idUser) {
+    public boolean insertTerm(NodeTerm nodeTerm, int idUser) {
         if (nodeTerm.getNodeTermTraduction().isEmpty()) {
             return false;
         }
@@ -1188,8 +1170,7 @@ public class TermHelper {
      * Cette fonction permet de récupérer les termes synonymes suivant un
      * id_term et son thésaurus et sa langue sous forme de classe NodeEM
      */
-    public ArrayList<String> getNonPreferredTermsLabel(
-            String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<String> getNonPreferredTermsLabel(String idConcept, String idThesaurus, String idLang) {
 
         ArrayList<String> listAltLabel = new ArrayList<>();
 

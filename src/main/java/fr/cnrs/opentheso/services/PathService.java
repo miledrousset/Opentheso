@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.repositories;
+package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
@@ -7,45 +7,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fr.cnrs.opentheso.repositories.*;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 
 
 @Data
 @Service
-public class PathHelper {
+@RequiredArgsConstructor
+public class PathService {
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
+    private final TermHelper termHelper;
+    private final ConceptHelper conceptHelper;
+    private final GroupHelper groupHelper;
+    private final NoteHelper noteHelper;
+    private final PreferencesHelper preferencesHelper;
+    private final RelationsHelper relationsHelper;
 
     private String message;
-    
-    
+
+
     /**
      * methode pour retrouver tous les chemins vers la racine exemple de retour
      */   
@@ -58,7 +45,7 @@ public class PathHelper {
 
     private void getGraph(String idConcept, String idThesaurus, List<String> path){
 
-        ArrayList<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
+        List<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
         if(idBTs == null || idBTs.isEmpty()){
             if(!path.contains(idConcept)) {
                 path.add(idConcept);

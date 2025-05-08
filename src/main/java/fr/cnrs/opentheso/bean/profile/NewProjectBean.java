@@ -4,9 +4,8 @@ import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.services.users.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -16,7 +15,7 @@ import java.util.List;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,36 +28,23 @@ import org.primefaces.PrimeFaces;
  */
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "newProjectBean")
 public class NewProjectBean implements Serializable {
 
-    private MyProjectBean myProjectBean;
-    private CurrentUser currentUser;
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private UserRoleGroupService userRoleGroupService;
+    private final MyProjectBean myProjectBean;
+    private final CurrentUser currentUser;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final UserRoleGroupService userRoleGroupService;
  
     private String projectName;
     private List<UserGroupLabel> listeProjectOfUser;
 
 
-    @Inject
-    public NewProjectBean(MyProjectBean myProjectBean, CurrentUser currentUser,
-                          UserGroupThesaurusRepository userGroupThesaurusRepository,
-                          UserGroupLabelRepository userGroupLabelRepository,
-                          UserRoleGroupService userRoleGroupService) {
-
-        this.myProjectBean = myProjectBean;
-        this.currentUser = currentUser;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.userRoleGroupService = userRoleGroupService;
-    }
-
     public void init() {
         projectName = null;
-        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             listeProjectOfUser = userGroupLabelRepository.findAll();
             listeProjectOfUser.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             return;

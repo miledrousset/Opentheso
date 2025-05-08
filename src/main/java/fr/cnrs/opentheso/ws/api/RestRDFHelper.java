@@ -14,7 +14,7 @@ import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
-import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
@@ -68,7 +68,7 @@ public class RestRDFHelper {
     private ExportRdf4jHelperNew exportRdf4jHelperNew;
 
     @Autowired
-    private PathHelper pathHelper;
+    private PathService pathService;
 
     @Autowired
     private ExportHelper exportHelper;
@@ -1014,9 +1014,9 @@ public class RestRDFHelper {
             var nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
             if (nodePreference == null) continue;
 
-            var paths = pathHelper.getPathOfConcept(idConcept, idTheso);
+            var paths = pathService.getPathOfConcept(idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                var element = pathHelper.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, format);
+                var element = pathService.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, format);
                // jsonArrayBuilder.add(element);
             }
         }
@@ -1086,9 +1086,9 @@ public class RestRDFHelper {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         for (String idConcept : nodeIds) {
-            var paths = pathHelper.getPathOfConcept(idConcept, idTheso);
+            var paths = pathService.getPathOfConcept(idConcept, idTheso);
             if (CollectionUtils.isNotEmpty(paths)) {
-                pathHelper.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, format);
+                pathService.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, format);
             }
         }
         return jsonArrayBuilder != null ? jsonArrayBuilder.build().toString() : null;
@@ -1323,9 +1323,9 @@ public class RestRDFHelper {
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for (String idConcept : branchs) {
-            paths = pathHelper.getPathOfConcept(idConcept, idTheso);
+            paths = pathService.getPathOfConcept(idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                pathHelper.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, null);
+                pathService.getPathWithLabelAsJson(paths, jsonArrayBuilder, idTheso, lang, null);
             }
         }
         if (jsonArrayBuilder != null) {

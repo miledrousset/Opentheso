@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
-import fr.cnrs.opentheso.services.candidats.CandidatService;
+import fr.cnrs.opentheso.services.CandidatService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 

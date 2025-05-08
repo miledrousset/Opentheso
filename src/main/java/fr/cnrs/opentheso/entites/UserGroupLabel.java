@@ -2,12 +2,12 @@ package fr.cnrs.opentheso.entites;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class UserGroupLabel implements Serializable {
     @Column(name = "label_group")
     private String label;
 
-    @OneToMany(mappedBy = "idGroup")
+    @OneToMany(mappedBy = "idGroup", fetch = FetchType.EAGER)
     private List<UserGroupThesaurus> thesaurusLinks;
 
 
