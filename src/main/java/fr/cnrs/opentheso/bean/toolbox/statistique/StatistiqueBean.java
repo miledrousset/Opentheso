@@ -1,12 +1,12 @@
 package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.services.exports.csv.StatistiquesRapportCSV;
 
 import java.io.ByteArrayInputStream;
@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.stream.Collectors;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import jakarta.inject.Named;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -34,14 +34,14 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 
 
 @Data
-@Named(value = "statistiqueBean")
+@Slf4j
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Named(value = "statistiqueBean")
 public class StatistiqueBean implements Serializable {
     
     private SelectedTheso selectedTheso;
     private LanguageBean languageBean;
-    private GroupHelper groupHelper;
     private ThesaurusHelper thesaurusHelper;
     private ConceptHelper conceptHelper;
     private StatistiqueService statistiqueService;
@@ -54,8 +54,8 @@ public class StatistiqueBean implements Serializable {
 
     private List<GenericStatistiqueData> genericStatistiques;
     private List<ConceptStatisticData> canceptStatistiques;
-    private ArrayList<NodeLangTheso> languagesOfTheso;
-    private ArrayList<DomaineDto> groupList;
+    private List<NodeLangTheso> languagesOfTheso;
+    private List<DomaineDto> groupList;
 
     private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)","rgb(54, 162, 235)",
             "rgb(75, 192, 192)","rgb(158, 14, 64)",
@@ -64,25 +64,10 @@ public class StatistiqueBean implements Serializable {
             "rgb(0, 255, 0)", "rgb(135, 233, 144)", "rgb(9, 106, 9)", "rgb(112, 141, 35)",
             "rgb(255, 205, 86)"));
 
-
-    @Inject
-    public StatistiqueBean(SelectedTheso selectedTheso,
-                           LanguageBean languageBean,
-                           GroupHelper groupHelper,
-                           ThesaurusHelper thesaurusHelper,
-                           ConceptHelper conceptHelper,
-                           StatistiqueService statistiqueService) {
-
-        this.selectedTheso = selectedTheso;
-        this.languageBean = languageBean;
-        this.groupHelper = groupHelper;
-        this.thesaurusHelper = thesaurusHelper;
-        this.conceptHelper = conceptHelper;
-        this.statistiqueService = statistiqueService;
-    }
     
     public void init() {
 
+        log.info("Initialisation de l'interface statistiques");
         genericTypeVisible = false;
         conceptTypeVisible = false;
 
@@ -90,7 +75,7 @@ public class StatistiqueBean implements Serializable {
         canceptStatistiques = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
+            MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Erreur", "Vous devez choisir un Thesorus avant !");
             return;
         }
 
@@ -146,12 +131,6 @@ public class StatistiqueBean implements Serializable {
         donutModel.setData(data);
         return donutModel;
     }
-    
-    private void initChamps() {
-
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
-        groupList = groupHelper.getAllGroupsByThesaurusAndLang(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
-    }
 
     public void onSelectStatType() {
         
@@ -159,7 +138,7 @@ public class StatistiqueBean implements Serializable {
         canceptStatistiques = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
+            MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Erreur !", "Vous devez choisir un thésaurus avant !");
             return;
         }
 
@@ -169,6 +148,17 @@ public class StatistiqueBean implements Serializable {
 
         genericTypeVisible = false;
         conceptTypeVisible = false;
+    }
+
+    private void initChamps() {
+
+        log.info("Initialisation des champs de l'interface statistiques");
+
+        log.info("Recupération de la liste des langues du thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
+
+        log.info("Recherche de la liste des groupes présent dans le thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
+        groupList = statistiqueService.getListGroupes(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
     }
 
     public List<String> searchDomaineName(String enteredValue) {
@@ -199,6 +189,8 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void onSelectLanguageType() {
+
+        log.info("Début de l'analyse des données des statistique");
 
         onSelectStatType();
         clearFilter();
@@ -233,36 +225,32 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void getStatisticByConcept() {
-        canceptStatistiques = statistiqueService.searchAllConceptsByThesaurus(this,
-                selectedTheso.getCurrentIdTheso(),
-                selectedLanguage, dateDebut, dateFin,
-                searchGroupIdFromLabel(selectedCollection), nbrResultat);
+        canceptStatistiques = statistiqueService.searchAllConceptsByThesaurus(selectedTheso.getCurrentIdTheso(),
+                selectedLanguage, dateDebut, dateFin, searchGroupIdFromLabel(selectedCollection), nbrResultat);
     }
 
-    public StreamedContent exportStatiqituque() {
+    public StreamedContent exportStatistiques() {
+
+        log.info("Début de l'export des statistiques du thésaurus {}", selectedTheso.getThesoName());
 
         var statistiquesRapportCSV = new StatistiquesRapportCSV();
         if (genericTypeVisible) {
-            statistiquesRapportCSV.createGenericStatitistiquesRapport(genericStatistiques);
+            log.info("Statistiques générique sélectionné");
+            statistiquesRapportCSV.createGenericStatistiquesRapport(genericStatistiques);
         } else {
-            statistiquesRapportCSV.createConceptsStatitistiquesRapport(canceptStatistiques);
+            log.info("Statistiques concepts sélectionné");
+            statistiquesRapportCSV.createConceptsStatistiquesRapport(canceptStatistiques);
         }
 
+        log.info("Recherche des données terminée, début de la génération du fichier");
         return DefaultStreamedContent.builder()
                 .contentType("text/csv")
                 .name(selectedTheso.getThesoName() + ".csv")
                 .stream(() -> new ByteArrayInputStream(statistiquesRapportCSV.getOutput().toByteArray()))
                 .build();
-
     }
     
     public void setConceptSelected(ConceptStatisticData canceptStatistiqueSelected) {
         this.canceptStatistiqueSelected = canceptStatistiqueSelected;
-    }
-
-    public void showMessage(FacesMessage.Severity messageType, String messageValue) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
     }
 }

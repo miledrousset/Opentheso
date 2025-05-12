@@ -1,9 +1,6 @@
 package fr.cnrs.opentheso.utils;
 
-import lombok.extern.slf4j.Slf4j;
 
-
-@Slf4j
 public class ToolsHelper {
 
 
@@ -27,7 +24,4 @@ public class ToolsHelper {
         else
             return idArk;
     }
-
-
-
 }

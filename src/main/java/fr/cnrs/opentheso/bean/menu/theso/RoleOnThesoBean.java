@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,6 @@ import org.primefaces.PrimeFaces;
 import lombok.Data;
 
 import jakarta.inject.Named;
-import jakarta.inject.Inject;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import org.springframework.context.annotation.Scope;
@@ -46,24 +46,26 @@ import java.util.Map;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "roleOnTheso")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RoleOnThesoBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
-    private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
-    private UserRepository userRepository;
-    private LanguageBean languageBean;
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserHelper userHelper;
-    private ThesaurusHelper thesaurusHelper;
-    private PreferencesHelper preferencesHelper;
-    private RoleRepository roleRepository;
-    private ThesaurusRepository thesaurusRepository;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptStatusRepository conceptStatusRepository;
+
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private final UserRepository userRepository;
+    private final LanguageBean languageBean;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserHelper userHelper;
+    private final ThesaurusHelper thesaurusHelper;
+    private final PreferencesHelper preferencesHelper;
+    private final RoleRepository roleRepository;
+    private final ThesaurusRepository thesaurusRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptStatusRepository conceptStatusRepository;
 
     private List<ThesoModel> listTheso;
     private Map<String, String> listThesoAsAdmin;
@@ -73,37 +75,8 @@ public class RoleOnThesoBean implements Serializable {
     private List<String> selectedThesoForSearch, authorizedTheso, authorizedThesoAsAdmin;
     private NodePreference nodePreference;
     private NodeUserRoleGroup nodeUserRoleGroup;
-
     private TreeNode<NodeIdValue> root;
 
-
-    @Inject
-    public RoleOnThesoBean(@Value("${settings.workLanguage:fr}")String workLanguage,
-                           RoleRepository roleRepository,
-                           UserRoleGroupRepository userRoleGroupRepository,
-                           UserRoleOnlyOnRepository userRoleOnlyOnRepository,
-                           UserRepository userRepository,
-                           LanguageBean languageBean,
-                           UserHelper userHelper,
-                           ThesaurusHelper thesaurusHelper,
-                           PreferencesHelper preferencesHelper,
-                           ThesaurusRepository thesaurusRepository,
-                           UserGroupLabelRepository userGroupLabelRepository,
-                           ConceptRepository conceptRepository) {
-
-        this.workLanguage = workLanguage;
-        this.languageBean = languageBean;
-        this.userHelper = userHelper;
-        this.userRoleOnlyOnRepository = userRoleOnlyOnRepository;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.thesaurusHelper = thesaurusHelper;
-        this.conceptRepository = conceptRepository;
-        this.thesaurusRepository = thesaurusRepository;
-        this.preferencesHelper = preferencesHelper;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-    }
 
     public void initNodePref(SelectedTheso selectedTheso) {
         if (selectedTheso.getCurrentIdTheso() == null) {

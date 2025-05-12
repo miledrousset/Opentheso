@@ -6,7 +6,13 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,22 +20,47 @@ import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.models.candidats.VoteDto;
-import fr.cnrs.opentheso.models.concept.*;
+import fr.cnrs.opentheso.models.concept.Concept;
+import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
+import fr.cnrs.opentheso.models.concept.ConceptImage;
+import fr.cnrs.opentheso.models.concept.ConceptLabel;
+import fr.cnrs.opentheso.models.concept.ConceptNote;
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.concept.NodeConceptExport;
+import fr.cnrs.opentheso.models.concept.NodeConceptSearch;
+import fr.cnrs.opentheso.models.concept.NodeConceptTree;
+import fr.cnrs.opentheso.models.concept.NodeConceptType;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.concept.NodeMetaData;
+import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.models.nodes.*;
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.nodes.NodeGps;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.models.terms.*;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
 import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.terms.NodeBT;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.terms.NodeNT;
+import fr.cnrs.opentheso.models.terms.NodeRT;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
@@ -73,9 +104,6 @@ public class ConceptHelper implements Serializable {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -109,10 +137,19 @@ public class ConceptHelper implements Serializable {
     private FacetHelper facetHelper;
 
     @Autowired
+    private TermRepository termRepository;
+
+    @Autowired
     private CandidatMessageRepository candidatMessageRepository;
 
     @Autowired
     private CandidatVoteRepository candidatVoteRepository;
+
+    @Autowired
+    private PreferredTermRepository preferredTermRepository;
+
+    @Autowired
+    private NonPreferredTermRepository nonPreferredTermRepository;
 
     //identifierType  1=numericId ; 2=alphaNumericId
     private NodePreference nodePreference;
@@ -123,6 +160,10 @@ public class ConceptHelper implements Serializable {
     private ThesaurusHelper thesaurusHelper;
     @Autowired
     private PreferencesHelper preferencesHelper;
+    @Autowired
+    private TermService termService;
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
 
 
     /**
@@ -432,7 +473,7 @@ public class ConceptHelper implements Serializable {
         }
         nodeDatas.setUrl(getUri(idConcept, idTheso));
         nodeDatas.setDefinition(noteHelper.getDefinition(idConcept, idTheso, idLang));
-        nodeDatas.setSynonym(termHelper.getNonPreferredTermsLabel(idConcept, idTheso, idLang));
+        nodeDatas.setSynonym(nonPreferredTermRepository.findAltLabelsByConceptAndThesaurusAndLang(idConcept, idTheso, idLang));
         return nodeDatas;
     }
 
@@ -1042,7 +1083,7 @@ public class ConceptHelper implements Serializable {
         nodeConceptSerach.setPrefLabel(getLexicalValueOfConcept(idConcept, idThesaurus, idLang));
 
         //récupération des traductions
-        nodeConceptSerach.setNodeTermTraductions(termHelper.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
+        nodeConceptSerach.setNodeTermTraductions(termService.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
 
         //récupération des termes génériques
         nodeConceptSerach.setNodeBT(relationsHelper.getListBT(idConcept, idThesaurus, idLang));
@@ -1054,7 +1095,7 @@ public class ConceptHelper implements Serializable {
         nodeConceptSerach.setNodeRT(relationsHelper.getListRT(idConcept, idThesaurus, idLang));
 
         //récupération des Non Prefered Term
-        nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(idConcept, idThesaurus, idLang));
+        nodeConceptSerach.setNodeEM(nonPreferredTermService.getNonPreferredTerms(idConcept, idThesaurus, idLang));
         nodeConceptSerach.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
         return nodeConceptSerach;
@@ -1176,7 +1217,7 @@ public class ConceptHelper implements Serializable {
         nodeConceptSearch.setPrefLabel(getLexicalValueOfConcept(conceptId, idThesaurus, idLang));
 
         //récupération des traductions
-        nodeConceptSearch.setNodeTermTraductions(termHelper.getTraductionsOfConcept(conceptId, idThesaurus, idLang));
+        nodeConceptSearch.setNodeTermTraductions(termService.getTraductionsOfConcept(conceptId, idThesaurus, idLang));
 
         //récupération des termes génériques
         nodeConceptSearch.setNodeBT(relationsHelper.getListBT(conceptId, idThesaurus, idLang));
@@ -1187,9 +1228,7 @@ public class ConceptHelper implements Serializable {
         //récupération des termes associés
         nodeConceptSearch.setNodeRT(relationsHelper.getListRT(conceptId, idThesaurus, idLang));
 
-        termHelper.getIdTermOfConcept(conceptId, idThesaurus);
-
-        nodeConceptSearch.setNodeEM(termHelper.getNonPreferredTerms(conceptId, idThesaurus, idLang));
+        nodeConceptSearch.setNodeEM(nonPreferredTermService.getNonPreferredTerms(conceptId, idThesaurus, idLang));
 
         nodeConceptSearch.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, conceptId, idLang));
 
@@ -2410,8 +2449,7 @@ public class ConceptHelper implements Serializable {
 
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where " + "lower(id_concept) = lower('"
-                        + idConcept + "') and id_thesaurus = '" + idTheso + "'");
+                stmt.executeQuery("select id_concept from concept where " + "lower(id_concept) = lower('" + idConcept + "') and id_thesaurus = '" + idTheso + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = resultSet.getRow() != 0;
@@ -2452,7 +2490,7 @@ public class ConceptHelper implements Serializable {
             if (concept.getIdGroup() != null && !concept.getIdGroup().isEmpty()) {
                 groupHelper.addConceptGroupConcept(concept.getIdGroup(), concept.getIdConcept(), concept.getIdThesaurus());
             }
-            String idTerm = termHelper.addTerm(term, idConcept, idUser);
+            String idTerm = termService.addTerm(term, idConcept, idUser);
             if (idTerm == null) {
                 conn.rollback();
                 conn.close();
@@ -2563,8 +2601,8 @@ public class ConceptHelper implements Serializable {
 
     private boolean deleteConcept__(String idConcept, String idThesaurus, int idUser) {
 
-        String idTerm = termHelper.getIdTermOfConcept(idConcept, idThesaurus);
-        if (idTerm == null) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
+        if (preferredTerm.isEmpty()) {
             return true;
         }
         Connection conn = null;
@@ -2572,11 +2610,7 @@ public class ConceptHelper implements Serializable {
             conn = dataSource.getConnection();
             conn.setAutoCommit(false);
 
-            if (!termHelper.deleteTerm(conn, idTerm, idThesaurus)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
+            termService.deleteTerm(preferredTerm.get().getIdTerm(), idThesaurus);
 
             if (!relationsHelper.deleteAllRelationOfConcept(idConcept, idThesaurus)) {
                 conn.rollback();
@@ -2733,26 +2767,6 @@ public class ConceptHelper implements Serializable {
             log.error("Error while deleting Concept : " + idConcept, sqle);
         }
         return status;
-    }
-
-    /**
-     * Cette fonction permet d'ajouter une traduction à un terme
-     */
-    public boolean addConceptTraduction(Term term, int idUser) {
-
-        try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-            if (!termHelper.addTermTraduction(conn, term, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            conn.commit();
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
     }
 
     /**
@@ -4123,10 +4137,10 @@ public class ConceptHelper implements Serializable {
         nodeConceptExport.setNodeAlignmentsList(alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idThesaurus));
 
         //récupération des traductions        
-        nodeConceptExport.setNodeTermTraductions(termHelper.getAllTraductionsOfConcept(idConcept, idThesaurus));
+        nodeConceptExport.setNodeTermTraductions(termRepository.findAllTraductionsOfConcept(idConcept, idThesaurus));
 
         //récupération des Non Prefered Term        
-        nodeConceptExport.setNodeEM(termHelper.getAllNonPreferredTerms(idConcept, idThesaurus));
+        nodeConceptExport.setNodeEM(nonPreferredTermService.getAllNonPreferredTerms(idConcept, idThesaurus));
 
         //récupération des Groupes ou domaines 
         nodeConceptExport.setNodeListIdsOfConceptGroup(groupHelper.getListGroupOfConceptArk(idThesaurus, idConcept));
@@ -4249,7 +4263,7 @@ public class ConceptHelper implements Serializable {
         nodeConcept.setConcept(concept);
 
         //récupération du Terme
-        Term term = termHelper.getThisTerm(idConcept, idThesaurus, idLang);
+        Term term = termService.getThisTerm(idConcept, idThesaurus, idLang);
         nodeConcept.setTerm(term);
 
         //récupération des termes spécifiques
@@ -4259,10 +4273,10 @@ public class ConceptHelper implements Serializable {
         nodeConcept.setNodeRT(relationsHelper.getListRT(idConcept, idThesaurus, idLang));
 
         //récupération des Non Prefered Term
-        nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeEM(nonPreferredTermService.getNonPreferredTerms(idConcept, idThesaurus, idLang));
 
         //récupération des traductions
-        nodeConcept.setNodeTermTraductions(termHelper.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeTermTraductions(termService.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
 
         //récupération des notes du term
         nodeConcept.setNodeNotes(noteHelper.getListNotes(idConcept, idThesaurus, idLang));

@@ -1,11 +1,17 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.PropositionModification;
 import fr.cnrs.opentheso.entites.PropositionModificationDetail;
 import fr.cnrs.opentheso.models.PropositionProjection;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.propositions.*;
+import fr.cnrs.opentheso.models.propositions.Proposition;
+import fr.cnrs.opentheso.models.propositions.PropositionActionEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionCategoryEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
+import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
@@ -21,7 +27,6 @@ import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.repositories.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -29,65 +34,64 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Service;
 
 
+@Data
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class PropositionService {
 
-    private Tree tree;
-    private ConceptView conceptView;
-    private CurrentUser currentUser;
-    private IndexSetting indexSetting;
-    private SelectedTheso selectedTheso;
-    private RoleOnThesoBean roleOnThesoBean;
-    private MailBean mailBean;
-    private ConceptDcTermRepository conceptDcTermRepository;
-    private ThesaurusHelper thesaurusHelper;
-    private ConceptHelper conceptHelper;
-    private NoteHelper noteHelper;
-    private TermHelper termHelper;
-    private UserHelper userHelper;
-    private PreferencesHelper preferencesHelper;
-    private PropositionModificationRepository propositionModificationRepository;
-    private PropositionModificationDetailRepository propositionModificationDetailRepository;
+    private final Tree tree;
+    private final ConceptView conceptView;
+    private final CurrentUser currentUser;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final MailBean mailBean;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ThesaurusHelper thesaurusHelper;
+    private final ConceptHelper conceptHelper;
+    private final NoteHelper noteHelper;
+    private final UserHelper userHelper;
+    private final TermRepository termRepository;
+    private final PreferencesHelper preferencesHelper;
+    private final PropositionModificationRepository propositionModificationRepository;
+    private final PropositionModificationDetailRepository propositionModificationDetailRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final TermService termService;
+    private final PreferredTermRepository preferredTermRepository;
 
-
-    public PropositionService(Tree tree, ConceptView conceptView, CurrentUser currentUser, IndexSetting indexSetting,
-                              SelectedTheso selectedTheso, RoleOnThesoBean roleOnThesoBean, MailBean mailBean,
-                              ConceptDcTermRepository conceptDcTermRepository, ThesaurusHelper thesaurusHelper,
-                              ConceptHelper conceptHelper, NoteHelper noteHelper, TermHelper termHelper, UserHelper userHelper,
-                              PreferencesHelper preferencesHelper, PropositionModificationRepository propositionModificationRepository,
-                              PropositionModificationDetailRepository propositionModificationDetailRepository) {
-
-        this.tree = tree;
-        this.conceptView = conceptView;
-        this.currentUser = currentUser;
-        this.indexSetting = indexSetting;
-        this.selectedTheso = selectedTheso;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.mailBean = mailBean;
-        this.conceptDcTermRepository = conceptDcTermRepository;
-        this.thesaurusHelper = thesaurusHelper;
-        this.conceptHelper = conceptHelper;
-        this.noteHelper = noteHelper;
-        this.termHelper = termHelper;
-        this.userHelper = userHelper;
-        this.preferencesHelper = preferencesHelper;
-        this.propositionModificationRepository = propositionModificationRepository;
-        this.propositionModificationDetailRepository = propositionModificationDetailRepository;
-    }
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
 
+        log.info("Début de l'envoi de la proposition");
         if (propositionModificationRepository.findPropositionByEmailConceptLang(email, proposition.getConceptID(),
                 selectedTheso.getCurrentLang()) != null) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous avez déjà une proposition pour le même concept en cours de etraitement !");
+
+            log.error("Il existe déjà une proposition pour le même concept en cours de traitement !");
+            MessageUtils.showWarnMessage("Vous avez déjà une proposition pour le même concept en cours de traitement !");
             return false;
         }
 
@@ -102,6 +106,8 @@ public class PropositionService {
                 .date(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()))
                 .build();
 
+        log.info("Recherche du nom du thésaurus à partir de son id {} et la langue {}",
+                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         var thesaurusName = thesaurusHelper.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         try {
@@ -114,11 +120,14 @@ public class PropositionService {
                     + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionModification.getIdConcept()
                     + "&idt=" + propositionModification.getIdTheso() + "\">" + proposition.getNomConcept().getLexicalValue() + "</a>). <br/><br/> Cordialement,<br/>"
                     + "L'équipe " + thesaurusName + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
+
+            log.info("Envoi de l'émail...");
             sendEmail(propositionModification.getEmail(), subject, contentFile);
         } catch (Exception ex) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Erreur detectée pendant l'envoie du mail de notification! \nVotre propostion a été enregistrée !");
+            MessageUtils.showWarnMessage("Erreur détectée pendant l'envoie du mail de notification! \nVotre proposition a été enregistrée !");
         }
 
+        log.info("Enregistrement de la proposition dans la base");
         var propositionSaved = propositionModificationRepository.save(propositionModification);
 
         if (StringUtils.isNotEmpty(proposition.getNomConceptProp())) {
@@ -133,12 +142,14 @@ public class PropositionService {
         }
 
         if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
+            log.info("Enregistrement des synonymes présent dans la proposition");
             for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
                 saveSynonyms(propositionSaved.getId(), synonymProp);
             }
         }
 
         if (!CollectionUtils.isEmpty(proposition.getTraductionsProp())) {
+            log.info("Enregistrement des traductions présents dans la proposition");
             for (var traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd() || traductionProp.isToUpdate() || traductionProp.isToRemove()) {
                     var propositionDetail = new PropositionModificationDetail();
@@ -165,30 +176,37 @@ public class PropositionService {
         }
 
         if (proposition.getNote() != null) {
+            log.info("Enregistrement des notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getNote(), PropositionCategoryEnum.NOTE.name());
         }
 
         if (proposition.getChangeNote() != null) {
+            log.info("Enregistrement des changes notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getChangeNote(), PropositionCategoryEnum.CHANGE_NOTE.name());
         }
 
         if (proposition.getDefinition() != null) {
+            log.info("Enregistrement des définitions présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getDefinition(), PropositionCategoryEnum.DEFINITION.name());
         }
 
         if (proposition.getEditorialNote() != null) {
+            log.info("Enregistrement des editorials notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getEditorialNote(), PropositionCategoryEnum.EDITORIAL_NOTE.name());
         }
 
         if (proposition.getExample() != null) {
+            log.info("Enregistrement des examples présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getExample(), PropositionCategoryEnum.EXAMPLE.name());
         }
 
         if (proposition.getHistoryNote() != null) {
+            log.info("Enregistrement des histories notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getHistoryNote(), PropositionCategoryEnum.HISTORY.name());
         }
 
         if (proposition.getScopeNote() != null) {
+            log.info("Enregistrement des scopes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getScopeNote(), PropositionCategoryEnum.SCOPE.name());
         }
 
@@ -231,6 +249,7 @@ public class PropositionService {
 
     public int searchNbrNewProposition() {
 
+        log.info("Recherche du nombre des nouvelles propositions");
         if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso()))
             return 0;
 
@@ -240,7 +259,6 @@ public class PropositionService {
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
-        //return true;
         if (currentUser.getNodeUser() != null) {
             if(!currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)) {
                 return mailBean.sendMail(emailDestination, subject, contentFile);
@@ -280,7 +298,7 @@ public class PropositionService {
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+            MessageUtils.showErrorMessage("Erreur detectée pendant l'envoie du mail de notification!");
         }
     }
 
@@ -296,11 +314,11 @@ public class PropositionService {
                                   boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
 
         if (prefTermeAccepted && proposition.isUpdateNomConcept()) {
-            Term term = termHelper.getThisTerm(propositionSelected.getIdConcept(), propositionSelected.getIdTheso(),
+            Term term = termService.getThisTerm(propositionSelected.getIdConcept(), propositionSelected.getIdTheso(),
                     propositionSelected.getLang());
 
             term.setLexicalValue(proposition.getNomConceptProp());
-            termHelper.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
+            termService.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
 
             tree.reset();
             tree.initialise(propositionSelected.getIdTheso(), propositionSelected.getLang());
@@ -315,30 +333,26 @@ public class PropositionService {
             for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
                 if (synonymPropBean.isToAdd()) {
 
-                    String idTerm = termHelper.getIdTermOfConcept(propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
-
-                    if (!termHelper.addNonPreferredTerm(idTerm, synonymPropBean.getLexicalValue(), synonymPropBean.getLang().toLowerCase(),
-                            selectedTheso.getCurrentIdTheso(), "", synonymPropBean.isHiden() ? "Hidden" : "USE",
-                            synonymPropBean.isHiden(), currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La création du nouveau synonyme a échoué !");
-                        return;
-                    }
+                    var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept());
+                    var term = Term.builder()
+                            .idTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null))
+                            .lexicalValue(synonymPropBean.getLexicalValue())
+                            .lang(synonymPropBean.getLang().toLowerCase())
+                            .idThesaurus(selectedTheso.getCurrentIdTheso())
+                            .hidden(synonymPropBean.isHiden())
+                            .status(synonymPropBean.isHiden() ? "Hidden" : "USE")
+                            .build();
+                    log.info("Enregistrement du synonyme");
+                    nonPreferredTermService.addNonPreferredTerm(term, currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToRemove()) {
-
-                    if (!termHelper.deleteNonPreferedTerm(synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
-                            synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La suppression du synonyme a échoué !");
-                        return;
-                    }
+                    log.info("Suppression du non preferred term '{}'", synonymPropBean.getLexicalValue());
+                    nonPreferredTermService.deleteNonPreferredTerm(synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
+                            synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToUpdate()) {
-
-                    if (!termHelper.updateTermSynonyme(synonymPropBean.getOldValue(), synonymPropBean.getLexicalValue(),
+                    if (nonPreferredTermService.updateNonPreferredTerm(synonymPropBean.getOldValue(), synonymPropBean.getLexicalValue(),
                             synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
                             selectedTheso.getCurrentIdTheso(), synonymPropBean.isHiden(), currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La modification du synonyme a échoué !");
+                        MessageUtils.showErrorMessage("La modification du synonyme a échoué !");
                         return;
                     }
                 }
@@ -348,29 +362,21 @@ public class PropositionService {
         if (traductionAccepted && CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
             for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd()) {
-                    if (!termHelper.addTraduction(traductionProp.getLexicalValue(), traductionProp.getIdTerm(),
-                            traductionProp.getLang(), "", "", selectedTheso.getCurrentIdTheso(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "L'ajout d'une traduction a échouée !");
-                        return;
-                    }
+                    var term = Term.builder()
+                            .lexicalValue(traductionProp.getLexicalValue())
+                            .idTerm(traductionProp.getIdTerm())
+                            .lang(traductionProp.getLang().toLowerCase())
+                            .idThesaurus(selectedTheso.getCurrentIdTheso())
+                            .source("")
+                            .status("")
+                            .build();
+                    termService.addTermTraduction(term, currentUser.getNodeUser().getIdUser());
                 } else if (traductionProp.isToRemove()) {
-                    if (!termHelper.deleteTraductionOfTerm(traductionProp.getIdTerm(), traductionProp.getLexicalValue(),
-                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La suppression d'une traduction a échouée !");
-                        return;
-                    }
+                    termRepository.deleteByIdTermAndLangAndIdThesaurus(traductionProp.getIdTerm(),
+                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso());
                 } else if (traductionProp.isToUpdate()) {
-                    if (!termHelper.updateTraduction(traductionProp.getLexicalValue(), traductionProp.getIdTerm(),
-                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La modification de la traduction "
-                                + traductionProp.getLexicalValue() + " (" + traductionProp.getLang()
-                                + ") a échouée !");
-                        return;
-                    }
+                    termService.updateTermTraduction(traductionProp.getLexicalValue(), traductionProp.getIdTerm(),
+                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                 }
             }
         }
@@ -484,7 +490,7 @@ public class PropositionService {
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+            MessageUtils.showErrorMessage("Erreur détectée pendant l'envoie du mail de notification!");
         }
     }
 
@@ -520,27 +526,21 @@ public class PropositionService {
     public boolean updateNomConcept(String newConceptName) {
 
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
-        String idTerm = termHelper.isTermEqualTo(newConceptName, selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-
-        if (idTerm != null) {
-            String label = termHelper.getLexicalValue(idTerm, selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        var value = fr.cnrs.opentheso.utils.StringUtils.convertString(newConceptName);
+        var termFound = termRepository.findByLexicalValueAndLangAndIdThesaurus(value, selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        if (termFound.isPresent()) {
+            var term = termRepository.findByIdTermAndIdThesaurusAndLang(termFound.get().getIdTerm(),
+                    selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+            var label = term.isPresent() ? term.get().getLexicalValue() : "";
+            MessageUtils.showWarnMessage("Le label '" + label + "' existe déjà !");
             return false;
         }
 
-        if (termHelper.isAltLabelExist(idTerm, selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (nonPreferredTermRepository.isAltLabelExist(termFound.get().getIdTerm(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
+            MessageUtils.showWarnMessage("Un synonyme existe déjà !");
             return false;
         }
         return true;
-    }
-
-    private void showMessage(FacesMessage.Severity type, String message) {
-        FacesMessage msg = new FacesMessage(type, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public Proposition selectProposition(NodeConcept nodeConcept) {
@@ -1004,13 +1004,13 @@ public class PropositionService {
                     propositionDetail.setOldValue(traduction.get().getOldValue());
                 }
 
-                var idTerm = termHelper.getIdTermOfConcept(proposition.getConceptID(), proposition.getIdTheso());
-                if (StringUtils.isNotEmpty(idTerm)) {
+                var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(proposition.getIdTheso(), proposition.getConceptID());
+                if (preferredTerm.isPresent()) {
                     propositionDetail.setIdProposition(propositionId);
                     propositionDetail.setCategorie(PropositionCategoryEnum.TRADUCTION.name());
                     propositionDetail.setLang(traduction.get().getLang());
                     propositionDetail.setValue(traduction.get().getLexicalValue());
-                    propositionDetail.setIdTerm(idTerm);
+                    propositionDetail.setIdTerm(preferredTerm.get().getIdTerm());
                     propositionModificationDetailRepository.save(propositionDetail);
                 }
             }

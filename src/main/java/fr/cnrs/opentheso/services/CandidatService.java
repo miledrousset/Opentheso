@@ -17,7 +17,20 @@ import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.repositories.*;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
+import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
+import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
+import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteRepository;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PropositionRepository;
+import fr.cnrs.opentheso.repositories.StatusRepository;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.TermeDao;
@@ -34,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,13 +56,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CandidatService {
 
     private final NoteDao noteDao;
     private final CandidatDao candidatDao;
     private final DomaineDao domaineDao;
-    private final TermHelper termHelper;
     private final ConceptHelper conceptHelper;
     private final TermeDao termeDao;
     private final AlignmentHelper alignmentHelper;
@@ -68,6 +80,7 @@ public class CandidatService {
     private final ConceptGroupConceptRepository conceptGroupConceptRepository;
     private final TermRepository termRepository;
     private final NoteRepository noteRepository;
+    private final TermService termService;
 
 
     /**
@@ -148,7 +161,7 @@ public class CandidatService {
 
     public String saveNewTerm(Term term, String idConcept, int idUser) throws SQLException {
 
-        return termHelper.addTerm(term, idConcept, idUser);
+        return termService.addTerm(term, idConcept, idUser);
     }
 
     public void updateIntitule(String intitule, String idThesaurus, String lang, String idTerm) {
@@ -189,7 +202,8 @@ public class CandidatService {
 
     public void getCandidatDetails(CandidatDto candidatSelected, String idThesaurus) {
 
-        candidatSelected.setIdTerm(termHelper.getIdTermOfConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+        candidatSelected.setIdTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null));
 
         candidatSelected.setCollections(domaineDao.getDomaineCandidatByConceptAndThesaurusAndLang(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
@@ -208,7 +222,7 @@ public class CandidatService {
         candidatSelected.getNodeNotes().forEach(note -> note.setVoted(getVote(candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte(), candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE)));
 
-        candidatSelected.setTraductions(termHelper.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
+        candidatSelected.setTraductions(termService.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                 term -> new TraductionDto(term.getLang(),
                         term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
@@ -333,13 +347,10 @@ public class CandidatService {
         Term terme = new Term();
         
         for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
-            // ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue
+            log.info("ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue");
             for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
-                // en cas d'un nouveau candidat, verification dans les prefLabels
-                if (termHelper.isPrefLabelExist(
-                        nodeTraduction.getTitle().trim(),
-                        idTheso,
-                        nodeTraduction.getIdLang())) {
+                log.info("Vérification de l'existance du terme (recherche dans prefLabels)");
+                if (termRepository.existsPrefLabel(nodeTraduction.getTitle().trim(), nodeTraduction.getIdLang(), idTheso)){
                     messages.append("Candidat existe : ").append(nodeTraduction.getTitle());
                     exist = true;
                     break;
@@ -381,11 +392,15 @@ public class CandidatService {
                         }
                         first = false;
                     } else {
-                        // ajout des traductions
-                        if(!termHelper.addTraduction(nodeTraduction.getTitle(), idNewTerm, nodeTraduction.getIdLang(),
-                                "candidat", "D", idTheso, idUser)) {
-                            messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
-                        }
+                        var term = Term.builder()
+                                .idTerm(idNewTerm)
+                                .idThesaurus(idTheso)
+                                .lang(nodeTraduction.getIdLang())
+                                .lexicalValue(nodeTraduction.getTitle())
+                                .source("candidat")
+                                .status("D")
+                                .build();
+                        termService.addTermTraduction(term, idUser);
                     }
                 }
                 first = true;
@@ -433,6 +448,10 @@ public class CandidatService {
 
         log.error("Création du nouveau concept dans la base");
         var thesaurus = thesaurusRepository.findById(candidate.getThesoId());
+        if (thesaurus.isEmpty()) {
+            log.error("Le thesaurus {} n'existe pas", candidate.getThesoId());
+            return false;
+        }
         conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()
                 .idConcept(idConcept)
                 .created(new Date())

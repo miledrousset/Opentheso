@@ -53,9 +53,7 @@ public class NodePreference {
     private int sizeIdArkLocal;
     
     private boolean breadcrumb;
-    
     private boolean suggestion;
-    
     private boolean useCustomRelation;
     private boolean uppercase_for_ark;
     

@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.candidats.TermeDao;
 import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -13,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.TermService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.inject.Named;
@@ -30,8 +30,8 @@ public class TraductionCandidatBean implements Serializable {
     private final CandidatBean candidatBean;
     private final LanguageBean languageBean;
     private final SelectedTheso selectedTheso;
-    private final TermHelper termHelper;
     private final TermeDao termeDao;
+    private final TermService termService;
 
     private String langage, traduction, langageOld, traductionOld, newLangage, newTraduction;
     private List<NodeLangTheso> nodeLangs, nodeLangsFiltered;
@@ -54,11 +54,9 @@ public class TraductionCandidatBean implements Serializable {
     }
 
     private void initLanguages() {
-        nodeLangs = selectedTheso.getNodeLangs();
 
-        nodeLangs.forEach((nodeLang) -> {
-            nodeLangsFiltered.add(nodeLang);
-        });
+        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangsFiltered.addAll(nodeLangs);
 
         // les langues à ignorer
         List<String> langsToRemove = new ArrayList<>();
@@ -103,7 +101,7 @@ public class TraductionCandidatBean implements Serializable {
 
     public void addTraductionCandidat() {
 
-        if (termHelper.isTermExistIgnoreCase(newTraduction, candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
+        if (termService.isTermExistIgnoreCase(newTraduction, candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
             messages = new StringBuilder();
             messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
                     .append("#").append(newTraduction).append(" (").append(langage).append(")");

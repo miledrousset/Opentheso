@@ -1,14 +1,8 @@
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
-import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -31,8 +25,16 @@ import fr.cnrs.opentheso.client.alignement.IdRefHelper;
 import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
 
 import jakarta.inject.Named;
@@ -93,9 +95,6 @@ public class AlignmentBean implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
@@ -109,6 +108,12 @@ public class AlignmentBean implements Serializable {
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
+
+    @Autowired
+    private PreferredTermRepository preferredTermRepository;
+
+    @Autowired
+    private TermRepository termRepository;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -194,6 +199,8 @@ public class AlignmentBean implements Serializable {
 
     /// pour l'alignement manuel en cas de non réponse
     private String manualAlignmentUri;
+    @Autowired
+    private TermService termService;
 
     public void deleteAlignment(AlignementElement alignement) {
         alignmentHelper.deleteAlignment(
@@ -505,25 +512,31 @@ public class AlignmentBean implements Serializable {
                 alignment.getThesaurus_target(), alignment.getUri_target(), alignment.getAlignement_id_type(),
                 alignment.getInternal_id_concept(), idTheso, alignment.getId_source());
 
-        String idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
-        if (StringUtils.isNotEmpty(idTerm)) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+        if (preferredTerm.isPresent()) {
             if (CollectionUtils.isNotEmpty(alignment.getSelectedTraductionsList())) {
                 for (SelectedResource selectedResource : alignment.getSelectedTraductionsList()) {
                     Term term = new Term();
                     term.setIdThesaurus(idTheso);
                     term.setLang(selectedResource.getIdLang());
                     term.setLexicalValue(selectedResource.getGettedValue());
-                    term.setIdTerm(idTerm);
+                    term.setIdTerm(preferredTerm.get().getIdTerm());
                     term.setContributor(idUser);
                     term.setCreator(idUser);
                     term.setSource("");
                     term.setStatus("");
-                    if (termHelper.isTraductionExistOfConcept(idConcept, idTheso, selectedResource.getIdLang())) {
-                        termHelper.updateTermTraduction(term, idUser);
+                    if (termService.isTraductionExistOfConcept(idConcept, idTheso, selectedResource.getIdLang())) {
+                        termService.updateTermTraduction(term, idUser);
                     } else {
-                        // insert
-                        termHelper.addTraduction(selectedResource.getGettedValue(), idTerm,
-                                selectedResource.getIdLang(), "", "", idTheso, idUser);
+                        var termToSave = fr.cnrs.opentheso.models.terms.Term.builder()
+                                .lexicalValue(selectedResource.getGettedValue())
+                                .idTerm(preferredTerm.get().getIdTerm())
+                                .lang(selectedResource.getIdLang())
+                                .idThesaurus(idTheso)
+                                .source("")
+                                .status("")
+                                .build();
+                        termService.addTermTraduction(termToSave, idUser);
                     }
                 }
             }
@@ -1198,7 +1211,7 @@ public class AlignmentBean implements Serializable {
      * initialisation des valeurs du concept local pour comparaison avec leconcept à aligner
      */
     private void getValuesOfLocalConcept(String idTheso, String idConcept) {
-        nodeTermTraductions = termHelper.getAllTraductionsOfConcept(idConcept, idTheso);
+        nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
         nodeNotes = noteHelper.getListNotesAllLang(idConcept, idTheso);
         nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idTheso);
         nodeAlignmentSmall = alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idTheso);
@@ -1567,8 +1580,8 @@ public class AlignmentBean implements Serializable {
     private boolean addTraductions__(String idTheso, String idConcept, int idUser) {
 
         Term term = new Term();
-        String idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
-        if (idTerm == null) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+        if (preferredTerm.isEmpty()) {
             return false;
         }
 
@@ -1577,31 +1590,24 @@ public class AlignmentBean implements Serializable {
                 term.setIdThesaurus(idTheso);
                 term.setLang(selectedResource.getIdLang());
                 term.setLexicalValue(selectedResource.getGettedValue());
-                term.setIdTerm(idTerm);
+                term.setIdTerm(preferredTerm.get().getIdTerm());
                 term.setContributor(idUser);
                 term.setCreator(idUser);
                 term.setSource("");
                 term.setStatus("");
-                if (termHelper.isTraductionExistOfConcept(
-                        idConcept, idTheso, selectedResource.getIdLang())) {
-                    // update
-                    if (!termHelper.updateTermTraduction(term, idUser)) {
-                        error = true;
-                        alignementResult = alignementResult + ": Erreur pendant la modification des traductions";
-                    }
+
+                if (termService.isTraductionExistOfConcept(idConcept, idTheso, selectedResource.getIdLang())) {
+                    termService.updateTermTraduction(term, idUser);
                 } else {
-                    // insert
-                    if (!termHelper.addTraduction(
-                            selectedResource.getGettedValue(),
-                            idTerm,
-                            selectedResource.getIdLang(),
-                            "",
-                            "",
-                            idTheso,
-                            idUser)) {
-                        error = true;
-                        alignementResult = alignementResult + ": Erreur dans l'ajout des traductions";
-                    }
+                    var termToSave = fr.cnrs.opentheso.models.terms.Term.builder()
+                            .lexicalValue(selectedResource.getGettedValue())
+                            .idTerm(preferredTerm.get().getIdTerm())
+                            .lang(selectedResource.getIdLang())
+                            .idThesaurus(selectedTheso.getCurrentIdTheso())
+                            .source("")
+                            .status("")
+                            .build();
+                    termService.addTermTraduction(termToSave, idUser);
                 }
             }
         }

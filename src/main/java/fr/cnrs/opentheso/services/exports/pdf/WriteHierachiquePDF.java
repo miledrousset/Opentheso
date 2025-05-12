@@ -11,8 +11,8 @@ import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.TermHelper;
 
+import fr.cnrs.opentheso.services.TermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class WriteHierachiquePDF {
     private UriHelper uriHelper;
 
     @Autowired
-    private TermHelper termHelper;
+    private TermService termService;
 
     private boolean isToogleExportImage;
 
@@ -75,7 +75,7 @@ public class WriteHierachiquePDF {
 
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         Collections.sort(concepts, sortForHiera(isTrad, codeLanguage1, codeLanguage2, labels,
-                idToChildId, idToDoc, matchs, gps, images, resourceChecked, notesDiff, termHelper));
+                idToChildId, idToDoc, matchs, gps, images, resourceChecked, notesDiff, termService));
 
         for (SKOSResource concept : concepts) {
 

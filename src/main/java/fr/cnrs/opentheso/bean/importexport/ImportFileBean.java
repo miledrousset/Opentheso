@@ -22,16 +22,18 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
@@ -107,6 +109,9 @@ public class ImportFileBean implements Serializable {
     private SelectedTheso selectedTheso;
 
     @Autowired
+    private PreferredTermRepository preferredTermRepository;
+
+    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -140,9 +145,6 @@ public class ImportFileBean implements Serializable {
     private ImageService imageService;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private AlignmentHelper alignmentHelper;
 
     @Autowired
@@ -150,6 +152,9 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
+
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
 
     private double progress = 0;
     private double progressStep = 0;
@@ -213,6 +218,8 @@ public class ImportFileBean implements Serializable {
     private String fileName;
 
     private String selectedSearchType;
+    @Autowired
+    private NonPreferredTermRepository nonPreferredTermRepository;
 
 
     public void init() {
@@ -2303,10 +2310,11 @@ public class ImportFileBean implements Serializable {
                 }
 
                 //Suppression des synonymes
-                idTerm = termHelper.getIdTermOfConcept(idConcept, selectedTheso.getCurrentIdTheso());
-                if(idTerm != null) {
+                var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+                if(preferredTerm.isPresent()) {
                     for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
-                        termHelper.deleteNonPreferedTerm(idTerm, altLabel.getLang(), altLabel.getLabel(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
+                        nonPreferredTermService.deleteNonPreferredTerm(preferredTerm.get().getIdTerm(), altLabel.getLang(),
+                                altLabel.getLabel(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                         total++;
                     }
                 }
@@ -2378,19 +2386,23 @@ public class ImportFileBean implements Serializable {
                 }
 
                 if (clearBefore) {
-                    if (!termHelper.deleteAllNonPreferedTerm(idConcept, selectedTheso.getCurrentIdTheso())) {
-                        error.append("erreur de suppression: ");
-                        error.append(idConcept);
-                        return;
-                    }
+                    nonPreferredTermRepository.deleteAllByConceptAndThesaurus(idConcept, selectedTheso.getCurrentIdTheso());
                 }
 
                 //ajout des synonymes
-                idTerm = termHelper.getIdTermOfConcept(idConcept, selectedTheso.getCurrentIdTheso());
-                if(idTerm != null) {
+                var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+                if(preferredTerm.isPresent()) {
                     for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
-                        termHelper.addNonPreferredTerm(idTerm, altLabel.getLabel(), altLabel.getLang(), selectedTheso.getCurrentIdTheso(), "import",
-                                "", false, currentUser.getNodeUser().getIdUser());
+                        Term term = Term.builder()
+                                .idTerm(preferredTerm.get().getIdTerm())
+                                .lexicalValue(altLabel.getLabel())
+                                .lang(altLabel.getLang())
+                                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                                .source("import")
+                                .status("")
+                                .hidden(false)
+                                .build();
+                        nonPreferredTermService.addNonPreferredTerm(term, currentUser.getNodeUser().getIdUser());
                         total++;
                     }
                 }

@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -346,10 +346,10 @@ public class SKOSResource {
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
             HashMap<String, ArrayList<String>> idToMatch, HashMap<String, List<String>> idToGPS,
             HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
-            HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermHelper termHelper) {
+            HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermService termService) {
 
         return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap, idToChildId, idToDocumentation,
-                idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff, termHelper);
+                idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff, termService);
     }
 
     private static class HieraComparator implements Comparator<SKOSResource> {
@@ -364,16 +364,16 @@ public class SKOSResource {
         HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
-        TermHelper termHelper;
+        TermService termService;
         HashMap<String, ArrayList<Integer>> idToIsTradDiff;
 
         public HieraComparator(boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
                 HashMap<String, List<String>> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
-                HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermHelper termHelper) {
+                HashMap<String, ArrayList<Integer>> idToIsTradDiff, TermService termService) {
 
-            this.termHelper = termHelper;
+            this.termService = termService;
             this.langCode = langCode;
             this.langCode2 = langCode2;
             this.idToNameHashMap = idToNameHashMap;
@@ -385,9 +385,7 @@ public class SKOSResource {
             this.isTrad = isTrad;
             this.resourceChecked = resourceChecked;
             this.idToIsTradDiff = idToIsTradDiff;
-
             this.idToNameHashMap.clear();
-
         }
 
         @Override
@@ -610,7 +608,7 @@ public class SKOSResource {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
                     String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4);
-                    Term term = termHelper.getThisTerm(child, idTheso, langCode);
+                    Term term = termService.getThisTerm(child, idTheso, langCode);
                     if (term != null) {
                         TermTemp termTemp = new TermTemp();
                         termTemp.idConcept = child;

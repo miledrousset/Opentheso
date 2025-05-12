@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 
 
@@ -51,11 +51,11 @@ public class GroupThesoController {
     private RestRDFHelper restRDFHelper;
 
 
-    @GetMapping(produces = APPLICATION_JSON_UTF_8)
+    @GetMapping(produces = CustomMediaType.APPLICATION_JSON_UTF_8)
     @Operation(summary = "Récupère toutes les collections et sous collections d'un thésaurus",
             description = "Ancienne version : `/api/info/list?theso=<idTheso>&group=all`<br/>Permet de récupérer toutes les collections et sous collections d'un thésaurus au format JSON",
             tags = {"Group"},
-            responses = { @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les collections d'un thésaurus", content = { @Content(mediaType = APPLICATION_JSON_UTF_8)}), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
+            responses = { @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les collections d'un thésaurus", content = { @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)}), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
     public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "Thésaurus pour lequel on veut récupérer les groupes", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
 
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -84,17 +84,18 @@ public class GroupThesoController {
     }
 
 
-    @GetMapping(value = "/{idGroup}", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @GetMapping(value = "/{idGroup}", produces = {CustomMediaType.APPLICATION_JSON_UTF_8,
+            CustomMediaType.APPLICATION_JSON_LD_UTF_8, CustomMediaType.APPLICATION_TURTLE_UTF_8, CustomMediaType.APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "Permet de récupérer les informations d'un groupe à partir de son identifiant interne",
             description = "Ancienne version : `/api/info/list?theso={idTheso}&group={idGroup}`<br/>Recherche les informations d'un groupe à partir de son identifiant",
             tags = {"Group"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Information du groupe", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8),
-                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-                            @Content(mediaType = APPLICATION_TURTLE_UTF_8),
-                            @Content(mediaType = APPLICATION_RDF_UTF_8)
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_TURTLE_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
@@ -109,16 +110,17 @@ public class GroupThesoController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
-    @GetMapping(value = "/{idGroup}/subgroup", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @GetMapping(value = "/{idGroup}/subgroup", produces = {CustomMediaType.APPLICATION_JSON_UTF_8,
+            CustomMediaType.APPLICATION_JSON_LD_UTF_8, CustomMediaType.APPLICATION_TURTLE_UTF_8, CustomMediaType.APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "Récupère les sous-collections d'une collection dans un thésaurus",
             tags = {"Group"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les sous collections d'un thésaurus", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8),
-                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-                            @Content(mediaType = APPLICATION_TURTLE_UTF_8),
-                            @Content(mediaType = APPLICATION_RDF_UTF_8)
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_TURTLE_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
@@ -153,17 +155,18 @@ public class GroupThesoController {
     }
 
 
-    @GetMapping(value = "/branch", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @GetMapping(value = "/branch", produces = {CustomMediaType.APPLICATION_JSON_UTF_8,
+            CustomMediaType.APPLICATION_JSON_LD_UTF_8, CustomMediaType.APPLICATION_TURTLE_UTF_8, CustomMediaType.APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "Permet de récupérer toute une branche de groupes à partir des identifiants internes",
             description = "Ancienne version : `/api/all/group?id={idGroups}&theso={idTheso}&format={format}`<br/>Récupère une branche d'un groupe à partir de son identifiant",
             tags = {"Group"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Information de la branche du groupe", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8),
-                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-                            @Content(mediaType = APPLICATION_TURTLE_UTF_8),
-                            @Content(mediaType = APPLICATION_RDF_UTF_8)
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_TURTLE_UTF_8),
+                            @Content(mediaType = CustomMediaType.APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
@@ -181,18 +184,18 @@ public class GroupThesoController {
         }
         
         var datas = restRDFHelper.brancheOfGroup(groups, idTheso, removeCharset(acceptHeader));
-        log.info(LocalTime.now().toString() + " fin ");
+        log.info(LocalTime.now() + " fin ");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
 
-    @GetMapping(value = "/branchtree", produces = APPLICATION_JSON_UTF_8)
+    @GetMapping(value = "/branchtree", produces = CustomMediaType.APPLICATION_JSON_UTF_8)
     @Operation(
             summary = "Permet de récupérer toute une branche de groupes avec le chemin complet vers la racine",
             tags = {"Group"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Information de la branche du groupe", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
+                            @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),

@@ -1,7 +1,10 @@
 package fr.cnrs.opentheso.services.exports.pdf;
 
-import com.itextpdf.text.*;
-
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
@@ -44,7 +47,7 @@ public class WriteAlphaPDF {
 
 
     public void writeAlphabetiquePDF(SKOSXmlDocument xmlDocument, List<Paragraph> paragraphs, List<Paragraph> paragraphTradList,
-            String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings, boolean isToogleExportImage) {
+                                     String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings, boolean isToogleExportImage) {
         this.isToogleExportImage = isToogleExportImage;
         var concepts = xmlDocument.getConceptList();
         List<String> resourceChecked = new ArrayList<>();

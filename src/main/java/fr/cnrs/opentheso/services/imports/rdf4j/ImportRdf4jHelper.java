@@ -1,19 +1,14 @@
 package fr.cnrs.opentheso.services.imports.rdf4j;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import fr.cnrs.opentheso.entites.*;
-import fr.cnrs.opentheso.repositories.*;
+import fr.cnrs.opentheso.entites.CandidatStatus;
+import fr.cnrs.opentheso.entites.ExternalResource;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
+import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
@@ -24,7 +19,6 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
@@ -44,24 +38,49 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.StatusRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 
 /**
  *
@@ -97,9 +116,6 @@ public class ImportRdf4jHelper {
 
     @Autowired
     private ConceptHelper conceptHelper;
-
-    @Autowired
-    private TermHelper termHelper;
 
     @Autowired
     private RelationsHelper relationsHelper;
@@ -160,6 +176,10 @@ public class ImportRdf4jHelper {
     boolean isFirst = true;
     @Autowired
     private CandidatStatusRepository candidatStatusRepository;
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
+    @Autowired
+    private TermService termService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -1173,7 +1193,8 @@ public class ImportRdf4jHelper {
         if (!conceptHelper.insertConceptInTable(acs.concept)) {
             System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
         }
-        termHelper.insertTerm(acs.nodeTerm, idUser);
+
+        termService.addTerms(acs.nodeTerm, idUser);
 
         for (HierarchicalRelationship hierarchicalRelationship : acs.hierarchicalRelationships) {
             switch (hierarchicalRelationship.getRole()) {
@@ -1359,7 +1380,7 @@ public class ImportRdf4jHelper {
             acs.term.setSource(nodeEMList1.getSource());
             acs.term.setStatus(nodeEMList1.getStatus());
             acs.term.setHidden(nodeEMList1.isHiden());
-            termHelper.addNonPreferredTerm(acs.term, idUser);
+            nonPreferredTermService.addNonPreferredTerm(acs.term, idUser);
         }
 
         if (CollectionUtils.isNotEmpty(acs.nodeGps)) {

@@ -3,11 +3,17 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cnrs.opentheso.repositories.*;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -23,12 +29,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PathService {
 
-    private final TermHelper termHelper;
-    private final ConceptHelper conceptHelper;
-    private final GroupHelper groupHelper;
     private final NoteHelper noteHelper;
-    private final PreferencesHelper preferencesHelper;
+    private final GroupHelper groupHelper;
+    private final TermService termService;
+    private final ConceptHelper conceptHelper;
     private final RelationsHelper relationsHelper;
+    private final PreferencesHelper preferencesHelper;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private String message;
 
@@ -177,7 +184,7 @@ public class PathService {
                 if(format != null && format.equalsIgnoreCase("full")) {
                     if(i++ == path1.getPath().size() - 1){
                         // synonymes
-                        ArrayList<String> altLabels = termHelper.getNonPreferredTermsLabel(idConcept, idTheso, idLang);
+                        var altLabels = nonPreferredTermRepository.findAltLabelsByConceptAndThesaurusAndLang(idConcept, idTheso, idLang);
                         
                         JsonArrayBuilder jsonArrayBuilderAltLabels = Json.createArrayBuilder();
                         for (String altLabel : altLabels) {
@@ -205,7 +212,7 @@ public class PathService {
                             job.add("scopeNote", jsonArrayBuilderScopeNotes.build());
                         
                         // traductions
-                        ArrayList<NodeTermTraduction> traductions = termHelper.getTraductionsOfConcept(idConcept, idTheso, idLang);
+                        List<NodeTermTraduction> traductions = termService.getTraductionsOfConcept(idConcept, idTheso, idLang);
 
                         JsonObjectBuilder jobTrad = Json.createObjectBuilder();
                         for (NodeTermTraduction trad : traductions) {

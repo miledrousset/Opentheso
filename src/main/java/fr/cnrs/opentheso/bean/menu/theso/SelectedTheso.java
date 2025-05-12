@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
-import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -26,6 +25,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;

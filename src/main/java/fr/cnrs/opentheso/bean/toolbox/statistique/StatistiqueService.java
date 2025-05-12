@@ -3,11 +3,15 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 import fr.cnrs.opentheso.entites.Alignement;
 import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.ConceptGroupProjection;
-import fr.cnrs.opentheso.repositories.AlignementRepository;
+import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.AlignementRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
+import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ import java.util.List;
 
 import jakarta.faces.application.FacesMessage;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,27 +29,17 @@ import org.springframework.stereotype.Service;
 
 @Data
 @Service
+@RequiredArgsConstructor
 public class StatistiqueService {
 
-    private AlignementRepository alignementRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptStatusRepository conceptStatusRepository;
     private GroupHelper groupHelper;
     private NoteHelper noteHelper;
+    private ConceptRepository conceptRepository;
+    private ThesaurusRepository thesaurusRepository;
+    private AlignementRepository alignementRepository;
+    private ConceptStatusRepository conceptStatusRepository;
+    private ConceptGroupLabelRepository conceptGroupLabelRepository;
 
-
-    public StatistiqueService(AlignementRepository alignementRepository,
-                              GroupHelper groupHelper,
-                              ConceptRepository conceptRepository,
-                              ConceptStatusRepository conceptStatusRepository,
-                              NoteHelper noteHelper) {
-
-        this.alignementRepository = alignementRepository;
-        this.groupHelper = groupHelper;
-        this.noteHelper = noteHelper;
-        this.conceptRepository = conceptRepository;
-        this.conceptStatusRepository = conceptStatusRepository;
-    }
 
     public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idTheso, String idLang) {
 
@@ -105,17 +100,16 @@ public class StatistiqueService {
         return CollectionUtils.isNotEmpty(alignements) ? alignements : List.of();
     }
 
-    public List<ConceptStatisticData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean, String idTheso,
-                                                                   String idLang, Date dateDebut, Date dateFin,
+    public List<ConceptStatisticData> searchAllConceptsByThesaurus(String idTheso, String idLang, Date dateDebut, Date dateFin,
                                                                    String collectionId, String nbrResultat) {
 
         if (ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin)) {
-            statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "Il faut préciser la date de fin !");
+            MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Il faut préciser la date de fin !");
             return List.of();
         }
 
         if (!ObjectUtils.isEmpty(dateDebut) && !ObjectUtils.isEmpty(dateFin) && dateDebut.after(dateFin)) {
-            statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "La date de début est plus récente que la date de fin !");
+            MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "La date de début est plus récente que la date de fin !");
             return List.of();
         }
 
@@ -167,6 +161,25 @@ public class StatistiqueService {
                         .type("skos:prefLabel")
                         .build())
                     .toList();
+    }
+
+    public List<DomaineDto> getListGroupes(String idThesaurus, String idLangue) {
+        var thesaurus = thesaurusRepository.findById(idThesaurus);
+        if (thesaurus.isPresent()) {
+            var conceptGroupList = conceptGroupLabelRepository.findAllByThesaurusAndLang(thesaurus.get(), idLangue);
+            if (CollectionUtils.isNotEmpty(conceptGroupList)) {
+                return conceptGroupList.stream()
+                        .map(element ->
+                                DomaineDto.builder()
+                                        .id(element.getConceptGroup().getIdGroup())
+                                        .name(element.getLexicalValue())
+                                        .build())
+                        .toList();
+            } else {
+                return List.of();
+            }
+        }
+        return List.of();
     }
 
 }

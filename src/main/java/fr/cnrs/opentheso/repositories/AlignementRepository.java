@@ -14,11 +14,7 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
         SELECT * 
         FROM alignement 
         WHERE internal_id_thesaurus = :idThesaurus 
-        AND internal_id_concept NOT IN (
-            SELECT idconcept 
-            FROM concept_group_concept 
-            WHERE idthesaurus = :idThesaurus
-        )
+        AND internal_id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = :idThesaurus)
         """, nativeQuery = true)
     List<Alignement> findAlignementsNotInConceptGroup(@Param("idThesaurus") String idThesaurus);
 

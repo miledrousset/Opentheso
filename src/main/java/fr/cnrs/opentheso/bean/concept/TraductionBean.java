@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -13,163 +12,128 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "traductionBean")
+@Slf4j
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "traductionBean")
 public class TraductionBean implements Serializable {
 
-    @Autowired @Lazy private PropositionBean propositionBean;
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;   
-    @Autowired @Lazy private LanguageBean languageBean;
+    private final PropositionBean propositionBean;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final LanguageBean languageBean;
+    private final ConceptHelper conceptHelper;
+    private final TermService termService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
 
-    @Autowired
-    private TermHelper termHelper;
+    private String selectedLang, traductionValue;
+    private List<NodeLangTheso> nodeLangs, nodeLangsFiltered;
+    private List<NodeTermTraduction> nodeTermTraductions, nodeTermTraductionsForEdit;
 
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    private String selectedLang;
-    private List<NodeLangTheso> nodeLangs;
-    private List<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
-    private List<NodeTermTraduction> nodeTermTraductions;
-    private List<NodeTermTraduction> nodeTermTraductionsForEdit;
-
-    private String traductionValue;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        if (nodeLangs != null) {
-            nodeLangs.clear();
-            nodeLangs = null;
-        }
-        if (nodeLangsFiltered != null) {
-            nodeLangsFiltered.clear();
-            nodeLangsFiltered = null;
-        }
-        if (nodeTermTraductions != null) {
-            nodeTermTraductions.clear();
-            nodeTermTraductions = null;
-        }
-        selectedLang = null;
-        traductionValue = null;
-    }
-
-    public TraductionBean() {
-    }
 
     public void reset() {
         nodeLangs = selectedTheso.getNodeLangs();
-        if (nodeLangsFiltered == null) {
-            nodeLangsFiltered = new ArrayList<>();
-        } else {
-            nodeLangsFiltered.clear();
-        }
+        nodeLangsFiltered = new ArrayList<>();
         nodeTermTraductions = conceptBean.getNodeConcept().getNodeTermTraductions();
-
         selectedLang = null;
         traductionValue = "";
     }
 
     public void setTraductionsForEdit() {
-        
-        reset();
-        
-        if (nodeTermTraductionsForEdit == null) {
-            nodeTermTraductionsForEdit = new ArrayList<>();
-        } else {
-            nodeTermTraductionsForEdit.clear();
-        }
 
-        for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
-            NodeTermTraduction nodeTermTraduction1 = new NodeTermTraduction();
-            nodeTermTraduction1.setLexicalValue(nodeTermTraduction.getLexicalValue());
-            nodeTermTraduction1.setLang(nodeTermTraduction.getLang());
-            nodeTermTraductionsForEdit.add(nodeTermTraduction1);
+        log.info("Préparation de la liste des traductions disponibles");
+        reset();
+
+        nodeTermTraductionsForEdit = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(nodeTermTraductions)) {
+            for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+                NodeTermTraduction nodeTermTraduction1 = new NodeTermTraduction();
+                nodeTermTraduction1.setLexicalValue(nodeTermTraduction.getLexicalValue());
+                nodeTermTraduction1.setLang(nodeTermTraduction.getLang());
+                nodeTermTraductionsForEdit.add(nodeTermTraduction1);
+            }
         }
     }
 
     public void setLangWithNoTraduction() {
-        nodeLangs.forEach((nodeLang) -> {
-            nodeLangsFiltered.add(nodeLang);
-        });
 
-        // les langues à ignorer
-        ArrayList<String> langsToRemove = new ArrayList<>();
+        nodeLangsFiltered.addAll(nodeLangs);
+
+        log.info("Préparation de la liste des langues à ignorer");
+        List<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(conceptBean.getSelectedLang());
-        for (NodeTermTraduction nodeTermTraduction : conceptBean.getNodeConcept().getNodeTermTraductions()) {
-            langsToRemove.add(nodeTermTraduction.getLang());
+        if (CollectionUtils.isNotEmpty(conceptBean.getNodeConcept().getNodeTermTraductions())) {
+            langsToRemove.addAll(conceptBean.getNodeConcept().getNodeTermTraductions().stream().map(NodeTermTraduction::getLang).toList());
         }
-        for (NodeLangTheso nodeLang : nodeLangs) {
-            if (langsToRemove.contains(nodeLang.getCode())) {
-                nodeLangsFiltered.remove(nodeLang);
+
+        if (CollectionUtils.isNotEmpty(nodeLangs)) {
+            nodeLangsFiltered.addAll(nodeLangs);
+            for (NodeLangTheso nodeLang : nodeLangs) {
+                if (langsToRemove.contains(nodeLang.getCode())) {
+                    nodeLangsFiltered.remove(nodeLang);
+                }
             }
         }
-        if (nodeLangsFiltered.isEmpty()) {
-            infoNoTraductionToAdd();
+
+        if (CollectionUtils.isEmpty(nodeLangsFiltered)) {
+            log.warn(languageBean.getMsg("concept.translate.isTranslatedIntoAllLang"));
+            MessageUtils.showInformationMessage(languageBean.getMsg("concept.translate.isTranslatedIntoAllLang"));
         }
     }
 
     public void setLangWithNoTraductionProp() {
         
         reset();
-        
-        nodeLangs.forEach((nodeLang) -> {
-            nodeLangsFiltered.add(nodeLang);
-        });
 
-        // les langues à ignorer
-        ArrayList<String> langsToRemove = new ArrayList<>();
+        nodeLangsFiltered.addAll(nodeLangs);
+
+        List<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(conceptBean.getSelectedLang());
-        for (TraductionPropBean nodeTermTraduction : propositionBean.getProposition().getTraductionsProp()) {
-            langsToRemove.add(nodeTermTraduction.getLang());
-        }
-        for (NodeLangTheso nodeLang : nodeLangs) {
-            if (langsToRemove.contains(nodeLang.getCode())) {
-                nodeLangsFiltered.remove(nodeLang);
+
+        if (CollectionUtils.isNotEmpty(conceptBean.getNodeConcept().getNodeTermTraductions())) {
+            for (TraductionPropBean nodeTermTraduction : propositionBean.getProposition().getTraductionsProp()) {
+                langsToRemove.add(nodeTermTraduction.getLang());
             }
         }
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (nodeLangsFiltered.isEmpty()) {
-            infoNoTraductionToAdd();
-            pf.ajax().update("containerIndex:rightTab:idAddTraduction");
+
+        if (CollectionUtils.isNotEmpty(nodeLangs)) {
+            nodeLangsFiltered.addAll(nodeLangs);
+            for (NodeLangTheso nodeLang : nodeLangs) {
+                if (langsToRemove.contains(nodeLang.getCode())) {
+                    nodeLangsFiltered.remove(nodeLang);
+                }
+            }
+        }
+
+        if (CollectionUtils.isEmpty(nodeLangsFiltered)) {
+            MessageUtils.showInformationMessage(languageBean.getMsg("concept.translate.isTranslatedIntoAllLang"));
+            PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddTraduction");
         } else {
-            pf.executeScript("PF('addTraductionProp').show();");
+            PrimeFaces.current().executeScript("PF('addTraductionProp').show();");
         }
     }
 
     public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void infoNoTraductionToAdd() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", languageBean.getMsg("concept.translate.isTranslatedIntoAllLang"));
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Rédiger une aide ici pour Add Concept !");
     }
 
     /**
@@ -178,45 +142,55 @@ public class TraductionBean implements Serializable {
      * @param idUser
      */
     public void addNewTraduction(int idUser) {
-        FacesMessage msg;
-        if (traductionValue == null || traductionValue.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Une valeur est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (StringUtils.isEmpty(traductionValue)) {
+            MessageUtils.showErrorMessage("La valeur est obligatoire !");
             return;
         }
-        if (selectedLang == null || selectedLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Pas de langue choisie !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(selectedLang)) {
+            MessageUtils.showErrorMessage("Aucune langue sélectionnée !");
             return;
         }
-        if (selectedTheso.getCurrentIdTheso() == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Aucun thésaurus sélectionné !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            MessageUtils.showErrorMessage("Aucun thésaurus sélectionné !");
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-        if (!termHelper.addTraduction(
-                traductionValue,
-                conceptBean.getNodeFullConcept().getPrefLabel().getIdTerm(),
-                selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (termService.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
+            MessageUtils.showErrorMessage("Un label identique existe dans cette langue !");
             return;
         }
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        log.info("Ajout de la nouvelle traduction dans la base de données");
+        termService.addTermTraduction(fr.cnrs.opentheso.models.terms.Term.builder()
+                .idTerm(conceptBean.getNodeFullConcept().getPrefLabel().getIdTerm())
+                .lexicalValue(traductionValue)
+                .lang(selectedLang)
+                .idThesaurus(selectedTheso.getCurrentIdTheso())
+                .creator(idUser)
+                .source("")
+                .status("")
+                .build(), idUser);
+
+        refreshConceptInformations(idUser);
+
+        MessageUtils.showInformationMessage(languageBean.getMsg("concept.translate.success"));
+
+        reset();
+        setLangWithNoTraduction();
+
+        PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddTraduction");
+        PrimeFaces.current().executeScript("PF('addTraduction').show();");
+    }
+
+    private void refreshConceptInformations(int idUser) {
+
+        log.info("Rafraîchissement des données du concept");
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        log.info("Mise à jour de la date de mise à jour du concept");
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -224,55 +198,40 @@ public class TraductionBean implements Serializable {
                 .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", languageBean.getMsg("concept.translate.success"));
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        reset();
-        setLangWithNoTraduction();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:rightTab:idAddTraduction");
-            pf.executeScript("PF('addTraduction').show();");
-        }
     }
 
     public void addNewTraductionProposition() {
-        FacesMessage msg;
-        if (traductionValue == null || traductionValue.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Une valeur est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (StringUtils.isEmpty(traductionValue)) {
+            MessageUtils.showErrorMessage("Aucune valeur n'est saisie !");
             return;
         }
         if (selectedLang == null || selectedLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Pas de langue choisie !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Aucune langue n'est sélectionnée !");
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (termService.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
+            MessageUtils.showErrorMessage("Un label identique existe dans cette langue !");
             return;
         }
 
         for (TraductionPropBean traductionPropBean : propositionBean.getProposition().getTraductionsProp()) {
             if (selectedLang.equalsIgnoreCase(traductionPropBean.getLang())
                     && traductionValue.equalsIgnoreCase(traductionPropBean.getLexicalValue())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+
+                MessageUtils.showErrorMessage("Un label identique existe dans cette langue !");
                 return;
             }
         }
 
-        TraductionPropBean traductionProp = new TraductionPropBean();
+        var traductionProp = new TraductionPropBean();
         traductionProp.setLang(selectedLang);
         traductionProp.setLexicalValue(traductionValue);
         traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getIdTerm());
         traductionProp.setToAdd(true);
         propositionBean.getProposition().getTraductionsProp().add(traductionProp);
         propositionBean.setTraductionAccepted(true);
-        
     }
 
     /**
@@ -282,82 +241,45 @@ public class TraductionBean implements Serializable {
      * @param idUser
      */
     public void updateTraduction(NodeTermTraduction nodeTermTraduction, int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
         if (nodeTermTraduction == null || nodeTermTraduction.getLexicalValue().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage("Veuillez saisir une valeur !");
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
-                nodeTermTraduction.getLang())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (termService.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(), nodeTermTraduction.getLang())) {
+            MessageUtils.showErrorMessage("Un label identique existe dans cette langue !");
             return;
         }
 
-        if (!termHelper.updateTraduction(
-                nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
-                nodeTermTraduction.getLang(),
-                selectedTheso.getCurrentIdTheso(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
+        termService.updateTermTraduction(nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
+                nodeTermTraduction.getLang(), selectedTheso.getCurrentIdTheso(), idUser);
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang(), currentUser);
+        refreshConceptInformations(idUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        MessageUtils.showInformationMessage("Traduction modifiée avec succès");
 
-        conceptDcTermRepository.save(ConceptDcTerm.builder()
-                .name(DCMIResource.CONTRIBUTOR)
-                .value(currentUser.getNodeUser().getName())
-                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
-                .idThesaurus(selectedTheso.getCurrentIdTheso())
-                .build());
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
-            pf.executeScript("PF('renameTraduction').show();");
-        }
+
+        PrimeFaces.current().ajax().update("containerIndex:rightTab:idRenameTraduction");
+        PrimeFaces.current().executeScript("PF('renameTraduction').show();");
     }
 
     public void updateTraductionProp(TraductionPropBean traductionPropBean) {
 
         if (traductionPropBean.getLexicalValue().isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Veuillez saisir une valeur !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Veuillez saisir une valeur !");
             return;
         }
         
-        if (traductionPropBean.isToUpdate() && 
-                traductionPropBean.getLexicalValue().equalsIgnoreCase(traductionPropBean.getOldValue())){
+        if (traductionPropBean.isToUpdate() && traductionPropBean.getLexicalValue().equalsIgnoreCase(traductionPropBean.getOldValue())){
             traductionPropBean.setToUpdate(false);
             return;
         }
 
         // Rechercher dans la base s'il existe un label identique
-        if (termHelper.isTermExistIgnoreCase(traductionPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
-                traductionPropBean.getLang())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (termService.isTermExistIgnoreCase(traductionPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), traductionPropBean.getLang())) {
+            MessageUtils.showErrorMessage("Un label identique existe dans cette langue !");
             return;
         }
 
@@ -387,25 +309,19 @@ public class TraductionBean implements Serializable {
      * @param idUser
      */
     public void updateAllTraduction(int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
         if (nodeTermTraductionsForEdit == null || nodeTermTraductionsForEdit.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showInformationMessage("Veuillez saisir une valeur !");
             return;
         }
 
-        boolean toModify;
         boolean isModified = false;
 
         for (NodeTermTraduction nodeTermTraduction : nodeTermTraductionsForEdit) {
-            toModify = false;
+            var toModify = false;
             isModified = false;
-            /// pour vérifier si le terme a changé
+
+            log.info("Vérification si le terme {} a changé !", nodeTermTraduction.getLexicalValue());
             for (NodeTermTraduction nodeTermTraductionOld : nodeTermTraductions) {
                 if (nodeTermTraduction.getLang().equalsIgnoreCase(nodeTermTraductionOld.getLang())) {
                     toModify = !nodeTermTraduction.getLexicalValue().equalsIgnoreCase(nodeTermTraductionOld.getLexicalValue());
@@ -413,54 +329,28 @@ public class TraductionBean implements Serializable {
                 }
             }
             if (toModify) {
-                if (termHelper.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
-                        nodeTermTraduction.getLang())) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue : " + nodeTermTraduction.getLang());
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (termService.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(), nodeTermTraduction.getLang())) {
+                    MessageUtils.showErrorMessage("Un label identique existe dans cette langue : " + nodeTermTraduction.getLang());
                     continue;
                 }
 
-                if (!termHelper.updateTraduction(nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
-                        nodeTermTraduction.getLang(), selectedTheso.getCurrentIdTheso(), idUser)) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    if (pf.isAjaxRequest()) {
-                        pf.ajax().update("messageIndex");
-                    }
-                    return;
-                }
+                log.info("Mise à jour du terme {} ({}) dans la base de donnée", nodeTermTraduction.getLexicalValue(), nodeTermTraduction.getLang());
+                termService.updateTermTraduction(nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
+                        nodeTermTraduction.getLang(), selectedTheso.getCurrentIdTheso(), idUser);
                 isModified = true;
             }
         }
+
         if (isModified) {
-            conceptBean.getConcept(
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    conceptBean.getSelectedLang(), currentUser);
+            refreshConceptInformations(idUser);
 
-            conceptHelper.updateDateOfConcept(
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-
-            conceptDcTermRepository.save(ConceptDcTerm.builder()
-                    .name(DCMIResource.CONTRIBUTOR)
-                    .value(currentUser.getNodeUser().getName())
-                    .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
-                    .idThesaurus(selectedTheso.getCurrentIdTheso())
-                    .build());
-            
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showInformationMessage("Traduction modifiée avec succès");
             reset();
 
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-                pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
-                pf.executeScript("PF('renameTraduction').show();");
-            }
+            PrimeFaces.current().ajax().update("containerIndex:rightTab:idRenameTraduction");
+            PrimeFaces.current().executeScript("PF('renameTraduction').show();");
         } else {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Aucune modification à faire");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showInformationMessage("Aucune modification à faire");
         }
     }
 
@@ -471,50 +361,25 @@ public class TraductionBean implements Serializable {
      * @param idUser
      */
     public void deleteTraduction(NodeTermTraduction nodeTermTraduction, int idUser) {
-        FacesMessage msg;
+
         if (nodeTermTraduction == null || nodeTermTraduction.getLang().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de sélection de tradcution !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Erreur de sélection de traduction !");
             return;
         }
 
-        if (!termHelper.deleteTraductionOfTerm(
-                conceptBean.getNodeConcept().getTerm().getIdTerm(),
-                nodeTermTraduction.getLexicalValue(),
-                nodeTermTraduction.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        log.info("Suppression de la traduction dans la base de données");
+        termService.deleteTerm(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getTerm().getIdTerm(), nodeTermTraduction.getLang());
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang(), currentUser);
+        refreshConceptInformations(idUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        MessageUtils.showInformationMessage("Traduction supprimée avec succès");
 
-        conceptDcTermRepository.save(ConceptDcTerm.builder()
-                .name(DCMIResource.CONTRIBUTOR)
-                .value(currentUser.getNodeUser().getName())
-                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
-                .idThesaurus(selectedTheso.getCurrentIdTheso())
-                .build());
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction supprimée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         reset();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:rightTab:idDeleteTraduction");
-            pf.executeScript("PF('deleteTraduction').show();");
-        }
+
+        PrimeFaces.current().ajax().update("containerIndex:rightTab:idDeleteTraduction");
+        PrimeFaces.current().executeScript("PF('deleteTraduction').show();");
+        log.info("Suppression de la traduction du terme {} ({}) terminée",
+                conceptBean.getNodeConcept().getTerm().getIdTerm(), nodeTermTraduction.getLang());
     }
 
     public void deleteTraductionProp(TraductionPropBean traductionPropBean) {

@@ -1,12 +1,13 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 
 
 @Slf4j
@@ -33,17 +33,18 @@ public class ConceptHandleController {
     private RestRDFHelper restRDFHelper;
 
 
-    @GetMapping(produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @GetMapping(produces = {CustomMediaType.APPLICATION_JSON_UTF_8, CustomMediaType.APPLICATION_JSON_LD_UTF_8,
+            CustomMediaType.APPLICATION_TURTLE_UTF_8, CustomMediaType.APPLICATION_RDF_UTF_8})
     @Operation(summary = "Permet de  récupérer les informations d'un concept à partir de son ID Handle",
             description = "Ancienne version : `/api/{hdl1}.{hdl2}.{hdl3}/{naan}.{id}.{format}`\\n\\nPermet de  récupérer les informations d'un concept à partir de son ID Handle dans les formats JSON, JSON-LD, Turtle ou RDF/XML",
             tags = {"Concept"},
             responses = {
                 @ApiResponse(responseCode = "200",
                     description = "${getConceptByHandle.200.description}$", content = {
-                    @Content(mediaType = APPLICATION_JSON_UTF_8),
-                    @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-                    @Content(mediaType = APPLICATION_TURTLE_UTF_8),
-                    @Content(mediaType = APPLICATION_RDF_UTF_8)
+                    @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8),
+                    @Content(mediaType = CustomMediaType.APPLICATION_JSON_LD_UTF_8),
+                    @Content(mediaType = CustomMediaType.APPLICATION_TURTLE_UTF_8),
+                    @Content(mediaType = CustomMediaType.APPLICATION_RDF_UTF_8)
                 }),
                     @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")

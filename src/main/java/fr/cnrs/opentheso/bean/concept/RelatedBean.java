@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -20,6 +19,8 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -50,13 +51,13 @@ public class RelatedBean implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
     private RelationsHelper relationsHelper;
+
+    @Autowired
+    private TermService termService;
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
@@ -271,12 +272,9 @@ public class RelatedBean implements Serializable {
                     searchSelected.getIdConcept(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getSelectedLang());
-            termHelper.updateTraduction(
-                    conceptBean.getNodeConcept().getTerm().getLexicalValue() + " (" + taggedValue + ")",
-                    conceptBean.getNodeConcept().getTerm().getIdTerm(),
-                    conceptBean.getSelectedLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    idUser);
+            termService.updateTermTraduction(conceptBean.getNodeConcept().getTerm().getLexicalValue() + " (" + taggedValue + ")",
+                    conceptBean.getNodeConcept().getTerm().getIdTerm(), conceptBean.getSelectedLang(),
+                    selectedTheso.getCurrentIdTheso(), idUser);
         }
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),

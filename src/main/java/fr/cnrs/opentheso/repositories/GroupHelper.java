@@ -24,7 +24,6 @@ import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.util.Collections;
@@ -2883,25 +2882,6 @@ public class GroupHelper implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public ArrayList<DomaineDto> getAllGroupsByThesaurusAndLang(String idThesaurus, String lang) {
-        ArrayList<DomaineDto> domaines = new ArrayList<>();
-        try ( var conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
-                    + idThesaurus + "' AND lang = '" + lang.toLowerCase() + "'");
-            try ( ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    DomaineDto domaineDto = new DomaineDto();
-                    domaineDto.setId(resultSet.getString("idgroup"));
-                    domaineDto.setName(resultSet.getString("lexicalvalue"));
-                    domaines.add(domaineDto);
-                }
-            }
-        } catch (SQLException e) {
-            log.error(e.toString());
-        }
-        return domaines;
     }
 
 }

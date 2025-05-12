@@ -11,7 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.enterprise.context.SessionScoped;
@@ -47,7 +48,7 @@ public class GraphService implements Serializable {
         if (currentUser == null || currentUser.getNodeUser().getIdUser() == -1) {
             return null;
         }
-        Map<Integer, GraphObject> graphviews = new HashMap();
+        Map<Integer, GraphObject> graphviews = new HashMap<>();
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from graph_view"

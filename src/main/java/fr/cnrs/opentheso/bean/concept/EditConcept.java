@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.PreferredTerm;
+import fr.cnrs.opentheso.entites.Term;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -15,11 +17,15 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 
@@ -64,7 +70,7 @@ public class EditConcept implements Serializable {
     private DeprecateService deprecateHelper;
 
     @Autowired
-    private TermHelper termHelper;
+    private PreferredTermRepository preferredTermRepository;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -83,6 +89,18 @@ public class EditConcept implements Serializable {
 
     @Autowired
     private SearchHelper searchHelper;
+
+    @Autowired
+    private TermService termService;
+
+    @Autowired
+    private TermRepository termRepository;
+
+    @Autowired
+    private NonPreferredTermRepository nonPreferredTermRepository;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private String prefLabel;
     private String notation;
@@ -110,8 +128,6 @@ public class EditConcept implements Serializable {
     
     private NodeConceptType nodeConceptTypeToDelete;
     private NodeConceptType nodeConceptTypeToAdd;
-    @Autowired
-    private GroupHelper groupHelper;
 
 
     public void clear() {
@@ -356,24 +372,19 @@ public class EditConcept implements Serializable {
         }
 
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
-        String idTerm = termHelper.isTermEqualTo(
-                prefLabel.trim(),
-                idTheso,
-                idLang);
+        var value = fr.cnrs.opentheso.utils.StringUtils.convertString(prefLabel.trim());
+        var termFound = termRepository.findByLexicalValueAndLangAndIdThesaurus(value, idLang, idTheso);
+        String idTerm = termFound.map(Term::getIdThesaurus).orElse(null);
 
         if (idTerm != null) {
-            String label = termHelper.getLexicalValue(idTerm, idTheso, idLang);
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idTheso, idLang);
+            var label = term.isPresent() ? term.get().getLexicalValue() : "";
+            MessageUtils.showWarnMessage("Le label '" + label + "' existe déjà ! voulez-vous continuer ?");
             duplicate = true;
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-                PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
-                PrimeFaces.current().executeScript("PF('renameConcept').show();");
-            }
+            PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
             return;
         }
-        if (termHelper.isAltLabelExist(idTerm, idTheso, idLang)) {
+        if (nonPreferredTermRepository.isAltLabelExist(idTerm, idTheso, idLang)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà ! voulez-vous continuer ?");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;
@@ -388,45 +399,29 @@ public class EditConcept implements Serializable {
         updateForced(idTheso, idLang, idUser);
     }
 
-    public void updateForced(
-            String idTheso,
-            String idLang,
-            int idUser) {
+    public void updateForced(String idTheso, String idLang, int idUser) {
 
-        PrimeFaces pf = PrimeFaces.current();
-
-        String idTerm = termHelper.getIdTermOfConcept(
-                conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso);
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept());
+        String idTerm = preferredTerm.map(PreferredTerm::getIdTerm).orElse(null);
         if (idTerm == null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage("Erreur de cohérence de BDD !!");
+            PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
 
         // on vérifie si la tradcution existe, on la met à jour, sinon, on en ajoute une
-        if (termHelper.isTermExistInThisLang(idTerm, idLang, idTheso)) {
-            if (!termHelper.updateTraduction(
-                    prefLabel, idTerm, idLang, idTheso, idUser)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }
+        if (termService.isTermExistInLangAndThesaurus(idTerm, idTheso, idLang)) {
+            termService.updateTermTraduction(prefLabel, idTerm, idLang, idTheso, idUser);
         } else {
-            if (!termHelper.addTraduction(
-                    prefLabel, idTerm, idLang, "", "", idTheso, idUser)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }
+            var term = fr.cnrs.opentheso.models.terms.Term.builder()
+                    .lexicalValue(prefLabel)
+                    .idTerm(idTerm)
+                    .lang(idLang)
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .source("")
+                    .status("")
+                    .build();
+            termService.addTermTraduction(term, idUser);
         }
 
         conceptHelper.updateDateOfConcept(idTheso,
@@ -441,13 +436,11 @@ public class EditConcept implements Serializable {
 
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang, currentUser);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            PrimeFaces.current().ajax().update("containerIndex::idRenameConcept");                
-            PrimeFaces.current().executeScript("PF('renameConcept').hide();");
-        }      
+        MessageUtils.showInformationMessage("Le concept a bien été modifié");
+
+        PrimeFaces.current().ajax().update("containerIndex::idRenameConcept");
+        PrimeFaces.current().executeScript("PF('renameConcept').hide();");
+
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
@@ -455,22 +448,8 @@ public class EditConcept implements Serializable {
                 tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
             }
             ((TreeNodeData) tree.getSelectedNode().getData()).setName(prefLabel);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-            }
-        }        
-/*
-        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
-            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
-                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
-            }
-            ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(prefLabel);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-            }
-        }*/
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
+        }
         reset("");
     }
 

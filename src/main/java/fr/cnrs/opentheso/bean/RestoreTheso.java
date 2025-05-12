@@ -6,8 +6,9 @@ import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.services.RelationService;
@@ -62,9 +63,6 @@ public class RestoreTheso implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private ConceptRepository conceptRepository;
 
     @Autowired
@@ -72,6 +70,12 @@ public class RestoreTheso implements Serializable {
 
     @Autowired
     private RelationService relationService;
+
+    @Autowired
+    private TermRepository termRepository;
+
+    @Autowired
+    private PreferredTermRepository preferredTermRepository;
 
     private boolean overwrite, overwriteLocalArk;
     private String naan, prefix;
@@ -295,27 +299,25 @@ public class RestoreTheso implements Serializable {
     public void switchRolesFromTermToConcept(String idTheso) {
 
         String lang = workLanguage;
-
-        String idTerm;
-        int idCreator;
-        int idContributor;
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
-
         for (String idConcept : allConcepts) {
-            if(!conceptHelper.isHaveCreator(idTheso, idConcept)) {
-                idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
-                if(idTerm != null) {
-                    idCreator = termHelper.getCreator(idTheso, idTerm, lang);
-                    if(idCreator != -1)
-                        conceptHelper.setCreator(idTheso, idConcept, idCreator);
+
+            var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, idConcept);
+
+            if (preferredTerm.isPresent()) {
+                if(!conceptHelper.isHaveCreator(idTheso, idConcept)) {
+                    var term = termRepository.findByIdTermAndIdThesaurusAndLang(preferredTerm.get().getIdTerm(), idTheso, lang);
+                    if (term.isPresent()) {
+                        if(term.get().getCreator() != -1)
+                            conceptHelper.setCreator(idTheso, idConcept, term.get().getCreator());
+                    }
                 }
-            }
-            if(!conceptHelper.isHaveContributor(idTheso, idConcept)) {
-                idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
-                if(idTerm != null) {
-                    idContributor = termHelper.getContributor(idTheso, idTerm, lang);
-                    if(idContributor != -1)
-                        conceptHelper.setContributor(idTheso, idConcept, idContributor);
+                if(!conceptHelper.isHaveContributor(idTheso, idConcept)) {
+                    var term = termRepository.findByIdTermAndIdThesaurusAndLang(preferredTerm.get().getIdTerm(), idTheso, lang);
+                    if (term.isPresent()) {
+                        if(term.get().getContributor() != -1)
+                            conceptHelper.setContributor(idTheso, idConcept, term.get().getContributor());
+                    }
                 }
             }
         }

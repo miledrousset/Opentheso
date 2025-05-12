@@ -1,23 +1,16 @@
 package fr.cnrs.opentheso.ws.api;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import jakarta.faces.context.FacesContext;
-import jakarta.json.JsonArray;
-
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ExportHelper;
-import fr.cnrs.opentheso.services.PathService;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.ExportHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -34,14 +27,20 @@ import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-
+import jakarta.faces.context.FacesContext;
+import jakarta.json.JsonArray;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +55,7 @@ import org.springframework.stereotype.Service;
 public class RestRDFHelper {
 
     @Autowired
-    private TermHelper termHelper;
+    private TermRepository termRepository;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -1364,7 +1363,7 @@ public class RestRDFHelper {
                 jsonArrayBuilderLine.add(jobLine.build());
             }
         } else {
-            ArrayList<NodeTermTraduction> termTraductions;
+            List<NodeTermTraduction> termTraductions;
             for (String idConcept : idConcepts) {
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
@@ -1372,7 +1371,7 @@ public class RestRDFHelper {
                 jobLine.add("handleId", conceptHelper.getIdHandleOfConcept(idConcept, idTheso));                
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(idConcept, idTheso));
 
-                termTraductions = termHelper.getAllTraductionsOfConcept(idConcept, idTheso);
+                termTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
 
                 // traductions 
                 JsonArrayBuilder jsonArrayBuilderTrad = Json.createArrayBuilder();

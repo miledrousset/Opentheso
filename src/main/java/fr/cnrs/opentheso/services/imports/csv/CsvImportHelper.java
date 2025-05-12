@@ -7,8 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.entites.ExternalResource;
+import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
-import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -23,15 +23,30 @@ import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.TermService;
+
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.GpsService;
-import fr.cnrs.opentheso.services.ImageService;
-import fr.cnrs.opentheso.services.RelationService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,9 +67,6 @@ public class CsvImportHelper {
 
     @Autowired
     private ImageService imageService;
-
-    @Autowired
-    private TermHelper termHelper;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -92,6 +104,15 @@ public class CsvImportHelper {
     @Autowired
     private UserGroupThesaurusRepository userGroupThesaurusRepository;
 
+    @Autowired
+    private TermService termService;
+
+    @Autowired
+    private TermRepository termRepository;
+
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
+
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
 
@@ -99,7 +120,9 @@ public class CsvImportHelper {
     private NodePreference nodePreference;
     private String langueSource, formatDate;
     private int idUser;
-    
+    @Autowired
+    private PreferredTermRepository preferredTermRepository;
+
 
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
@@ -214,7 +237,9 @@ public class CsvImportHelper {
                     return;
                 } else {
                     conceptObject.setIdConcept(idConcept);
-                    idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
+
+                    var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, idConcept);
+                    idTerm = preferredTerm.map(PreferredTerm::getIdTerm).orElse(null);
                     conceptObject.setIdTerm(idTerm);
 
                     // synonymes et cachés
@@ -252,9 +277,7 @@ public class CsvImportHelper {
                     term.setCreator(idUser);
                     term.setSource("");
                     term.setStatus("");
-                    if (!conceptHelper.addConceptTraduction(term, idUser)) {
-                        message = message + "\n" + "erreur dans l'intégration de la traduction " + prefLabel.getLabel();
-                    }
+                    termService.addTermTraduction(term, idUser);
                 }
             }
         }
@@ -313,7 +336,8 @@ public class CsvImportHelper {
 
     public boolean addConcept(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        conceptObject.setIdTerm(termHelper.getIdTermOfConcept(conceptObject.getIdConcept(), idTheso));
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, conceptObject.getIdConcept());
+        conceptObject.setIdTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null));
 
         if (!addPrefLabel(idTheso, conceptObject)) {
             return false;
@@ -854,32 +878,16 @@ public class CsvImportHelper {
         term.setSource("");
         term.setStatus("");
 
-        try ( Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
-            // ajout de la relation entre le concept et le terme
-            if (!termHelper.addLinkTerm(term, conceptObject.getIdConcept())) {
-                message = message + "\n" + "erreur dans l'intégration du concept " + conceptObject.getIdConcept();
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            conn.commit();
-            // ajout des PrefLabel
-            for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
-                // ajout des traductions
-                term.setLang(prefLabel.getLang());
-                term.setLexicalValue(prefLabel.getLabel());
-                if (!termHelper.addTermTraduction(conn, term, idUser)) {
-                    conn.rollback();
-                    conn.close();
-                    message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
-                    return false;
-                }
-                conn.commit();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        if (!termService.addLinkTerm(term.getIdConcept(), term.getIdThesaurus(), conceptObject.getIdTerm())) {
+            message = message + "\n" + "erreur dans l'intégration du concept " + conceptObject.getIdConcept();
             return false;
+        }
+
+        // ajout des PrefLabel
+        for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
+            term.setLang(prefLabel.getLang());
+            term.setLexicalValue(prefLabel.getLabel());
+            termService.addTermTraduction(term, idUser);
         }
 
         return true;
@@ -898,10 +906,7 @@ public class CsvImportHelper {
             term.setHidden(false);
             term.setStatus("USE");
             term.setSource("");
-
-            if (!termHelper.addNonPreferredTerm(term, idUser)) {
-                message = message + "\n" + "erreur dans l'intégration du synonyme : " + altLabel.getLabel();
-            }
+            nonPreferredTermService.addNonPreferredTerm(term, idUser);
         }
         for (CsvReadHelper.Label altLabel : conceptObject.getHiddenLabels()) {
             term.setIdTerm(conceptObject.getIdTerm());
@@ -912,9 +917,7 @@ public class CsvImportHelper {
             term.setStatus("Hiddden");
             term.setSource("");
 
-            if (!termHelper.addNonPreferredTerm(term, idUser)) {
-                message = message + "\n" + "erreur dans l'intégration du synonyme : " + altLabel.getLabel();
-            }
+            nonPreferredTermService.addNonPreferredTerm(term, idUser);
         }
         return true;
     }
@@ -1175,14 +1178,13 @@ public class CsvImportHelper {
             return false;
         }
 
-        String idTerm = termHelper.getIdTermOfConcept(nodeReplaceValueByValue.getIdConcept(), idTheso);
-        if (idTerm == null || idTerm.isEmpty()) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, nodeReplaceValueByValue.getIdConcept());
+        if (preferredTerm.isEmpty()) {
             return false;
         }
 
-        if(!termHelper.updateTraduction(nodeReplaceValueByValue.getNewValue(), idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, idUser1)) {
-            addMessage("Rename error :", nodeReplaceValueByValue);
-        }
+        termService.updateTermTraduction(nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(),
+                nodeReplaceValueByValue.getIdLang(), idTheso, idUser1);
         return true;
     }
 
@@ -1192,8 +1194,8 @@ public class CsvImportHelper {
             return false;
         }
 
-        String idTerm = termHelper.getIdTermOfConcept(nodeReplaceValueByValue.getIdConcept(), idTheso);
-        if (idTerm == null || idTerm.isEmpty()) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, nodeReplaceValueByValue.getIdConcept());
+        if (preferredTerm.isEmpty()) {
             return false;
         }
         
@@ -1201,19 +1203,25 @@ public class CsvImportHelper {
         if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                 // on met remplace la valeur du altLabel par la nouvelle valeur
-                if(!termHelper.updateTermSynonyme(nodeReplaceValueByValue.getOldValue(),
-                        nodeReplaceValueByValue.getNewValue(), idTerm, nodeReplaceValueByValue.getIdLang(),
+                if(nonPreferredTermService.updateNonPreferredTerm(nodeReplaceValueByValue.getOldValue(),
+                        nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(), nodeReplaceValueByValue.getIdLang(),
                         idTheso, false, idUser1)) {
                     addMessage("Rename AltLabel error :", nodeReplaceValueByValue);
                 }                
             }
         } else {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
-                // on ajoute un nouvel altLabel 
-                if(!termHelper.addNonPreferredTerm(idTerm, nodeReplaceValueByValue.getNewValue(),
-                        nodeReplaceValueByValue.getIdLang(), idTheso, "", "", false, idUser1)) {
-                    addMessage("Insert AltLabel error :", nodeReplaceValueByValue);
-                }                 
+                // on ajoute un nouvel altLabel
+                var term = Term.builder()
+                        .idTerm(preferredTerm.get().getIdTerm())
+                        .lexicalValue(nodeReplaceValueByValue.getNewValue())
+                        .lang(nodeReplaceValueByValue.getIdLang())
+                        .idThesaurus(idTheso)
+                        .hidden(false)
+                        .source("")
+                        .status("")
+                        .build();
+                nonPreferredTermService.addNonPreferredTerm(term, idUser1);
             }
         }
         return true;
@@ -1285,7 +1293,8 @@ public class CsvImportHelper {
     
     public boolean updateConcept(String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
 
-        conceptObject.setIdTerm(termHelper.getIdTermOfConcept(conceptObject.getIdConcept(), idTheso));
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, conceptObject.getIdConcept());
+        conceptObject.setIdTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null));
         updatePrefLabel(idTheso, conceptObject, idUser1);
         updateAltLabel(idTheso, conceptObject, idUser1);
         updateNotes(idTheso, conceptObject, idUser1);
@@ -1303,30 +1312,40 @@ public class CsvImportHelper {
             return false;
         }
 
-        String idTerm = termHelper.getIdTermOfConcept(conceptObject.getIdConcept(), idTheso);
-        if (idTerm == null || idTerm.isEmpty()) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, conceptObject.getIdConcept());
+        if(preferredTerm.isEmpty()) {
             return false;
         }
+
         String oldLabel;
 
         for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
             // si le label n'existe pas dans cette langue, on l'ajoute
-            if (!termHelper.isTermExistInThisLang(idTerm, prefLabel.getLang(), idTheso)) {
-                if (!termHelper.addTraduction(prefLabel.getLabel(), idTerm, prefLabel.getLang(), "import", "", idTheso, idUser1)) {
-                    return false;
-                }                  
+            if (!termService.isTermExistInLangAndThesaurus(preferredTerm.get().getIdTerm(), idTheso, prefLabel.getLang())) {
+                var termToSave = Term.builder()
+                        .lexicalValue(prefLabel.getLabel())
+                        .idTerm(preferredTerm.get().getIdTerm())
+                        .lang(prefLabel.getLang())
+                        .idThesaurus(idTheso)
+                        .source("import")
+                        .status("")
+                        .build();
+                termService.addTermTraduction(termToSave, idUser1);
             } else {
-                oldLabel = termHelper.getLexicalValue(idTerm, idTheso, prefLabel.getLang());
+                var term = termRepository.findByIdTermAndIdThesaurusAndLang(preferredTerm.get().getIdTerm(), idTheso, prefLabel.getLang());
+                oldLabel = term.isPresent() ? term.get().getLexicalValue() : "";
                 
                 // si le label est fourni vide, il faut alors supprimer cette traduction
                 if (prefLabel.getLabel().isEmpty()) {
-                    return termHelper.deleteTraductionOfTerm(idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1);
+                    termRepository.deleteByIdTermAndLangAndIdThesaurus(preferredTerm.get().getIdTerm(), prefLabel.getLang(), idTheso);
+                    return true;
                 } 
                 
                 // si le label d'origine est vide (cas rare et normalement impossible)
                 if (oldLabel.isEmpty()) {
                     //le terme est alors à mettre à jour
-                    return termHelper.updateTraduction(prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1);
+                    termService.updateTermTraduction(prefLabel.getLabel(), preferredTerm.get().getIdTerm(), prefLabel.getLang(), idTheso, idUser1);
+                    return true;
                 }        
                 
                 // on vérifie si le terme est identique, on ne fait rien
@@ -1335,9 +1354,7 @@ public class CsvImportHelper {
                 }  
                 
                 // le terme est alors à mettre à jour
-                if (!termHelper.updateTraduction(prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1)) {
-                    return false;
-                }                   
+                termService.updateTermTraduction(prefLabel.getLabel(), preferredTerm.get().getIdTerm(), prefLabel.getLang(), idTheso, idUser1);
             }            
         }
         return true;
@@ -1349,26 +1366,33 @@ public class CsvImportHelper {
             return false;
         }
 
-        String idTerm = termHelper.getIdTermOfConcept(conceptObject.getIdConcept(), idTheso);
-        if (idTerm == null || idTerm.isEmpty()) {
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, conceptObject.getIdConcept());
+        if(preferredTerm.isEmpty()) {
             return false;
         }
-        ArrayList<String> oldLabels;
 
         // suppression des altLabel par langue
-        ArrayList<String> langs = getLangs(conceptObject.getAltLabels());
+        var langs = getLangs(conceptObject.getAltLabels());
         for (String lang : langs) {
-            oldLabels = termHelper.getLexicalValueOfAltLabel(idTerm, idTheso, lang);
+            var oldLabels = nonPreferredTermService.getNonPreferredTermValue(preferredTerm.get().getIdTerm(), idTheso, lang);
             for (String oldLabel : oldLabels) {
-                termHelper.deleteNonPreferedTerm(idTerm, lang, oldLabel, idTheso, idUser1);
+                nonPreferredTermService.deleteNonPreferredTerm(preferredTerm.get().getIdTerm(), lang, oldLabel, idTheso, idUser1);
             }
         }
 
         for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
             // on ajoute les nouveaux prefLabels dans cette langue
             if (!altLabel.getLabel().isEmpty()) {
-                termHelper.addNonPreferredTerm(idTerm, altLabel.getLabel(), altLabel.getLang(), idTheso, "import", "", false, idUser);
-                //    return false;
+                var term = Term.builder()
+                        .idTerm(preferredTerm.get().getIdTerm())
+                        .lexicalValue(altLabel.getLabel())
+                        .lang(altLabel.getLang())
+                        .idThesaurus(idTheso)
+                        .hidden(false)
+                        .source("import")
+                        .status("")
+                        .build();
+                nonPreferredTermService.addNonPreferredTerm(term, idUser);
             }
         }
         return true;

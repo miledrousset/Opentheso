@@ -1,17 +1,333 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.ConceptGroupConcept;
+import fr.cnrs.opentheso.entites.Permuted;
+import fr.cnrs.opentheso.entites.PreferredTerm;
+import fr.cnrs.opentheso.entites.TermHistorique;
+import fr.cnrs.opentheso.models.terms.NodeTerm;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.terms.Term;
+import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PermutedRepository;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.TermHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.utils.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 
 @Data
+@Slf4j
 @Service
 @AllArgsConstructor
 public class TermService {
 
     private final TermRepository termRepository;
+    private final ConceptRepository conceptRepository;
+    private final PermutedRepository permutedRepository;
+    private final PreferredTermRepository preferredTermRepository;
+    private final TermHistoriqueRepository termHistoriqueRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
 
+
+    public String addTerm(Term term, String idConcept, int idUser) {
+
+        log.info("Ajout d'un nouveau term {}", term.getLexicalValue());
+        var idTerm = generateNextIdTerm(term);
+        log.info("Le nouveau id Term est {}", idTerm);
+
+        var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                .idTerm(idTerm)
+                .lexicalValue(StringUtils.convertString(term.getLexicalValue()))
+                .lang(term.getLang())
+                .idThesaurus(term.getIdThesaurus())
+                .source(term.getSource())
+                .status(term.getStatus())
+                .contributor(idUser)
+                .creator(idUser)
+                .build());
+
+        log.info("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
+        termHistoriqueRepository.save(TermHistorique.builder()
+                .idTerm(termSaved.getIdTerm())
+                .lexicalValue(termSaved.getLexicalValue())
+                .lang(termSaved.getLang())
+                .idThesaurus(termSaved.getIdThesaurus())
+                .source(termSaved.getSource())
+                .status(termSaved.getStatus())
+                .idUser(idUser)
+                .action("ADD")
+                .build());
+
+        addLinkTerm(idConcept, term.getIdThesaurus(), termSaved.getIdTerm());
+
+        return idTerm;
+    }
+
+    private String generateNextIdTerm(Term term) {
+        int idTermNum = termRepository.getMaxInternalId();
+        String idTerm;
+
+        do {
+            idTerm = String.valueOf(++idTermNum);
+        } while (termRepository.findByIdTermAndIdThesaurus(idTerm, term.getIdThesaurus()).isPresent());
+
+        term.setIdTerm(idTerm);
+        return idTerm;
+    }
+
+    public void updateTermTraduction(Term term, int idUser) {
+        updateTermTraduction(term.getLexicalValue(), term.getIdTerm(), term.getLang(), term.getIdThesaurus(), idUser);
+    }
+
+    public void updateTermTraduction(String label, String idTerm, String idLang, String idTheso, int idUser) {
+        log.info("Mise à jour du term");
+        var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idTheso, idLang);
+        if (term.isPresent()) {
+            term.get().setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label));
+            term.get().setContributor(idUser);
+            term.get().setModified(new Date());
+            termRepository.save(term.get());
+
+            log.info("Ajout d'une trace de modification de la traduction {}", term.get().getLexicalValue());
+            termHistoriqueRepository.save(TermHistorique.builder()
+                    .idTerm(term.get().getIdTerm())
+                    .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label))
+                    .lang(idLang)
+                    .idThesaurus(idTheso)
+                    .source("")
+                    .action("")
+                    .idUser(idUser)
+                    .action("UPDATE")
+                    .modified(LocalDateTime.now())
+                    .build());
+        }
+    }
+
+    public void addTerms(NodeTerm nodeTerm, int idUser) {
+
+        if (CollectionUtils.isEmpty(nodeTerm.getNodeTermTraduction())) {
+            log.error("Aucune traduction n'est pas présente !");
+        }
+
+        log.info("Début de l'ajout des traductions");
+        for (NodeTermTraduction termTraduction : nodeTerm.getNodeTermTraduction()) {
+
+            log.info("Traduction {}", termTraduction.getLexicalValue());
+            addInPermutedTable(nodeTerm, termTraduction);
+
+            var lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(termTraduction.getLexicalValue());
+
+            termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                    .idTerm(nodeTerm.getIdTerm())
+                    .lexicalValue(lexicalValue)
+                    .lang(termTraduction.getLang())
+                    .idThesaurus(nodeTerm.getIdThesaurus())
+                    .source(nodeTerm.getSource())
+                    .status(nodeTerm.getStatus())
+                    .contributor(idUser)
+                    .created(nodeTerm.getCreated())
+                    .modified(nodeTerm.getModified())
+                    .build());
+        }
+
+        log.info("Ajout du lien avec preferred term {}", nodeTerm.getIdTerm());
+        preferredTermRepository.save(PreferredTerm.builder()
+                .idTerm(nodeTerm.getIdTerm())
+                .idThesaurus(nodeTerm.getIdThesaurus())
+                .idConcept(nodeTerm.getIdConcept())
+                .build());
+    }
+
+    private void addInPermutedTable(NodeTerm nodeTerm, NodeTermTraduction termTraduction) {
+
+        log.info("Recherche de l'id Groupe");
+        var conceptGroup = conceptGroupConceptRepository.findByIdThesaurusAndIdConcept(nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
+        var idGroup = conceptGroup.map(ConceptGroupConcept::getIdGroup).orElse(null);
+        log.info("Id Group trouvé : {}", idGroup);
+
+        var value = formatLexicalValue(termTraduction.getLexicalValue());
+        log.info("Formatage de lexicalValue : {}", value);
+
+        var tabMots = value.split(" ");
+        for (int index = 1; index < tabMots.length; index++) {
+            log.info("Enregistrement dans la table permuted pour lexicalValue {} ({}/{})", tabMots[index], index, tabMots.length);
+            permutedRepository.save(Permuted.builder()
+                    .ord(index++)
+                    .idConcept(nodeTerm.getIdConcept())
+                    .idGroup(idGroup)
+                    .idThesaurus(nodeTerm.getIdThesaurus())
+                    .idLang(termTraduction.getLang())
+                    .lexicalValue(tabMots[index])
+                    .isPreferredTerm(true)
+                    .originalValue(value)
+                    .build());
+        }
+    }
+
+    private String formatLexicalValue(String lexicalValue) {
+
+        var value = lexicalValue.replaceAll("-", " ");
+        value = value.replaceAll("\\(", " ");
+        value = value.replaceAll("\\)", " ");
+        value = value.replaceAll("/", " ");
+        return fr.cnrs.opentheso.utils.StringUtils.convertString(value.trim());
+    }
+
+    public boolean addLinkTerm(String idConcept, String idThesaurus, String idTerm) {
+        log.info("Ajout d'une relation avec Terme Préféré");
+        preferredTermRepository.save(PreferredTerm.builder()
+                .idConcept(idConcept)
+                .idThesaurus(idThesaurus)
+                .idTerm(idTerm)
+                .build());
+        return true;
+    }
+
+    public boolean isTermExistInLangAndThesaurus(String idTerm, String idThesaurus, String idLang) {
+
+        log.info("Vérification de l'existence du term {} dans le thésaurus {} ({})", idTerm, idThesaurus, idLang);
+        var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, idLang);
+        return term.isPresent();
+    }
+
+    @Transactional
+    public void deleteTerm(String idTerm, String idThesaurus) {
+
+        log.info("Suppression du terme");
+        termRepository.deleteByIdTermAndIdThesaurus(idTerm, idThesaurus);
+
+        log.info("Suppression de la relation Term_Concept");
+        preferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
+
+        log.info("Suppression des synonymes");
+        nonPreferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
+    }
+
+    public void addTermTraduction(Term term, int idUser) {
+
+        log.info("Ajout d'un nouveau term traduction {}", term.getLexicalValue());
+
+        var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                .idTerm(term.getIdTerm())
+                .lexicalValue(StringUtils.convertString(term.getLexicalValue()))
+                .lang(term.getLang())
+                .idThesaurus(term.getIdThesaurus())
+                .source(term.getSource())
+                .status(term.getStatus())
+                .contributor(term.getContributor())
+                .creator(term.getCreator())
+                .created(new Date())
+                .modified(new Date())
+                .build());
+
+        log.info("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
+        termHistoriqueRepository.save(TermHistorique.builder()
+                .idTerm(termSaved.getIdTerm())
+                .lexicalValue(termSaved.getLexicalValue())
+                .lang(termSaved.getLang())
+                .idThesaurus(termSaved.getIdThesaurus())
+                .source(termSaved.getSource())
+                .status(termSaved.getStatus())
+                .idUser(idUser)
+                .modified(LocalDateTime.now())
+                .action("New")
+                .build());
+    }
+
+    public boolean isTraductionExistOfConcept(String idConcept, String idThesaurus, String idLang) {
+        try {
+            return termRepository.existsTranslationForConcept(idConcept, idThesaurus, idLang);
+        } catch (Exception e) {
+            log.error("Error pendant la vérification de l'existence d'une traduction pour le concept: " + idConcept, e);
+            return false;
+        }
+    }
+
+    public boolean isTermExistIgnoreCase(String title, String idThesaurus, String idLang) {
+        try {
+            String convertedTitle = fr.cnrs.opentheso.utils.StringUtils.convertString(title);
+            return termRepository.existsTermIgnoreCase(convertedTitle, idLang, idThesaurus);
+        } catch (Exception e) {
+            log.error("Error pendant la vérification de l'existence d'un term (ignore case) pour " + title, e);
+            return false;
+        }
+    }
+
+    public Term getThisTerm(String idConcept, String idThesaurus, String idLang) {
+
+        if (isTraductionExistOfConcept(idConcept, idThesaurus, idLang)) {
+            Optional<Object[]> result = termRepository.getPreferredTermWithConceptInfo(idConcept, idThesaurus, idLang);
+
+            if (result.isPresent()) {
+                Object[] row = result.get();
+                return Term.builder()
+                        .idTerm((String) row[0])
+                        .idConcept((String) row[1])
+                        .lexicalValue((String) row[2])
+                        .lang((String) row[3])
+                        .idThesaurus((String) row[4])
+                        .created((Date) row[5])
+                        .modified((Date) row[6])
+                        .source((String) row[7])
+                        .status((String) row[8])
+                        .contributor((Integer) row[9])
+                        .creator((Integer) row[10])
+                        .build();
+            }
+        } else {
+            Optional<Object[]> conceptMeta = conceptRepository.getConceptMetadata(idConcept, idThesaurus); // à créer
+
+            if (conceptMeta.isPresent()) {
+                Object[] row = conceptMeta.get();
+                return Term.builder()
+                        .idTerm("")
+                        .idConcept(idConcept)
+                        .lexicalValue("")
+                        .lang(idLang)
+                        .idThesaurus(idThesaurus)
+                        .created((Date) row[0])
+                        .modified((Date) row[1])
+                        .status((String) row[2])
+                        .build();
+            }
+        }
+
+        return null;
+    }
+
+    public List<NodeTermTraduction> getTraductionsOfConcept(String idConcept, String idThesaurus, String idLang) {
+        List<Object[]> rawResults = termRepository.getConceptTranslationsRaw(idConcept, idThesaurus, idLang);
+        List<NodeTermTraduction> results = new ArrayList<>();
+
+        for (Object[] row : rawResults) {
+            results.add(new NodeTermTraduction(
+                    (String) row[0],     // lang
+                    (String) row[3],     // nomLang (case when)
+                    (String) row[1],     // lexicalValue
+                    (String) row[2]      // codePays
+            ));
+        }
+
+        return results;
+    }
+
+    public void deleteTerm(String idThesaurus, String idTerm, String idLang) {
+        log.info("Suppression d'un term id {}", idTerm);
+        termRepository.deleteByIdTermAndLangAndIdThesaurus(idTerm, idLang, idThesaurus);
+    }
 }

@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.*;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
@@ -21,6 +20,12 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
+import fr.cnrs.opentheso.repositories.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 

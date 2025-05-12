@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -14,24 +13,22 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
-import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.FileUploadEvent;
 
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +49,6 @@ public class FusionService implements Serializable {
     private ImportRdf4jHelper importRdf4jHelper;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -65,6 +59,12 @@ public class FusionService implements Serializable {
 
     @Autowired
     private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private TermService termService;
+
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
 
 
     private SKOSXmlDocument sourceSkos;
@@ -93,7 +93,7 @@ public class FusionService implements Serializable {
             conceptsExists.clear();
         }
 
-        ArrayList<NodeEM> nodeEMsLocal;
+        List<NodeEM> nodeEMsLocal;
 
         String workLang = preferencesHelper.getWorkLanguageOfTheso(thesoSelected.getId());
 
@@ -143,7 +143,7 @@ public class FusionService implements Serializable {
                     // Traduction OK validée #MR
                     // Synonymes : NonPreferredTerms
                     if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
-                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
+                        nodeEMsLocal = nonPreferredTermService.getAllNonPreferredTerms(conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeEM nodeEM : acs.nodeEMList) {
                             if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
@@ -155,8 +155,7 @@ public class FusionService implements Serializable {
                                 term.setSource(nodeEM.getSource());
                                 term.setStatus(nodeEM.getStatus());
                                 term.setHidden(nodeEM.isHiden());
-                                termHelper.addNonPreferredTerm(term,
-                                        currentUser.getNodeUser().getIdUser());
+                                nonPreferredTermService.addNonPreferredTerm(term, currentUser.getNodeUser().getIdUser());
                                 isUpdated = true;
                             }
                         }
@@ -172,21 +171,18 @@ public class FusionService implements Serializable {
                                 term.setLexicalValue(nodeTermTraduction.getLexicalValue());
                                 term.setLang(nodeTermTraduction.getLang());
                                 term.setIdThesaurus(conceptFound.getConcept().getIdThesaurus());
-                                if (termHelper.isTermExistInThisLang(
-                                                term.getIdTerm(), nodeTermTraduction.getLang(),
-                                                term.getIdThesaurus())) {
-                                    termHelper.updateTermTraduction(
-                                            term,
-                                            currentUser.getNodeUser().getIdUser());
+                                if (termService.isTermExistInLangAndThesaurus(term.getIdTerm(), term.getIdThesaurus(), nodeTermTraduction.getLang())) {
+                                    termService.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
                                 } else {
-                                    termHelper.addTraduction(
-                                            nodeTermTraduction.getLexicalValue(),
-                                            acs.nodeTerm.getIdTerm(),
-                                            nodeTermTraduction.getLang(),
-                                            "fusion",
-                                            "",
-                                            conceptFound.getConcept().getIdThesaurus(),
-                                            currentUser.getNodeUser().getIdUser());
+                                    var termToSave = Term.builder()
+                                            .lexicalValue(nodeTermTraduction.getLexicalValue())
+                                            .idTerm(acs.nodeTerm.getIdTerm())
+                                            .lang(nodeTermTraduction.getLang())
+                                            .idThesaurus(conceptFound.getConcept().getIdThesaurus())
+                                            .source("fusion")
+                                            .status("")
+                                            .build();
+                                    termService.addTermTraduction(termToSave, currentUser.getNodeUser().getIdUser());
                                 }
                                 isUpdated = true;
                             }
@@ -280,7 +276,7 @@ public class FusionService implements Serializable {
         return false;
     }
 
-    private boolean isSynonymeExist(NodeEM nodeEMimport, ArrayList<NodeEM> nodeEMLocal) {
+    private boolean isSynonymeExist(NodeEM nodeEMimport, List<NodeEM> nodeEMLocal) {
         if (nodeEMLocal == null || nodeEMLocal.isEmpty())
             return false;
 
@@ -291,18 +287,6 @@ public class FusionService implements Serializable {
             }
         }
         return false;
-    }
-
-    public void importTheso(FileUploadEvent event) {
-        try (InputStream is = event.getFile().getInputStream()) {
-            sourceSkos = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, workLanguage);
-            total = sourceSkos.getConceptList().size();
-            uri = sourceSkos.getTitle();
-            loadDone = true;
-        } catch (Exception e) {}
-        
-        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-        PrimeFaces.current().ajax().update("statistiques");
     }
 
     public void initFusionResult() {

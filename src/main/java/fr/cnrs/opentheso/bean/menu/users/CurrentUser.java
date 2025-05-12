@@ -307,7 +307,6 @@ public class CurrentUser implements Serializable {
 
         // liste des projets de l'utilisateur
         if (nodeUser.isSuperAdmin()) {
-            //SELECT DISTINCT label.*, lower(label.label_group) AS sorted_label_group FROM user_group_label label ORDER BY lower(label.label_group) ASC
             userPermissions.setListProjects(userGroupLabelRepository.findAll());
         } else {  
             userPermissions.setListProjects(userHelper.getProjectOfUser(nodeUser.getIdUser()));
@@ -580,17 +579,11 @@ public class CurrentUser implements Serializable {
     }
     
     public boolean isHasRoleAsAdmin(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
-                (  
-                (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()) 
-                );
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && ((userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()));
     }
 
     public boolean isHasRoleAsSuperAdmin(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
-                (
-                (nodeUser.isSuperAdmin())
-                );
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && ((nodeUser.isSuperAdmin()));
     }
 
 

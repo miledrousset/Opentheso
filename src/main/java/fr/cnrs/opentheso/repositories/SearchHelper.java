@@ -1,8 +1,17 @@
 package fr.cnrs.opentheso.repositories;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.Normalizer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -18,6 +27,8 @@ import fr.cnrs.opentheso.models.search.NodeSearch;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 
+import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.TermService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,13 +47,14 @@ public class SearchHelper {
     private DataSource dataSource;
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
     private GroupHelper groupHelper;
+    @Autowired
+    private TermService termService;
+    @Autowired
+    private NonPreferredTermService nonPreferredTermService;
 
     /**
      * Permet de chercher les terms avec précision pour limiter le bruit avec filtre par langue et ou par groupe
@@ -158,10 +170,10 @@ public class SearchHelper {
                     var idConcept = resultSet.getString("id_concept");
 
                     var synonymes = new ArrayList<NodeElement>();
-                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(idConcept, idTheso, "fr"))
+                    synonymes.addAll(Optional.ofNullable(nonPreferredTermService.getNonPreferredTerms(idConcept, idTheso, "fr"))
                             .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
-                    synonymes.addAll(Optional.ofNullable(termHelper.getNonPreferredTerms(idConcept, idTheso, "ar"))
+                    synonymes.addAll(Optional.ofNullable(nonPreferredTermService.getNonPreferredTerms(idConcept, idTheso, "ar"))
                             .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
 
@@ -178,10 +190,10 @@ public class SearchHelper {
                     if (ObjectUtils.isNotEmpty(definitionAr)) definitions.add(toElement(definitionAr));
 
                     var terms = new ArrayList<NodeElement>();
-                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(idConcept, idTheso, "fr"))
+                    terms.addAll(Optional.ofNullable(termService.getTraductionsOfConcept(idConcept, idTheso, "fr"))
                             .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
-                    terms.addAll(Optional.ofNullable(termHelper.getTraductionsOfConcept(idConcept, idTheso, "ar"))
+                    terms.addAll(Optional.ofNullable(termService.getTraductionsOfConcept(idConcept, idTheso, "ar"))
                             .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
                             .orElse(Collections.emptyList()));
 

@@ -27,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_TURTLE_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_LD_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_RDF_UTF_8;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getMediaType;
 

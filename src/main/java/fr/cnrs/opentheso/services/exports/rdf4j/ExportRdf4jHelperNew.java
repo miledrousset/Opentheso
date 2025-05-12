@@ -26,7 +26,13 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.*;
+import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

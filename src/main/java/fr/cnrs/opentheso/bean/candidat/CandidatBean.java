@@ -1,24 +1,25 @@
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
-import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import fr.cnrs.opentheso.services.TermService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -50,6 +52,7 @@ import jakarta.faces.context.ExternalContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
@@ -67,6 +70,7 @@ import org.primefaces.event.SelectEvent;
 
 
 @Data
+@Slf4j
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "candidatBean")
@@ -91,13 +95,15 @@ public class CandidatBean implements Serializable {
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final ImageService imageService;
     private final DomaineDao domaineDao;
-    private final TermHelper termHelper;
     private final GroupHelper groupHelper;
     private final ConceptHelper conceptHelper;
     private final CandidatService candidatService;
     private final AlignmentHelper alignmentHelper;
     private final TermeDao termeDao;
     private final ThesaurusHelper thesaurusHelper;
+    private final TermRepository termRepository;
+    private final TermService termService;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
     private boolean isRejectCandidatsActivate, isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate;
@@ -525,13 +531,14 @@ public class CandidatBean implements Serializable {
 
         if (initialCandidat == null) {
 
-            // en cas d'un nouveau candidat, verification dans les prefLabels
-            if (termHelper.isPrefLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
+            log.info("Vérification de l'existance du term (recherche dans prefLabels)");
+            if (termRepository.existsPrefLabel(candidatSelected.getNomPref().trim(), getIdLang(), selectedTheso.getCurrentIdTheso())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg3"));
                 return;
             }
-            // verification dans les altLabels
-            if (termHelper.isAltLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
+
+            log.info("Vérification de l'existance du term (recherche dans altLabels)");
+            if (nonPreferredTermRepository.isAltLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg4"));
                 return;
             }
@@ -573,7 +580,7 @@ public class CandidatBean implements Serializable {
             setIsListCandidatsActivate(true);
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
-                if (termHelper.isTermExistInThisLang(candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
+                if (termService.isTermExistInLangAndThesaurus(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), getIdLang())) {
                     candidatService.updateIntitule(candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
                             getIdLang(), candidatSelected.getIdTerm());
                 } else {

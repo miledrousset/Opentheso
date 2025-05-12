@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ConceptRepository extends JpaRepository<Concept, Integer> {
@@ -33,5 +34,13 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     @Query(value = "SELECT nextval('concept__id_seq')", nativeQuery = true)
     Long getNextConceptNumericId();
+
+    @Query(value = """
+        SELECT created, modified, status 
+        FROM concept 
+        WHERE id_concept = :idConcept 
+            AND id_thesaurus = :idThesaurus
+    """, nativeQuery = true)
+    Optional<Object[]> getConceptMetadata(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
 }

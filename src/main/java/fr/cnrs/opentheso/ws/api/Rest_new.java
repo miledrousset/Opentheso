@@ -4,6 +4,10 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,10 +17,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
@@ -25,7 +25,6 @@ import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -59,7 +58,7 @@ public class Rest_new {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private TermHelper termHelper;
+    private TermRepository termRepository;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -749,7 +748,7 @@ public class Rest_new {
 
         List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(idTheso);
 
-        ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+        List<NodeGroupTraductions> nodeGroupTraductions;
 
         String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
@@ -783,7 +782,7 @@ public class Rest_new {
 
         List<String> listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(idTheso);
 
-        ArrayList<NodeTermTraduction> nodeTermTraductions;
+        List<NodeTermTraduction> nodeTermTraductions;
 
         String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
@@ -792,7 +791,7 @@ public class Rest_new {
             job.add("idConcept", idConcept);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeTermTraductions = termHelper.getAllTraductionsOfConcept(idConcept, idTheso);
+            nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
             for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeTermTraduction.getLang());
