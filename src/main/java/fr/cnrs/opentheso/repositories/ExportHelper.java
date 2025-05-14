@@ -1,11 +1,12 @@
 package fr.cnrs.opentheso.repositories;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.concept.NodeUri;
 
 import java.sql.Connection;
@@ -44,7 +45,7 @@ public class ExportHelper {
 
     
     public List<SKOSResource> getAllFacettes(String idTheso, String baseUrl, 
-            String originalUri, NodePreference nodePreference) throws Exception {
+            String originalUri, Preferences nodePreference) throws Exception {
         
         List<SKOSResource> facettes = new ArrayList<>();
 
@@ -114,7 +115,7 @@ public class ExportHelper {
      * @throws Exception 
      */
     public List<SKOSResource> getAllConcepts(String idTheso, String baseUrl, String idGroup, String originalUri,
-                                             NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
+                                             Preferences nodePreference, boolean filterHtmlCharacter) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
@@ -274,7 +275,7 @@ public class ExportHelper {
         }
     }
     
-    private String getUriThesoFromId(String id, String originalUri, NodePreference nodePreference) {
+    private String getUriThesoFromId(String id, String originalUri, Preferences nodePreference) {
         if(nodePreference.isOriginalUriIsArk()) {
             return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
         }
@@ -468,7 +469,7 @@ public class ExportHelper {
         }
     }
     
-    private String getUriFromNodeUri(String idTheso, String originalUri, String idConcept, NodePreference nodePreference,
+    private String getUriFromNodeUri(String idTheso, String originalUri, String idConcept, Preferences nodePreference,
                                      NodeUri nodeUri) {
               
         if(nodePreference.isOriginalUriIsArk() && nodeUri.getIdArk()!= null && !StringUtils.isEmpty(nodeUri.getIdArk())) {

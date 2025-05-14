@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -162,7 +163,7 @@ public class SelectedTheso implements Serializable {
         }
     }
 
-    public String getUriOfTheso(NodePreference nodePreference){
+    public String getUriOfTheso(Preferences nodePreference){
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
         String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();

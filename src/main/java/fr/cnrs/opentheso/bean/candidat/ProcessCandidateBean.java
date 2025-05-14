@@ -1,11 +1,12 @@
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -95,7 +96,7 @@ public class ProcessCandidateBean implements Serializable {
     }
     
     
-    public void insertCandidat(int idUser, NodePreference nodePreference) {
+    public void insertCandidat(int idUser, Preferences nodePreference) {
         if (selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
             return;
@@ -139,7 +140,7 @@ public class ProcessCandidateBean implements Serializable {
         pf.ajax().update("containerIndex:tabViewCandidat");
     }
     
-    private void generateArk(NodePreference nodePreference, CandidatDto selectedCandidateTemp){
+    private void generateArk(Preferences nodePreference, CandidatDto selectedCandidateTemp){
         if (nodePreference != null) {
             conceptHelper.setNodePreference(nodePreference);
 
@@ -206,7 +207,7 @@ public class ProcessCandidateBean implements Serializable {
         pf.ajax().update("containerIndex:tabViewCandidat");
     }
 
-    public void insertListCandidat(int idUser, NodePreference nodePreference) {
+    public void insertListCandidat(int idUser, Preferences nodePreference) {
         if (candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;

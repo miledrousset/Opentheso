@@ -1,39 +1,31 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.services.HomePageService;
 
 import lombok.Data;
 import java.io.Serializable;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
-    private HomePageService homePageService;
-    private SelectedTheso selectedTheso;
-    private PreferencesHelper preferencesHelper;
+    private final HomePageService homePageService;
+    private final SelectedTheso selectedTheso;
 
     private boolean isViewPlainText, isInEditing, isInEditingHomePage, isInEditingGoogleAnalytics;
     private String text, colorOfHtmlButton, colorOfTextButton, codeGoogleAnalitics;
 
 
-    @Inject
-    public ViewEditorHomeBean(HomePageService homePageService, SelectedTheso selectedTheso, PreferencesHelper preferencesHelper) {
-
-        this.selectedTheso = selectedTheso;
-        this.homePageService = homePageService;
-        this.preferencesHelper = preferencesHelper;
-    }
 
     public void reset() {
         isInEditing = false;

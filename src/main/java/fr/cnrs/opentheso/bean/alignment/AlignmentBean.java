@@ -79,7 +79,6 @@ public class AlignmentBean implements Serializable {
     private final ImageService imageService;
     private final SelectedTheso selectedTheso;
     private final ConceptView conceptBean;
-    private final AlignmentManualBean alignmentManualBean;
     private final LanguageBean languageBean;
     private final CurrentUser currentUser;
     private final ThesaurusHelper thesaurusHelper;
@@ -744,7 +743,8 @@ public class AlignmentBean implements Serializable {
     /**
      * lance la recherche des alignements pour le concept sélectionné avec la source sélectionnée
      */
-    public void searchAlignments(String idTheso, String idConcept, String lexicalValue, String idLang) {
+    public void searchAlignments(AlignmentManualBean alignmentManualBean, String idTheso, String idConcept,
+                                 String lexicalValue, String idLang) {
 
         reset();
         for (AlignementSource alignementSource : alignementSources) {

@@ -4,8 +4,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -16,6 +15,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.services.exports.pdf.PdfExportType;
 import fr.cnrs.opentheso.services.exports.pdf.WritePdfNewGen;
@@ -92,7 +92,7 @@ public class ExportFileBean implements Serializable {
     private ExportHelper exportHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private Tree tree;
@@ -143,7 +143,7 @@ public class ExportFileBean implements Serializable {
     private SKOSXmlDocument getCandidatsDatas(boolean isCandidatExport) {
 
         var skosXmlDocument = new SKOSXmlDocument();
-        var nodePreference = preferencesHelper.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
+        var nodePreference = preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
 
         if (nodePreference == null) {
             return skosXmlDocument;
@@ -206,8 +206,7 @@ public class ExportFileBean implements Serializable {
      */
     public StreamedContent exportThesorus() {
         // permet d'initialiser les paramètres pour contruire les Uris
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                viewExportBean.getNodeIdValueOfTheso().getId());
+        var nodePreference = preferenceService.getThesaurusPreferences(viewExportBean.getNodeIdValueOfTheso().getId());
         if (nodePreference == null) {
             return null;
         }
@@ -410,8 +409,7 @@ public class ExportFileBean implements Serializable {
 
     public StreamedContent exportNewGen() throws Exception {
         // permet d'initialiser les paramètres pour contruire les Uris
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                viewExportBean.getNodeIdValueOfTheso().getId());
+        var nodePreference = preferenceService.getThesaurusPreferences(viewExportBean.getNodeIdValueOfTheso().getId());
         if (nodePreference == null) {
             return null;
         }
@@ -789,8 +787,8 @@ public class ExportFileBean implements Serializable {
     
     
     private SKOSXmlDocument getThesoByGroup(String idTheso, String idGroup) throws Exception {
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                idTheso);
+
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         if (nodePreference == null) {
             return null;
@@ -861,8 +859,7 @@ public class ExportFileBean implements Serializable {
 
     private SKOSXmlDocument getConcepts(String idTheso) throws Exception {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         if (nodePreference == null) {
             return null;
@@ -939,7 +936,7 @@ public class ExportFileBean implements Serializable {
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<String> selectedGroups) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         if (nodePreference == null) {
             return null;

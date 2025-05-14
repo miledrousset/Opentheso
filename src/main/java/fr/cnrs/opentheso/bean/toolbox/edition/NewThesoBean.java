@@ -6,15 +6,15 @@ import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -33,49 +34,26 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Data
-@Named(value = "newThesoBean")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "newThesoBean")
 public class NewThesoBean implements Serializable {
 
-    private CurrentUser currentUser;
-    private RoleOnThesoBean roleOnThesoBean;
-    private ViewEditionBean viewEditionBean;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private SelectedTheso selectedTheso;
-    private PreferencesHelper preferencesHelper;
-    private UserHelper userHelper;
-    private LanguageRepository languageRepository;
-    private ThesaurusHelper thesaurusHelper;
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final CurrentUser currentUser;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final ViewEditionBean viewEditionBean;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final SelectedTheso selectedTheso;
+    private final UserHelper userHelper;
+    private final PreferenceService preferenceService;
+    private final LanguageRepository languageRepository;
+    private final ThesaurusHelper thesaurusHelper;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
 
     private List<LanguageIso639> allLangs;
     private List<UserGroupLabel> nodeProjects;
     private String title, selectedLang, selectedProject;
 
-
-    @Inject
-    public NewThesoBean(UserHelper userHelper,
-                        CurrentUser currentUser,
-                        RoleOnThesoBean roleOnThesoBean,
-                        ViewEditionBean viewEditionBean,
-                        SelectedTheso selectedTheso,
-                        PreferencesHelper preferencesHelper,
-                        LanguageRepository languageRepository,
-                        ThesaurusHelper thesaurusHelper,
-                        UserGroupLabelRepository userGroupLabelRepository,
-                        UserGroupThesaurusRepository userGroupThesaurusRepository) {
-
-        this.userHelper = userHelper;
-        this.currentUser = currentUser;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.viewEditionBean = viewEditionBean;
-        this.selectedTheso = selectedTheso;
-        this.preferencesHelper = preferencesHelper;
-        this.languageRepository = languageRepository;
-        this.thesaurusHelper = thesaurusHelper;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-    }
 
     public void init() {
         allLangs = languageRepository.findAll();
@@ -143,13 +121,13 @@ public class NewThesoBean implements Serializable {
         }
 
         // écriture des préférences en utilisant le thésaurus en cours pour duppliquer les infos
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        var nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(idNewTheso, selectedLang);
+            preferenceService.initPreferences(idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(title);
             nodePreference.setSourceLang(selectedLang);
-            preferencesHelper.addPreference(nodePreference, idNewTheso);
+            preferenceService.addPreference(nodePreference, idNewTheso);
         }
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "thesaurus ajouté avec succès");

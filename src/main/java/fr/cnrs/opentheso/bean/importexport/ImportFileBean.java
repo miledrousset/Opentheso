@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
@@ -24,7 +24,6 @@ import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -33,6 +32,7 @@ import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
@@ -132,7 +132,7 @@ public class ImportFileBean implements Serializable {
     private NoteHelper noteHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private DeprecateService deprecateHelper;
@@ -1172,16 +1172,16 @@ public class ImportFileBean implements Serializable {
         }
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        var nodePreference = roleOnThesoBean.getNodePreference();
 
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(idNewTheso, selectedLang);
+            preferenceService.initPreferences(idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(idNewTheso);
             nodePreference.setSourceLang(selectedLang);
-            preferencesHelper.addPreference(nodePreference, idNewTheso);
+            preferenceService.addPreference(nodePreference, idNewTheso);
         }
-        conceptHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(idNewTheso));
+        conceptHelper.setNodePreference(preferenceService.getThesaurusPreferences(idNewTheso));
         // ajout des concepts et collections
         for (NodeTree nodeTree : racine.getChildrens()) {
             insertDB(nodeTree, idNewTheso, null);
@@ -1263,17 +1263,16 @@ public class ImportFileBean implements Serializable {
         csvImportHelper.addLangsToThesaurus(langs, idNewTheso);
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
-
+        var nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(idNewTheso, selectedLang);
+            preferenceService.initPreferences(idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(thesaurusName);
             nodePreference.setSourceLang(selectedLang);
             if (nodePreference.getOriginalUri() == null || nodePreference.getOriginalUri().isEmpty()) {
                 nodePreference.setOriginalUri("http://mondomaine.fr");
             }
-            preferencesHelper.addPreference(nodePreference, idNewTheso);
+            preferenceService.addPreference(nodePreference, idNewTheso);
         }
         csvImportHelper.setNodePreference(nodePreference);
         csvImportHelper.setFormatDate(formatDate);
@@ -1324,8 +1323,6 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-        //    System.gc();
-        //    System.gc();
 
         onComplete();
     }
@@ -1363,16 +1360,16 @@ public class ImportFileBean implements Serializable {
         csvImportHelper.addLangsToThesaurus(langs, idNewTheso);
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        var nodePreference = roleOnThesoBean.getNodePreference();
 
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(idNewTheso, selectedLang);
+            preferenceService.initPreferences(idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(thesaurusName);
             nodePreference.setSourceLang(selectedLang);
-            preferencesHelper.addPreference(nodePreference, idNewTheso);
+            preferenceService.addPreference(nodePreference, idNewTheso);
         }
-        csvImportHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(idNewTheso));
+        csvImportHelper.setNodePreference(preferenceService.getThesaurusPreferences(idNewTheso));
         csvImportHelper.setFormatDate(formatDate);
 
         // ajout des concepts et collections
@@ -2823,7 +2820,7 @@ public class ImportFileBean implements Serializable {
         progress = 0;
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        var nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
             warning = "pas de préférences";
             return;
@@ -2925,7 +2922,7 @@ public class ImportFileBean implements Serializable {
         progress = 0;
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        var nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
             warning = "pas de préférences";
             return;

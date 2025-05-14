@@ -13,11 +13,10 @@ import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.services.PreferenceService;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +39,7 @@ import org.primefaces.model.TreeNode;
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "editThesoBean")
 public class EditThesoBean implements Serializable {
 
@@ -50,7 +49,7 @@ public class EditThesoBean implements Serializable {
     private ThesaurusMetadataAdd thesaurusMetadataAdd;
     private ConceptGroupRepository conceptGroupRepository;
     private SelectedTheso selectedTheso;
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
     private ThesaurusRepository thesaurusRepository;
     private LanguageRepository languageRepository;
     private ThesaurusHelper thesaurusHelper;
@@ -65,29 +64,6 @@ public class EditThesoBean implements Serializable {
     private boolean isPrivateTheso;
     private int activeTabIndex;
     private String title, selectedLang, preferredLang, arkIdOfTheso, newIdOfTheso;
-
-
-    @Inject
-    public EditThesoBean(CurrentUser currentUser, RoleOnThesoBean roleOnThesoBean, MenuBean menuBean,
-                         ThesaurusMetadataAdd thesaurusMetadataAdd, SelectedTheso selectedTheso,
-                         PreferencesHelper preferencesHelper, ThesaurusRepository thesaurusRepository,
-                         LanguageRepository languageRepository, ThesaurusHelper thesaurusHelper,
-                         ConceptHelper conceptHelper, GroupHelper groupHelper,
-                         ConceptGroupRepository conceptGroupRepository) {
-
-        this.currentUser = currentUser;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.menuBean = menuBean;
-        this.thesaurusMetadataAdd = thesaurusMetadataAdd;
-        this.selectedTheso = selectedTheso;
-        this.preferencesHelper = preferencesHelper;
-        this.thesaurusRepository = thesaurusRepository;
-        this.languageRepository = languageRepository;
-        this.thesaurusHelper = thesaurusHelper;
-        this.conceptHelper = conceptHelper;
-        this.groupHelper = groupHelper;
-        this.conceptGroupRepository = conceptGroupRepository;
-    }
 
 
     public void init(String idTheso) {
@@ -119,7 +95,7 @@ public class EditThesoBean implements Serializable {
         activeTabIndex = 0;
         isPrivateTheso = thesaurusHelper.isThesoPrivate(nodeIdValueOfTheso.getId());
 
-        var nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
+        var nodePreference = preferenceService.getThesaurusPreferences(nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
         allLangs = languageRepository.findAll();
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
@@ -229,7 +205,7 @@ public class EditThesoBean implements Serializable {
             return;
         }
         
-        if (!preferencesHelper.setWorkLanguageOfTheso(preferredLang, nodeIdValueOfTheso.getId())) {
+        if (!preferenceService.setWorkLanguageOfThesaurus(preferredLang, nodeIdValueOfTheso.getId())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la modification de la langue source !!!");
             return;
         }
@@ -321,7 +297,7 @@ public class EditThesoBean implements Serializable {
         roleOnThesoBean.showListTheso(currentUser, selectedTheso);
         showMessage(FacesMessage.SEVERITY_INFO, "Langue modifiée avec succès");
 
-        String sourceLang = preferencesHelper.getWorkLanguageOfTheso(nodeIdValueOfTheso.getId());
+        String sourceLang = preferenceService.getWorkLanguageOfThesaurus(nodeIdValueOfTheso.getId());
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), sourceLang);
 
         PrimeFaces.current().ajax().update("containerIndex:listLangThes");

@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.models.candidats.VoteDto;
@@ -41,7 +42,7 @@ import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
@@ -61,6 +62,7 @@ import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
@@ -150,14 +152,14 @@ public class ConceptHelper implements Serializable {
     private NonPreferredTermRepository nonPreferredTermRepository;
 
     //identifierType  1=numericId ; 2=alphaNumericId
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private String message = "";
     @Autowired
     private HandleService handleService;
     @Autowired
     private ThesaurusHelper thesaurusHelper;
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
     @Autowired
     private TermService termService;
     @Autowired
@@ -1893,7 +1895,7 @@ public class ConceptHelper implements Serializable {
      */
     public String generateArkIdForTheso(String idTheso) {
         if(nodePreference == null)
-            nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+            nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
         if (nodePreference.isUseArk()) {
@@ -1938,7 +1940,7 @@ public class ConceptHelper implements Serializable {
         if (nodePreference.isUseArkLocal()) {
             String idArk = nodeThesaurus.getIdArk();
             if (StringUtils.isEmpty(idArk)) {
-                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
                 idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
                 if (!thesaurusHelper.updateIdArkOfThesaurus(idTheso, idArk)) {
                     return null;
@@ -2303,7 +2305,7 @@ public class ConceptHelper implements Serializable {
         for (String idConcept : idConcepts) {
             idArk = getIdArkOfConcept(idConcept, idTheso);
             if (StringUtils.isEmpty(idArk)) {
-                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
                 idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
             }
             if (!updateArkIdOfConcept(idConcept, idTheso, idArk)) {
@@ -4673,11 +4675,11 @@ public class ConceptHelper implements Serializable {
         return true;
     }
 
-    public NodePreference getNodePreference() {
+    public Preferences getNodePreference() {
         return nodePreference;
     }
 
-    public void setNodePreference(NodePreference nodePreference) {
+    public void setNodePreference(Preferences nodePreference) {
         this.nodePreference = nodePreference;
     }
 

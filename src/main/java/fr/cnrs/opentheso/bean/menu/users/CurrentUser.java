@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.entites.User;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
@@ -15,6 +14,7 @@ import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -86,6 +86,9 @@ public class CurrentUser implements Serializable {
     private LdapService ldapService;
 
     @Autowired
+    private PreferenceService preferenceService;
+
+    @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
 
     @Autowired
@@ -99,9 +102,6 @@ public class CurrentUser implements Serializable {
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
 
     @Autowired
     private Tree tree;
@@ -415,7 +415,7 @@ public class CurrentUser implements Serializable {
 
         int idProject, idRole; 
         userPermissions.setSelectedTheso(idTheso);
-        userPermissions.setPreferredLangOfSelectedTheso(preferencesHelper.getWorkLanguageOfTheso(selectedTheso.getCurrentIdTheso()));
+        userPermissions.setPreferredLangOfSelectedTheso(preferenceService.getWorkLanguageOfThesaurus(selectedTheso.getCurrentIdTheso()));
         userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
         
         

@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -34,7 +33,7 @@ public class PathService {
     private final TermService termService;
     private final ConceptHelper conceptHelper;
     private final RelationsHelper relationsHelper;
-    private final PreferencesHelper preferencesHelper;
+    private final PreferenceService preferenceService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private String message;
@@ -165,7 +164,7 @@ public class PathService {
         int i = 0;
          
         if(idLang == null || idLang.isEmpty()) {
-            idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+            idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
         }
 
         for (Path path1 : paths) {

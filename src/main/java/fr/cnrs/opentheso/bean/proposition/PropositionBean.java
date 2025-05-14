@@ -1,7 +1,5 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.models.propositions.Proposition;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
@@ -11,6 +9,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -18,12 +17,9 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,18 +32,17 @@ import java.util.List;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "propositionBean")
-@AllArgsConstructor
-@NoArgsConstructor
 public class PropositionBean implements Serializable {
 
-    private IndexSetting indexSetting;
-    private RoleOnThesoBean roleOnThesoBean;
-    private SelectedTheso selectedTheso;
-    private RightBodySetting rightBodySetting;
-    private PropositionService propositionService;
-    private LanguageBean languageBean;
-    private PreferencesHelper preferencesHelper;
+    private final IndexSetting indexSetting;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final SelectedTheso selectedTheso;
+    private final RightBodySetting rightBodySetting;
+    private final PropositionService propositionService;
+    private final LanguageBean languageBean;
+    private final PreferenceService preferenceService;
 
     private Proposition proposition;
     private PropositionDao propositionSelected;
@@ -60,20 +55,6 @@ public class PropositionBean implements Serializable {
     private String showAllPropositions = "1";
     private int nbrNewPropositions;
 
-
-    @Inject
-    public PropositionBean(IndexSetting indexSetting, RoleOnThesoBean roleOnThesoBean, SelectedTheso selectedTheso,
-                           RightBodySetting rightBodySetting, PropositionService propositionService,
-                           LanguageBean languageBean, PreferencesHelper preferencesHelper) {
-
-        this.indexSetting = indexSetting;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.selectedTheso = selectedTheso;
-        this.rightBodySetting = rightBodySetting;
-        this.propositionService = propositionService;
-        this.languageBean = languageBean;
-        this.preferencesHelper = preferencesHelper;
-    }
 
     public void init() {
         nom = "";
@@ -89,7 +70,7 @@ public class PropositionBean implements Serializable {
 
         this.propositionSelected = propositionDao;
 
-        NodePreference preference = preferencesHelper.getThesaurusPreferences(propositionDao.getIdTheso());
+        var preference = preferenceService.getThesaurusPreferences(propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("rightbody.proposal.avertissement"));
             return;

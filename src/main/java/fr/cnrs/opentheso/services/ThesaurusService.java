@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusLabelRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
@@ -20,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ThesaurusService {
 
-    private final PreferencesHelper preferencesHelper;
+    private final PreferenceService preferenceService;
     private final ThesaurusRepository thesaurusRepository;
     private final ThesaurusLabelRepository thesaurusLabelRepository;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
@@ -38,7 +37,7 @@ public class ThesaurusService {
 
         for (UserGroupThesaurus thesaurus : thesaurusList) {
 
-            var idLangTemp = preferencesHelper.getWorkLanguageOfTheso(thesaurus.getIdThesaurus());
+            var idLangTemp = preferenceService.getWorkLanguageOfThesaurus(thesaurus.getIdThesaurus());
             if (StringUtils.isEmpty(idLangTemp)) {
                 idLangTemp = idLang;
             }

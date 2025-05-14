@@ -1,22 +1,23 @@
 package fr.cnrs.opentheso.ws.ark;
 
 import java.util.Properties;
+
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.concept.NodeMetaData;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.utils.StringUtils;
 import java.util.ArrayList;
 
 
 public class ArkHelper2 {
     
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private String message;
     
     private String idArk;
     private String idHandle;
     private ArkClientRest arkClientRest;
     
-    public ArkHelper2(NodePreference nodePreference) {
+    public ArkHelper2(Preferences nodePreference) {
         this.nodePreference = nodePreference;
     }
     
@@ -25,7 +26,7 @@ public class ArkHelper2 {
         arkClientRest = new ArkClientRest();
 
         Properties propertiesArk = new Properties();
-        propertiesArk.setProperty("serverHost", nodePreference.getServeurArk());//"http://localhost:8082/Arkeo");//"https://ark.mom.fr/Arkeo");
+        propertiesArk.setProperty("serverHost", nodePreference.getServerArk());//"http://localhost:8082/Arkeo");//"https://ark.mom.fr/Arkeo");
         propertiesArk.setProperty("idNaan", nodePreference.getIdNaan());
         propertiesArk.setProperty("user", nodePreference.getUserArk());
         propertiesArk.setProperty("password", nodePreference.getPassArk());

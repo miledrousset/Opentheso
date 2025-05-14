@@ -27,7 +27,7 @@ public class Preferences {
     private Integer idPref;
     private String idThesaurus;
     private String sourceLang;
-    private int identifierType;
+    private Integer identifierType;
     private String cheminSite;
     private String idNaan;
 
@@ -66,7 +66,9 @@ public class Preferences {
     private boolean useArkLocal;
     private String naanArkLocal;
     private String prefixArkLocal;
-    private int sizeidArkLocal;
+
+    @Column(name = "sizeidArkLocal")
+    private Integer sizeIdArkLocal;
 
     private boolean breadcrumb;
 
@@ -89,9 +91,11 @@ public class Preferences {
 
     private boolean useHandleWithCertificat;
     private String adminHandle;
-    private int indexHandle;
+    private Integer indexHandle;
 
     // Gérer le module de traduction via Deepl
     private boolean useDeeplTranslation;
     private String deeplApiKey;
+
+    private boolean webservices;
 }

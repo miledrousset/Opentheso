@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.fusion;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -14,6 +13,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
@@ -55,7 +55,7 @@ public class FusionService implements Serializable {
     private NoteHelper noteHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private TermService termService;
@@ -95,7 +95,7 @@ public class FusionService implements Serializable {
 
         List<NodeEM> nodeEMsLocal;
 
-        String workLang = preferencesHelper.getWorkLanguageOfTheso(thesoSelected.getId());
+        String workLang = preferenceService.getWorkLanguageOfThesaurus(thesoSelected.getId());
 
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {

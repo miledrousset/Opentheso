@@ -40,7 +40,7 @@ public class DeeplTranslate implements Serializable {
 
     public void init() {
 
-        var keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
+        var keyApi = roleOnThesoBean.getNodePreference().getDeeplApiKey();
         sourceLangs = deeplHelper.getSourceLanguages(keyApi);
         targetLangs = deeplHelper.getTargetLanguages(keyApi);
         existingTranslatedText = null;
@@ -118,7 +118,7 @@ public class DeeplTranslate implements Serializable {
 
     public void translate() {
 
-        var keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
+        var keyApi = roleOnThesoBean.getNodePreference().getDeeplApiKey();
         translatingText = deeplHelper.translate(keyApi, textToTranslate, fromLang, toLang);
     }
 

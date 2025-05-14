@@ -1,16 +1,15 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.PreferenceService;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -43,14 +42,14 @@ public class ViewExportBean implements Serializable {
     private GroupHelper groupHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
 
     private List<NodeLangTheso> selectedLanguages;
     private List<NodeGroup> selectedGroups;
@@ -125,7 +124,7 @@ public class ViewExportBean implements Serializable {
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
+        nodePreference = preferenceService.getThesaurusPreferences(nodeIdValueOfTheso.getId());
 
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
@@ -331,11 +330,11 @@ public class ViewExportBean implements Serializable {
         this.exportUriArk = exportUriArk;
     }
 
-    public NodePreference getNodePreference() {
+    public Preferences getNodePreference() {
         return nodePreference;
     }
 
-    public void setNodePreference(NodePreference nodePreference) {
+    public void setNodePreference(Preferences nodePreference) {
         this.nodePreference = nodePreference;
     }
 

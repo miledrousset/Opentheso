@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
@@ -7,7 +8,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
-import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -37,7 +37,6 @@ public class AlignmentManualBean implements Serializable {
     private final ConceptView conceptView;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
-    private final CandidatBean candidatBean;
     private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final AlignmentService alignmentService;
@@ -163,7 +162,7 @@ public class AlignmentManualBean implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
-    public void addManualAlignement(String idConcept, boolean isFromConceptView){
+    public void addManualAlignement(CandidatBean candidatBean, boolean isFromConceptView){
 
         if(StringUtils.isEmpty(manualAlignmentUri)){
             MessageUtils.showInformationMessage("Veuillez saisir une valeur  !");
@@ -175,6 +174,7 @@ public class AlignmentManualBean implements Serializable {
             return;            
         }
 
+        var idConcept = candidatBean.getCandidatSelected().getIdConcepte();
         if(!alignmentService.addNewAlignment(currentUser.getNodeUser().getIdUser(), "", manualAlignmentSource,
                 manualAlignmentUri, manualAlignmentType, idConcept, selectedTheso.getCurrentIdTheso(), 0)) {
 

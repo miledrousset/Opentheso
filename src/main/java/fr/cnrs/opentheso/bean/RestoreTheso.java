@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.bean;
 
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
@@ -364,7 +365,7 @@ public class RestoreTheso implements Serializable {
      * @param idTheso
      * @param nodePreference
      */
-    public void generateArkLacal(String idTheso, NodePreference nodePreference) {
+    public void generateArkLacal(String idTheso, Preferences nodePreference) {
 
         int count = 0;
 
@@ -384,14 +385,14 @@ public class RestoreTheso implements Serializable {
         for (String conceptId : allConcepts) {
             if(!overwriteLocalArk) {
                 if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
-                    idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                    idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
                     conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                             nodePreference.getNaanArkLocal() + "/" +
                                     nodePreference.getPrefixArkLocal() + idArk);
                     count++;
                 }
             } else {
-                idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
                 conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                         nodePreference.getNaanArkLocal() + "/" +
                                 nodePreference.getPrefixArkLocal() + idArk);

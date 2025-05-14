@@ -1,14 +1,12 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -24,6 +22,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +53,7 @@ public class AtelierThesService implements Serializable {
     private ThesaurusHelper thesaurusHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private SearchHelper searchHelper;
@@ -61,7 +61,7 @@ public class AtelierThesService implements Serializable {
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(thesoSelected.getId());
+        var nodePreference = preferenceService.getThesaurusPreferences(thesoSelected.getId());
         
         ArrayList<ConceptResultNode> list = new ArrayList<>();
         int limit = 5;
@@ -168,7 +168,7 @@ public class AtelierThesService implements Serializable {
         String preferredIdLangOfTheso;
         for (String idTheso1 : authorizedTheso) {
             
-            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(idTheso1);
+            preferredIdLangOfTheso = preferenceService.getWorkLanguageOfThesaurus(idTheso1);
             if (preferredIdLangOfTheso == null) {
                 preferredIdLangOfTheso = workLanguage.toLowerCase();
             }

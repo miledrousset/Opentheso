@@ -1,13 +1,14 @@
 package fr.cnrs.opentheso.ws.api;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Slf4j
 @Service
@@ -24,7 +26,7 @@ public class D3jsHelper {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -34,7 +36,7 @@ public class D3jsHelper {
 
 
     private int count = 0;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
         count = 0;
@@ -45,7 +47,7 @@ public class D3jsHelper {
         if(StringUtils.isEmpty(idLang)) {
             return null;
         }
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }

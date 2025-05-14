@@ -83,7 +83,7 @@
             <div class="col-12">
                 <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
                         style="width: auto; border: none; min-height: 925px; max-height: 925px; overflow: auto;font-size: 12px;" 
-                        cache="#{roleOnTheso.nodePreference.tree_cache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
+                        cache="#{roleOnTheso.nodePreference.treeCache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}"
                         droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" widgetVar="treeWidget">
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>

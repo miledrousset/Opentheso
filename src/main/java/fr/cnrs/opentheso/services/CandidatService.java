@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.entites.CandidatMessages;
 import fr.cnrs.opentheso.entites.CandidatStatus;
 import fr.cnrs.opentheso.entites.CandidatVote;
 import fr.cnrs.opentheso.entites.NonPreferredTerm;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.ConceptGroupConcept;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
@@ -16,7 +17,7 @@ import fr.cnrs.opentheso.models.candidats.NodeProposition;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
@@ -307,7 +308,7 @@ public class CandidatService {
     /**
      * permet de récupérer les anciens candidats saisies dans l'ancien module uniquement les candidats qui étatient en attente
      */    
-    public String getOldCandidates(String idTheso, int idUser, NodePreference nodePreference) {
+    public String getOldCandidates(String idTheso, int idUser, Preferences nodePreference) {
 
         StringBuilder messages = new StringBuilder();
         

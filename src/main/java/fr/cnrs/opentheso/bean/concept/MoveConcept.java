@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -13,9 +12,7 @@ import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
 import java.io.IOException;
@@ -23,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -71,7 +69,7 @@ public class MoveConcept implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     private String idThesoFrom, idThesoTo;
     
@@ -148,7 +146,7 @@ public class MoveConcept implements Serializable {
         String idArk;
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idThesoTo);
+        var nodePreference = preferenceService.getThesaurusPreferences(idThesoTo);
         for (String idConcept : idConceptsToMove) {
             if(!conceptHelper.moveConceptToAnotherTheso(idConcept, idThesoFrom, idThesoTo)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
@@ -217,7 +215,7 @@ public class MoveConcept implements Serializable {
                     .id(idTheso)
                     .value(idTheso)
                     .build();
-            String idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+            String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
             String title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
             if(StringUtils.isEmpty(title))
                 nodeIdValue.setValue("");

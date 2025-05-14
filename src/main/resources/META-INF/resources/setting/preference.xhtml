@@ -157,7 +157,7 @@
                                                         <h:outputText value="#{langueBean.getMsg('preferences.activateAutoTreeDeployment')}" style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.autoExpandTree}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -171,7 +171,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  /> 
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.treeCache}" style="font-size: 12px;"  />
                                                     </div>
                                                 </div>
                                             </div>
@@ -184,7 +184,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.sortByNotation}" style="font-size: 12px;"  />
                                                     </div>
                                                 </div>
                                             </div>
@@ -301,7 +301,7 @@
                                                                           style="font-size: 14px; font-weight: bold;"/>
                                                         </div>
                                                         <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                            <p:toggleSwitch value="#{preferenceBean.nodePreference.use_deepl_translation}" style="font-size: 12px;" >
+                                                            <p:toggleSwitch value="#{preferenceBean.nodePreference.useDeeplTranslation}" style="font-size: 12px;" >
                                                                 <p:ajax event="change" update="deepl" />
                                                             </p:toggleSwitch>
                                                                 
@@ -309,7 +309,7 @@
                                                     </div>
                                                 </div>
 
-                                                <h:panelGroup id="deeplApiKey" rendered="#{preferenceBean.nodePreference.use_deepl_translation}">
+                                                <h:panelGroup id="deeplApiKey" rendered="#{preferenceBean.nodePreference.useDeeplTranslation}">
                                                     <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                                         <div class="row" style="padding-top: 3px;">
                                                             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">

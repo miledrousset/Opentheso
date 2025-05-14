@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.entites.Info;
 import fr.cnrs.opentheso.repositories.HomePageRepository;
 import fr.cnrs.opentheso.repositories.InfoRepository;
 import jakarta.inject.Inject;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,25 +15,16 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class HomePageService {
 
-    private final String workLanguage;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
     private final LanguageBean languageBean;
     private final InfoRepository infoRepository;
     private final HomePageRepository homePageRepository;
 
-
-    @Inject
-    public HomePageService(@Value("${settings.workLanguage:fr}") String workLanguage,
-                           LanguageBean languageBean,
-                           InfoRepository infoRepository,
-                           HomePageRepository homePageRepository) {
-
-        this.workLanguage = workLanguage;
-        this.languageBean = languageBean;
-        this.infoRepository = infoRepository;
-        this.homePageRepository = homePageRepository;
-    }
 
     public boolean setHomePage(String htmlText, String idLang) {
 

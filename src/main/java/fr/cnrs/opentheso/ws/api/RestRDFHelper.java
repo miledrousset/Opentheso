@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.ws.api;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -15,13 +15,13 @@ import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
@@ -76,7 +76,7 @@ public class RestRDFHelper {
     private AlignmentService alignmentService;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -125,7 +125,7 @@ public class RestRDFHelper {
             return null;
         }
         
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         switch (choix) {
             case CONCEPT:
                 String idConcept = conceptHelper.getIdConceptFromArkId(naan + "/" + idArk, idTheso);    
@@ -165,7 +165,7 @@ public class RestRDFHelper {
     }
     
     public String getAllLinkedConceptsWithOntome__(String idTheso) {
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        Preferences nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -198,7 +198,7 @@ public class RestRDFHelper {
     }
 
     public String getLinkedConceptWithOntome__(String idTheso, String cidocClass) {
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -525,7 +525,7 @@ public class RestRDFHelper {
         idConcept = idConcept.replaceAll("'", "");
         idTheso = idTheso.replaceAll("'", "");
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -543,7 +543,7 @@ public class RestRDFHelper {
         if (ids == null || ids.isEmpty()) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -594,7 +594,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -643,7 +643,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -683,7 +683,7 @@ public class RestRDFHelper {
         if (doi == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -724,7 +724,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -815,7 +815,7 @@ public class RestRDFHelper {
         if (value == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -877,7 +877,7 @@ public class RestRDFHelper {
         if (value == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -946,7 +946,7 @@ public class RestRDFHelper {
         if (value == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1010,7 +1010,7 @@ public class RestRDFHelper {
             var idConcept = conceptHelper.getIdConceptFromArkId(idArk, idTheso);
             if(idConcept == null) continue;
             
-            var nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+            var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
             if (nodePreference == null) continue;
 
             var paths = pathService.getPathOfConcept(idConcept, idTheso);
@@ -1056,7 +1056,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        var nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1133,7 +1133,7 @@ public class RestRDFHelper {
         if(!conceptHelper.isIdExiste(idConcept, idTheso)) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1193,7 +1193,7 @@ public class RestRDFHelper {
         if(!conceptHelper.isIdExiste(idConcept, idTheso)) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1242,7 +1242,7 @@ public class RestRDFHelper {
         if (groups == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1305,11 +1305,9 @@ public class RestRDFHelper {
      * @param idTheso
      * @return skos
      */
-    private String brancheOfGroupAsTree__(
-            
-            String[] groups, String idTheso, String lang) {
+    private String brancheOfGroupAsTree__(String[] groups, String idTheso, String lang) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1436,7 +1434,7 @@ public class RestRDFHelper {
         if (idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1458,7 +1456,7 @@ public class RestRDFHelper {
      */
     private WriteRdf4j getTheso2__ (String idTheso) throws Exception{
         if (idTheso == null) return null;
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) return null;
 
         var skosXmlDocument = new SKOSXmlDocument();
@@ -1471,11 +1469,9 @@ public class RestRDFHelper {
             skosXmlDocument.addGroup(group);
         }
         
-        List<SKOSResource> concepts = exportHelper.getAllConcepts(idTheso,
-                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
+        List<SKOSResource> concepts = exportHelper.getAllConcepts(idTheso, baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
 
-        List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl,
-                nodePreference.getOriginalUri(), nodePreference);
+        List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl, nodePreference.getOriginalUri(), nodePreference);
         for (SKOSResource facette : facettes) {
             skosXmlDocument.addFacet(facette);
         }
@@ -1548,7 +1544,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1564,7 +1560,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -1580,8 +1576,7 @@ public class RestRDFHelper {
      *
      * @return
      */
-    private String getUri(NodePreference nodePreference,
-            NodeAutoCompletion nodeAutoCompletion1, String idTheso) {
+    private String getUri(Preferences nodePreference, NodeAutoCompletion nodeAutoCompletion1, String idTheso) {
         String uri = "";
         if (nodeAutoCompletion1 == null) {
             return uri;
@@ -1624,7 +1619,7 @@ public class RestRDFHelper {
      * @param idConcept
      * @return
      */
-    public String getUri(NodePreference nodePreference, String idConcept, String idTheso) {
+    public String getUri(Preferences nodePreference, String idConcept, String idTheso) {
         String uri;
 
         // Choix de l'URI pour l'export : 

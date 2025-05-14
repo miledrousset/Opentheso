@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,9 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class SelectTheso {
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
 
     // Cette fonction permet de se diriger vers le bon thésaurus en passant par son nom VIA REST ceci permet de gérer
     // les noms de domaines et filtrer les thésaurus dans un parc important

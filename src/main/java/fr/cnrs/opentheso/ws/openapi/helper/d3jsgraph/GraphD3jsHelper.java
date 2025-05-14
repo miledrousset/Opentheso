@@ -1,16 +1,15 @@
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
@@ -19,6 +18,8 @@ import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -42,10 +43,10 @@ public class GraphD3jsHelper {
     private ThesaurusHelper thesaurusHelper;
     
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     private NodeGraphD3js nodeGraphD3js;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     
     public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
@@ -55,7 +56,7 @@ public class GraphD3jsHelper {
     
     public void getGraphByTheso(String idTheso, String idLang, boolean limit){
 
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         uriHelper.setIdTheso(idTheso);
         uriHelper.setNodePreference(nodePreference);
@@ -85,7 +86,7 @@ public class GraphD3jsHelper {
 
     public void getGraphByConcept(String idTheso, String idConcept, String idLang){
         
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         uriHelper.setIdTheso(idTheso);
         uriHelper.setNodePreference(nodePreference);

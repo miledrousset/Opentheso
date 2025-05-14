@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.handlestandard;
 
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.entites.Preferences;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -54,10 +54,10 @@ public class HandleService {
     public HandleService() {
     }
 
-    public void applyNodePreference(NodePreference nodePreference){
+    public void applyNodePreference(Preferences nodePreference){
         serverHandle = nodePreference.getUrlApiHandle();
         pass = nodePreference.getPassHandle();
-        prefix = nodePreference.getPrefixIdHandle(); // exp : 20.500.11859
+        prefix = nodePreference.getPrefixHandle(); // exp : 20.500.11859
         privatePrefix = nodePreference.getPrivatePrefixHandle();
         
         pathKey = admprivPath;//("certificats/admpriv.bin");

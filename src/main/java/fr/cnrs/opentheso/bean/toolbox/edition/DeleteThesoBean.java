@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -10,12 +9,15 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import java.io.IOException;
+
+import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -23,6 +25,7 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Data
+@RequiredArgsConstructor
 @Named(value = "deleteThesoBean")
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
@@ -30,28 +33,13 @@ public class DeleteThesoBean implements Serializable {
     private final SelectedTheso selectedTheso;
     private final RoleOnThesoBean roleOnThesoBean;
     private final ConceptHelper conceptHelper;
-    private final PreferencesHelper preferencesHelper;
+    private final PreferenceService preferenceService;
     private final ThesaurusHelper thesaurusHelper;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
     
     private String idThesoToDelete, valueOfThesoToDelelete, currentIdTheso;
     private boolean isDeleteOn, deletePerennialIdentifiers;
 
-
-    public DeleteThesoBean(SelectedTheso selectedTheso,
-                           RoleOnThesoBean roleOnThesoBean,
-                           ConceptHelper conceptHelper,
-                           PreferencesHelper preferencesHelper,
-                           ThesaurusHelper thesaurusHelper,
-                           UserGroupThesaurusRepository userGroupThesaurusRepository) {
-
-        this.selectedTheso = selectedTheso;
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.conceptHelper = conceptHelper;
-        this.preferencesHelper = preferencesHelper;
-        this.thesaurusHelper = thesaurusHelper;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-    }
     
     public void init() {
         idThesoToDelete = null;
@@ -76,7 +64,7 @@ public class DeleteThesoBean implements Serializable {
     public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
 
-        var nodePreference = preferencesHelper.getThesaurusPreferences(idThesoToDelete);
+        var nodePreference = preferenceService.getThesaurusPreferences(idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);

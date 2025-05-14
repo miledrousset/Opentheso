@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.RoleRepository;
@@ -9,17 +10,16 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
+import fr.cnrs.opentheso.services.PreferenceService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -60,7 +60,7 @@ public class RoleOnThesoBean implements Serializable {
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserHelper userHelper;
     private final ThesaurusHelper thesaurusHelper;
-    private final PreferencesHelper preferencesHelper;
+    private final PreferenceService preferenceService;
     private final RoleRepository roleRepository;
     private final ThesaurusRepository thesaurusRepository;
     private final UserGroupLabelRepository userGroupLabelRepository;
@@ -73,7 +73,7 @@ public class RoleOnThesoBean implements Serializable {
     private Thesaurus thesoInfos;
     private boolean isSuperAdmin, isAdminOnThisTheso,isManagerOnThisTheso, isContributorOnThisTheso, isNoRole;
     private List<String> selectedThesoForSearch, authorizedTheso, authorizedThesoAsAdmin;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private NodeUserRoleGroup nodeUserRoleGroup;
     private TreeNode<NodeIdValue> root;
 
@@ -83,10 +83,10 @@ public class RoleOnThesoBean implements Serializable {
             return;
         }
 
-        nodePreference = preferencesHelper.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
+        nodePreference = preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
         if (nodePreference == null) { // cas où il n'y a pas de préférence pour ce thésaurus, il faut les créer
-            preferencesHelper.initPreferences(selectedTheso.getCurrentIdTheso(), workLanguage);
-            nodePreference = preferencesHelper.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
+            preferenceService.initPreferences(selectedTheso.getCurrentIdTheso(), workLanguage);
+            nodePreference = preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
         }
     }
 
@@ -95,10 +95,10 @@ public class RoleOnThesoBean implements Serializable {
             return;
         }
 
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) { // cas où il n'y a pas de préférence pour ce thésaurus, il faut les créer
-            preferencesHelper.initPreferences(idTheso, workLanguage);
-            nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+            preferenceService.initPreferences(idTheso, workLanguage);
+            nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         }
     }
 
@@ -239,7 +239,7 @@ public class RoleOnThesoBean implements Serializable {
         listTheso = new ArrayList<>();
         
         for (String idTheso1 : authorizedTheso) {
-            String preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(idTheso1);
+            String preferredIdLangOfTheso = preferenceService.getWorkLanguageOfThesaurus(idTheso1);
             if (StringUtils.isEmpty(preferredIdLangOfTheso)) {
                 preferredIdLangOfTheso = workLanguage.toLowerCase();
             }
@@ -254,7 +254,7 @@ public class RoleOnThesoBean implements Serializable {
                 thesoModel.setNom(title + " (" + idTheso1 + ")");
             }
 
-            thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(idTheso1));
+            thesoModel.setDefaultLang(preferenceService.getWorkLanguageOfThesaurus(idTheso1));
             
             listTheso.add(thesoModel);
             

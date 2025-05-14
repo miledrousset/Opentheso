@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.entites.ExternalResource;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -17,7 +18,7 @@ import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -117,7 +118,7 @@ public class CsvImportHelper {
     private final static String SOUS_SEPERATEUR = "@@";
 
     private String message = "";
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private String langueSource, formatDate;
     private int idUser;
     @Autowired
@@ -198,7 +199,7 @@ public class CsvImportHelper {
     }
 
     public void addSingleConcept(String idTheso, String idConceptPere, String idGroup, int idUser,
-            CsvReadHelper.ConceptObject conceptObject, NodePreference nodePreference) {
+            CsvReadHelper.ConceptObject conceptObject, Preferences nodePreference) {
         boolean first = true;
         String idConcept = null;
         String idTerm = null;

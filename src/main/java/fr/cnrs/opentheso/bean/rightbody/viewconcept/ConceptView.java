@@ -343,11 +343,8 @@ public class ConceptView implements Serializable {
             if (roleOnThesoBean.getNodePreference().isBreadcrumb())
                 pathOfConcept2(idTheso, idConcept, idLang);
 
-            if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
-                tree.expandTreeToPath(
-                        idConcept,
-                        idTheso,
-                        idLang);
+            if (roleOnThesoBean.getNodePreference().isAutoExpandTree()) {
+                tree.expandTreeToPath(idConcept, idTheso, idLang);
                 if (PrimeFaces.current().isAjaxRequest()) {
                     PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
                     PrimeFaces.current().ajax().update("containerIndex:languageSelect");
@@ -1027,7 +1024,7 @@ public class ConceptView implements Serializable {
     }
 
     public String margeTranslateNotes(){
-        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUse_deepl_translation())
+        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUseDeeplTranslation())
             return "col-xl-2 col-lg-2 col-md-2 col-sm-2";
         else
             return "col-xl-1 col-lg-1 col-md-1 col-sm-1";

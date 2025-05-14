@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.entites.Preferences;
+
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
@@ -44,10 +44,10 @@ public class CopyAndPasteBetweenThesoService {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     public boolean pasteBranchLikeNT(String currentIdTheso, String currentIdConcept, String fromIdTheso,
-                                     String fromIdConcept, String identifierType, int idUser, NodePreference nodePreference) {
+                                     String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
 
         // récupération des concepts du thésaurus de départ
         SKOSXmlDocument sKOSXmlDocument = getBranch(fromIdTheso, fromIdConcept);
@@ -95,7 +95,7 @@ public class CopyAndPasteBetweenThesoService {
 
     
     public boolean pasteBranchToRoot(String currentIdTheso, String fromIdTheso,
-            String fromIdConcept, String identifierType, int idUser, NodePreference nodePreference) {
+            String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
 
         // récupération des concepts du thésaurus de départ
         SKOSXmlDocument sKOSXmlDocument = getBranch(fromIdTheso, fromIdConcept);
@@ -124,7 +124,7 @@ public class CopyAndPasteBetweenThesoService {
 
     private SKOSXmlDocument getBranch(String fromIdTheso, String fromIdConcept) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(fromIdTheso);
+        var nodePreference = preferenceService.getThesaurusPreferences(fromIdTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -139,7 +139,7 @@ public class CopyAndPasteBetweenThesoService {
         return skosXmlDocument;
     }
 
-    private boolean addBranch(SKOSXmlDocument sKOSXmlDocument, NodePreference nodePreference,
+    private boolean addBranch(SKOSXmlDocument sKOSXmlDocument, Preferences nodePreference,
             String idTheso, int idUser, String identifierType) {
 
         int idGroup = -1;

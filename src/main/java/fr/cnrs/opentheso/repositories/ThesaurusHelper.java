@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.utils.StringUtils;
 
 import fr.cnrs.opentheso.utils.ToolsHelper;
@@ -35,7 +36,7 @@ public class ThesaurusHelper implements Serializable {
     private DataSource dataSource;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     private String identifierType = "2";
 
@@ -74,7 +75,7 @@ public class ThesaurusHelper implements Serializable {
         List<String> tabIdThesaurus = getAllIdOfThesaurus(withPrivateTheso);
         String idLang;
         for (String idTheso : tabIdThesaurus) {
-            idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+            idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso);
             nodeIdValue.setValue(getTitleOfThesaurus(idTheso, idLang));

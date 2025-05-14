@@ -250,7 +250,7 @@ public class AlignmentService {
                 .toList();
     }
 
-    public void updateAlignmentUrlStatut(int idAlignment, boolean newStatut, String idConcept, String idThesaurus) {
+    public boolean updateAlignmentUrlStatut(int idAlignment, boolean newStatut, String idConcept, String idThesaurus) {
 
         log.info("Mise à jour du status de l'URL de l'alignement id {}, id Concept {} et id thesaurus {}", idAlignment, idConcept, idThesaurus);
         var alignement = alignementRepository.findByInternalIdThesaurusAndInternalIdConceptAndId(idThesaurus, idConcept, idAlignment);

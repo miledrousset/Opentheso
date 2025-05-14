@@ -57,7 +57,7 @@
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
                         <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
 
-                        <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
+                        <p:commandButton rendered="#{!roleOnTheso.nodePreference.autoExpandTree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeFullConcept.identifier,
                                                    selectedTheso.currentIdTheso, conceptView.nodeFullConcept.prefLabel.idLang)}"

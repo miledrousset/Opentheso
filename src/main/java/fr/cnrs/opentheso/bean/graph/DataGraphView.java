@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.graph;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
@@ -16,6 +15,7 @@ import java.util.Properties;
 
 import fr.cnrs.opentheso.models.graphs.GraphObject;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.graphs.GraphService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -59,9 +59,6 @@ public class DataGraphView implements Serializable {
     private GraphService graphService;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
     private SearchHelper searchHelper;
 
     @Value("${neo4j.serverName}")
@@ -100,6 +97,9 @@ public class DataGraphView implements Serializable {
     @Autowired
     private LanguageBean langueBean;
 
+    @Autowired
+    private PreferenceService preferenceService;
+
     @jakarta.inject.Inject
     public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
         this.selectedTheso = selectedTheso;
@@ -124,7 +124,7 @@ public class DataGraphView implements Serializable {
      */
     public List<NodeSearchMini> getAutoComplete(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        String idLang = preferencesHelper.getWorkLanguageOfTheso(selectedIdTheso);
+        String idLang = preferenceService.getWorkLanguageOfThesaurus(selectedIdTheso);
         
         if (selectedIdTheso != null && idLang != null) {
             liste = searchHelper.searchAutoCompletionForRelation(value, idLang, selectedIdTheso, true);
@@ -150,7 +150,7 @@ public class DataGraphView implements Serializable {
     // pour afficher la valeur des identifiants de thésaurus et concept
     public void onSelectTheso(AjaxBehaviorEvent e) {
         String idTheso = ((Chip) e.getSource()).getLabel();
-        String idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+        String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
         String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
         FacesContext.getCurrentInstance().addMessage(null, message);
@@ -164,7 +164,7 @@ public class DataGraphView implements Serializable {
         String idTheso = idValue[0].trim();
         String idConcept = idValue[1].trim();
 
-        String idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+        String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
         String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
         String nameOfConcept = conceptHelper.getLexicalValueOfConcept(idConcept,idTheso,idLang);
         FacesMessage message1 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);

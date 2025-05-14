@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.utils.ToolsHelper;
 import jakarta.faces.model.SelectItem;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
@@ -19,7 +20,7 @@ import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.models.group.NodeGroupType;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.concept.NodeMetaData;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -46,7 +47,7 @@ public class GroupHelper implements Serializable {
     @Autowired
     private HandleHelper handleHelper;
 
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private String message;
     
     /**
@@ -375,7 +376,7 @@ public class GroupHelper implements Serializable {
         String idArk = getIdArkOfGroup(idGroup, idTheso);
         
         if(StringUtils.isEmpty(idArk)) {
-            idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+            idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
             idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
         }
         return updateArkIdOfGroup(idGroup, idTheso, idArk);
@@ -2868,11 +2869,11 @@ public class GroupHelper implements Serializable {
         }
     }
 
-    public NodePreference getNodePreference() {
+    public Preferences getNodePreference() {
         return nodePreference;
     }
 
-    public void setNodePreference(NodePreference nodePreference) {
+    public void setNodePreference(Preferences nodePreference) {
         this.nodePreference = nodePreference;
     }
 

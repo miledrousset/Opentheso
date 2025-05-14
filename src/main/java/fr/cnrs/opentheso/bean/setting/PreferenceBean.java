@@ -1,14 +1,13 @@
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.HomePageService;
+import fr.cnrs.opentheso.services.PreferenceService;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 
@@ -17,37 +16,28 @@ import java.io.Serializable;
 import java.util.List;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
 
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "preferenceBean")
 public class PreferenceBean implements Serializable {
 
-    private RoleOnThesoBean roleOnThesoBean;
-    private SelectedTheso selectedTheso;
-    private ThesaurusHelper thesaurusHelper;
-    private PreferencesHelper preferencesHelper;
-    private HomePageService homePageService;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final SelectedTheso selectedTheso;
+    private final ThesaurusHelper thesaurusHelper;
+    private final PreferenceService preferenceService;
+    private final HomePageService homePageService;
 
     private String uriType;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private List<NodeLangTheso> languagesOfTheso;
 
 
-    @Inject
-    public PreferenceBean(RoleOnThesoBean roleOnThesoBean, SelectedTheso selectedTheso,
-                          ThesaurusHelper thesaurusHelper, PreferencesHelper preferencesHelper,
-                          HomePageService homePageService) {
-
-        this.roleOnThesoBean = roleOnThesoBean;
-        this.selectedTheso = selectedTheso;
-        this.thesaurusHelper = thesaurusHelper;
-        this.preferencesHelper = preferencesHelper;
-        this.homePageService = homePageService;
-    }
 
     public void init() {
         if (selectedTheso.getCurrentIdTheso() == null) {
@@ -73,17 +63,17 @@ public class PreferenceBean implements Serializable {
             case "ark":
                 nodePreference.setUseArkLocal(false);
                 nodePreference.setUseHandle(false);
-                preferencesHelper.setUseArk(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
+                preferenceService.setUseArk(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());
                 break;
             case "arklocal":
                 nodePreference.setUseArk(false);
-                nodePreference.setUseHandle(false);  
-                preferencesHelper.setUseArkLocal(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
+                nodePreference.setUseHandle(false);
+                preferenceService.setUseArkLocal(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());
                 break;
             case "handle":
                 nodePreference.setUseArk(false);
-                nodePreference.setUseArkLocal(false);      
-                preferencesHelper.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
+                nodePreference.setUseArkLocal(false);
+                preferenceService.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());
                 break;                
             default:
                 break;
@@ -98,7 +88,7 @@ public class PreferenceBean implements Serializable {
 
         setUriType();
         
-        if (!preferencesHelper.updateAllPreferenceUser(nodePreference, selectedTheso.getCurrentIdTheso())) {
+        if (!preferenceService.updateAllPreferenceUser(nodePreference)) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Erreur d'enregistrement des préférences !!!"));
             PrimeFaces.current().ajax().update("messageIndex");

@@ -38,7 +38,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
 import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
@@ -75,12 +74,12 @@ public class PropositionService {
     private final NoteHelper noteHelper;
     private final UserHelper userHelper;
     private final TermRepository termRepository;
-    private final PreferencesHelper preferencesHelper;
     private final PropositionModificationRepository propositionModificationRepository;
     private final PropositionModificationDetailRepository propositionModificationDetailRepository;
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final NonPreferredTermService nonPreferredTermService;
     private final TermService termService;
+    private final PreferenceService preferenceService;
     private final PreferredTermRepository preferredTermRepository;
 
 
@@ -935,7 +934,7 @@ public class PropositionService {
     public void createProposition(PropositionFromApi proposition, int userId) {
 
         var user = userHelper.getUser(userId);
-        var thesaurusLang = preferencesHelper.getWorkLanguageOfTheso(proposition.getIdTheso());
+        var thesaurusLang = preferenceService.getWorkLanguageOfThesaurus(proposition.getIdTheso());
 
         int propositionId = propositionModificationRepository.save(PropositionModification.builder()
                         .nom(user.getName())

@@ -1,12 +1,13 @@
 package fr.cnrs.opentheso.ws.handle;
 
 import java.util.ArrayList;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.utils.ToolsHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Slf4j
 @Data
@@ -23,7 +24,7 @@ public class HandleHelper {
      * @param privateUri
      * @return
      */
-    public String addIdHandle(String privateUri, NodePreference nodePreference) {
+    public String addIdHandle(String privateUri, Preferences nodePreference) {
         if (nodePreference == null) {
             return null;
         }
@@ -32,8 +33,7 @@ public class HandleHelper {
         }
 
         String newId = getNewHandleId(nodePreference);
-        newId = nodePreference.getPrefixIdHandle() + "/"
-                + nodePreference.getPrivatePrefixHandle() + newId;
+        newId = nodePreference.getPrefixHandle() + "/" + nodePreference.getPrivatePrefixHandle() + newId;
 
         log.info("avant l'appel à HandleClient");
         String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
@@ -56,7 +56,7 @@ public class HandleHelper {
      * permet de genérer un identifiant unique pour Handle on controle la
      * présence de l'identifiant sur handle.net si oui, on regénère un autre.
      */
-    private String getNewHandleId(NodePreference nodePreference) {
+    private String getNewHandleId(Preferences nodePreference) {
 
         boolean duplicateId = true;
         String idHandle = null;
@@ -64,12 +64,12 @@ public class HandleHelper {
         while (duplicateId) {
             idHandle = ToolsHelper.getNewId(10, false, false);
             if (!handleClient.isHandleExist(nodePreference.getUrlApiHandle(),
-                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
+                    nodePreference.getPrefixHandle() + "/" + idHandle)) {
                 duplicateId = false;
             }
             if (!handleClient.isHandleExist(
                     " https://hdl.handle.net/",
-                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
+                    nodePreference.getPrefixHandle() + "/" + idHandle)) {
                 duplicateId = false;
             }
         }
@@ -80,7 +80,7 @@ public class HandleHelper {
      * Permet de supprimer un identifiant Handle de la
      * plateforme (handle.net) via l'API REST
      */
-    public boolean deleteIdHandle(String idHandle, NodePreference nodePreference) {
+    public boolean deleteIdHandle(String idHandle, Preferences nodePreference) {
         /**
          * récupération du code Handle via WebServices
          *
@@ -111,7 +111,7 @@ public class HandleHelper {
      * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
      * suite à une suppression d'un thésaurus
      */
-    public boolean deleteAllIdHandle(ArrayList<String> tabIdHandle, NodePreference nodePreference) {
+    public boolean deleteAllIdHandle(ArrayList<String> tabIdHandle, Preferences nodePreference) {
         if (nodePreference == null) {
             return false;
         }

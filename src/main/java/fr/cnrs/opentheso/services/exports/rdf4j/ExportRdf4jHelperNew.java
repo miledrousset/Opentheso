@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.services.exports.rdf4j;
 
 import fr.cnrs.opentheso.entites.CandidatStatus;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
@@ -9,7 +10,7 @@ import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.concept.NodeConceptExport;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -75,7 +76,7 @@ public class ExportRdf4jHelperNew {
     private CandidatStatusRepository candidatStatusRepository;
 
 
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private SKOSXmlDocument skosXmlDocument;
    
     private String messages;
@@ -88,7 +89,7 @@ public class ExportRdf4jHelperNew {
         superGroupHashMap = new HashMap();
     }
 
-    public boolean setInfos(NodePreference nodePreference) {
+    public boolean setInfos(Preferences nodePreference) {
         skosXmlDocument = new SKOSXmlDocument();
         this.nodePreference = nodePreference;
         messages = "";
@@ -276,7 +277,7 @@ public class ExportRdf4jHelperNew {
      * @param idTheso
      * @param nodePreference
      */
-    public SKOSResource exportThesoV2(String idTheso, NodePreference nodePreference) {
+    public SKOSResource exportThesoV2(String idTheso, Preferences nodePreference) {
         this.nodePreference = nodePreference;
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
         SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.CONCEPT_SCHEME);

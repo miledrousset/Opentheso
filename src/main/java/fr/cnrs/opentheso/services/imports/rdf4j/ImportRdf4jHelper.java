@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.services.imports.rdf4j;
 import fr.cnrs.opentheso.entites.CandidatStatus;
 import fr.cnrs.opentheso.entites.ExternalResource;
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -14,7 +15,7 @@ import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
@@ -43,6 +44,7 @@ import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
@@ -51,7 +53,6 @@ import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
@@ -121,7 +122,7 @@ public class ImportRdf4jHelper {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private PreferencesHelper preferencesHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
     private ExternalResourcesRepository externalResourcesRepository;
@@ -163,7 +164,7 @@ public class ImportRdf4jHelper {
     private String prefixHandle;
     private String prefixDoi;
 
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private StringBuilder message;
 
     HashMap<String, String> memberHashMap = new HashMap<>();
@@ -305,8 +306,8 @@ public class ImportRdf4jHelper {
     private void setPreferences(String idTheso, String uri) {
 
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(idTheso, langueSource);
-            nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+            preferenceService.initPreferences(idTheso, langueSource);
+            nodePreference = preferenceService.getThesaurusPreferences(idTheso);
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
@@ -319,7 +320,7 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
-            preferencesHelper.updateAllPreferenceUser(nodePreference, idTheso);
+            preferenceService.updateAllPreferenceUser(nodePreference);
 
         } else {
             nodePreference.setCheminSite(uri);
@@ -335,7 +336,7 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
-            preferencesHelper.addPreference(nodePreference, idTheso);
+            preferenceService.addPreference(nodePreference, idTheso);
         }
     }
 
@@ -348,7 +349,7 @@ public class ImportRdf4jHelper {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
-            preferencesHelper.updateAllPreferenceUser(nodePreference, idTheso);
+            preferenceService.updateAllPreferenceUser(nodePreference);
         }
     }
 

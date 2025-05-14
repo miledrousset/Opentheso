@@ -223,7 +223,7 @@
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                     oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                     action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'note')}"
                                                     icon="fa-solid fa-language"/>                                          
@@ -257,7 +257,7 @@
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'changeNote')}"
                                                 icon="fa-solid fa-language"/>                                      
@@ -288,7 +288,7 @@
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="fas fa-cog"
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'definition')}"
                                                 icon="fa-solid fa-language"/>                                      
@@ -323,7 +323,7 @@
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'editorialNote')}"
                                                 icon="fa-solid fa-language"/>                                      
@@ -357,7 +357,7 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'example')}"
                                                 icon="fa-solid fa-language"/>                                     
@@ -392,7 +392,7 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'historyNote')}"
                                                 icon="fa-solid fa-language"/>                                     
@@ -427,7 +427,7 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
-                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.useDeeplTranslation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
                                                 action="#{deeplTranslate.initNoteToTranslate(editFacet.facetSelected.idFacet,'scopeNote')}"
                                                 icon="fa-solid fa-language"/>                                     
