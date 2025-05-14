@@ -14,12 +14,10 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
-import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
@@ -31,6 +29,7 @@ import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
@@ -145,9 +144,6 @@ public class ImportFileBean implements Serializable {
     private ImageService imageService;
 
     @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
     private ImportRdf4jHelper importRdf4jHelper;
 
     @Autowired
@@ -155,6 +151,9 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private NonPreferredTermService nonPreferredTermService;
+
+    @Autowired
+    private AlignmentService alignmentService;
 
     private double progress = 0;
     private double progressStep = 0;
@@ -181,8 +180,6 @@ public class ImportFileBean implements Serializable {
     private NodeTree racine;
 
     private String selectedIdentifierImportAlign;
-
-    private ArrayList<NodeNote> nodeNotes;
 
     private String formatDate = "yyyy-MM-dd";
     private String uri;
@@ -256,9 +253,6 @@ public class ImportFileBean implements Serializable {
             langs.clear();
         }
 
-        if (nodeNotes != null) {
-            nodeNotes.clear();
-        }
         idLang = null;
         selectedConcept = null;
         alignmentSource = null;
@@ -296,16 +290,8 @@ public class ImportFileBean implements Serializable {
         }
     }
 
-    public void actionChoiceLang(String lang) {
-        //     selectedLang = lang;
-    }
-
     public void actionChoiceIdentifier() {
         setSelectedIdentifier(selectedIdentifierImportAlign);
-    }
-
-    public void actionToggle() {
-        //   this.clearBefore = clearBefore;
     }
 
     /**
@@ -1530,7 +1516,7 @@ public class ImportFileBean implements Serializable {
 
         ArrayList<NodeIdValue> listAlignments = new ArrayList<>();
         ArrayList<String> branchIds;
-        ArrayList<NodeAlignmentSmall> nodeAlignmentSmalls;
+        List<NodeAlignmentSmall> nodeAlignmentSmalls;
         try {
             if (StringUtils.isEmpty(selectedConcept)) {
                 // on exporte tous les alignements
@@ -1546,7 +1532,7 @@ public class ImportFileBean implements Serializable {
             }
             if (branchIds != null) {
                 for (String idConcept : branchIds) {
-                    nodeAlignmentSmalls = alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idTheso);
+                    nodeAlignmentSmalls = alignmentService.getAllAlignmentsOfConcept(idConcept, idTheso);
                     if (!nodeAlignmentSmalls.isEmpty()) {
                         for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentSmalls) {
                             NodeIdValue nodeIdValue = new NodeIdValue();
@@ -2725,7 +2711,7 @@ public class ImportFileBean implements Serializable {
                     nodeAlignment.setInternal_id_thesaurus(selectedTheso.getCurrentIdTheso());
                     nodeAlignment.setAlignement_id_type(nodeAlignmentSmall.getAlignement_id_type());
                     nodeAlignment.setUri_target(nodeAlignmentSmall.getUri_target());
-                    if (alignmentHelper.addNewAlignment(nodeAlignment)) {
+                    if (alignmentService.addNewAlignment(nodeAlignment)) {
                         total++;
                     }
                 }
@@ -2792,10 +2778,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
-                    if (alignmentHelper.deleteAlignmentByUri(
-                            nodeIdValue.getValue().trim(),
-                            idConcept,
-                            selectedTheso.getCurrentIdTheso())) {
+                    if (alignmentService.deleteAlignmentByUri(nodeIdValue.getValue().trim(), idConcept, selectedTheso.getCurrentIdTheso())) {
                         total++;
                     }
                 }

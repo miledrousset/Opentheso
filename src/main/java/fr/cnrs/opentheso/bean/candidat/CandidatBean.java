@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -10,7 +11,6 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
@@ -33,6 +33,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.CandidatService;
 
@@ -98,11 +99,11 @@ public class CandidatBean implements Serializable {
     private final GroupHelper groupHelper;
     private final ConceptHelper conceptHelper;
     private final CandidatService candidatService;
-    private final AlignmentHelper alignmentHelper;
     private final TermeDao termeDao;
     private final ThesaurusHelper thesaurusHelper;
     private final TermRepository termRepository;
     private final TermService termService;
+    private final AlignmentService alignmentService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
@@ -368,16 +369,14 @@ public class CandidatBean implements Serializable {
 
     public void deleteAlignment(NodeAlignment nodeAlignment) {
 
-        if (!alignmentHelper.deleteAlignment(
-                nodeAlignment.getId_alignement(),
-                selectedTheso.getCurrentIdTheso())) {
+        if (!alignmentService.deleteAlignment(nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
+        candidatSelected.setAlignments(alignmentService.getAllAlignmentOfConcept(
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement supprimé avec succès");
@@ -986,11 +985,9 @@ public class CandidatBean implements Serializable {
     }
 
     public void deleteAlignement() {
-        alignmentHelper.deleteAlignment(
-                alignementSelected.getId_alignement(),
-                selectedTheso.getCurrentIdTheso());
+        alignmentService.deleteAlignment(alignementSelected.getId_alignement(), selectedTheso.getCurrentIdTheso());
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
+        candidatSelected.setAlignments(alignmentService.getAllAlignmentOfConcept(
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement supprimé avec succès !");
@@ -999,16 +996,17 @@ public class CandidatBean implements Serializable {
     }
 
     public void updateAlignement() {
-        alignmentHelper.updateAlignment(
-                alignementSelected.getId_alignement(),
-                alignementSelected.getConcept_target(),
-                alignementSelected.getThesaurus_target(),
-                alignementSelected.getUri_target(),
-                alignementSelected.getAlignement_id_type(),
-                candidatSelected.getIdConcepte(),
-                selectedTheso.getCurrentIdTheso());
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
+        var alignementElement = AlignementElement.builder()
+                .idAlignment(alignementSelected.getId_alignement())
+                .alignement_id_type(alignementSelected.getAlignement_id_type())
+                .conceptTarget(alignementSelected.getConcept_target())
+                .thesaurus_target(alignementSelected.getThesaurus_target())
+                .targetUri(alignementSelected.getUri_target())
+                .build();
+        alignmentService.updateAlignement(alignementElement, candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso());
+
+        candidatSelected.setAlignments(alignmentService.getAllAlignmentOfConcept(
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement mise à jour avec succès !");

@@ -1,12 +1,12 @@
 package fr.cnrs.opentheso.services.alignements;
 
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
+import fr.cnrs.opentheso.services.AlignmentService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,12 @@ public class AlignementAutomatique {
     private DataSource dataSource;
 
     @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
+    @Autowired
+    private AlignmentService alignmentService;
 
 
     public List<NodeAlignment> searchAlignementsAutomatique(String idTheso, String idCurrentLang,
@@ -61,7 +60,7 @@ public class AlignementAutomatique {
             //Supprimer l'alignement déjà ajouté dans la liste des alignements proposés
             idsAndValues = idsAndValues.stream()
                     .peek(element -> {
-                        var alignements = alignmentHelper.getAllAlignmentOfConcept(element.getId(), idTheso)
+                        var alignements = alignmentService.getAllAlignmentOfConcept(element.getId(), idTheso)
                                 .stream()
                                 .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
                                         || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())

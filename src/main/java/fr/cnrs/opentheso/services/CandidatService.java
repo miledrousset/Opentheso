@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
@@ -64,7 +63,6 @@ public class CandidatService {
     private final DomaineDao domaineDao;
     private final ConceptHelper conceptHelper;
     private final TermeDao termeDao;
-    private final AlignmentHelper alignmentHelper;
     private final RelationDao relationDao;
 
     private final ImageService imageService;
@@ -81,6 +79,7 @@ public class CandidatService {
     private final TermRepository termRepository;
     private final NoteRepository noteRepository;
     private final TermService termService;
+    private final AlignmentService alignmentService;
 
 
     /**
@@ -101,7 +100,7 @@ public class CandidatService {
             var noteVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel());
             candidatDto.setNbrNoteVote(CollectionUtils.isEmpty(noteVotes) ? 0 : noteVotes.size());
 
-            candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatDto.getIdConcepte(), idThesaurus));
+            candidatDto.setAlignments(alignmentService.getAllAlignmentOfConcept(candidatDto.getIdConcepte(), idThesaurus));
         });
         return candidatList;
     }    
@@ -247,7 +246,7 @@ public class CandidatService {
                 candidatSelected.getIdThesaurus(), candidatSelected.getUserId(), VoteType.CANDIDAT.getLabel());
         candidatSelected.setVoted(CollectionUtils.isNotEmpty(votes));
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatSelected.getIdConcepte(), idThesaurus));
+        candidatSelected.setAlignments(alignmentService.getAllAlignmentOfConcept(candidatSelected.getIdConcepte(), idThesaurus));
         candidatSelected.setImages(imageService.getAllExternalImages(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte()));
     }
 
@@ -288,9 +287,9 @@ public class CandidatService {
             conceptRepository.setStatus("D", candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
             conceptRepository.setTopConceptTag(candidatDto.getTermesGenerique().isEmpty(), candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
 
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
     
     public boolean rejectCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
@@ -300,9 +299,9 @@ public class CandidatService {
             candidatStatus.get().setMessage(adminMessage);
             candidatStatus.get().setIdUserAdmin(idUser);
             candidatStatusRepository.save(candidatStatus.get());
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }     
     
     /**

@@ -25,13 +25,14 @@ import fr.cnrs.opentheso.client.alignement.IdRefHelper;
 import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.AlignmentSourceService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.TermService;
@@ -52,8 +53,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -69,148 +70,73 @@ import org.primefaces.PrimeFaces;
 
 @Slf4j
 @Data
-@Named(value = "alignmentBean")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "alignmentBean")
 public class AlignmentBean implements Serializable {
 
-    @Autowired
-    private ConceptView conceptView;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private SelectedTheso selectedTheso;
-
-    @Autowired
-    private ConceptView conceptBean;
-
-    @Autowired
-    private AlignmentManualBean alignmentManualBean;
-
-    @Autowired
-    private LanguageBean languageBean;
-
-    @Autowired
-    private CurrentUser currentUser;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private AlignementAutomatique alignementAutomatique;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private PreferredTermRepository preferredTermRepository;
-
-    @Autowired
-    private TermRepository termRepository;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private GpsService gpsService;
-
-    private boolean withLang;
-    private boolean withNote;
-    private boolean withImage;
+    private final ConceptView conceptView;
+    private final ImageService imageService;
+    private final SelectedTheso selectedTheso;
+    private final ConceptView conceptBean;
+    private final AlignmentManualBean alignmentManualBean;
+    private final LanguageBean languageBean;
+    private final CurrentUser currentUser;
+    private final ThesaurusHelper thesaurusHelper;
+    private final ConceptHelper conceptHelper;
+    private final AlignementAutomatique alignementAutomatique;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final PreferredTermRepository preferredTermRepository;
+    private final TermRepository termRepository;
+    private final NoteHelper noteHelper;
+    private final GpsService gpsService;
+    private final AlignmentService alignmentService;
+    private final TermService termService;
+    private final AlignmentSourceService alignementSourceService;
 
     private boolean isViewResult = true;
-    private boolean isViewSelection = false;
+    private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible,
+            viewSetting, isNameAlignment, viewAddNewSource, withLang, withNote, withImage, isViewSelection;
+    private int selectedAlignementType, alignementResultSize = 3;
+    private String selectedAlignement, nom, prenom, idConceptSelectedForAlignment, conceptValueForAlignment,
+            alignementResult, alertWikidata, mode, manualAlignmentUri;
 
-    private NodeAlignment alignementSelect;
-    private NodeLangTheso nodeLangTheso;
-
-    private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible;
-    private List<NodeAlignment> allAlignementFound, selectAlignementForAdd;
-    private NodeAlignment selectOneAlignementForAdd;
-
-    private boolean viewSetting = false;
-    private boolean viewAddNewSource = false;
-
-    private ArrayList<AlignementSource> alignementSources;
-    private String selectedAlignement;
     private AlignementSource alignementSource, selectedAlignementSource;
-    private List<NodeAlignment> listAlignValues;
-    private ArrayList<AlignementElement> allignementsList, filteredAlignement;
-    private AlignementElement selectedLastPositionReportDtos;
-
-    private NodeAlignment selectedNodeAlignment;
-    private ArrayList<Map.Entry<String, String>> alignmentTypes;
-    private int selectedAlignementType;
-
-    private String nom;
-    private String prenom;
-    private boolean isNameAlignment = false; // pour afficher les nom et prénom
     private AlignementElement alignementElementSelected = new AlignementElement();
-
-    private List<String> thesaurusUsedLanguageWithoutCurrentLang;
-    private List<String> thesaurusUsedLanguage;
-
-    // permet de gérer le flux des concepts 10 par 10
-    private ArrayList<String> allIdsOfBranch;
-
-    private ArrayList<NodeIdValue> idsAndValues;
-
-    private ArrayList<String> idsToGet;
-    private String idConceptSelectedForAlignment;
-    private String conceptValueForAlignment;
-    private int counter = 0; // initialisation du compteur
+    private AlignementElement selectedLastPositionReportDtos;
+    private NodeAlignment selectOneAlignementForAdd, selectedNodeAlignment, alignementSelect;
+    private NodeLangTheso nodeLangTheso;
 
     private List<NodeTermTraduction> nodeTermTraductions;
     private List<NodeNote> nodeNotes;
     private List<NodeImage> nodeImages;
-
-    // résultat des alignements
-    private ArrayList<SelectedResource> traductionsOfAlignment;
-    private ArrayList<SelectedResource> descriptionsOfAlignment;
-    private ArrayList<SelectedResource> imagesOfAlignment;
-    private ArrayList<NodeAlignmentSmall> nodeAlignmentSmall;
+    private List<NodeIdValue> idsAndValues;
+    private List<String> allIdsOfBranch, idsToGet;
+    private List<String> thesaurusUsedLanguageWithoutCurrentLang, thesaurusUsedLanguage;
+    private List<NodeAlignment> existingAlignments;
+    private List<SelectedResource> traductionsOfAlignment, descriptionsOfAlignment, imagesOfAlignment;
+    private List<NodeAlignmentSmall> nodeAlignmentSmall;
+    private List<NodeAlignment> allAlignementFound, selectAlignementForAdd, listAlignValues;
+    private List<AlignementElement> allignementsList, filteredAlignement;
+    private List<AlignementSource> alignementSources;
+    private List<Map.Entry<String, String>> alignmentTypes;
 
     private boolean isSelectedAllLang = true;
     private boolean isSelectedAllDef = true;
     private boolean isSelectedAllImages = true;
-
-    private boolean alignmentInProgress = false;
-
-    // resultat de l'alignement
-    private String alignementResult = null;
-    private boolean error;
-
-    private String alertWikidata;
-
-    private String mode;
-
-    private int alignementResultSize = 3;
-
-    //les alignements existants
-    private ArrayList<NodeAlignment> existingAlignments;
+    private boolean alignmentInProgress, error;
 
 
-    /// pour l'alignement manuel en cas de non réponse
-    private String manualAlignmentUri;
-    @Autowired
-    private TermService termService;
 
     public void deleteAlignment(AlignementElement alignement) {
-        alignmentHelper.deleteAlignment(
-                alignement.getIdAlignment(),
-                selectedTheso.getCurrentIdTheso());
+
+        log.info("Suppression de l'alignement avec id {} et situé dans le thésaurus id {}",
+                alignement.getIdAlignment(), selectedTheso.getCurrentIdTheso());
+        alignmentService.deleteAlignment(alignement.getIdAlignment(), selectedTheso.getCurrentIdTheso());
 
         getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
-        initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
         getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
@@ -244,19 +170,21 @@ public class AlignmentBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public void getIdsAndValues(String idLang, String idTheso) {
+    public void getIdsAndValues(String idLang, String idThesaurus) {
+
+        log.info("Rechercher des identifiants et leurs valeurs");
         if (idsToGet == null) {
             return;
         }
 
-        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(idsToGet, idLang, idTheso);
+        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(idsToGet, idLang, idThesaurus);
         selectConceptForAlignment(idConceptSelectedForAlignment);
 
         allignementsList = new ArrayList<>();
 
         for (NodeIdValue idsAndValue : idsAndValues) {
 
-            ArrayList<NodeAlignment> alignements = alignmentHelper.getAllAlignmentOfConcept(idsAndValue.getId(), idTheso);
+            List<NodeAlignment> alignements = alignmentService.getAllAlignmentOfConcept(idsAndValue.getId(), idThesaurus);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
@@ -297,7 +225,7 @@ public class AlignmentBean implements Serializable {
 
         for (NodeIdValue concept : idsAndValues) {
 
-            ArrayList<NodeAlignment> alignements = alignmentHelper.getAllAlignmentOfConcept(concept.getId(), idTheso);
+            List<NodeAlignment> alignements = alignmentService.getAllAlignmentOfConcept(concept.getId(), idTheso);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
@@ -337,7 +265,7 @@ public class AlignmentBean implements Serializable {
                 .forEach(alignement -> {
                     var isValide = isReachable(alignement.getTargetUri());
                     if (isValide != alignement.isValide()) {
-                        alignmentHelper.updateAlignmentUrlStatut(alignement.getIdAlignment(),
+                        alignmentService.updateAlignmentUrlStatut(alignement.getIdAlignment(),
                                 isValide, idConceptOrig, selectedTheso.getCurrentIdTheso());
                         alignement.setValide(isValide);
                     }
@@ -346,8 +274,7 @@ public class AlignmentBean implements Serializable {
         if (allignementsList.stream()
                 .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
                 .filter(alignement -> !alignement.isValide())
-                .filter(alignement -> alignement.getTargetUri() != null)
-                .findFirst().isPresent()) {
+                .anyMatch(alignement -> alignement.getTargetUri() != null)) {
             showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
         } else {
             showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");
@@ -501,14 +428,14 @@ public class AlignmentBean implements Serializable {
     }
 
     public void openEditAlignementWindow(AlignementElement alignement) {
-        alignementSources = alignmentHelper.getAlignementSource(selectedTheso.getCurrentIdTheso());
+        alignementSources = alignementSourceService.getAlignementSources(selectedTheso.getCurrentIdTheso());
         selectConceptForAlignment(alignement.getIdConceptOrig());
         PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
 
     public void addSingleAlignment(NodeAlignment alignment, String idTheso, String idConcept, int idUser) {
 
-        alignmentHelper.addNewAlignment(idUser, alignment.getConcept_target(),
+        alignmentService.addNewAlignment(idUser, alignment.getConcept_target(),
                 alignment.getThesaurus_target(), alignment.getUri_target(), alignment.getAlignement_id_type(),
                 alignment.getInternal_id_concept(), idTheso, alignment.getId_source());
 
@@ -612,10 +539,7 @@ public class AlignmentBean implements Serializable {
         }
 
         //Supprimer l'alignement
-        alignmentHelper.deleteAlignment(selectedAlignement.getId_alignement(), idThesaurus);
-
-        alignmentHelper.deleteAlignment(selectedAlignement.getInternal_id_concept(),
-                idThesaurus, selectedAlignement.getUri_target());
+        alignmentService.deleteAlignment(selectedAlignement.getId_alignement(), idThesaurus);
     }
 
     public String getDefinitionFromAlignement(NodeAlignment alignement) {
@@ -707,7 +631,7 @@ public class AlignmentBean implements Serializable {
     }
 
     public void setExistingAlignment(String idConcept, String idTheso) {
-        existingAlignments = alignmentHelper.getAllAlignmentOfConcept(idConcept, idTheso);
+        existingAlignments = alignmentService.getAllAlignmentOfConcept(idConcept, idTheso);
     }
 
     public void prepareValuesForIdRef() {
@@ -735,8 +659,6 @@ public class AlignmentBean implements Serializable {
         idConceptSelectedForAlignment = idConcept;
         idsToGet = new ArrayList<>();
         listAlignValues = null;
-
-        counter = 0;
         initAlignmentSources(idTheso, currentLang);
         reset();
     }
@@ -746,7 +668,7 @@ public class AlignmentBean implements Serializable {
         viewSetting = false;
         viewAddNewSource = false;
 
-        alignementSources = alignmentHelper.getAlignementSource(idTheso);
+        alignementSources = alignementSourceService.getAlignementSources(idTheso);
 
         initAlignmentType();
 
@@ -772,7 +694,7 @@ public class AlignmentBean implements Serializable {
     
     public void initAlignmentType(){
         alignmentTypes = new ArrayList<>();
-        HashMap<String, String> map = alignmentHelper.getAlignmentType();
+        HashMap<String, String> map = alignmentService.getAlignmentTypes();
         alignmentTypes.addAll(map.entrySet());           
     }
  
@@ -1214,7 +1136,7 @@ public class AlignmentBean implements Serializable {
         nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
         nodeNotes = noteHelper.getListNotesAllLang(idConcept, idTheso);
         nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idTheso);
-        nodeAlignmentSmall = alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idTheso);
+        nodeAlignmentSmall = alignmentService.getAllAlignmentsOfConcept(idConcept, idTheso);
     }
 
     /**
@@ -1468,7 +1390,6 @@ public class AlignmentBean implements Serializable {
             }
         }
 
-        alignementResult = alignementResult + alignmentHelper.getMessage();
         selectedNodeAlignment = null;
         alignmentInProgress = false;
 
@@ -1495,9 +1416,9 @@ public class AlignmentBean implements Serializable {
     public void addManualAlignement(String idTheso, String idConcept, int idUser) {
 
         // ajout de l'alignement séléctionné
-        if (!alignmentHelper.addNewAlignment(idUser, "", selectedAlignement,
+        if (!alignmentService.addNewAlignment(idUser, "", selectedAlignement,
                 manualAlignmentUri, selectedAlignementType, idConcept, idTheso, -1)) {
-            alignementResult = "Erreur pendant l'ajout de l'alignement: " + alignmentHelper.getMessage();
+
             alignmentInProgress = false;
             selectedNodeAlignment = null;
             resetVariables();
@@ -1505,7 +1426,6 @@ public class AlignmentBean implements Serializable {
             return;
         }
 
-        alignementResult = alignementResult + alignmentHelper.getMessage();
         selectedNodeAlignment = null;
         alignmentInProgress = false;
 
@@ -1558,15 +1478,8 @@ public class AlignmentBean implements Serializable {
     private boolean addAlignment__(String idTheso, String idConcept, int idUser) {
 
         // ajout de l'alignement séléctionné
-        if (!alignmentHelper.addNewAlignment(
-                idUser,
-                selectedNodeAlignment.getConcept_target(),
-                selectedNodeAlignment.getThesaurus_target(),
-                selectedNodeAlignment.getUri_target(),
-                selectedAlignementType,
-                idConcept, idTheso, selectedAlignementSource.getId())) {
-            alignementResult = "Erreur pendant l'ajout de l'alignement: "
-                    + alignmentHelper.getMessage();
+        if (!alignmentService.addNewAlignment(idUser, selectedNodeAlignment.getConcept_target(), selectedNodeAlignment.getThesaurus_target(),
+                selectedNodeAlignment.getUri_target(), selectedAlignementType, idConcept, idTheso, selectedAlignementSource.getId())) {
             alignmentInProgress = false;
             selectedNodeAlignment = null;
             resetVariables();

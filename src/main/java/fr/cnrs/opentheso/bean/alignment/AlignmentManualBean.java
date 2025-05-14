@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -11,234 +11,174 @@ import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.annotation.PreDestroy;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "alignmentManualBean")
+
+@Data
+@Slf4j
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "alignmentManualBean")
 public class AlignmentManualBean implements Serializable {
 
-    @Autowired @Lazy private AlignmentBean alignmentBean;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private CandidatBean candidatBean;
+    private final AlignmentBean alignmentBean;
+    private final ConceptView conceptView;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final CandidatBean candidatBean;
+    private final ConceptHelper conceptHelper;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final AlignmentService alignmentService;
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
-    
-    private List<NodeAlignmentType> nodeAlignmentTypes;
-    
-    // pour l'aligenement manuel
-    private String manualAlignmentSource;
-    private String manualAlignmentUri;
+    private String manualAlignmentSource, manualAlignmentUri;
     private int manualAlignmentType;
     private List<NodeAlignment> nodeAlignments;
+    private List<NodeAlignmentType> nodeAlignmentTypes;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-       // nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
-    }  
-    public void clear(){
-        if(nodeAlignmentTypes!= null){
-            nodeAlignmentTypes.clear();
-            nodeAlignmentTypes = null;
-        }        
-        manualAlignmentSource = null;
-        manualAlignmentUri = null;
-    }
-    
-    public AlignmentManualBean() {
-    }
 
     public void reset() {
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
+        log.info("Initialisation des données nécessaire pour l'interface alignement manuel");
+        nodeAlignmentTypes = alignmentService.searchAllAlignementTypes();
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
-
-        nodeAlignments = alignmentHelper.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
+        nodeAlignments = alignmentService.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
     }
 
     public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Rédiger une aide ici pour Add Concept !");
     }    
     
     public void deleteAlignment(NodeAlignment nodeAlignment) {
         
         if(nodeAlignment == null) return;
 
-        if(!alignmentHelper.deleteAlignment(nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(!alignmentService.deleteAlignment(nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
+            MessageUtils.showErrorMessage("Erreur pendant la suppression !");
             return;            
         }
 
-        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                currentUser.getNodeUser().getIdUser());
 
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement supprimé avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Alignement supprimé avec succès");
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+
         reset();
     }
 
-    public void updateAlignement(){
+    public void updateAlignement() {
+
         if(alignmentBean.getAlignementElementSelected() == null) return;
 
-        FacesMessage msg;
+        if(!alignmentService.updateAlignement(alignmentBean.getAlignementElementSelected(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
 
-        if(!alignmentHelper.updateAlignment(
-                alignmentBean.getAlignementElementSelected().getIdAlignment(),
-                alignmentBean.getAlignementElementSelected().getConceptTarget(),
-                alignmentBean.getAlignementElementSelected().getThesaurus_target(),
-                alignmentBean.getAlignementElementSelected().getTargetUri(),
-                alignmentBean.getAlignementElementSelected().getAlignement_id_type(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Erreur pendant la modification !");
             return;            
         }
-        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                currentUser.getNodeUser().getIdUser());
+
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement modifié avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Alignement modifié avec succès");
         
         alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
-    public void updateAlignement(NodeAlignment nodeAlignment){
+    public void updateAlignement(NodeAlignment nodeAlignment) {
 
         if(nodeAlignment == null) return;
 
-        if(!alignmentHelper.updateAlignment(
-                nodeAlignment.getId_alignement(),
-                nodeAlignment.getConcept_target(),
-                nodeAlignment.getThesaurus_target(),
-                nodeAlignment.getUri_target(),
-                nodeAlignment.getAlignement_id_type(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        var alignementElement = AlignementElement.builder()
+                .idAlignment(nodeAlignment.getId_alignement())
+                .alignement_id_type(nodeAlignment.getAlignement_id_type())
+                .conceptTarget(nodeAlignment.getConcept_target())
+                .thesaurus_target(nodeAlignment.getThesaurus_target())
+                .targetUri(nodeAlignment.getUri_target())
+                .build();
+        if(!alignmentService.updateAlignement(alignementElement, conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            MessageUtils.showErrorMessage("Erreur pendant la modification !");
             return;
         }
 
-        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                currentUser.getNodeUser().getIdUser());
 
-        conceptView.getConcept(selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang(),
-                currentUser);
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Alignement modifié avec succès");
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     public void updateAlignementFromConceptInterface(){
-        if(!alignmentHelper.updateAlignment(
-                alignmentBean.getAlignementElementSelected().getIdAlignment(),
-                alignmentBean.getAlignementElementSelected().getConceptTarget(),
-                alignmentBean.getAlignementElementSelected().getThesaurus_target(),
-                alignmentBean.getAlignementElementSelected().getTargetUri(),
-                alignmentBean.getAlignementElementSelected().getAlignement_id_type(),
+
+        if(!alignmentService.updateAlignement(alignmentBean.getAlignementElementSelected(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            MessageUtils.showErrorMessage("Erreur pendant la modification !");
             return;            
         }
 
-        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                currentUser.getNodeUser().getIdUser());
 
         alignmentBean.getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Alignement modifié avec succès");
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
     public void addManualAlignement(String idConcept, boolean isFromConceptView){
 
-    /*    if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Veuillez saisir une valeur !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
-        }*/
-        if(manualAlignmentUri == null || manualAlignmentUri.isEmpty()){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Veuillez saisir une valeur  !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(StringUtils.isEmpty(manualAlignmentUri)){
+            MessageUtils.showInformationMessage("Veuillez saisir une valeur  !");
             return;
         } 
 
         if(!fr.cnrs.opentheso.utils.StringUtils.urlValidator(manualAlignmentUri)){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showInformationMessage("L'URL n'est pas valide !");
             return;            
         }
 
-        if(!alignmentHelper.addNewAlignment(currentUser.getNodeUser().getIdUser(), "", manualAlignmentSource,
+        if(!alignmentService.addNewAlignment(currentUser.getNodeUser().getIdUser(), "", manualAlignmentSource,
                 manualAlignmentUri, manualAlignmentType, idConcept, selectedTheso.getCurrentIdTheso(), 0)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            MessageUtils.showInformationMessage("Erreur de modification !");
             return;            
         }
 
@@ -248,78 +188,27 @@ public class AlignmentManualBean implements Serializable {
             conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                     conceptView.getSelectedLang(), currentUser);
         } else {
-            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(
+            candidatBean.getCandidatSelected().setAlignments(alignmentService.getAllAlignmentOfConcept(
                     idConcept, selectedTheso.getCurrentIdTheso()));
         }
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Alignement ajouté avec succès");
         
         alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
-    
-    /**
-     * 
-     * @param idTheso
-     * @param idConcept
-     * @param idUser 
-     */
-    private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(idTheso, idConcept, idUser);
+    private void updateDateOfConcept(String idThesaurus, String idConcept, int idUser) {
+
+        conceptHelper.updateDateOfConcept(idThesaurus, idConcept, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
                 .value(currentUser.getNodeUser().getName())
                 .idConcept(idConcept)
-                .idThesaurus(idTheso)
+                .idThesaurus(idThesaurus)
                 .build());
-    }
-    
-
-    public List<NodeAlignmentType> getNodeAlignmentTypes() {
-        return nodeAlignmentTypes;
-    }
-
-    public void setNodeAlignmentTypes(List<NodeAlignmentType> nodeAlignmentTypes) {
-        this.nodeAlignmentTypes = nodeAlignmentTypes;
-    }
-
-    public String getManualAlignmentSource() {
-        return manualAlignmentSource;
-    }
-
-    public void setManualAlignmentSource(String manualAlignmentSource) {
-        this.manualAlignmentSource = manualAlignmentSource;
-    }
-
-    public String getManualAlignmentUri() {
-        return manualAlignmentUri;
-    }
-
-    public void setManualAlignmentUri(String manualAlignmentUri) {
-        this.manualAlignmentUri = manualAlignmentUri;
-    }
-
-    public int getManualAlignmentType() {
-        return manualAlignmentType;
-    }
-
-    public void setManualAlignmentType(int manualAlignmentType) {
-        this.manualAlignmentType = manualAlignmentType;
-    }
-
-    public List<NodeAlignment> getNodeAlignments() {
-        return nodeAlignments;
-    }
-
-    public void setNodeAlignments(List<NodeAlignment> nodeAlignments) {
-        this.nodeAlignments = nodeAlignments;
     }
 }

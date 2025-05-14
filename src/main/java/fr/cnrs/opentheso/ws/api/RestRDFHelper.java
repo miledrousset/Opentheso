@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
@@ -10,6 +9,7 @@ import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
@@ -73,7 +73,7 @@ public class RestRDFHelper {
     private ExportHelper exportHelper;
 
     @Autowired
-    private AlignmentHelper alignmentHelper;
+    private AlignmentService alignmentService;
 
     @Autowired
     private PreferencesHelper preferencesHelper;
@@ -170,7 +170,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ArrayList<NodeIdValue> listLinkedConceptsWithOntome = alignmentHelper.getAllLinkedConceptsWithOntome(idTheso);
+        List<NodeIdValue> listLinkedConceptsWithOntome = alignmentService.getAllLinkedConceptsWithOntome(idTheso);
 
         String datasJson;
 
@@ -203,7 +203,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ArrayList<NodeIdValue> listLinkedConceptsWithOntome = alignmentHelper.getLinkedConceptsWithOntome(idTheso, cidocClass);
+        List<NodeIdValue> listLinkedConceptsWithOntome = alignmentService.getLinkedConceptsWithOntome(idTheso, cidocClass);
 
         String datasJson;
 

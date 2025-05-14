@@ -1,10 +1,11 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.models.alignment.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
+import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.AlignmentSourceService;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -40,9 +41,12 @@ public class SetAlignmentSourceBean implements Serializable {
 
     @Autowired @Lazy
     private AlignmentBean alignmentBean;
-    
+
     @Autowired
-    private AlignmentHelper alignmentHelper;
+    private AlignmentService alignmentService;
+
+    @Autowired
+    private AlignmentSourceService alignmentSourceService;
 
     private List<AlignementSource> allAlignementSources;
     private List<NodeSelectedAlignment> selectedAlignments = new ArrayList<>();
@@ -65,7 +69,7 @@ public class SetAlignmentSourceBean implements Serializable {
     }
     
     public void initForUpdate(NodeSelectedAlignment nodeSelectedAlignment){
-        alignementSourceToUpdate= alignmentHelper.getThisAlignementSource(nodeSelectedAlignment.getIdAlignmentSource());
+        alignementSourceToUpdate= alignmentSourceService.getAlignementSourceById(nodeSelectedAlignment.getIdAlignmentSource());
     }
 
     public void initAlignementAutomatique(String alignementMode) {
@@ -103,17 +107,16 @@ public class SetAlignmentSourceBean implements Serializable {
     public void updateSelectedSource(NodeSelectedAlignment selectedAlignment) throws SQLException {
 
         if (selectedAlignment.isSelected()) {
-            alignmentHelper.addSourceAlignementToTheso(
-                    selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
+            alignmentSourceService.addSourceAlignementToThesaurus(selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         } else {
-            alignmentHelper.deleteSourceAlignementFromTheso(selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
+            alignmentService.deleteAlignment(selectedAlignment.getIdAlignmentSource(), selectedTheso.getCurrentIdTheso());
         }
         showMessage(FacesMessage.SEVERITY_INFO, "Source mise à jour !");
     }
 
     public void startAlignementAutomatique() {
         if (!ObjectUtils.isEmpty(selectedSource)) {
-            alignmentBean.setAlignementSources(alignmentHelper.getAlignementSource(selectedTheso.getCurrentIdTheso()));
+            alignmentBean.setAlignementSources(alignmentSourceService.getAlignementSources(selectedTheso.getCurrentIdTheso()));
             var sourceFound = alignmentBean.getAlignementSources().stream()
                     .filter(source -> source.getId() == selectedSource.getIdAlignmentSource())
                     .findFirst();
@@ -136,11 +139,11 @@ public class SetAlignmentSourceBean implements Serializable {
     public void initSourcesList() {
 
         // toutes les sources d'alignements
-        allAlignementSources = alignmentHelper.getAlignementSourceSAdmin();
+        allAlignementSources = alignmentSourceService.getAllAlignementSources();
         nodeSelectedAlignmentsAll = new ArrayList<>();
 
-        // la liste des sources séléctionnées pour le thésaurus en cours
-        selectedAlignmentsOfTheso = alignmentHelper.getSelectedAlignementOfThisTheso(selectedTheso.getCurrentIdTheso());
+        // la liste des sources sélectionnées pour le thésaurus en cours
+        selectedAlignmentsOfTheso = alignmentService.getSelectedAlignementOfThisThesaurus(selectedTheso.getCurrentIdTheso());
 
         // intégrer les éléments dans un vecteur global pour la modifiation
         for (AlignementSource allAlignementSource : allAlignementSources) {
@@ -184,7 +187,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!alignmentHelper.deleteAlignmentSource(alignment.getIdAlignmentSource())) {
+        if (!alignmentSourceService.deleteAlignmentSource(alignment.getIdAlignmentSource())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la suppression de la source !");
             return;
         }
@@ -199,7 +202,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!alignmentHelper.updateAlignmentSource(alignementSourceToUpdate)) {
+        if (!alignmentSourceService.updateAlignmentSource(alignementSourceToUpdate)) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la mise à jour de la source !");
             return;
         }
@@ -244,7 +247,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
 
-        if (!alignmentHelper.addNewAlignmentSource(alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
+        if (!alignmentSourceService.addNewAlignmentSource(alignementSource, selectedTheso.getCurrentIdTheso(), idUser)) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur côté base de données !");
             return;
         }

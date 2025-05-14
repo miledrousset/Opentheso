@@ -56,6 +56,7 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
@@ -81,8 +82,8 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,9 +109,6 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private HandleHelper handleHelper;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -164,6 +162,9 @@ public class ConceptHelper implements Serializable {
     private TermService termService;
     @Autowired
     private NonPreferredTermService nonPreferredTermService;
+
+    @Autowired
+    private AlignmentService alignmentService;
 
 
     /**
@@ -1548,7 +1549,7 @@ public class ConceptHelper implements Serializable {
         return idsAndValues;
     }
 
-    public ArrayList<NodeIdValue> getIdsAndValuesOfConcepts2(ArrayList<String> idsToGet, String idLang, String idTheso) {
+    public ArrayList<NodeIdValue> getIdsAndValuesOfConcepts2(List<String> idsToGet, String idLang, String idTheso) {
 
         ArrayList<NodeIdValue> idsAndValues = new ArrayList<>();
         String label;
@@ -2624,9 +2625,7 @@ public class ConceptHelper implements Serializable {
                 return false;
             }
 
-            if (!alignmentHelper.deleteAlignmentOfConcept(conn, idConcept, idThesaurus)) {
-                conn.rollback();
-                conn.close();
+            if (!alignmentService.deleteAlignmentOfConcept(idConcept, idThesaurus)) {
                 return false;
             }
 
@@ -4134,7 +4133,7 @@ public class ConceptHelper implements Serializable {
         nodeConceptExport.setConcept(concept);
 
         //récupération les aligenemnts 
-        nodeConceptExport.setNodeAlignmentsList(alignmentHelper.getAllAlignmentOfConceptNew(idConcept, idThesaurus));
+        nodeConceptExport.setNodeAlignmentsList(alignmentService.getAllAlignmentsOfConcept(idConcept, idThesaurus));
 
         //récupération des traductions        
         nodeConceptExport.setNodeTermTraductions(termRepository.findAllTraductionsOfConcept(idConcept, idThesaurus));
@@ -4283,7 +4282,7 @@ public class ConceptHelper implements Serializable {
 
         nodeConcept.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
-        nodeConcept.setNodeAlignments(alignmentHelper.getAllAlignmentOfConcept(idConcept, idThesaurus));
+        nodeConcept.setNodeAlignments(alignmentService.getAllAlignmentOfConcept(idConcept, idThesaurus));
 
         nodeConcept.setNodeimages(imageService.getAllExternalImages(idConcept, idThesaurus));
 

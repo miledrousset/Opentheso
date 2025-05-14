@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.fusion;
 
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
@@ -13,6 +12,7 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
@@ -52,9 +52,6 @@ public class FusionService implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
@@ -62,6 +59,9 @@ public class FusionService implements Serializable {
 
     @Autowired
     private TermService termService;
+
+    @Autowired
+    private AlignmentService alignmentService;
 
     @Autowired
     private NonPreferredTermService nonPreferredTermService;
@@ -126,7 +126,7 @@ public class FusionService implements Serializable {
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
                         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
                             if (!isAlignementExist(nodeAlignment, conceptFound.getNodeAlignments())) {
-                                alignmentHelper.addNewAlignment(
+                                alignmentService.addNewAlignment(
                                         nodeAlignment.getId_author(),
                                         nodeAlignment.getConcept_target(),
                                         nodeAlignment.getThesaurus_target(),
@@ -258,10 +258,7 @@ public class FusionService implements Serializable {
     }
 
     /**
-     * permet de vérifier si l'alignement existe ou non  
-     * @param nodeAlignementImport
-     * @param nodeAlignmentsLocal
-     * @return 
+     * permet de vérifier si l'alignement existe ou non
      */
     private boolean isAlignementExist(NodeAlignment nodeAlignementImport, List<NodeAlignment> nodeAlignmentsLocal) {
         if (nodeAlignmentsLocal == null || nodeAlignmentsLocal.isEmpty())

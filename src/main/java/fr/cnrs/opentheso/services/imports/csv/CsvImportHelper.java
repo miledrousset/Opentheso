@@ -23,7 +23,6 @@ import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
@@ -35,6 +34,7 @@ import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
@@ -78,9 +78,6 @@ public class CsvImportHelper {
     private GpsService gpsService;
 
     @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
     private UserHelper userHelper;
 
     @Autowired
@@ -112,6 +109,9 @@ public class CsvImportHelper {
 
     @Autowired
     private NonPreferredTermService nonPreferredTermService;
+
+    @Autowired
+    private AlignmentService alignmentService;
 
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
@@ -1010,35 +1010,35 @@ public class CsvImportHelper {
         for (String uri : conceptObject.getExactMatchs()) {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(1);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
+            if (!alignmentService.addNewAlignment(nodeAlignment)) {
                 message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         for (String uri : conceptObject.getCloseMatchs()) {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(2);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
+            if (!alignmentService.addNewAlignment(nodeAlignment)) {
                 message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         for (String uri : conceptObject.getBroadMatchs()) {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(3);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
+            if (!alignmentService.addNewAlignment(nodeAlignment)) {
                 message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         for (String uri : conceptObject.getRelatedMatchs()) {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(4);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
+            if (!alignmentService.addNewAlignment(nodeAlignment)) {
                 message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         for (String uri : conceptObject.getNarrowMatchs()) {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(5);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
+            if (!alignmentService.addNewAlignment(nodeAlignment)) {
                 message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
@@ -1522,7 +1522,7 @@ public class CsvImportHelper {
 
         /// suppression des alignements 
         if (!conceptObject.getExactMatchs().isEmpty()) {
-            alignmentHelper.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 1);
+            alignmentService.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 1);
         }
         for (String uri : conceptObject.getExactMatchs()) {
             if (uri.isEmpty()) {
@@ -1530,13 +1530,11 @@ public class CsvImportHelper {
             }
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(1);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
-                //       message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
-            }
+            alignmentService.addNewAlignment(nodeAlignment);
         }
 
         if (!conceptObject.getCloseMatchs().isEmpty()) {
-            alignmentHelper.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 2);
+            alignmentService.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 2);
         }
         for (String uri : conceptObject.getCloseMatchs()) {
             if (uri.isEmpty()) {
@@ -1544,13 +1542,11 @@ public class CsvImportHelper {
             }
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(2);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
-                //        message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
-            }
+            alignmentService.addNewAlignment(nodeAlignment);
         }
 
         if (!conceptObject.getBroadMatchs().isEmpty()) {
-            alignmentHelper.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 3);
+            alignmentService.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 3);
         }
         for (String uri : conceptObject.getBroadMatchs()) {
             if (uri.isEmpty()) {
@@ -1558,13 +1554,11 @@ public class CsvImportHelper {
             }
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(3);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
-                //           message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
-            }
+            alignmentService.addNewAlignment(nodeAlignment);
         }
 
         if (!conceptObject.getRelatedMatchs().isEmpty()) {
-            alignmentHelper.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 4);
+            alignmentService.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 4);
         }
         for (String uri : conceptObject.getRelatedMatchs()) {
             if (uri.isEmpty()) {
@@ -1572,13 +1566,11 @@ public class CsvImportHelper {
             }
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(4);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
-                //          message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
-            }
+            alignmentService.addNewAlignment(nodeAlignment);
         }
 
         if (!conceptObject.getNarrowMatchs().isEmpty()) {
-            alignmentHelper.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 5);
+            alignmentService.deleteAlignmentOfConceptByType(conceptObject.getIdConcept(), idTheso, 5);
         }
         for (String uri : conceptObject.getNarrowMatchs()) {
             if (uri.isEmpty()) {
@@ -1586,9 +1578,7 @@ public class CsvImportHelper {
             }
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(5);
-            if (!alignmentHelper.addNewAlignment(nodeAlignment)) {
-                //         message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
-            }
+            alignmentService.addNewAlignment(nodeAlignment);
         }
 
         return true;

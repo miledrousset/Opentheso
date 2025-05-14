@@ -38,13 +38,13 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
@@ -97,6 +97,9 @@ public class ImportRdf4jHelper {
     private DataSource dataSource;
 
     @Autowired
+    private AlignmentService alignmentService;
+
+    @Autowired
     private DeprecateService deprecateHelper;
 
     @Autowired
@@ -107,9 +110,6 @@ public class ImportRdf4jHelper {
 
     @Autowired
     private GroupHelper groupHelper;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -1369,7 +1369,7 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
-            alignmentHelper.addNewAlignment(nodeAlignment);
+            alignmentService.addNewAlignment(nodeAlignment);
         }
         for (NodeEM nodeEMList1 : acs.nodeEMList) {
             acs.term.setIdConcept(acs.concept.getIdConcept());
