@@ -101,7 +101,7 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
 
-        if (!candidatService.insertCandidate(selectedCandidate, adminMessage, idUser)) {
+        if (candidatService.insertCandidate(selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
@@ -178,7 +178,7 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
 
-        if (!candidatService.rejectCandidate(selectedCandidate, adminMessage, idUser)) {
+        if (candidatService.rejectCandidate(selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
@@ -218,7 +218,7 @@ public class ProcessCandidateBean implements Serializable {
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             selectedCandidate1 = candidatBean.getAllInfosOfCandidate(selectedCandidate1);
-            if (!candidatService.insertCandidate(selectedCandidate1, adminMessage, idUser)) {
+            if (candidatService.insertCandidate(selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
@@ -261,7 +261,7 @@ public class ProcessCandidateBean implements Serializable {
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             selectedCandidate1 = candidatBean.getAllInfosOfCandidate(selectedCandidate1);
-            if (!candidatService.rejectCandidate(selectedCandidate1, adminMessage, idUser)) {
+            if (candidatService.rejectCandidate(selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
