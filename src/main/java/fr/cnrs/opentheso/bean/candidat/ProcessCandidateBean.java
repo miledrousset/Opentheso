@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
-
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -33,6 +32,7 @@ import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+
 
 @Slf4j
 @Data

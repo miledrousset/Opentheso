@@ -1,18 +1,77 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.entites.ConceptGroup;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 
 public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE ConceptGroup cg SET cg.isPrivate = :isPrivate WHERE cg.idGroup = :idGroup AND cg.thesaurus.idThesaurus = :idThesaurus")
+    @Query("UPDATE ConceptGroup cg SET cg.isPrivate = :isPrivate WHERE cg.idGroup = :idGroup AND cg.idThesaurus = :idThesaurus")
     void updateVisibility(@Param("idGroup") String idGroup, @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate);
 
+    Optional<ConceptGroup> findByIdGroupAndIdThesaurus(String idGroup, String idThesaurus);
+
+    Optional<ConceptGroup> findAllByIdThesaurusAndIdArk(String idThesaurus, String idArk);
+
+    Optional<ConceptGroup> findByIdHandle(String idHandle);
+
+    List<ConceptGroup> findAllByIdThesaurus(String idThesaurus);
+
+    List<ConceptGroup> findByIdThesaurusAndNotation(String idThesaurus, String notation);
+
+    @Query(value = "SELECT nextval('concept_group__id_seq')", nativeQuery = true)
+    Long getNextConceptGroupSequence();
+
+    @Query(value = "SELECT COUNT(*) FROM concept_group WHERE LOWER(idgroup) = LOWER(:idGroup)", nativeQuery = true)
+    int countByIdGroupIgnoreCase(@Param("idGroup") String idGroup);
+
+    @Modifying
+    void deleteByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
+
+    @Query(value = """
+        SELECT idthesaurus 
+        FROM concept_group 
+        WHERE REPLACE(id_ark, '-', '') = REPLACE(:arkId, '-', '')
+        LIMIT 1
+    """, nativeQuery = true)
+    String findThesaurusIdByArkId(@Param("arkId") String arkId);
+
+    @Query(value = """
+        SELECT idgroup 
+        FROM concept_group 
+        WHERE idthesaurus = :idThesaurus
+        AND idgroup NOT IN (SELECT id_group2 FROM relation_group WHERE relation = 'sub' AND id_thesaurus = :idThesaurus)
+        ORDER BY notation ASC
+        """, nativeQuery = true)
+    List<String> findRootGroups(@Param("idThesaurus") String idThesaurus);
+
+
+    @Query(value = """
+        SELECT idgroup 
+        FROM concept_group 
+        WHERE idthesaurus = :idThesaurus
+        AND private = false
+        AND idgroup NOT IN (SELECT id_group2 FROM relation_group WHERE relation = 'sub' AND id_thesaurus = :idThesaurus)
+        ORDER BY notation ASC
+        """, nativeQuery = true)
+    List<String> findRootGroupsPublicOnly(@Param("idThesaurus") String idThesaurus);
+
+    @Query(value = """
+        SELECT cg.idgroup, cg.id_ark, cg.id_handle, cg.id_doi
+        FROM concept_group cg
+            JOIN concept_group_concept cgc ON LOWER(cg.idgroup) = LOWER(cgc.idgroup)
+        AND cg.idthesaurus = cgc.idthesaurus
+        WHERE cgc.idconcept = :idConcept
+        AND cgc.idthesaurus = :idThesaurus
+    """, nativeQuery = true)
+    List<Object[]> findGroupsOfConcept(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
 }

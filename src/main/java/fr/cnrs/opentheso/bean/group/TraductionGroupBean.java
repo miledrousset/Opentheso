@@ -4,10 +4,11 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -33,14 +34,13 @@ public class TraductionGroupBean implements Serializable {
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
-    @Autowired
-    private GroupHelper groupHelper;
-
     private String selectedLang;
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
-    private ArrayList<NodeGroupTraductions> nodeGroupTraductionses;
+    private List<NodeGroupTraductions> nodeGroupTraductionses;
     private String traductionValue;
+    @Autowired
+    private GroupService groupService;
 
     @PreDestroy
     public void destroy() {
@@ -63,10 +63,6 @@ public class TraductionGroupBean implements Serializable {
             nodeGroupTraductionses = null;
         }
     }
-
-    public TraductionGroupBean() {
-    }
-
     public void reset() {
         nodeLangs = selectedTheso.getNodeLangs();
         nodeLangsFiltered = new ArrayList<>();
@@ -132,10 +128,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(
-                traductionValue,
-                selectedLang,
-                selectedTheso.getCurrentIdTheso())) {
+        if (groupService.isDomainExist(traductionValue, selectedLang, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Ce nom existe déjà dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -144,22 +137,12 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.addGroupTraduction(
-                groupView.getNodeGroup().getConceptGroup().getIdgroup(),
-                selectedTheso.getCurrentIdTheso(),
-                selectedLang,
-                traductionValue)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
-        groupHelper.updateModifiedDate(groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+        groupService.addGroupTraduction(groupView.getNodeGroup().getConceptGroup().getIdGroup(), selectedTheso.getCurrentIdTheso(),
+                selectedLang, traductionValue);
+        groupService.updateModifiedDate(groupView.getNodeGroup().getConceptGroup().getIdGroup(), selectedTheso.getCurrentIdTheso());
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
-                groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                 groupView.getNodeGroup().getIdLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " traduction ajoutée avec succès !");
@@ -192,10 +175,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(
-                nodeGroupTraductions.getTitle(),
-                nodeGroupTraductions.getIdLang(),
-                selectedTheso.getCurrentIdTheso())) {
+        if (groupService.isDomainExist(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(), selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Ce nom existe déjà dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -204,8 +184,8 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.renameGroup(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(),
-                groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso(), idUser)) {
+        if (groupService.renameGroup(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(),
+                groupView.getNodeGroup().getConceptGroup().getIdGroup(), selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -215,7 +195,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
-                groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                 groupView.getNodeGroup().getIdLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " traduction modifiée avec succès !");
@@ -247,7 +227,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.deleteGroupTraduction(groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+        if (!groupService.deleteGroupTraduction(groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                 selectedTheso.getCurrentIdTheso(), nodeGroupTraductions.getIdLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -258,7 +238,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
-                groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                 groupView.getNodeGroup().getIdLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " traduction supprimée avec succès !");

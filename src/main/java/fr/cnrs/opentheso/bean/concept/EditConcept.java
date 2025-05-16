@@ -16,13 +16,13 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.utils.MessageUtils;
@@ -100,7 +100,7 @@ public class EditConcept implements Serializable {
     private NonPreferredTermRepository nonPreferredTermRepository;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     private String prefLabel;
     private String notation;
@@ -180,7 +180,7 @@ public class EditConcept implements Serializable {
     }
 
     public void removeAllConceptFromCollection(String idGroup){
-        groupHelper.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso());
+        groupService.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso());
 
         selectedTheso.reloadGroups();
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tous les concepts ont été retirés de la collection.");

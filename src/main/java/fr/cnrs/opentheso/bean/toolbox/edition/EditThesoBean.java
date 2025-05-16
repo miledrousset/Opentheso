@@ -11,10 +11,10 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 
 import jakarta.inject.Named;
@@ -43,18 +43,18 @@ import org.primefaces.model.TreeNode;
 @Named(value = "editThesoBean")
 public class EditThesoBean implements Serializable {
 
-    private CurrentUser currentUser;
-    private RoleOnThesoBean roleOnThesoBean;
-    private MenuBean menuBean;
-    private ThesaurusMetadataAdd thesaurusMetadataAdd;
-    private ConceptGroupRepository conceptGroupRepository;
-    private SelectedTheso selectedTheso;
-    private PreferenceService preferenceService;
-    private ThesaurusRepository thesaurusRepository;
-    private LanguageRepository languageRepository;
-    private ThesaurusHelper thesaurusHelper;
-    private ConceptHelper conceptHelper;
-    private GroupHelper groupHelper;
+    private final CurrentUser currentUser;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final MenuBean menuBean;
+    private final ThesaurusMetadataAdd thesaurusMetadataAdd;
+    private final ConceptGroupRepository conceptGroupRepository;
+    private final SelectedTheso selectedTheso;
+    private final PreferenceService preferenceService;
+    private final ThesaurusRepository thesaurusRepository;
+    private final LanguageRepository languageRepository;
+    private final ThesaurusHelper thesaurusHelper;
+    private final ConceptHelper conceptHelper;
+    private final GroupService groupService;
 
     private List<LanguageIso639> allLangs;
     private List<NodeLangTheso> languagesOfTheso;
@@ -108,14 +108,14 @@ public class EditThesoBean implements Serializable {
 
     private void loadGroupsTree() {
         groupRoot = new DefaultTreeNode<>(new NodeGroup(), null);
-        var elements = groupHelper.getListRootConceptGroup(nodeIdValueOfTheso.getId(), preferredLang, false, false);
+        var elements = groupService.getListRootConceptGroup(nodeIdValueOfTheso.getId(), preferredLang, false, false);
         setGroupTree(groupRoot, elements);
     }
 
     private void setGroupTree(TreeNode<NodeGroup> elementTree, List<NodeGroup> elements) {
         for (NodeGroup nodeGroup : elements) {
             var fils = new DefaultTreeNode(nodeGroup, elementTree);
-            var tmp = groupHelper.getListChildsOfGroup(nodeGroup.getConceptGroup().getIdgroup(),
+            var tmp = groupService.getListChildsOfGroup(nodeGroup.getConceptGroup().getIdGroup(),
                     nodeIdValueOfTheso.getId(), preferredLang, false);
 
             if (CollectionUtils.isNotEmpty(tmp)) {
@@ -132,7 +132,7 @@ public class EditThesoBean implements Serializable {
         }
 
         var isPrivate = group.isGroupPrivate();
-        conceptGroupRepository.updateVisibility(group.getConceptGroup().getIdgroup(), group.getConceptGroup().getIdthesaurus(), isPrivate);
+        conceptGroupRepository.updateVisibility(group.getConceptGroup().getIdGroup(), group.getConceptGroup().getIdThesaurus(), isPrivate);
 
         if (group.isHaveChildren()) {
             var nodes = getTreeNode(groupRoot.getChildren(), group);
@@ -145,8 +145,8 @@ public class EditThesoBean implements Serializable {
 
     private void updateCollectionsStatus(TreeNode<NodeGroup> element, boolean newStatus) {
         for (TreeNode<NodeGroup> group : element.getChildren()) {
-            conceptGroupRepository.updateVisibility(group.getData().getConceptGroup().getIdgroup(),
-                    group.getData().getConceptGroup().getIdthesaurus(), newStatus);
+            conceptGroupRepository.updateVisibility(group.getData().getConceptGroup().getIdGroup(),
+                    group.getData().getConceptGroup().getIdThesaurus(), newStatus);
             group.getData().setGroupPrivate(newStatus);
 
             if (CollectionUtils.isNotEmpty(element.getChildren())) {
@@ -161,7 +161,7 @@ public class EditThesoBean implements Serializable {
 
         TreeNode<NodeGroup> tmp = null;
         for (TreeNode<NodeGroup> node : nodes) {
-            if (node.getData().getConceptGroup().getIdgroup().equals(group.getConceptGroup().getIdgroup())) {
+            if (node.getData().getConceptGroup().getIdGroup().equals(group.getConceptGroup().getIdGroup())) {
                 return node;
             }
             if (CollectionUtils.isNotEmpty(node.getChildren())) {

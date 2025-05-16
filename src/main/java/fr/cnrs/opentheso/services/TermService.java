@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.entites.ConceptGroupConcept;
 import fr.cnrs.opentheso.entites.Permuted;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.TermHistorique;
@@ -157,7 +156,11 @@ public class TermService {
 
         log.info("Recherche de l'id Groupe");
         var conceptGroup = conceptGroupConceptRepository.findByIdThesaurusAndIdConcept(nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
-        var idGroup = conceptGroup.map(ConceptGroupConcept::getIdGroup).orElse(null);
+        if (CollectionUtils.isEmpty(conceptGroup)) {
+            log.info("Aucun group n'est associé au thésaurus id {} et concept id {}", nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
+            return;
+        }
+        var idGroup = conceptGroup.get(0).getIdGroup();
         log.info("Id Group trouvé : {}", idGroup);
 
         var value = formatLexicalValue(termTraduction.getLexicalValue());

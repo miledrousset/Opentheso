@@ -2,8 +2,6 @@ package fr.cnrs.opentheso.bean.leftbody.viewconcepts;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.terms.NodeNT;
@@ -16,6 +14,7 @@ import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
+import fr.cnrs.opentheso.services.GroupService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
@@ -47,9 +46,6 @@ public class TreeConcepts implements Serializable {
     @Autowired @Lazy private PropositionBean propositionBean;
 
     @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
     private RelationsHelper relationsHelper;
 
     @Autowired
@@ -58,8 +54,10 @@ public class TreeConcepts implements Serializable {
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
+    @Autowired
+    private GroupService groupService;
 
-    
+
     public void reset() {
         root = null;
         selectedNode = null;
@@ -80,11 +78,11 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation(),
+        List<NodeGroup> racineNode = groupService.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation(),
                 ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         for (NodeGroup nodeGroup : racineNode) {
-            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
+            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),true,false,false,false,"group");
 
             if (nodeGroup.isHaveChildren()) {
@@ -119,8 +117,7 @@ public class TreeConcepts implements Serializable {
     }
 
     private boolean addGroupsChild(TreeNode parent) {
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
+        var listeSubGroup = groupService.getListChildsOfGroup(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         if (listeSubGroup == null) {
             parent.setType("group");
@@ -128,7 +125,7 @@ public class TreeConcepts implements Serializable {
         }
 
         for (NodeGroup nodeGroup : listeSubGroup) {
-            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
+            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),false,true,false,false,"subGroup");
 
             if (nodeGroup.isHaveChildren()) {

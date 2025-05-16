@@ -14,9 +14,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.util.Date;
 
 
@@ -26,33 +26,29 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "concept_group_label")
+@Table(name = "concept_group_label_historique")
 @EntityListeners(AuditingEntityListener.class)
-public class ConceptGroupLabel {
+public class ConceptGroupLabelHistorique {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "lexicalvalue", nullable = false)
+    @Column(name = "lexicalvalue")
     private String lexicalValue;
 
-    @CreatedDate
-    @Column(name = "created", nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
-
     @LastModifiedDate
-    @Column(name = "modified", nullable = false)
+    @Column(name = "modified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
 
-    @Column(name = "lang", nullable = false)
     private String lang;
 
-    @Column(name = "idthesaurus", nullable = false)
+    @Column(name = "idthesaurus")
     private String idThesaurus;
 
-    @Column(name = "idgroup", nullable = false)
+    @Column(name = "idgroup")
     private String idGroup;
+
+    private Integer idUser;
 }

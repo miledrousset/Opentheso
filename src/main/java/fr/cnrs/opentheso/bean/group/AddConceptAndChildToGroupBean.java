@@ -8,13 +8,12 @@ import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
@@ -39,26 +38,16 @@ public class AddConceptAndChildToGroupBean implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
+    private GroupService groupService;
+
+    @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
     private ConceptHelper conceptHelper;
 
-    @Autowired
-    private GroupHelper groupHelper;
-
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-    public void clear(){
-        selectedNodeAutoCompletionGroup = null;
-    }
-
-    public AddConceptAndChildToGroupBean() {
-    }
 
     public void init() {
         selectedNodeAutoCompletionGroup = null;
@@ -76,7 +65,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(),
+            liste = groupService.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(), value);
         }
         return liste;
@@ -104,7 +93,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
 
         // addConceptToGroup
         for (String idConcept : allId) {
-            if (!groupHelper.addConceptGroupConcept(
+            if (!groupService.addConceptGroupConcept(
                     selectedNodeAutoCompletionGroup.getIdGroup(),
                     idConcept,
                     selectedTheso.getCurrentIdTheso())) {

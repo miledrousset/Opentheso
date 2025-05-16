@@ -6,13 +6,14 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.GroupTypeService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -44,7 +45,10 @@ public class ModifyGroupBean implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupTypeService groupTypeService;
+
+    @Autowired
+    private GroupService groupService;
 
     private String selectedGroupType;
     private String idGroup;
@@ -54,35 +58,18 @@ public class ModifyGroupBean implements Serializable {
 
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
     private boolean moveToRoot = false;
+    @Autowired
+    private RelationGroupService relationGroupService;
 
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        selectedGroupType = null;
-        titleGroup = null;
-        titleGroup = null;
-        notation = null;
-        if (listGroupType != null) {
-            listGroupType.clear();
-            listGroupType = null;
-        }
-        moveToRoot = false;
-    }
-
-    public ModifyGroupBean() {
-    }
 
     public void init() {
         moveToRoot = false;
-        idGroup = groupView.getNodeGroup().getConceptGroup().getIdgroup();
+        idGroup = groupView.getNodeGroup().getConceptGroup().getIdGroup();
         titleGroup = groupView.getNodeGroup().getLexicalValue();
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
-        selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
+        selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdTypeCode();
 
-        listGroupType = groupHelper.getAllGroupType();
+        listGroupType = groupTypeService.getAllGroupType();
     }
 
     public void infos() {
@@ -98,15 +85,11 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        String idParent = groupHelper.getIdFather(idGroup, selectedTheso.getCurrentIdTheso());
+        String idParent = relationGroupService.getIdFather(idGroup, selectedTheso.getCurrentIdTheso());
 
         if(isMoveToRoot()) {
             if(!StringUtils.isEmpty(idParent)) {
-                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;
-                }
+                relationGroupService.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso());
             } else {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement à la même place !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -127,8 +110,7 @@ public class ModifyGroupBean implements Serializable {
             }
 
             /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
-            if(groupHelper.isMoveToDescending(
-                    idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
+            if(groupService.isMoveToDescending(idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -142,14 +124,9 @@ public class ModifyGroupBean implements Serializable {
                     return;
                 }
 
-                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;
-                }
+                relationGroupService.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso());
             }
-            groupHelper.addSubGroup(
-                    selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
+            relationGroupService.addSubGroup(selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
         }
 
         selectedTheso.reloadGroups();
@@ -168,7 +145,7 @@ public class ModifyGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), value);
+            liste = groupService.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), value);
         }
         return liste;
     }
@@ -191,10 +168,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(
-                titleGroup,
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang())) {
+        if (groupService.isDomainExist(titleGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, " ", " un group existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -202,8 +176,8 @@ public class ModifyGroupBean implements Serializable {
             }
             return;
         }
-        if(groupHelper.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
-            if (!groupHelper.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
+        if(groupService.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+            if (groupService.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
                     currentUser.getNodeUser().getIdUser())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -213,14 +187,7 @@ public class ModifyGroupBean implements Serializable {
                 return;
             }
         } else {
-            if (!groupHelper.addGroupTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), titleGroup)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }
+            groupService.addGroupTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), titleGroup);
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
@@ -233,7 +200,7 @@ public class ModifyGroupBean implements Serializable {
 
             // sinon, on modifie le label
             if (((TreeNodeData) treeGroups.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
+                    groupView.getNodeGroup().getConceptGroup().getIdGroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setName(titleGroup);
             }
             if (pf.isAjaxRequest()) {
@@ -261,7 +228,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isNotationExist(notation, selectedTheso.getCurrentIdTheso())) {
+        if (groupService.isNotationExist(notation, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -270,10 +237,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.setNotationOfGroup(
-                notation,
-                idGroup,
-                selectedTheso.getCurrentIdTheso())) {
+        if (!groupService.setNotationOfGroup(notation, idGroup, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -293,7 +257,7 @@ public class ModifyGroupBean implements Serializable {
 
             // sinon, on modifie le label
             if (((TreeNodeData) treeGroups.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
+                    groupView.getNodeGroup().getConceptGroup().getIdGroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setNotation(notation);
             }
         }
@@ -318,7 +282,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.updateTypeGroup(selectedGroupType, selectedTheso.getCurrentIdTheso(), idGroup)) {
+        if (!groupTypeService.updateTypeGroup(selectedGroupType, selectedTheso.getCurrentIdTheso(), idGroup)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {

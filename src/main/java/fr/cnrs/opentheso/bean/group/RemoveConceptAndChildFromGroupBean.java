@@ -7,147 +7,83 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 
-import javax.sql.DataSource;
 
-/**
- * @author miledrousset
- */
 @Data
-@Named(value = "removeConceptAndChildFromGroupBean")
+@Slf4j
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "removeConceptAndChildFromGroupBean")
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
-    private ConceptView conceptView;
-
-    @Autowired @Lazy
-    private TreeGroups treeGroups;
-
-    @Autowired @Lazy
-    private GroupView groupView;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private GroupHelper groupHelper;
+    private final CurrentUser currentUser;
+    private final SelectedTheso selectedTheso;
+    private final ConceptView conceptView;
+    private final TreeGroups treeGroups;
+    private final GroupView groupView;
+    private final ConceptHelper conceptHelper;
+    private final GroupService groupService;
 
     private List<NodeGroup> nodeGroups;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-    public void clear(){
-        if(nodeGroups!= null){
-            nodeGroups.clear();
-            nodeGroups = null;
-        }
-    }
 
     public void init() {
         nodeGroups = conceptView.getNodeConcept().getNodeConceptGroup();
     }
 
-    public void removeConceptAndChildFromGroup(String idGroup, int idUser) {
 
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+    public void removeConceptAndChildFromGroup(String idGroup) {
 
-        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+        log.info("Début de la suppression de tous les concepts rattachés au group id {}", idGroup);
+        var allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
 
-        if( (allId == null) || (allId.isEmpty())) return;
+        if(CollectionUtils.isEmpty(allId)) {
+            log.error("Aucun concepts n'est trouvé");
+            return;
+        }
 
         for (String idConcept : allId) {
-            if (!groupHelper.deleteRelationConceptGroupConcept(idGroup, idConcept, selectedTheso.getCurrentIdTheso())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression des concepts de la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }
+            groupService.deleteRelationConceptGroupConcept(idGroup, idConcept, selectedTheso.getCurrentIdTheso());
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La branche a bien été enlevée de la collection");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        MessageUtils.showInformationMessage("La branche a bien été enlevée de la collection");
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
+
+        log.info("Initialisation de l'interface");
         init();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("conceptForm:listeConceptGroupeToDelete");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        PrimeFaces.current().ajax().update("conceptForm:listeConceptGroupeToDelete");
     }
 
     public void deleteGroup(String idGroup){
-        FacesMessage msg;
-        try {
-            Connection conn = dataSource.getConnection();
-            conn.setAutoCommit(false);
-            if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso())) {
-                conn.rollback();
-                conn.close();
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
-            conn.commit();
-            conn.close();
-            if(!groupHelper.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso())){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
 
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La collection a bien été supprimée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (SQLException ex) {
-            Logger.getLogger(RemoveConceptAndChildFromGroupBean.class.getName()).log(Level.SEVERE, null, ex);
+        groupService.deleteConceptGroupRollBack(idGroup, selectedTheso.getCurrentIdTheso());
+        if(!groupService.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso())){
+            MessageUtils.showErrorMessage("Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
         }
-        PrimeFaces pf = PrimeFaces.current();
+
+        MessageUtils.showInformationMessage("La collection a bien été supprimée");
+
         if (treeGroups.getSelectedNode() != null) {
-            TreeNode parent = treeGroups.getSelectedNode().getParent();
+            var parent = treeGroups.getSelectedNode().getParent();
             if (parent != null) {
                 parent.getChildren().remove(treeGroups.getSelectedNode());
-
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("containerIndex:formLeftTab:tabGroups:treeGroups");
-                }
+                PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabGroups:treeGroups");
             }
         }
         groupView.init();
-
     }
 }

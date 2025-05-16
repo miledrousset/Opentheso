@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -9,6 +8,7 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 
 import jakarta.inject.Named;
@@ -39,16 +39,16 @@ public class ViewExportBean implements Serializable {
     @Autowired @Lazy private LanguageBean languageBean;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private PreferenceService preferenceService;
 
     @Autowired
-    private PreferenceService preferenceService;
+    private GroupService groupService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
-    private ArrayList<NodeGroup> groupList;
+    private List<NodeGroup> groupList;
     private Preferences nodePreference;
 
     private List<NodeLangTheso> selectedLanguages;
@@ -146,7 +146,7 @@ public class ViewExportBean implements Serializable {
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
-        groupList = groupHelper.getListConceptGroup(nodeIdValueOfTheso.getId(), idLang);
+        groupList = groupService.getListConceptGroup(nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;
@@ -160,7 +160,7 @@ public class ViewExportBean implements Serializable {
 
         if(groupList != null) {
             for (NodeGroup nodeGroup : groupList) {
-                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdgroup());
+                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdGroup());
             }
         }
 
@@ -282,11 +282,11 @@ public class ViewExportBean implements Serializable {
         this.languagesOfTheso = languagesOfTheso;
     }
 
-    public ArrayList<NodeGroup> getGroupList() {
+    public List<NodeGroup> getGroupList() {
         return groupList;
     }
 
-    public void setGroupList(ArrayList<NodeGroup> groupList) {
+    public void setGroupList(List<NodeGroup> groupList) {
         this.groupList = groupList;
     }
 

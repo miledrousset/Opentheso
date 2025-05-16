@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -20,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -57,10 +57,10 @@ public class MoveConcept implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private UserHelper userHelper;
 
     @Autowired
-    private UserHelper userHelper;
+    private GroupService groupService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -142,7 +142,7 @@ public class MoveConcept implements Serializable {
             return;
         }
 
-        ArrayList<String> lisIdGroup;
+        List<String> lisIdGroup;
         String idArk;
         ArrayList<String> idConcepts = new ArrayList<>();
 
@@ -163,9 +163,9 @@ public class MoveConcept implements Serializable {
                     .build());
 
 
-            lisIdGroup = groupHelper.getListIdGroupOfConcept(idThesoTo, idConcept);
+            lisIdGroup = groupService.getListIdGroupOfConcept(idThesoTo, idConcept);
             for (String idGroup : lisIdGroup) {
-                groupHelper.deleteRelationConceptGroupConcept(idGroup, idConcept, idThesoTo);
+                groupService.deleteRelationConceptGroupConcept(idGroup, idConcept, idThesoTo);
             }
             idArk = conceptHelper.getIdArkOfConcept(idConcept, idThesoTo);
             if(!StringUtils.isEmpty(idArk)) {

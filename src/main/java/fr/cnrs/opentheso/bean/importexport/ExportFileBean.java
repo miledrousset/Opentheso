@@ -3,8 +3,6 @@ package fr.cnrs.opentheso.bean.importexport;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -15,6 +13,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.services.exports.pdf.PdfExportType;
@@ -74,10 +73,10 @@ public class ExportFileBean implements Serializable {
     private FacetHelper facetHelper;
 
     @Autowired
-    private ExportRdf4jHelperNew exportRdf4jHelperNew;
+    private GroupService groupService;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private ExportRdf4jHelperNew exportRdf4jHelperNew;
 
     @Autowired
     private UriHelper uriHelper;
@@ -615,7 +614,7 @@ public class ExportFileBean implements Serializable {
             // récupérer le SKOSXmlDocument
             SKOSXmlDocument skosxd;
             try {
-                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdgroup());
+                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdGroup());
             } catch (Exception ex) {
                 Logger.getLogger(ExportFileBean.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
@@ -672,7 +671,7 @@ public class ExportFileBean implements Serializable {
             // récupérer le SKOSXmlDocument
             SKOSXmlDocument skosxd;
             try {
-                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdgroup());
+                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdGroup());
             } catch (Exception ex) {
                 Logger.getLogger(ExportFileBean.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
@@ -811,7 +810,7 @@ public class ExportFileBean implements Serializable {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idTheso);
         SKOSResource sKOSResource = new SKOSResource(exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
         sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
         skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(idTheso, idGroup));
@@ -905,7 +904,7 @@ public class ExportFileBean implements Serializable {
         } else {
             /// Export filtré par collection, on filtre également les Facettes qui sont dans les collections sélectionnées
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
-                NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);
+                NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idTheso);
                 SKOSResource sKOSResource = new SKOSResource(exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
                 skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(idTheso, idGroup));

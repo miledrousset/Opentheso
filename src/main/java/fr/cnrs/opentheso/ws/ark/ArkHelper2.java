@@ -22,7 +22,6 @@ public class ArkHelper2 {
     }
     
     public boolean login() {
-        //initialisation des valeurs 
         arkClientRest = new ArkClientRest();
 
         Properties propertiesArk = new Properties();

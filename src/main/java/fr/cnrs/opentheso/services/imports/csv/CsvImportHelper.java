@@ -27,7 +27,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -37,6 +36,7 @@ import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.RelationService;
@@ -70,7 +70,7 @@ public class CsvImportHelper {
     private ImageService imageService;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -298,7 +298,7 @@ public class CsvImportHelper {
         // ajout des concepts à la collection
         if (!conceptObject.getMembers().isEmpty()) {
             for (String conceptId : conceptObject.getMembers()) {
-                groupHelper.addConceptGroupConcept(idGroup, conceptId, idTheso);
+                groupService.addConceptGroupConcept(idGroup, conceptId, idTheso);
             }
         }
         
@@ -318,7 +318,7 @@ public class CsvImportHelper {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
         }        
         
-        groupHelper.insertGroup(idGroup, idTheso, "", "C", conceptObject.getNotation(), created, modified);
+        groupService.insertGroup(idGroup, idTheso, "", "C", conceptObject.getNotation(), created, modified);
 
         ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
         for (CsvReadHelper.Label label : conceptObject.getPrefLabels()) {
@@ -327,7 +327,7 @@ public class CsvImportHelper {
             conceptGroupLabel.setIdthesaurus(idTheso);
             conceptGroupLabel.setLang(label.getLang());
             conceptGroupLabel.setLexicalValue(label.getLabel());
-            groupHelper.addGroupTraduction(conceptGroupLabel, idUser);
+            groupService.addGroupTraduction(conceptGroupLabel, idUser);
         }
 
         addNotes(idTheso, conceptObject);
@@ -1062,7 +1062,7 @@ public class CsvImportHelper {
             return true;
         }
         for(String idGroup : conceptObject.getMembers()) {
-            groupHelper.addConceptGroupConcept(idGroup,  conceptObject.getIdConcept(), idTheso);
+            groupService.addConceptGroupConcept(idGroup,  conceptObject.getIdConcept(), idTheso);
         }
         return true;
     }
@@ -1112,7 +1112,7 @@ public class CsvImportHelper {
 
         if (!conceptObject.getMembers().isEmpty()) {
             for (String member : conceptObject.getMembers()) {
-                groupHelper.addConceptGroupConcept(member.trim(), conceptObject.getIdConcept(), idTheso);
+                groupService.addConceptGroupConcept(member.trim(), conceptObject.getIdConcept(), idTheso);
             }
         }
         return true;

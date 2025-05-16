@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -61,9 +61,6 @@ public class Rest_new {
     private TermRepository termRepository;
 
     @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
     private D3jsHelper d3jsHelper;
     
     @Autowired
@@ -71,6 +68,9 @@ public class Rest_new {
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private GroupService groupService;
 
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
@@ -444,7 +444,7 @@ public class Rest_new {
         String[] groups = new String[arkGroups.length];
         int i=0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(arkGroup, idTheso);
+            groups[i] = groupService.getIdGroupFromArkId(arkGroup, idTheso);
             i++;
         }
         return groups;
@@ -746,7 +746,7 @@ public class Rest_new {
 
     private String getlistAllGroupOfTheso__(String idTheso) {
 
-        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(idTheso);
+        List<String> listIdGroupOfTheso = groupService.getGroupsByThesaurus(idTheso);
 
         List<NodeGroupTraductions> nodeGroupTraductions;
 
@@ -757,7 +757,7 @@ public class Rest_new {
             job.add("idGroup", idGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idGroup, idTheso);
+            nodeGroupTraductions = groupService.getAllGroupTraduction(idGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());

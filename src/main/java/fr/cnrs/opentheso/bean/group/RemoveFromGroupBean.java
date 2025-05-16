@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
@@ -35,9 +35,7 @@ public class RemoveFromGroupBean implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private CurrentUser currentUser;
-
-    @Autowired
-    private GroupHelper groupHelper;
+    @Autowired @Lazy private GroupService groupService;
 
     private List<NodeGroup> nodeGroups;
 
@@ -64,15 +62,9 @@ public class RemoveFromGroupBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (!groupHelper.deleteRelationConceptGroupConcept(idGroup, conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
+        groupService.deleteRelationConceptGroupConcept(idGroup, conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été enlevé de la collection");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),

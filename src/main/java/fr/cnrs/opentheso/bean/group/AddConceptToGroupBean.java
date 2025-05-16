@@ -8,7 +8,7 @@ import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
@@ -34,7 +34,7 @@ public class AddConceptToGroupBean implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -61,7 +61,7 @@ public class AddConceptToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptView.getSelectedLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), value);
+            liste = groupService.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), value);
         }
         return liste;
     }
@@ -83,7 +83,7 @@ public class AddConceptToGroupBean implements Serializable {
         }
 
         // addConceptToGroup
-        if (!groupHelper.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(),
+        if (!groupService.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

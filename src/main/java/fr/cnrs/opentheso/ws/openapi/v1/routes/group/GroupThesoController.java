@@ -1,20 +1,19 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,10 +44,12 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 public class GroupThesoController {
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private RestRDFHelper restRDFHelper;
+    @Autowired
+    private RelationGroupService relationGroupService;
 
 
     @GetMapping(produces = CustomMediaType.APPLICATION_JSON_UTF_8)
@@ -58,16 +59,16 @@ public class GroupThesoController {
             responses = { @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les collections d'un thésaurus", content = { @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)}), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
     public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "Thésaurus pour lequel on veut récupérer les groupes", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
 
-        ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+        List<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(idTheso);
+        List<String> listIdGroupOfTheso = groupService.getGroupsByThesaurus(idTheso);
 
         for (String idGroup : listIdGroupOfTheso) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idGroup", idGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idGroup, idTheso);
+            nodeGroupTraductions = groupService.getAllGroupTraduction(idGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());
@@ -129,16 +130,16 @@ public class GroupThesoController {
             @Parameter(name = "idTheso", required = true, description = "Thésaurus pour lequel on veut récupérer les collections") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "idGroup", required = true, description = "Identifiant interne du groupe") @PathVariable("idGroup") String idGroup) {
 
-        ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+        List<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(idGroup, idTheso);
+        List<String> listIdSubGroupOfTheso = relationGroupService.getListGroupChildIdOfGroup(idGroup, idTheso);
 
         for (String idSubGroup : listIdSubGroupOfTheso) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idGroup", idSubGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idSubGroup, idTheso);
+            nodeGroupTraductions = groupService.getAllGroupTraduction(idSubGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());

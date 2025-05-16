@@ -20,7 +20,6 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
@@ -30,9 +29,11 @@ import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
@@ -94,6 +95,8 @@ public class ImportFileBean implements Serializable {
     
     @Autowired @Lazy
     private CurrentUser currentUser;
+    @Autowired
+    private RelationGroupService relationGroupService;
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy
@@ -106,6 +109,9 @@ public class ImportFileBean implements Serializable {
     private CandidatBean candidatBean;
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
+
+    @Autowired
+    private GroupService groupService;
 
     @Autowired
     private PreferredTermRepository preferredTermRepository;
@@ -121,9 +127,6 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private LanguageRepository languageRepository;
-
-    @Autowired
-    private GroupHelper groupHelper;
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
@@ -1389,7 +1392,7 @@ public class ImportFileBean implements Serializable {
 
                     // ajout des liens pour les sous groupes
                     for (String subGroup : conceptObject.getSubGroups()) {
-                        groupHelper.addSubGroup(conceptObject.getIdConcept(), subGroup, idNewTheso);
+                        relationGroupService.addSubGroup(conceptObject.getIdConcept(), subGroup, idNewTheso);
                     }
                     break;
 
@@ -1921,10 +1924,10 @@ public class ImportFileBean implements Serializable {
     private String getIdGroup(String idToFind, String idTheso) {
         String idGroup = null;
         if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-            idGroup = groupHelper.getIdGroupFromArkId(idToFind, idTheso);
+            idGroup = groupService.getIdGroupFromArkId(idToFind, idTheso);
         }
         if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-            idGroup = groupHelper.getIdGroupFromHandleId(idToFind);
+            idGroup = groupService.getIdGroupFromHandleId(idToFind);
         }
         if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
             idGroup = idToFind;
@@ -2619,10 +2622,7 @@ public class ImportFileBean implements Serializable {
                 }
 
                 // addConceptToGroup
-                if (groupHelper.addConceptGroupConcept(
-                        nodeIdValue.getValue(),
-                        idConcept,
-                        selectedTheso.getCurrentIdTheso())) {
+                if (groupService.addConceptGroupConcept(nodeIdValue.getValue(), idConcept, selectedTheso.getCurrentIdTheso())) {
                     total++;
                 }
                 progressStep++;
@@ -2846,7 +2846,7 @@ public class ImportFileBean implements Serializable {
                             }
                             conceptObject.setIdConcept(idGroup);
                             // controle pour vérifier l'existance de l'Id
-                            if (groupHelper.isIdGroupExiste(idGroup, idTheso)) {
+                            if (groupService.isIdGroupExiste(idGroup, idTheso)) {
                                 continue;
                             }
                         }
@@ -2856,7 +2856,7 @@ public class ImportFileBean implements Serializable {
 
                         // ajout des liens pour les sous groupes
                         for (String subGroup : conceptObject.getSubGroups()) {
-                            if (groupHelper.addSubGroup(conceptObject.getIdConcept(), subGroup, idTheso)) {
+                            if (relationGroupService.addSubGroup(conceptObject.getIdConcept(), subGroup, idTheso)) {
                                 total++;
                             }
                         }

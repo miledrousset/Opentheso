@@ -13,11 +13,11 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -50,7 +50,7 @@ public class NewConcept implements Serializable {
     private final Tree tree;
     private final FacetHelper facetHelper;
     private final RelationsHelper relationsHelper;
-    private final GroupHelper groupHelper;
+    private final GroupService groupService;
     private final ConceptHelper conceptHelper;
     private final SearchHelper searchHelper;
     private final TermRepository termRepository;
@@ -72,11 +72,11 @@ public class NewConcept implements Serializable {
 
         if (conceptBean.getNodeConcept() != null &&
                 CollectionUtils.isNotEmpty(conceptBean.getNodeConcept().getNodeConceptGroup())) {
-            idGroup = conceptBean.getNodeConcept().getNodeConceptGroup().get(0).getConceptGroup().getIdgroup();
+            idGroup = conceptBean.getNodeConcept().getNodeConceptGroup().get(0).getConceptGroup().getIdGroup();
         }
 
         typesRelationsNT = relationsHelper.getTypesRelationsNT();
-        nodeGroups = groupHelper.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        nodeGroups = groupService.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
     public void resetForFacet(NodeFacet nodeFacet) {

@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.ConceptGroup;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -35,7 +36,6 @@ import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.NodeMetaData;
 import fr.cnrs.opentheso.models.concept.NodeUri;
-import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.nodes.DcElement;
@@ -60,9 +60,11 @@ import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
@@ -111,9 +113,6 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private HandleHelper handleHelper;
-
-    @Autowired
-    private GroupHelper groupHelper;
 
     @Autowired
     private DaoResourceHelper daoResourceHelper;
@@ -167,6 +166,12 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private AlignmentService alignmentService;
+
+    @Autowired
+    private GroupService groupService;
+
+    @Autowired
+    private RelationGroupService relationGroupService;
 
 
     /**
@@ -1099,7 +1104,7 @@ public class ConceptHelper implements Serializable {
 
         //récupération des Non Prefered Term
         nodeConceptSerach.setNodeEM(nonPreferredTermService.getNonPreferredTerms(idConcept, idThesaurus, idLang));
-        nodeConceptSerach.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, idConcept, idLang));
+        nodeConceptSerach.setNodeConceptGroup(groupService.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
         return nodeConceptSerach;
     }
@@ -1233,7 +1238,7 @@ public class ConceptHelper implements Serializable {
 
         nodeConceptSearch.setNodeEM(nonPreferredTermService.getNonPreferredTerms(conceptId, idThesaurus, idLang));
 
-        nodeConceptSearch.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, conceptId, idLang));
+        nodeConceptSearch.setNodeConceptGroup(groupService.getListGroupOfConcept(idThesaurus, conceptId, idLang));
 
         return nodeConceptSearch;
     }
@@ -2491,7 +2496,7 @@ public class ConceptHelper implements Serializable {
                 return null;
             }
             if (concept.getIdGroup() != null && !concept.getIdGroup().isEmpty()) {
-                groupHelper.addConceptGroupConcept(concept.getIdGroup(), concept.getIdConcept(), concept.getIdThesaurus());
+                groupService.addConceptGroupConcept(concept.getIdGroup(), concept.getIdConcept(), concept.getIdThesaurus());
             }
             String idTerm = termService.addTerm(term, idConcept, idUser);
             if (idTerm == null) {
@@ -4144,7 +4149,7 @@ public class ConceptHelper implements Serializable {
         nodeConceptExport.setNodeEM(nonPreferredTermService.getAllNonPreferredTerms(idConcept, idThesaurus));
 
         //récupération des Groupes ou domaines 
-        nodeConceptExport.setNodeListIdsOfConceptGroup(groupHelper.getListGroupOfConceptArk(idThesaurus, idConcept));
+        nodeConceptExport.setNodeListIdsOfConceptGroup(groupService.getListGroupOfConceptArk(idThesaurus, idConcept));
 
         ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(idConcept, idThesaurus);
         if (isCandidatExport) {
@@ -4282,7 +4287,7 @@ public class ConceptHelper implements Serializable {
         //récupération des notes du term
         nodeConcept.setNodeNotes(noteHelper.getListNotes(idConcept, idThesaurus, idLang));
 
-        nodeConcept.setNodeConceptGroup(groupHelper.getListGroupOfConcept(idThesaurus, idConcept, idLang));
+        nodeConcept.setNodeConceptGroup(groupService.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
         nodeConcept.setNodeAlignments(alignmentService.getAllAlignmentOfConcept(idConcept, idThesaurus));
 
@@ -4427,12 +4432,12 @@ public class ConceptHelper implements Serializable {
             do {
                 group = getGroupIdOfConcept(idConcept, idThesaurus);
                 if (group == null) {
-                    group = groupHelper.getIdFather(idConcept, idThesaurus);
+                    group = relationGroupService.getIdFather(idConcept, idThesaurus);
                 }
 
                 path.add(group);
                 idConcept = group;
-            } while (groupHelper.getIdFather(group, idThesaurus) != null);
+            } while (relationGroupService.getIdFather(group, idThesaurus) != null);
 
             ArrayList<String> pathTemp = new ArrayList<>();
             for (String path2 : firstPath) {
@@ -4826,11 +4831,11 @@ public class ConceptHelper implements Serializable {
                     NodeGroup node = new NodeGroup();
                     node.setLexicalValue(collection.getLabel());
                     node.setIdLang(idLang);
-                    ConceptGroup conceptGroup = new ConceptGroup();
-                    conceptGroup.setIdgroup(collection.getIdentifier());
-                    conceptGroup.setIdthesaurus(idTheso);
+                    var conceptGroup = new ConceptGroup();
+                    conceptGroup.setIdGroup(collection.getIdentifier());
+                    conceptGroup.setIdThesaurus(idTheso);
                     //conceptGroup.setIdARk(collection.get);
-                    conceptGroup.setIdtypecode("C");
+                    conceptGroup.setIdTypeCode("C");
 
                     node.setConceptGroup(conceptGroup);
                     return node;

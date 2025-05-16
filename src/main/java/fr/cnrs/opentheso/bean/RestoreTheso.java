@@ -1,17 +1,16 @@
 package fr.cnrs.opentheso.bean;
 
-
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.utils.DateUtils;
@@ -61,7 +60,7 @@ public class RestoreTheso implements Serializable {
     private ThesaurusRepository thesaurusRepository;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private ConceptRepository conceptRepository;
@@ -183,13 +182,13 @@ public class RestoreTheso implements Serializable {
 
         // supprimer le concept qui ont une relation vers un groupe vide
         // liste des concepts de la table concept-group-concept qui ont une relation vers un groupe qui n'existe plus
-        if(!groupHelper.deleteConceptsWithEmptyRelation(idTheso)) {
+        if(!groupService.deleteConceptsWithEmptyRelation(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations vides"));
         }
-        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedGroup(idTheso)) {
+        if(!groupService.deleteConceptsHavingRelationShipWithDeletedGroup(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites"));
         }
-        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedConcept(idTheso)) {
+        if(!groupService.deleteConceptsHavingRelationShipWithDeletedConcept(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites"));
         }
 

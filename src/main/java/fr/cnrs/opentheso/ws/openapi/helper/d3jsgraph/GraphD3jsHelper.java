@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -9,16 +8,17 @@ import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -29,9 +29,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GraphD3jsHelper {
-
-    @Autowired
-    private GroupHelper groupHelper;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -47,7 +44,9 @@ public class GraphD3jsHelper {
 
     private NodeGraphD3js nodeGraphD3js;
     private Preferences nodePreference;
-    
+    @Autowired
+    private GroupService groupService;
+
     public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
         nodeGraphD3js.setNodes(new ArrayList<>());
@@ -153,7 +152,7 @@ public class GraphD3jsHelper {
     
     private Node getDatasOfCollection(ConceptIdLabel conceptIdLabel, String idTheso){
         Node node = new Node();
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(conceptIdLabel.getIdentifier(), idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(conceptIdLabel.getIdentifier(), idTheso);
  
         node.setId(conceptIdLabel.getUri());
         List<String> labels = new ArrayList<>();

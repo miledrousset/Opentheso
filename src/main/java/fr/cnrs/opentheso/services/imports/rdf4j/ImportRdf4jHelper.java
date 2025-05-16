@@ -15,7 +15,6 @@ import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
@@ -42,16 +41,17 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
@@ -110,9 +110,6 @@ public class ImportRdf4jHelper {
     private CandidatDao candidatDao;
 
     @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
@@ -151,6 +148,9 @@ public class ImportRdf4jHelper {
     @Autowired
     private StatusRepository statusRepository;
 
+    @Autowired
+    private RelationGroupService relationGroupService;
+
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
     private String langueSource;
@@ -181,6 +181,8 @@ public class ImportRdf4jHelper {
     private NonPreferredTermService nonPreferredTermService;
     @Autowired
     private TermService termService;
+    @Autowired
+    private GroupService groupService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -480,7 +482,7 @@ public class ImportRdf4jHelper {
                 }
             }
 
-            groupHelper.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
 
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {
@@ -488,13 +490,13 @@ public class ImportRdf4jHelper {
                 switch (prop) {
                     case SKOSProperty.SUBGROUP:
                         idSubGroup = getIdFromUri(relation.getTargetUri());
-                        groupHelper.addSubGroup(idGroup, idSubGroup, idTheso);
+                        relationGroupService.addSubGroup(idGroup, idSubGroup, idTheso);
                         break;
                     case SKOSProperty.MEMBER:
                         // Récupération de l'Id d'origine sauvegardé à l'import (idArk -> identifier)
                         idSubConcept = getOriginalId(relation.getTargetUri());
                         groupSubGroup.put(idSubConcept, idGroup);
-                        groupHelper.addConceptGroupConcept(idGroup, idSubConcept, idTheso);
+                        groupService.addConceptGroupConcept(idGroup, idSubConcept, idTheso);
                         break;
                     default:
                         break;
@@ -509,7 +511,7 @@ public class ImportRdf4jHelper {
                 conceptGroupLabel.setLang(label.getLanguage());
                 conceptGroupLabel.setLexicalValue(label.getLabel());
 
-                groupHelper.addGroupTraduction(conceptGroupLabel, idUser);
+                groupService.addGroupTraduction(conceptGroupLabel, idUser);
             }
 
             for (SKOSDocumentation documentation : group.getDocumentationsList()) {
@@ -556,9 +558,9 @@ public class ImportRdf4jHelper {
         for (String idSubGroup : groupSubGroup.keySet()) {
             if (idGroups.contains(idSubGroup)) {
                 // si la relation member est vers un sous groupe, alors on créé une relation groupe/sousGroupe
-                groupHelper.addSubGroup(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
+                relationGroupService.addSubGroup(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
             } else {
-                groupHelper.addConceptGroupConcept(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
+                groupService.addConceptGroupConcept(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
             }
         }
     }

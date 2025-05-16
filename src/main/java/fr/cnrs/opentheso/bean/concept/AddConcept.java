@@ -9,11 +9,11 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -39,11 +39,11 @@ public class AddConcept implements Serializable {
     private final SelectedTheso selectedTheso;
     private final EditFacet editFacet;
     private final CurrentUser currentUser;
-    private final GroupHelper groupHelper;
     private final ConceptHelper conceptHelper;
     private final RelationsHelper relationsHelper;
     private final TermRepository termRepository;
     private final ConceptService conceptService;
+    private final GroupService groupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
@@ -107,11 +107,11 @@ public class AddConcept implements Serializable {
         if (conceptBean.getNodeConcept() != null) {
             conceptBean.getNodeConcept().getNodeConceptGroup().stream()
                     .findFirst()
-                    .ifPresent(nodeGroup -> idGroup = nodeGroup.getConceptGroup().getIdgroup());
+                    .ifPresent(nodeGroup -> idGroup = nodeGroup.getConceptGroup().getIdGroup());
         }
 
         typesRelationsNT = relationsHelper.getTypesRelationsNT();
-        nodeGroups = groupHelper.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        nodeGroups = groupService.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
     public void cancel() {

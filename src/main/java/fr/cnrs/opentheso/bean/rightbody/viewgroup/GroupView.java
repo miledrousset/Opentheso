@@ -1,23 +1,26 @@
 package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.entites.ConceptGroupType;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.models.group.NodeGroupType;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
-
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.IpAddressService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +42,7 @@ public class GroupView implements Serializable {
     @Autowired
     private SelectedTheso selectedTheso;
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -51,8 +54,8 @@ public class GroupView implements Serializable {
     private NoteHelper noteHelper;
 
     private NodeGroup nodeGroup;
-    private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
-    private NodeGroupType nodeGroupType;
+    private List<NodeGroupTraductions> nodeGroupTraductions;
+    private ConceptGroupType nodeGroupType;
     
     private NodeNote note;
     private NodeNote scopeNote;
@@ -74,8 +77,10 @@ public class GroupView implements Serializable {
     private int count;
 
     private boolean toggleSwitchNotesLang;
+    @Autowired
+    private GroupTypeService groupTypeService;
 
-     @PreDestroy
+    @PreDestroy
     public void destroy(){
         clear();
     }  
@@ -115,10 +120,10 @@ public class GroupView implements Serializable {
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
 
-        nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
+        nodeGroup = groupService.getThisConceptGroup(idGroup, idTheso, idLang);
         
-        nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
-        nodeGroupType = groupHelper.getGroupType(nodeGroup.getConceptGroup().getIdtypecode());
+        nodeGroupTraductions = groupService.getGroupTraduction(idGroup, idTheso, idLang);
+        nodeGroupType = groupTypeService.getGroupType(nodeGroup.getConceptGroup().getIdTypeCode());
         logGroup();
         setNotes(idTheso, idGroup, idLang);
 
@@ -130,7 +135,7 @@ public class GroupView implements Serializable {
 
     private void logGroup() {
         String ipAddress = ipAddressService.getClientIpAddress();
-        log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdgroup(),
+        log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdGroup(),
                 selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 

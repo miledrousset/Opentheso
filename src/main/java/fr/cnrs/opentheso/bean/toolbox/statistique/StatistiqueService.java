@@ -4,13 +4,14 @@ import fr.cnrs.opentheso.entites.Alignement;
 import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.ConceptGroupProjection;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
+import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.AlignementRepository;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.text.SimpleDateFormat;
@@ -32,33 +33,34 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StatistiqueService {
 
-    private GroupHelper groupHelper;
-    private NoteHelper noteHelper;
-    private ConceptRepository conceptRepository;
-    private ThesaurusRepository thesaurusRepository;
-    private AlignementRepository alignementRepository;
-    private ConceptStatusRepository conceptStatusRepository;
-    private ConceptGroupLabelRepository conceptGroupLabelRepository;
+    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final NoteHelper noteHelper;
+    private final GroupService groupService;
+    private final ConceptRepository conceptRepository;
+    private final ThesaurusRepository thesaurusRepository;
+    private final AlignementRepository alignementRepository;
+    private final ConceptStatusRepository conceptStatusRepository;
+    private final ConceptGroupLabelRepository conceptGroupLabelRepository;
 
 
-    public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idTheso, String idLang) {
+    public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idThesaurus, String idLang) {
 
         List<GenericStatistiqueData> result = new ArrayList<>();
         
-        var listGroup = groupHelper.getListConceptGroup(idTheso, idLang);
+        var listGroup = groupService.getListConceptGroup(idThesaurus, idLang);
 
         listGroup.forEach(group -> {
 
-            var noteNbr = noteHelper.getNbrNoteByGroup(group.getConceptGroup().getIdgroup(), idTheso, idLang);
-            var conceptNbr = conceptStatusRepository.countConceptsInGroup(idTheso, group.getConceptGroup().getIdgroup());
-            var traductionOfGroupNbr = conceptStatusRepository.countNonPreferredTermsByLangAndGroup(idTheso,
-                    group.getConceptGroup().getIdgroup(), idLang);
-            var WikidataAlignNbr = getNbAlignWikidata(idTheso, group.getConceptGroup().getIdgroup());
-            var totalAlignmentNbr = getAlignementsSize(idTheso, group.getConceptGroup().getIdgroup()).size();
+            var noteNbr = noteHelper.getNbrNoteByGroup(group.getConceptGroup().getIdGroup(), idThesaurus, idLang);
+            var conceptNbr = conceptStatusRepository.countConceptsInGroup(idThesaurus, group.getConceptGroup().getIdGroup());
+            var traductionOfGroupNbr = conceptStatusRepository.countNonPreferredTermsByLangAndGroup(idThesaurus,
+                    group.getConceptGroup().getIdGroup(), idLang);
+            var WikidataAlignNbr = getNbAlignWikidata(idThesaurus, group.getConceptGroup().getIdGroup());
+            var totalAlignmentNbr = getAlignementsSize(idThesaurus, group.getConceptGroup().getIdGroup()).size();
             var termesNonTraduitsNbr = conceptNbr - traductionOfGroupNbr;
             
             result.add(GenericStatistiqueData.builder()
-                    .idCollection(group.getConceptGroup().getIdgroup())
+                    .idCollection(group.getConceptGroup().getIdGroup())
                     .collection(group.getLexicalValue())
                     .notesNbr(noteNbr)
                     .synonymesNbr(traductionOfGroupNbr)
@@ -70,15 +72,15 @@ public class StatistiqueService {
                     .build());
         });
 
-        var conceptNbr = conceptStatusRepository.countConceptsWithoutGroup(idTheso);
+        var conceptNbr = conceptStatusRepository.countConceptsWithoutGroup(idThesaurus);
         result.add(GenericStatistiqueData.builder()
                 .collection("Sans collection")
                 .conceptsNbr(conceptNbr)
-                .notesNbr(noteHelper.getNbrNoteSansGroup(idTheso, idLang))
-                .synonymesNbr(conceptStatusRepository.countNonPreferredTermsNotInGroup(idTheso, idLang))
-                .termesNonTraduitsNbr(conceptNbr - conceptStatusRepository.countConceptsWithoutGroupByLangAndThesaurus(idTheso, idLang))
-                .wikidataAlignNbr(getNbAlignWikidata(idTheso, null))
-                .totalAlignment(getAlignementsSize(idTheso, null).size())
+                .notesNbr(noteHelper.getNbrNoteSansGroup(idThesaurus, idLang))
+                .synonymesNbr(conceptStatusRepository.countNonPreferredTermsNotInGroup(idThesaurus, idLang))
+                .termesNonTraduitsNbr(conceptNbr - conceptStatusRepository.countConceptsWithoutGroupByLangAndThesaurus(idThesaurus, idLang))
+                .wikidataAlignNbr(getNbAlignWikidata(idThesaurus, null))
+                .totalAlignment(getAlignementsSize(idThesaurus, null).size())
                 .build());
 
         return result;
@@ -166,12 +168,12 @@ public class StatistiqueService {
     public List<DomaineDto> getListGroupes(String idThesaurus, String idLangue) {
         var thesaurus = thesaurusRepository.findById(idThesaurus);
         if (thesaurus.isPresent()) {
-            var conceptGroupList = conceptGroupLabelRepository.findAllByThesaurusAndLang(thesaurus.get(), idLangue);
+            var conceptGroupList = conceptGroupLabelRepository.findAllByIdThesaurusAndLang(thesaurus.get().getIdThesaurus(), idLangue);
             if (CollectionUtils.isNotEmpty(conceptGroupList)) {
                 return conceptGroupList.stream()
                         .map(element ->
                                 DomaineDto.builder()
-                                        .id(element.getConceptGroup().getIdGroup())
+                                        .id(element.getIdGroup())
                                         .name(element.getLexicalValue())
                                         .build())
                         .toList();

@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -22,6 +21,7 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -49,11 +49,10 @@ public class NoteBean implements Serializable {
     @Autowired @Lazy private EditFacet editFacet;
     @Autowired @Lazy private GroupView groupView;
 
-    @Autowired
-    private ConceptHelper conceptHelper;
+    @Autowired @Lazy private GroupService groupService;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private ConceptHelper conceptHelper;
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
@@ -94,7 +93,7 @@ public class NoteBean implements Serializable {
      * permet d'initialiser l'édition des notes pour les facettes
      */
     public void resetForGroup(NodeGroup nodeGroup){
-        resetNotes(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getIdLang());
+        resetNotes(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getIdLang());
         setIsGroupNote();
 //        this.nodeGroup = nodeGroup;
     }
@@ -209,7 +208,7 @@ public class NoteBean implements Serializable {
         if(isGroupNote) {
             groupView.getGroup(
                     selectedTheso.getCurrentIdTheso(),
-                    groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                    groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                     selectedTheso.getCurrentLang());
         }
         if(isFacetNote) {
@@ -277,7 +276,7 @@ public class NoteBean implements Serializable {
             conceptDcTermRepository.save(ConceptDcTerm.builder()
                     .name(DCMIResource.CONTRIBUTOR)
                     .value(currentUser.getNodeUser().getName())
-                    .idConcept(groupView.getNodeGroup().getConceptGroup().getIdgroup())
+                    .idConcept(groupView.getNodeGroup().getConceptGroup().getIdGroup())
                     .idThesaurus(selectedTheso.getCurrentIdTheso())
                     .build());
         }
@@ -525,21 +524,21 @@ public class NoteBean implements Serializable {
     
     /// notes pour les collections
     private void addGroupNote(int idUser){
-        if (!addNote(nodeGroup.getConceptGroup().getIdgroup(), idUser)) {
+        if (!addNote(nodeGroup.getConceptGroup().getIdGroup(), idUser)) {
             printErreur();
             return;
         }
-        groupHelper.updateModifiedDate(nodeGroup.getConceptGroup().getIdgroup(),
+        groupService.updateModifiedDate(nodeGroup.getConceptGroup().getIdGroup(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
                 .value(currentUser.getNodeUser().getName())
-                .idConcept(nodeGroup.getConceptGroup().getIdgroup())
+                .idConcept(nodeGroup.getConceptGroup().getIdGroup())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentLang());
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeGroup.getConceptGroup().getIdGroup(), selectedTheso.getCurrentLang());
         noteValue = "";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);           
@@ -784,8 +783,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        groupHelper.updateModifiedDate(
-                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
+        groupService.updateModifiedDate(nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

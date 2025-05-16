@@ -26,9 +26,10 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.search.NodeSearch;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.TermService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -50,7 +51,7 @@ public class SearchHelper {
     private NoteHelper noteHelper;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
     @Autowired
     private TermService termService;
     @Autowired
@@ -203,7 +204,7 @@ public class SearchHelper {
                             .idTerm(resultSet.getString("id_term"))
                             .terms(terms)
                             .status(getStatusLabel(resultSet.getString("status")))
-                            .collections(groupHelper.getListGroupOfConcept(idTheso, idConcept, idLang).stream()
+                            .collections(groupService.getListGroupOfConcept(idTheso, idConcept, idLang).stream()
                                     .map(this::toElement)
                                     .collect(Collectors.toList()))
                             .synonymes(synonymes)
@@ -223,7 +224,7 @@ public class SearchHelper {
     private String generateGroupCondition(String idTheso, String idGroup) {
         String groups = null;
         if (!StringUtils.isEmpty(idGroup)) {
-            var groupList = groupHelper.getAllGroupDescending(idGroup, idTheso);
+            var groupList = groupService.getAllGroupDescending(idGroup, idTheso);
             if (CollectionUtils.isEmpty(groupList)) groupList = new ArrayList<>();
             groups = String.join(",", groupList.stream()
                     .map(element -> String.format("'%s'", element.toLowerCase()))
@@ -256,7 +257,7 @@ public class SearchHelper {
 
     private NodeElement toElement(NodeGroup nodeGroup) {
         return NodeElement.builder()
-                .id(nodeGroup.getConceptGroup().getIdgroup())
+                .id(nodeGroup.getConceptGroup().getIdGroup())
                 .lang(nodeGroup.getIdLang())
                 .value(nodeGroup.getLexicalValue())
                 .build();

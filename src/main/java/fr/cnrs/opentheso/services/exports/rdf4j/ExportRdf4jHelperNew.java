@@ -30,10 +30,11 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,7 +59,10 @@ public class ExportRdf4jHelperNew {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
+
+    @Autowired
+    private RelationGroupService relationGroupService;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -344,10 +348,10 @@ public class ExportRdf4jHelperNew {
     }
 
     public List<SKOSResource> exportCollectionsV2(String idTheso){
-        var rootGroupList = groupHelper.getListIdOfRootGroup(idTheso, false);
+        var rootGroupList = groupService.getListIdOfRootGroup(idTheso, false);
         List<SKOSResource> skosResourcesList = new ArrayList<>();
         for (String idGroup : rootGroupList) {
-            var nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);
+            var nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
             sKOSResource.setIdentifier(idGroup);
             sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
@@ -358,7 +362,7 @@ public class ExportRdf4jHelperNew {
 
     public SKOSResource addChildsGroupRecursiveV2(String idTheso, String idParent, SKOSResource sKOSResource) {
 
-        ArrayList<String> listIdsOfGroupChilds = groupHelper.getListGroupChildIdOfGroup(idParent, idTheso);
+        var listIdsOfGroupChilds = relationGroupService.getListGroupChildIdOfGroup(idParent, idTheso);
         var skosResource = writeGroupInfoV2(sKOSResource, idTheso, idParent);
 
         for (String idOfGroupChild : listIdsOfGroupChilds) {
@@ -372,7 +376,7 @@ public class ExportRdf4jHelperNew {
 
     private SKOSResource writeGroupInfoV2(SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idOfGroupChild, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
@@ -395,8 +399,8 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.PREF_LABEL);
         }
 
-        ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(idTheso, idOfGroupChild);
-        ArrayList<NodeUri> nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
+        var childURIs = relationGroupService.getListGroupChildOfGroup(idTheso, idOfGroupChild);
+        var nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
@@ -409,7 +413,7 @@ public class ExportRdf4jHelperNew {
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
         if (idSuperGroup != null) {
-            NodeUri nodeUri1 = groupHelper.getThisGroupIds(idSuperGroup, idTheso);
+            NodeUri nodeUri1 = groupService.getThisGroupIds(idSuperGroup, idTheso);
             if(nodeUri1 != null){
                 sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.SUPERGROUP);
                 superGroupHashMap.remove(idOfGroupChild);
@@ -431,7 +435,7 @@ public class ExportRdf4jHelperNew {
 
     public SKOSResource addSingleGroupV2(String idThesaurus, String idGroup) {
 
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idThesaurus);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idThesaurus);
         SKOSResource sKOSResource = new SKOSResource();
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
@@ -453,7 +457,7 @@ public class ExportRdf4jHelperNew {
 
         // pour exporter les membres (tous les concepts du group
 
-        ArrayList<String> childURI = groupHelper.getListGroupChildIdOfGroup(idGroup, idThesaurus);
+        var childURI = relationGroupService.getListGroupChildIdOfGroup(idGroup, idThesaurus);
         HashMap<String, String> superGroupHashMapTemp = new HashMap();
         for (String id : childURI) {
             sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.SUBGROUP);
@@ -473,7 +477,7 @@ public class ExportRdf4jHelperNew {
         NodeGroupLabel nodeGroupLabel;
         List<SKOSResource> skosResourcesList = new ArrayList<>();
         for (String idGroup : selectedGroups) {
-            nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);
+            nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
             sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
             skosResourcesList.add(addChildsGroupRecursiveV2(idTheso, idGroup, sKOSResource));
@@ -493,7 +497,7 @@ public class ExportRdf4jHelperNew {
 
     public SKOSResource exportThisCollectionV2(String idTheso, String idGroup){
 
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idGroup, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idTheso);
         SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
         sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
         return writeGroupInfoV2(sKOSResource, idTheso, idGroup);
@@ -501,7 +505,7 @@ public class ExportRdf4jHelperNew {
 
     public void addChildsGroupRecursive(String idTheso, String idParent, SKOSResource sKOSResource) {
 
-        ArrayList<String> listIdsOfGroupChilds = groupHelper.getListGroupChildIdOfGroup(idParent, idTheso);
+        var listIdsOfGroupChilds = relationGroupService.getListGroupChildIdOfGroup(idParent, idTheso);
         writeGroupInfo(sKOSResource, idTheso, idParent);
 
         for (String idOfGroupChild : listIdsOfGroupChilds) {
@@ -513,7 +517,7 @@ public class ExportRdf4jHelperNew {
 
     private void writeGroupInfo(SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(idOfGroupChild, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
@@ -536,8 +540,8 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.PREF_LABEL);
         }
 
-        ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(idTheso, idOfGroupChild);
-        ArrayList<NodeUri> nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
+        var childURIs = relationGroupService.getListGroupChildOfGroup(idTheso, idOfGroupChild);
+        var nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
@@ -550,7 +554,7 @@ public class ExportRdf4jHelperNew {
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
         if (idSuperGroup != null) {
-            NodeUri nodeUri1 = groupHelper.getThisGroupIds(idSuperGroup, idTheso);
+            NodeUri nodeUri1 = groupService.getThisGroupIds(idSuperGroup, idTheso);
             if(nodeUri1 != null){
                 sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.SUPERGROUP);
                 superGroupHashMap.remove(idOfGroupChild);

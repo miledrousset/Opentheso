@@ -3,16 +3,14 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -29,11 +27,11 @@ import org.springframework.stereotype.Service;
 public class PathService {
 
     private final NoteHelper noteHelper;
-    private final GroupHelper groupHelper;
     private final TermService termService;
     private final ConceptHelper conceptHelper;
     private final RelationsHelper relationsHelper;
     private final PreferenceService preferenceService;
+    private final RelationGroupService relationGroupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private String message;
@@ -366,7 +364,7 @@ public class PathService {
      */
     private ArrayList<String> getPathOfGroup(String idGroup, String idThesaurus, ArrayList<String> path) {
 
-        String idGroupParent = groupHelper.getIdFather(idGroup, idThesaurus);
+        String idGroupParent = relationGroupService.getIdFather(idGroup, idThesaurus);
         if(idGroupParent == null) return path;
 
         path.add(0,idGroupParent);

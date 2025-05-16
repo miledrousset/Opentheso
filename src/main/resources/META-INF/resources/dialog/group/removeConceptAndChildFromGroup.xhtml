@@ -42,8 +42,7 @@
 
                 <p:column width="80" headerText="Supprimer">
                     <p:commandLink style="color: #FF7979" ajax="true" process="@this"
-                                   action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(
-                                             domaines.conceptGroup.idgroup, currentUser.nodeUser.idUser)}"
+                                   action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(domaines.conceptGroup.idgroup)}"
                                    update="messageIndex containerIndex:formRightTab">
                         <i class="pi pi-trash" />
                     </p:commandLink>

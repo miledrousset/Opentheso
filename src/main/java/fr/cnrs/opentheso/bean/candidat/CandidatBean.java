@@ -13,7 +13,6 @@ import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -34,6 +33,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.CandidatService;
 
@@ -96,7 +96,6 @@ public class CandidatBean implements Serializable {
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final ImageService imageService;
     private final DomaineDao domaineDao;
-    private final GroupHelper groupHelper;
     private final ConceptHelper conceptHelper;
     private final CandidatService candidatService;
     private final TermeDao termeDao;
@@ -104,6 +103,7 @@ public class CandidatBean implements Serializable {
     private final TermRepository termRepository;
     private final TermService termService;
     private final AlignmentService alignmentService;
+    private final GroupService groupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
@@ -618,7 +618,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
         if (StringUtils.isNotEmpty(enteredValue)) {
-            allCollections = groupHelper.searchGroup(selectedTheso.getCurrentIdTheso(),
+            allCollections = groupService.searchGroup(selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), enteredValue);
             return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
         } else {

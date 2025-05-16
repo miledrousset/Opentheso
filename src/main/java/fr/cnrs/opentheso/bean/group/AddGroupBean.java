@@ -5,14 +5,15 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.GroupTypeService;
+import fr.cnrs.opentheso.services.RelationGroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -44,10 +45,13 @@ public class AddGroupBean implements Serializable {
     private TreeGroups treeGroups;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private RelationGroupService relationGroupService;
 
     @Autowired
     private NoteHelper noteHelper;
+
+    @Autowired
+    private GroupService groupService;
 
     private String selectedGroupType;
     private String titleGroup;
@@ -63,29 +67,16 @@ public class AddGroupBean implements Serializable {
     private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
+    @Autowired
+    private GroupTypeService groupTypeService;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-    public void clear(){
-        selectedGroupType = null;
-        titleGroup = null;
-        if(listGroupType!= null){
-            listGroupType.clear();
-            listGroupType = null;
-        }
-    }
-
-    public AddGroupBean() {
-    }
 
     public void init() {
         titleGroup = "";
         notation = "";
         definition = "";
         selectedGroupType = null;
-        listGroupType = groupHelper.getAllGroupType();
+        listGroupType = groupTypeService.getAllGroupType();
         if (!listGroupType.isEmpty()) {
             selectedGroupType = listGroupType.get(0).getLabel();
         }
@@ -120,28 +111,24 @@ public class AddGroupBean implements Serializable {
 
         nodeGroup.setLexicalValue(titleGroup);
         nodeGroup.setIdLang(idLang);
-        nodeGroup.getConceptGroup().setIdthesaurus(idTheso);
+        nodeGroup.getConceptGroup().setIdThesaurus(idTheso);
         nodeGroup.getConceptGroup().setNotation(notation);
 
         if (selectedGroupType == null || selectedGroupType.isEmpty()) {
             selectedGroupType = "C";
         }
-        nodeGroup.getConceptGroup().setIdtypecode(selectedGroupType);
-
-        groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        nodeGroup.getConceptGroup().setIdTypeCode(selectedGroupType);
 
         if(notation == null || notation.isEmpty()){
         } else {
-            if (groupHelper.isNotationExist(notation, idTheso)) {
+            if (groupService.isNotationExist(notation, idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         }
 
-        String idGroup = groupHelper.addGroup(
-                nodeGroup,
-                idUser);
+        String idGroup = groupService.addGroup(nodeGroup, idUser);
         if (idGroup == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "","Erreur interne"));
@@ -189,12 +176,8 @@ public class AddGroupBean implements Serializable {
             return;
         }
 
-        groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-        if(!groupHelper.addIdArkGroup(idTheso, idGroup, groupLabel)) {
+        if(!groupService.addIdArkGroup(idTheso, idGroup, groupLabel)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", groupHelper.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
@@ -247,31 +230,22 @@ public class AddGroupBean implements Serializable {
         NodeGroup nodeGroup = new NodeGroup();
         nodeGroup.setLexicalValue(titleGroup);
         nodeGroup.setIdLang(idLang);
-        nodeGroup.getConceptGroup().setIdthesaurus(idTheso);
+        nodeGroup.getConceptGroup().setIdThesaurus(idTheso);
         nodeGroup.getConceptGroup().setNotation(notation);
 
         if (selectedGroupType == null || selectedGroupType.isEmpty()) {
             selectedGroupType = "C";
         }
-        nodeGroup.getConceptGroup().setIdtypecode(selectedGroupType);
+        nodeGroup.getConceptGroup().setIdTypeCode(selectedGroupType);
 
-        groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-        String idSubGroup = groupHelper.addGroup(
-                nodeGroup,
-                idUser);
+        String idSubGroup = groupService.addGroup(nodeGroup, idUser);
         if (idSubGroup == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne"));
             return;
         }
 
-        if (!groupHelper.addSubGroup(idGroupFather, idSubGroup, idTheso)) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
-                            titleGroup + " : Erreur de création"));
-            return;
-        }
+        relationGroupService.addSubGroup(idGroupFather, idSubGroup, idTheso);
         treeGroups.addNewSubGroupToTree(treeGroups.getSelectedNode(), idSubGroup, idTheso, idLang);
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",

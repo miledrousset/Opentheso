@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,10 +42,10 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_RD
 public class ConcepThesoSearchController {
 
     @Autowired
-    private GroupHelper groupHelper;
+    private RestRDFHelper restRDFHelper;
 
     @Autowired
-    private RestRDFHelper restRDFHelper;
+    private GroupService groupService;
 
 
     @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
@@ -173,7 +173,7 @@ public class ConcepThesoSearchController {
         String[] groups = new String[arkGroups.length];
         int i = 0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(arkGroup, idTheso);
+            groups[i] = groupService.getIdGroupFromArkId(arkGroup, idTheso);
             i++;
         }
         return groups;

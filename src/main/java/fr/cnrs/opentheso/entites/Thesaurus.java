@@ -58,10 +58,4 @@ public class Thesaurus {
     @OneToMany(mappedBy = "thesaurus")
     private List<ConceptCandidat> candidats;
 
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroup> conceptGroups;
-
-    @OneToMany(mappedBy = "thesaurus")
-    private List<ConceptGroupLabel> conceptGroupLabels;
-
 }

@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
@@ -20,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.GroupService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -54,10 +54,10 @@ public class DragAndDrop implements Serializable {
     private FacetHelper facetHelper;
 
     @Autowired
-    private ConceptHelper conceptHelper;
+    private GroupService groupService;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private ConceptHelper conceptHelper;
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
@@ -180,7 +180,7 @@ public class DragAndDrop implements Serializable {
             nodeGroupsToCut = new ArrayList<>();
         for (NodeGroup nodeGroup : nodeConceptDrag.getNodeConceptGroup()) {
             NodeGroup nodeGroup1 = new NodeGroup();
-            nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+            nodeGroup1.getConceptGroup().setIdGroup(nodeGroup.getConceptGroup().getIdGroup());
             nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
             nodeGroup1.setSelected(true);
             nodeGroupsToCut.add(nodeGroup1);
@@ -190,7 +190,7 @@ public class DragAndDrop implements Serializable {
         if(nodeConceptDrop != null) {
             for (NodeGroup nodeGroup : nodeConceptDrop.getNodeConceptGroup()) {
                 NodeGroup nodeGroup1 = new NodeGroup();
-                nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+                nodeGroup1.getConceptGroup().setIdGroup(nodeGroup.getConceptGroup().getIdGroup());
                 nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
                 nodeGroup1.setSelected(true);
                 nodeGroupsToAdd.add(nodeGroup1);
@@ -204,7 +204,7 @@ public class DragAndDrop implements Serializable {
 
         for (NodeGroup nodeGroup : concept.getNodeConceptGroup()) {
             NodeGroup nodeGroup1 = new NodeGroup();
-            nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+            nodeGroup1.getConceptGroup().setIdGroup(nodeGroup.getConceptGroup().getIdGroup());
             nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
             nodeGroup1.setSelected(true);
             groupsToCut.add(nodeGroup1);
@@ -218,7 +218,7 @@ public class DragAndDrop implements Serializable {
         List<NodeGroup> groupsToAdd = new ArrayList<>();
         for (NodeGroup nodeGroup : concept.getNodeConceptGroup()) {
             NodeGroup nodeGroup1 = new NodeGroup();
-            nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+            nodeGroup1.getConceptGroup().setIdGroup(nodeGroup.getConceptGroup().getIdGroup());
             nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
             nodeGroup1.setSelected(true);
             groupsToAdd.add(nodeGroup1);
@@ -916,8 +916,8 @@ public class DragAndDrop implements Serializable {
             return true;
         
         //cas où les deux collections sont identiques ou non 
-        return !nodeConceptDrag.getNodeConceptGroup().get(0).getConceptGroup().getIdgroup().equalsIgnoreCase(
-                nodeConceptDrop.getNodeConceptGroup().get(0).getConceptGroup().getIdgroup());
+        return !nodeConceptDrag.getNodeConceptGroup().get(0).getConceptGroup().getIdGroup().equalsIgnoreCase(
+                nodeConceptDrop.getNodeConceptGroup().get(0).getConceptGroup().getIdGroup());
     }
     
     private void updateMessage(){
@@ -1021,14 +1021,14 @@ public class DragAndDrop implements Serializable {
                     .equals(nodeConceptDrag.getConcept().getIdConcept())
                     && nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.deleteRelationConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                    groupService.deleteRelationConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdGroup(),
                             idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
             if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
                     && !nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.addConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                    groupService.addConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdGroup(),
                             idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
@@ -1037,14 +1037,14 @@ public class DragAndDrop implements Serializable {
             if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
                     && !nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.deleteRelationConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                    groupService.deleteRelationConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdGroup(),
                             idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
             if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
                     && nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.addConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                    groupService.addConceptGroupConcept(nodeGroup.getNodeGroup().getConceptGroup().getIdGroup(),
                             idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
@@ -1178,27 +1178,25 @@ public class DragAndDrop implements Serializable {
         for (NodeGroup nodeGroup : nodeGroupsToCut) {
             if(nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.deleteRelationConceptGroupConcept(nodeGroup.getConceptGroup().getIdgroup(),
+                    groupService.deleteRelationConceptGroupConcept(nodeGroup.getConceptGroup().getIdGroup(),
                         idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
             if(!nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.addConceptGroupConcept(nodeGroup.getConceptGroup().getIdgroup(), idConcept,
-                            selectedTheso.getCurrentIdTheso());
+                    groupService.addConceptGroupConcept(nodeGroup.getConceptGroup().getIdGroup(), idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }            
         }
         for (NodeGroup nodeGroup : nodeGroupsToAdd) {
             if(!nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.deleteRelationConceptGroupConcept(nodeGroup.getConceptGroup().getIdgroup(),
-                        idConcept, selectedTheso.getCurrentIdTheso());
+                    groupService.deleteRelationConceptGroupConcept(nodeGroup.getConceptGroup().getIdGroup(), idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }
             if(nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
-                    groupHelper.addConceptGroupConcept(nodeGroup.getConceptGroup().getIdgroup(),
+                    groupService.addConceptGroupConcept(nodeGroup.getConceptGroup().getIdGroup(),
                         idConcept, selectedTheso.getCurrentIdTheso());
                 }
             }            

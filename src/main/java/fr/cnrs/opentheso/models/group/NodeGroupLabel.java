@@ -1,11 +1,18 @@
 package fr.cnrs.opentheso.models.group;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeGroupLabel {
 
     private String idGroup;
@@ -16,6 +23,6 @@ public class NodeGroupLabel {
     private String idThesaurus;
     private Date created;
     private Date modified;
-    private ArrayList<NodeGroupTraductions> nodeGroupTraductionses = new ArrayList<>();
+    private List<NodeGroupTraductions> nodeGroupTraductionses = new ArrayList<>();
 
 }

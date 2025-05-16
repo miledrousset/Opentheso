@@ -6,7 +6,7 @@ import java.util.List;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
+import fr.cnrs.opentheso.services.RelationGroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
@@ -59,7 +60,7 @@ public class TreeGroups implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private GroupHelper groupHelper;
+    private GroupService groupService;
 
     @Autowired
     private PathService pathService;
@@ -68,6 +69,8 @@ public class TreeGroups implements Serializable {
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
     private boolean sortByNotation;
+    @Autowired
+    private RelationGroupService relationGroupService;
 
     public void reset() {
         root = null;
@@ -88,12 +91,12 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, isSortByNotation(),
+        List<NodeGroup> racineNode = groupService.getListRootConceptGroup(idTheso, idLang, isSortByNotation(),
                 ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(
-                    nodeGroup.getConceptGroup().getIdgroup(),
+                    nodeGroup.getConceptGroup().getIdGroup(),
                     nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),
                     true,//isgroup
@@ -134,8 +137,7 @@ public class TreeGroups implements Serializable {
 
     private boolean addGroupsChild(TreeNode parent) {
 
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(((TreeNodeData) parent.getData()).getNodeId(),
-                idTheso, idLang, isSortByNotation());
+        var listeSubGroup = groupService.getListChildsOfGroup(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, isSortByNotation());
         if (listeSubGroup == null) {
             parent.setType("group");
             return true;
@@ -143,7 +145,7 @@ public class TreeGroups implements Serializable {
 
         for (NodeGroup nodeGroup : listeSubGroup) {
             TreeNodeData data = new TreeNodeData(
-                    nodeGroup.getConceptGroup().getIdgroup(),
+                    nodeGroup.getConceptGroup().getIdGroup(),
                     nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),
                     false,//isgroup
@@ -251,7 +253,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupService.getThisConceptGroup(idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -286,7 +288,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupService.getThisConceptGroup(idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -407,9 +409,7 @@ public class TreeGroups implements Serializable {
         if (selectedNode == null) {
             return false;
         }
-        return groupHelper.isHaveSubGroup(
-                idTheso,
-                ((TreeNodeData) selectedNode.getData()).getNodeId());
+        return relationGroupService.isHaveSubGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId());
     }
 
     public boolean deleteGroupDisable() {

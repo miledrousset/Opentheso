@@ -5,11 +5,11 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
@@ -58,9 +58,6 @@ public class RestRDFHelper {
     private TermRepository termRepository;
 
     @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -86,6 +83,9 @@ public class RestRDFHelper {
 
     @Autowired
     private DaoResourceHelper daoResourceHelper;
+
+    @Autowired
+    private GroupService groupService;
 
 
     private enum Choix {
@@ -118,7 +118,7 @@ public class RestRDFHelper {
         
         if(StringUtils.isEmpty(idTheso)) {
             // cas où c'est l'identifiant d'un groupe
-            idTheso = groupHelper.getIdThesaurusFromArkId(naan + "/" + idArk);  
+            idTheso = groupService.getIdThesaurusFromArkId(naan + "/" + idArk);
             choix = Choix.GROUP;
         }        
         if(StringUtils.isEmpty(idTheso)){
@@ -138,7 +138,7 @@ public class RestRDFHelper {
                 return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;                  
 
             case GROUP:
-                String idGroup = groupHelper.getIdGroupFromArkId(naan + "/" + idArk, idTheso);    
+                String idGroup = groupService.getIdGroupFromArkId(naan + "/" + idArk, idTheso);
                 if(StringUtils.isEmpty(idGroup)){    
                     return null;
                 }     
@@ -1536,8 +1536,8 @@ public class RestRDFHelper {
 
     private WriteRdf4j getGroupFromArk(String idArk) {
 
-        String idTheso = groupHelper.getIdThesaurusFromArkId(idArk);        
-        String idGroup = groupHelper.getIdGroupFromArkId(idArk, idTheso);
+        String idTheso = groupService.getIdThesaurusFromArkId(idArk);
+        String idGroup = groupService.getIdGroupFromArkId(idArk, idTheso);
 
 
         if (idGroup == null || idTheso == null) {

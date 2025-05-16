@@ -1,15 +1,13 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -59,7 +57,7 @@ public class DomaineDao {
         for (NodeGroup nodeGroup : nodeGroups) {
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setValue(nodeGroup.getLexicalValue());
-            nodeIdValue.setId(nodeGroup.getConceptGroup().getIdgroup());
+            nodeIdValue.setId(nodeGroup.getConceptGroup().getIdGroup());
             nodeIdValues.add(nodeIdValue);
         }
         return nodeIdValues;
@@ -109,7 +107,7 @@ public class DomaineDao {
     public NodeGroup getThisConceptGroup(String idConceptGroup, String idThesaurus, String idLang) {
 
         NodeGroup nodeConceptGroup = null;
-        ConceptGroup conceptGroup = null;
+        fr.cnrs.opentheso.entites.ConceptGroup conceptGroup = null;
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * from concept_group where LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
@@ -117,12 +115,12 @@ public class DomaineDao {
                 try (ResultSet resultSet = stmt.getResultSet()){
                     if (resultSet.next()) {
                         if (resultSet.getRow() != 0) {
-                            conceptGroup = new ConceptGroup();
-                            conceptGroup.setIdgroup(idConceptGroup);
-                            conceptGroup.setIdthesaurus(idThesaurus);
-                            conceptGroup.setIdARk(resultSet.getString("id_ark"));
+                            conceptGroup = new fr.cnrs.opentheso.entites.ConceptGroup();
+                            conceptGroup.setIdGroup(idConceptGroup);
+                            conceptGroup.setIdThesaurus(idThesaurus);
+                            conceptGroup.setIdArk(resultSet.getString("id_ark"));
                             conceptGroup.setIdHandle(resultSet.getString("id_handle"));
-                            conceptGroup.setIdtypecode(resultSet.getString("idtypecode"));
+                            conceptGroup.setIdTypeCode(resultSet.getString("idtypecode"));
                             conceptGroup.setNotation(resultSet.getString("notation"));
                             conceptGroup.setCreated(resultSet.getDate("created"));
                             conceptGroup.setModified(resultSet.getDate("modified"));
@@ -131,7 +129,7 @@ public class DomaineDao {
                 }
                 if (conceptGroup != null) {
                     stmt.executeQuery("SELECT * FROM concept_group_label WHERE"
-                            + " LOWER(idgroup) = '" + conceptGroup.getIdgroup().toLowerCase() + "'"
+                            + " LOWER(idgroup) = '" + conceptGroup.getIdGroup().toLowerCase() + "'"
                             + " AND idthesaurus = '" + idThesaurus + "'"
                             + " AND lang = '" + idLang + "'");
                     try (ResultSet resultSet = stmt.getResultSet()){

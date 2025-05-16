@@ -17,7 +17,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @Table(name = "thesaurus_alignement_source")
-@AllArgsConstructor@IdClass(ThesaurusAlignementSourceId.class)
+@AllArgsConstructor
+@IdClass(ThesaurusAlignementSourceId.class)
 public class ThesaurusAlignementSource {
 
     @Id
