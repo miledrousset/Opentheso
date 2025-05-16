@@ -3,12 +3,12 @@ package fr.cnrs.opentheso.ws.api;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ResourceService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -31,12 +31,11 @@ public class D3jsHelper {
     @Autowired
     private ThesaurusHelper thesaurusHelper;
 
-    @Autowired
-    private DaoResourceHelper daoResourceHelper;
-
 
     private int count = 0;
     private Preferences nodePreference;
+    @Autowired
+    private ResourceService resourceService;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
         count = 0;
@@ -56,9 +55,9 @@ public class D3jsHelper {
         
         // cas où on affiche tout le thésaurus
         if(StringUtils.isEmpty(idConcept)){
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsTTForGraph(idTheso, idLang);
+            nodeConceptGraphs_childs = resourceService.getConceptsTTForGraph(idTheso, idLang);
         } else {
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
+            nodeConceptGraphs_childs = resourceService.getConceptsNTForGraph(idTheso, idConcept, idLang);
         }
         
         if(nodeConceptGraphs_childs == null || nodeConceptGraphs_childs.isEmpty())
@@ -120,7 +119,7 @@ public class D3jsHelper {
         if(count > 2000 && limit == true) return nodeDatas;
 
         List<NodeDatas> childrens = new ArrayList<>();
-            List<NodeConceptGraph> nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
+            List<NodeConceptGraph> nodeConceptGraphs_childs = resourceService.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
             
             if(nodeConceptGraphs_childs != null && !nodeConceptGraphs_childs.isEmpty()) {            
                 /// limitation des frères à 2000

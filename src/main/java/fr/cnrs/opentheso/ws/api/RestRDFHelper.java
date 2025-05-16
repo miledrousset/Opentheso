@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.ws.api;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
@@ -22,6 +21,7 @@ import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ResourceService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
@@ -82,7 +82,7 @@ public class RestRDFHelper {
     private SearchHelper searchHelper;
 
     @Autowired
-    private DaoResourceHelper daoResourceHelper;
+    private ResourceService resourceService;
 
     @Autowired
     private GroupService groupService;
@@ -364,7 +364,7 @@ public class RestRDFHelper {
      */
     private String getNarrower__(String idTheso, String idConcept, String idLang) {
 
-        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false, false);
+        List<NodeConceptTree> nodeConceptTrees = resourceService.getConceptsNTForTree(idTheso, idConcept, idLang, false, false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 

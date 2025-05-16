@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.ResourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
@@ -56,6 +57,8 @@ public class TreeConcepts implements Serializable {
     private String idTheso, idLang;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private ResourceService resourceService;
 
 
     public void reset() {
@@ -153,7 +156,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeGroup.getId(), idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(nodeGroup.getId(), idTheso, idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -167,8 +170,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
+        var ConceptsId = relationsHelper.getListNT(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
 
         if (ConceptsId == null || ConceptsId.isEmpty()) {
             parent.setType("file");
@@ -179,8 +181,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeNT.getIdConcept(),
-                    idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(nodeNT.getIdConcept(), idTheso, idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);

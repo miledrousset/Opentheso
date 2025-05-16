@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.ws.graphql;
 
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.services.ResourceService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,10 +15,9 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
-
 public class GraphQLController {
  //   private final NodeFullConceptService nodeFullConceptService;
-    private final DaoResourceHelper daoResourceHelper;
+    private final ResourceService resourceService;
     private final SearchHelper searchHelper;
 
     @QueryMapping
@@ -26,7 +25,7 @@ public class GraphQLController {
             @Argument String idTheso,
             @Argument String idConcept,
             @Argument String idLang) {
-        return daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, 0, 10);
+        return resourceService.getFullConcept(idTheso, idConcept, idLang, 0, 10);
     }
 
     @QueryMapping
@@ -49,7 +48,7 @@ public class GraphQLController {
         }
         List<NodeFullConcept> nodeFullConcepts = new ArrayList<>();
         for (String idConcept : listIds) {
-            nodeFullConcepts.add(daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, 0, 10));
+            nodeFullConcepts.add(resourceService.getFullConcept(idTheso, idConcept, idLang, 0, 10));
         }
         return nodeFullConcepts;
     }

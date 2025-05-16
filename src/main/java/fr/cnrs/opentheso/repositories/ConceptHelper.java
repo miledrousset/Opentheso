@@ -65,6 +65,7 @@ import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.ResourceService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
@@ -113,9 +114,6 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private HandleHelper handleHelper;
-
-    @Autowired
-    private DaoResourceHelper daoResourceHelper;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -172,6 +170,9 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private RelationGroupService relationGroupService;
+
+    @Autowired
+    private ResourceService resourceService;
 
 
     /**
@@ -1593,7 +1594,7 @@ public class ConceptHelper implements Serializable {
 
         lisIds.add(idConceptDeTete);
 
-        List<String> listIdsOfConceptChildren = daoResourceHelper.getConceptsTT(idTheso, idConceptDeTete);
+        List<String> listIdsOfConceptChildren = resourceService.getConceptsTT(idTheso, idConceptDeTete);
 
         for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
             getIdsOfBranch2__(idTheso, listIdsOfConceptChildren1, lisIds);
@@ -4242,7 +4243,7 @@ public class ConceptHelper implements Serializable {
      * @return
      */
     public NodeFullConcept getConcept2(String idConcept, String idThesaurus, String idLang, int offset, int step) {
-        return daoResourceHelper.getFullConcept(idThesaurus, idConcept, idLang, offset, step);
+        return resourceService.getFullConcept(idThesaurus, idConcept, idLang, offset, step);
     }
 
     /**

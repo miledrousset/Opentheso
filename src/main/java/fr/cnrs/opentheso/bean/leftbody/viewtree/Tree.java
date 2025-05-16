@@ -8,7 +8,6 @@ import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.PathService;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -30,11 +29,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ResourceService;
 import jakarta.enterprise.context.SessionScoped;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,8 +69,8 @@ public class Tree implements Serializable {
     private final ConceptHelper conceptHelper;
     private final PathService pathService;
     private final FacetHelper facetHelper;
-    private final DaoResourceHelper daoResourceHelper;
     private final DragAndDrop dragAndDrop;
+    private final ResourceService resourceService;
 
     private DataService dataService;
     private TreeNode selectedNode;
@@ -308,7 +306,7 @@ public class Tree implements Serializable {
      */
     private boolean addConceptsChild(TreeNode parent) {
 
-        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, ((TreeNodeData) parent.getData()).getNodeId(),
+        List<NodeConceptTree> nodeConceptTrees = resourceService.getConceptsNTForTree(idTheso, ((TreeNodeData) parent.getData()).getNodeId(),
                 selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation(), !ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         if (nodeConceptTrees.size() >= 2000) {

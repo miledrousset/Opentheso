@@ -22,7 +22,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -30,6 +29,8 @@ import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
 import fr.cnrs.opentheso.services.PathService;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.ResourceService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -84,9 +85,6 @@ public class ConceptView implements Serializable {
     private LanguageRepository languageRepository;
 
     @Autowired
-    private DaoResourceHelper daoResourceHelper;
-
-    @Autowired
     private RelationsHelper relationsHelper;
 
     @Autowired
@@ -106,6 +104,9 @@ public class ConceptView implements Serializable {
 
     @Autowired
     private SelectedTheso selectedTheso;
+
+    @Autowired
+    private RelationService relationsService;
 
     @Autowired
     private CorpusLinkRepository corpusLinkRepository;
@@ -171,6 +172,8 @@ public class ConceptView implements Serializable {
     private String contributors;
     @Autowired
     private CurrentUser currentUser;
+    @Autowired
+    private ResourceService resourceService;
 
     @PreDestroy
     public void destroy() {
@@ -591,10 +594,7 @@ public class ConceptView implements Serializable {
 
     public void getNextNT(String idTheso, String idConcept, String idLang) {
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            List<ConceptRelation> conceptRelations = daoResourceHelper.getListNT(
-                    idTheso,
-                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
-                    idLang, offset, step + 1);
+            List<ConceptRelation> conceptRelations = resourceService.getListNT(idTheso, ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), idLang, offset, step + 1);
             if (conceptRelations != null && !conceptRelations.isEmpty()) {
                 nodeFullConcept.getNarrowers().addAll(conceptRelations);
                 setOffset();
