@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -13,14 +12,17 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.GroupService;
-import fr.cnrs.opentheso.services.PreferenceService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -48,6 +50,9 @@ public class MoveConcept implements Serializable {
     private CandidatBean candidatBean;
 
     @Autowired
+    private ThesaurusService thesaurusService;
+
+    @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
@@ -63,13 +68,16 @@ public class MoveConcept implements Serializable {
     private GroupService groupService;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
     private PreferenceService preferenceService;
+
+    @Autowired
+    private ConceptService conceptService;
+
+    @Autowired
+    private ConceptAddService conceptAddService;
 
     private String idThesoFrom, idThesoTo;
     
@@ -113,7 +121,7 @@ public class MoveConcept implements Serializable {
                 return;
             }
 
-            conceptHelper.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
+            conceptService.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()
                     .name(DCMIResource.CONTRIBUTOR)
@@ -143,9 +151,6 @@ public class MoveConcept implements Serializable {
         }
 
         List<String> lisIdGroup;
-        String idArk;
-        ArrayList<String> idConcepts = new ArrayList<>();
-
         var nodePreference = preferenceService.getThesaurusPreferences(idThesoTo);
         for (String idConcept : idConceptsToMove) {
             if(!conceptHelper.moveConceptToAnotherTheso(idConcept, idThesoFrom, idThesoTo)) {
@@ -153,7 +158,7 @@ public class MoveConcept implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            conceptHelper.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
+            conceptService.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()
                     .name(DCMIResource.CONTRIBUTOR)
@@ -167,12 +172,12 @@ public class MoveConcept implements Serializable {
             for (String idGroup : lisIdGroup) {
                 groupService.deleteRelationConceptGroupConcept(idGroup, idConcept, idThesoTo);
             }
-            idArk = conceptHelper.getIdArkOfConcept(idConcept, idThesoTo);
-            if(!StringUtils.isEmpty(idArk)) {
-                idConcepts.clear();
-                idConcepts.add(idConcept);
-                conceptHelper.setNodePreference(nodePreference);
-                conceptHelper.generateArkId(idThesoTo, idConcepts, selectedTheso.getCurrentLang());
+
+            var concept = conceptService.getConcept(idConcept);
+            if (concept != null) {
+                if(!StringUtils.isEmpty(concept.getIdArk())) {
+                    conceptAddService.generateArkId(idThesoTo, List.of(idConcept), selectedTheso.getCurrentLang(), nodePreference);
+                }
             }
         }
 
@@ -203,27 +208,19 @@ public class MoveConcept implements Serializable {
         if(currentUser.getNodeUser() == null) return null;
         List<String> authorizedThesoAsAdmin;
         if(currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(true);
+            authorizedThesoAsAdmin = thesaurusService.getAllIdOfThesaurus(true);
         } else {
             authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
         }
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        authorizedThesoAsAdmin.remove(selectedTheso.getCurrentIdTheso());
-        for (String idTheso : authorizedThesoAsAdmin) {
-            var nodeIdValue = NodeIdValue.builder()
-                    .id(idTheso)
-                    .value(idTheso)
-                    .build();
-            String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
-            String title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
-            if(StringUtils.isEmpty(title))
-                nodeIdValue.setValue("");
-            else
-                nodeIdValue.setValue(title);
-            nodeIdValues.add(nodeIdValue);
-        }
-        return nodeIdValues;
+        return authorizedThesoAsAdmin.stream()
+                .filter(idThesaurus -> selectedTheso.getCurrentIdTheso().equalsIgnoreCase(idThesaurus))
+                .map(idThesaurus -> NodeIdValue.builder()
+                        .id(idThesaurus)
+                        .value(thesaurusService.getTitleOfThesaurus(idThesaurus, preferenceService.getWorkLanguageOfThesaurus(idThesaurus)))
+                        .build())
+                .toList();
     }
 
     /// Cette focntion est nécessaire pour activer l'autocomplete

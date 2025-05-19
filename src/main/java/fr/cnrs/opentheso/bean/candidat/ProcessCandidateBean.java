@@ -11,7 +11,11 @@ import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.ArkService;
 import fr.cnrs.opentheso.services.CandidatService;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.HandleConceptService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 
 import java.io.ByteArrayInputStream;
@@ -27,6 +31,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -47,6 +52,9 @@ public class ProcessCandidateBean implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
+    private final ConceptService conceptService;
+
+    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -63,6 +71,12 @@ public class ProcessCandidateBean implements Serializable {
     
     private CandidatDto selectedCandidate;
     private String adminMessage;
+    @Autowired
+    private ConceptAddService conceptAddService;
+    @Autowired
+    private HandleConceptService handleConceptService;
+    @Autowired
+    private ArkService arkService;
 
 
     public void reset(CandidatDto candidatSelected) {
@@ -113,9 +127,8 @@ public class ProcessCandidateBean implements Serializable {
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
-        
-        conceptHelper.updateDateOfConcept(selectedCandidate.getIdThesaurus(),
-                selectedCandidate.getIdConcepte(), idUser);
+
+        conceptService.updateDateOfConcept(selectedCandidate.getIdThesaurus(), selectedCandidate.getIdConcepte(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -146,16 +159,16 @@ public class ProcessCandidateBean implements Serializable {
 
             // création de l'identifiant Handle
             if (nodePreference.isUseHandle()) {
-                if (!conceptHelper.generateIdHandle(selectedCandidateTemp.getIdConcepte(), selectedCandidateTemp.getIdThesaurus())) {
+                if (!handleConceptService.generateIdHandle(selectedCandidateTemp.getIdConcepte(), selectedCandidateTemp.getIdThesaurus())) {
                     printErreur("La création Handle a échouée");
                     log.error("La création Handle a échoué");
                 }
             }     
             // serveur Ark
             if (nodePreference.isUseArk()) {
-                if (!conceptHelper.generateArkId(
-                        selectedCandidateTemp.getIdThesaurus(), selectedCandidateTemp.getIdConcepte(),
-                        selectedCandidateTemp.getLang())) {
+                var result = conceptAddService.generateArkId(selectedCandidateTemp.getIdThesaurus(), List.of(selectedCandidateTemp.getIdConcepte()),
+                        selectedCandidateTemp.getLang(), null);
+                if (CollectionUtils.isEmpty(result)) {
                     log.error("La création Ark a échoué");
                 }
             }
@@ -163,9 +176,7 @@ public class ProcessCandidateBean implements Serializable {
             if (nodePreference.isUseArkLocal()) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 idConcepts.add(selectedCandidateTemp.getIdConcepte());
-                if (!conceptHelper.generateArkIdLocal(
-                        selectedCandidateTemp.getIdThesaurus(),
-                        idConcepts)) {
+                if (arkService.generateArkIdLocal(selectedCandidateTemp.getIdThesaurus(), idConcepts)) {
                     printErreur("La création du Ark local a échoué");
                     log.error("La création du Ark local a échoué");
                 }
@@ -223,7 +234,8 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
+
+            conceptService.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser);
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()
@@ -269,7 +281,7 @@ public class ProcessCandidateBean implements Serializable {
             nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
-            conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
+            conceptService.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser);
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()

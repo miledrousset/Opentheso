@@ -12,10 +12,10 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -25,8 +25,6 @@ import jakarta.faces.context.FacesContext;
 import java.io.Serializable;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,9 +50,9 @@ public class EditThesoBean implements Serializable {
     private final PreferenceService preferenceService;
     private final ThesaurusRepository thesaurusRepository;
     private final LanguageRepository languageRepository;
-    private final ThesaurusHelper thesaurusHelper;
     private final ConceptHelper conceptHelper;
     private final GroupService groupService;
+    private final ThesaurusService thesaurusService;
 
     private List<LanguageIso639> allLangs;
     private List<NodeLangTheso> languagesOfTheso;
@@ -66,18 +64,20 @@ public class EditThesoBean implements Serializable {
     private String title, selectedLang, preferredLang, arkIdOfTheso, newIdOfTheso;
 
 
-    public void init(String idTheso) {
+    public void init(String idThesaurus) throws IOException {
 
         activeTabIndex = 0;
         nodeIdValueOfTheso = new NodeIdValue();
-        nodeIdValueOfTheso.setId(idTheso);
-        arkIdOfTheso = thesaurusHelper.getIdArkOfThesaurus(idTheso);
-        init();
-        try {
-            menuBean.redirectToEditionPage();
-        } catch (IOException ex) {
-            Logger.getLogger(EditThesoBean.class.getName()).log(Level.SEVERE, null, ex);
+        nodeIdValueOfTheso.setId(idThesaurus);
+
+        var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
+        if (idThesaurus != null) {
+            arkIdOfTheso = thesaurus.getIdArk();
         }
+
+        init();
+        menuBean.redirectToEditionPage();
+
         /// initialisation des métadonnées pour le thésaurus 
         thesaurusMetadataAdd.init(nodeIdValueOfTheso.getId());        
     }    
@@ -93,12 +93,14 @@ public class EditThesoBean implements Serializable {
     private void init() {
 
         activeTabIndex = 0;
-        isPrivateTheso = thesaurusHelper.isThesoPrivate(nodeIdValueOfTheso.getId());
+
+        var thesaurus = thesaurusService.getThesaurusById(nodeIdValueOfTheso.getId());
+        isPrivateTheso = thesaurus.getIsPrivate();
 
         var nodePreference = preferenceService.getThesaurusPreferences(nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
         allLangs = languageRepository.findAll();
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), preferredLang);
         selectedLang = null;
         langSelected = new NodeLangTheso();
         title = "";
@@ -185,7 +187,7 @@ public class EditThesoBean implements Serializable {
 
     public void modifyIdOfThesaurus(String oldId, String newId) {
 
-        if(!thesaurusHelper.changeIdOfThesaurus(oldId, newId)) {
+        if(!thesaurusService.changeIdOfThesaurus(oldId, newId)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de changement d'identifiant !!!");
             return;
         }
@@ -261,7 +263,7 @@ public class EditThesoBean implements Serializable {
         thesaurus.setId_thesaurus(nodeIdValueOfTheso.getId());
         thesaurus.setTitle(title);
         thesaurus.setLanguage(selectedLang);
-        if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
+        if (thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout de la langue !!!");
             return;
         }
@@ -289,7 +291,7 @@ public class EditThesoBean implements Serializable {
         thesaurus.setTitle(langSelected.getLabelTheso());
         thesaurus.setLanguage(nodeLangThesoSelected.getCode());
 
-        if (!thesaurusHelper.UpdateThesaurus(thesaurus)) {
+        if (!thesaurusService.UpdateThesaurus(thesaurus)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la modification !!!");
             return;
         }
@@ -298,7 +300,7 @@ public class EditThesoBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Langue modifiée avec succès");
 
         String sourceLang = preferenceService.getWorkLanguageOfThesaurus(nodeIdValueOfTheso.getId());
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), sourceLang);
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), sourceLang);
 
         PrimeFaces.current().ajax().update("containerIndex:listLangThes");
     }
@@ -315,10 +317,7 @@ public class EditThesoBean implements Serializable {
             return;
         }
 
-        if (!thesaurusHelper.deleteThesaurusTraduction(nodeIdValueOfTheso.getId(), idLang)){
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression de la langue !!!");
-            return;
-        }
+        thesaurusService.deleteThesaurusTraduction(nodeIdValueOfTheso.getId(), idLang);
 
         showMessage(FacesMessage.SEVERITY_INFO, "Langue supprimée avec succès");
         init(nodeIdValueOfTheso);

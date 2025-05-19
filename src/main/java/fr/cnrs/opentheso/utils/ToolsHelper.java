@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.utils;
 
 public class ToolsHelper {
 
-
     public static String getNewId(int length, boolean isUpperCase, boolean isUseNoidCheck) {
         String chars = "0123456789bcdfghjklmnpqrstvwxz";
         StringBuilder pass = new StringBuilder();
@@ -24,4 +23,5 @@ public class ToolsHelper {
         else
             return idArk;
     }
+
 }

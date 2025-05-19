@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
@@ -58,6 +59,9 @@ public class RelatedBean implements Serializable {
 
     @Autowired
     private TermService termService;
+
+    @Autowired
+    private ConceptService conceptService;
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
@@ -164,9 +168,7 @@ public class RelatedBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -213,9 +215,7 @@ public class RelatedBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -268,10 +268,7 @@ public class RelatedBean implements Serializable {
 
         // mettre à jour le label du concept si l'option TAG est activée
         if (tagPrefLabel) {
-            String taggedValue = conceptHelper.getLexicalValueOfConcept(
-                    searchSelected.getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getSelectedLang());
+            var taggedValue = termService.getLexicalValueOfConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang());
             termService.updateTermTraduction(conceptBean.getNodeConcept().getTerm().getLexicalValue() + " (" + taggedValue + ")",
                     conceptBean.getNodeConcept().getTerm().getIdTerm(), conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), idUser);
@@ -280,9 +277,7 @@ public class RelatedBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -351,9 +346,7 @@ public class RelatedBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

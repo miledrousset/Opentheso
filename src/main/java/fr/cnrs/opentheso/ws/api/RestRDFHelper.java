@@ -3,11 +3,11 @@ package fr.cnrs.opentheso.ws.api;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.ExportService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -22,6 +22,8 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
@@ -61,22 +63,22 @@ public class RestRDFHelper {
     private ConceptHelper conceptHelper;
 
     @Autowired
+    private ThesaurusService thesaurusService;
+
+    @Autowired
     private ExportRdf4jHelperNew exportRdf4jHelperNew;
 
     @Autowired
     private PathService pathService;
 
     @Autowired
-    private ExportHelper exportHelper;
+    private ExportService exportService;
 
     @Autowired
     private AlignmentService alignmentService;
 
     @Autowired
     private PreferenceService preferenceService;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
 
     @Autowired
     private SearchHelper searchHelper;
@@ -86,6 +88,10 @@ public class RestRDFHelper {
 
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private TermService termService;
+    @Autowired
+    private ConceptService conceptService;
 
 
     private enum Choix {
@@ -112,7 +118,7 @@ public class RestRDFHelper {
         
         if(StringUtils.isEmpty(idTheso)) {
             // cas où c'est l'identifiant d'un thésaurus
-            idTheso = thesaurusHelper.getIdThesaurusFromArkId(naan + "/" + idArk);
+            idTheso = thesaurusService.getIdThesaurusFromArkId(naan + "/" + idArk);
             choix = Choix.THESO;
         }
         
@@ -148,7 +154,7 @@ public class RestRDFHelper {
                 return nodePreference.getCheminSite() + "?idg=" + idGroup + "&idt=" + idTheso;                  
             case THESO:
                 // cas où c'est l'identifiant d'un thésaurus
-                idTheso = thesaurusHelper.getIdThesaurusFromArkId(naan + "/" + idArk);  
+                idTheso = thesaurusService.getIdThesaurusFromArkId(naan + "/" + idArk);
                 if(StringUtils.isEmpty(idTheso)){    
                     return null;
                 }
@@ -178,7 +184,7 @@ public class RestRDFHelper {
         
         if(!listLinkedConceptsWithOntome.isEmpty()) {
             JsonObjectBuilder jobLabel = Json.createObjectBuilder();
-            jobLabel.add("thesaurusLabel", thesaurusHelper.getTitleOfThesaurus(idTheso, nodePreference.getSourceLang()));
+            jobLabel.add("thesaurusLabel", thesaurusService.getTitleOfThesaurus(idTheso, nodePreference.getSourceLang()));
             jsonArrayBuilderLang.add(jobLabel.build());
         }
     
@@ -211,7 +217,7 @@ public class RestRDFHelper {
 
         if(!listLinkedConceptsWithOntome.isEmpty()) {
             JsonObjectBuilder jobLabel = Json.createObjectBuilder();
-            jobLabel.add("thesaurusLabel", thesaurusHelper.getTitleOfThesaurus(idTheso, nodePreference.getSourceLang()));
+            jobLabel.add("thesaurusLabel", thesaurusService.getTitleOfThesaurus(idTheso, nodePreference.getSourceLang()));
             jsonArrayBuilderLang.add(jobLabel.build());
         }        
         for (NodeIdValue nodeIdValue : listLinkedConceptsWithOntome) {
@@ -282,7 +288,7 @@ public class RestRDFHelper {
         JsonArrayBuilder jsonArrayBuilderRelate = Json.createArrayBuilder();
         String labelRT;
         for (NodeRT nodeRT : nodeConcept.getNodeRT()) {
-            labelRT = conceptHelper.getLexicalValueOfConcept(nodeRT.getIdConcept(), idTheso, idLang);
+            labelRT = termService.getLexicalValueOfConcept(nodeRT.getIdConcept(), idTheso, idLang);
             if (labelRT != null && !labelRT.isEmpty()) {
                 jsonArrayBuilderRelate.add(labelRT);
             }
@@ -470,7 +476,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        String value = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+        String value = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
 
         if (value == null || value.isEmpty()) {
             return null;
@@ -1130,7 +1136,7 @@ public class RestRDFHelper {
         if (idConcept == null || idTheso == null) {
             return null;
         }
-        if(!conceptHelper.isIdExiste(idConcept, idTheso)) {
+        if(!conceptService.isIdExiste(idConcept, idTheso)) {
             return null;
         }
         var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
@@ -1190,7 +1196,7 @@ public class RestRDFHelper {
         if (idConcept == null || idTheso == null) {
             return null;
         }
-        if(!conceptHelper.isIdExiste(idConcept, idTheso)) {
+        if(!conceptService.isIdExiste(idConcept, idTheso)) {
             return null;
         }
         var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
@@ -1262,19 +1268,13 @@ public class RestRDFHelper {
         List<SKOSResource> concepts;
         try {
             for(String idGroup : groups) {
-                concepts = exportHelper.getAllConcepts(idTheso, baseUrl, idGroup,
+                concepts = exportService.getAllConcepts(idTheso, baseUrl, idGroup,
                         nodePreference.getOriginalUri(), nodePreference, false);
                 for (SKOSResource concept : concepts) {
                     skosXmlDocument.addconcept(concept);
                 }
             }
         } catch (Exception ex){}
-
-        /* ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(idTheso, groups);
-         exportRdf4jHelperNew.setInfos(nodePreference);
-        for (String idConcept : branchs) {
-            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
-        }*/
 
          return new WriteRdf4j(skosXmlDocument);
     }
@@ -1352,21 +1352,23 @@ public class RestRDFHelper {
 
         if (lang != null) {
             for (String idConcept : idConcepts) {
+                var concept = conceptService.getConcept(idConcept, idTheso);
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
-                jobLine.add("arkId", conceptHelper.getIdArkOfConcept(idConcept, idTheso));
-                jobLine.add("handleId", conceptHelper.getIdHandleOfConcept(idConcept, idTheso));
+                jobLine.add("arkId", concept.getIdArk());
+                jobLine.add("handleId", concept.getIdHandle());
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(idConcept, idTheso));
-                jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, lang));
+                jobLine.add("prefLabel", termService.getLexicalValueOfConcept(idConcept, idTheso, lang));
                 jsonArrayBuilderLine.add(jobLine.build());
             }
         } else {
             List<NodeTermTraduction> termTraductions;
             for (String idConcept : idConcepts) {
+                var concept = conceptService.getConcept(idConcept, idTheso);
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
-                jobLine.add("arkId", conceptHelper.getIdArkOfConcept(idConcept, idTheso));
-                jobLine.add("handleId", conceptHelper.getIdHandleOfConcept(idConcept, idTheso));                
+                jobLine.add("arkId", concept.getIdArk());
+                jobLine.add("handleId", concept.getIdHandle());
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(idConcept, idTheso));
 
                 termTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
@@ -1469,9 +1471,9 @@ public class RestRDFHelper {
             skosXmlDocument.addGroup(group);
         }
         
-        List<SKOSResource> concepts = exportHelper.getAllConcepts(idTheso, baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
+        List<SKOSResource> concepts = exportService.getAllConcepts(idTheso, baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
 
-        List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl, nodePreference.getOriginalUri(), nodePreference);
+        List<SKOSResource> facettes = exportService.getAllFacettes(idTheso, baseUrl, nodePreference.getOriginalUri(), nodePreference);
         for (SKOSResource facette : facettes) {
             skosXmlDocument.addFacet(facette);
         }
@@ -1629,17 +1631,18 @@ public class RestRDFHelper {
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
         String identifier;
-        if (nodePreference.isOriginalUriIsArk()) {
-            identifier = conceptHelper.getIdArkOfConcept(idConcept, idTheso);
+        var concept = conceptService.getConcept(idConcept, idTheso);
+        if (nodePreference.isOriginalUriIsArk() && concept != null) {
+            identifier = concept.getIdArk();
             if (identifier != null && !identifier.isEmpty()) {
                 uri = nodePreference.getUriArk() + identifier;
                 return uri;
             }
         }
 
-        if (nodePreference.isOriginalUriIsHandle()) {
+        if (nodePreference.isOriginalUriIsHandle() && concept != null) {
             // URI de type Handle
-            identifier = conceptHelper.getIdHandleOfConcept(idConcept, idTheso);
+            identifier = concept.getIdHandle();
             if (identifier != null && !identifier.isEmpty()) {
                 uri = "https://hdl.handle.net/" + identifier;
                 return uri;

@@ -17,18 +17,19 @@ import fr.cnrs.opentheso.models.candidats.NodeProposition;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-
 import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
+import fr.cnrs.opentheso.repositories.ConceptCandidatRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptTermCandidatRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PropositionRepository;
 import fr.cnrs.opentheso.repositories.StatusRepository;
+import fr.cnrs.opentheso.repositories.TermCandidatRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
@@ -62,7 +63,6 @@ public class CandidatService {
     private final NoteDao noteDao;
     private final CandidatDao candidatDao;
     private final DomaineDao domaineDao;
-    private final ConceptHelper conceptHelper;
     private final TermeDao termeDao;
     private final RelationDao relationDao;
 
@@ -77,10 +77,14 @@ public class CandidatService {
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final PreferredTermRepository preferredTermRepository;
     private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final ConceptTermCandidatRepository conceptTermCandidatRepository;
     private final TermRepository termRepository;
     private final NoteRepository noteRepository;
     private final TermService termService;
     private final AlignmentService alignmentService;
+    private final ConceptCandidatRepository conceptCandidatRepository;
+    private final TermCandidatRepository termCandidatRepository;
+    private final ConceptAddService conceptAddService;
 
 
     /**
@@ -134,7 +138,7 @@ public class CandidatService {
 
     public String saveNewCondidat(Concept concept) throws SQLException {
 
-        var idNewCondidat = conceptHelper.addConceptInTable(concept, concept.getIdUser());
+        var idNewCondidat = conceptAddService.addConceptInTable(concept, concept.getIdUser());
         var status = statusRepository.findById(1);
         candidatStatusRepository.save(CandidatStatus.builder()
                         .idConcept(idNewCondidat)
@@ -364,8 +368,6 @@ public class CandidatService {
                 concept.setIdUser(idUser);
                 concept.setStatus("CA");
 
-                conceptHelper.setNodePreference(nodePreference);
-
                 try {
                     idNewConcept = saveNewCondidat(concept);
                 } catch (SQLException e) {
@@ -459,7 +461,7 @@ public class CandidatService {
                 .conceptType("concept")
                 .creator(userId)
                 .topConcept(false)
-                .thesaurus(thesaurus.get())
+                .idThesaurus(thesaurus.get().getIdThesaurus())
                 .build());
 
         conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
@@ -540,5 +542,48 @@ public class CandidatService {
                 .notesource(source)
                 .idConcept(idConcept)
                 .build());
+    }
+
+    public void deleteAllCandidatsByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de tous les votes des candidats dans le thésaurus id {}", idThesaurus);
+        candidatVoteRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les status des candidats dans le thésaurus id {}", idThesaurus);
+        candidatStatusRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les messages des candidats dans le thésaurus id {}", idThesaurus);
+        candidatMessageRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des concept candidats dans le thésaurus id {}", idThesaurus);
+        conceptCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des concepts terms des candidats dans le thésaurus id {}", idThesaurus);
+        conceptTermCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des terms des candidats dans le thésaurus id {}", idThesaurus);
+        termCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour de l'id thésaurus dans le module candidat du {} vers {}", oldIdThesaurus, newIdThesaurus);
+        log.info("Mise à jour de tous les votes des candidats dans le thésaurus id {}", oldIdThesaurus);
+        candidatVoteRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour de tous les status des candidats dans le thésaurus id {}", oldIdThesaurus);
+        candidatStatusRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour de tous les messages des candidats dans le thésaurus id {}", oldIdThesaurus);
+        candidatMessageRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour des concept candidats dans le thésaurus id {}", oldIdThesaurus);
+        conceptCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour des concepts terms des candidats dans le thésaurus id {}", oldIdThesaurus);
+        conceptTermCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour des terms des candidats dans le thésaurus id {}", oldIdThesaurus);
+        termCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 }

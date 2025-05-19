@@ -16,8 +16,9 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.Serializable;
@@ -48,13 +49,14 @@ public class SynonymBean implements Serializable {
     private final SelectedTheso selectedTheso;
     private final PropositionBean propositionBean;
     private final CurrentUser currentUser;
-    private final ThesaurusHelper thesaurusHelper;
     private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final NonPreferredTermService nonPreferredTermService;
     private final PreferredTermRepository preferredTermRepository;
     private final TermRepository termRepository;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
 
     private NodeEM nodeEM;
     private List<NodeLangTheso> nodeLangs;
@@ -66,7 +68,7 @@ public class SynonymBean implements Serializable {
     public void reset() {
         hidden = false;
         selectedLang = conceptBean.getSelectedLang();
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedLang);
+        nodeLangs = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedLang);
 
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
         
@@ -426,8 +428,7 @@ public class SynonymBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
         log.info("Mise à jour de la date de modification du concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

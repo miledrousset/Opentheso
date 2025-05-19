@@ -17,6 +17,8 @@ import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -55,12 +57,15 @@ public class NewConcept implements Serializable {
     private final SearchHelper searchHelper;
     private final TermRepository termRepository;
     private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final ConceptAddService conceptAddService;
+    private final ConceptService conceptService;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
     private String prefLabel, notation, idNewConcept, source, relationType, idGroup, idBTfacet, idFacet;
     private List<NodeTypeRelation> typesRelationsNT;
     private List<NodeGroup> nodeGroups;
     private List<NodeSearchMini> nodeSearchMinis;
+
 
     public void reset() {
         isCreated = false;
@@ -110,7 +115,7 @@ public class NewConcept implements Serializable {
         Concept concept = buildConcept(idTheso, status);
         Term term = buildTerm(idTheso, idLang, status);
 
-        idNewConcept = conceptHelper.addConcept(null, null, concept, term, idUser);
+        idNewConcept = conceptAddService.addConcept(null, null, concept, term, idUser);
         if (idNewConcept == null) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
             return;
@@ -148,7 +153,7 @@ public class NewConcept implements Serializable {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre !");
             return false;
         }
-        if (StringUtils.isNotBlank(idNewConcept) && conceptHelper.isIdExiste(idNewConcept, idTheso)) {
+        if (StringUtils.isNotBlank(idNewConcept) && conceptService.isIdExiste(idNewConcept, idTheso)) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué !");
             return false;
         }

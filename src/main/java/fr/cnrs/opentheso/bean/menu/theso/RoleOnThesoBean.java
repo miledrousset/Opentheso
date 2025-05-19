@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
@@ -20,6 +19,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -51,6 +51,7 @@ import java.util.Map;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RoleOnThesoBean implements Serializable {
 
+    private final ThesaurusService thesaurusService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -59,7 +60,6 @@ public class RoleOnThesoBean implements Serializable {
     private final LanguageBean languageBean;
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserHelper userHelper;
-    private final ThesaurusHelper thesaurusHelper;
     private final PreferenceService preferenceService;
     private final RoleRepository roleRepository;
     private final ThesaurusRepository thesaurusRepository;
@@ -132,8 +132,8 @@ public class RoleOnThesoBean implements Serializable {
         authorizedTheso = new ArrayList<>();
         if (currentUser.getNodeUser().isSuperAdmin()) {
             boolean withPrivateTheso = true;
-            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(withPrivateTheso);
-            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(withPrivateTheso);
+            authorizedTheso = thesaurusService.getAllIdOfThesaurus(withPrivateTheso);
+            authorizedThesoAsAdmin = thesaurusService.getAllIdOfThesaurus(withPrivateTheso);
 
         } else {
             authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
@@ -201,20 +201,22 @@ public class RoleOnThesoBean implements Serializable {
         // si c'est superAdmin, on prend tous les thésaurus
         if(currentUser.getNodeUser().isSuperAdmin()){
             for (NodeIdValue listTheso1 : currentUser.getUserPermissions().getListThesos()) {
+                var thesaurus = thesaurusService.getThesaurusById(listTheso1.getId());
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(listTheso1.getId());
                 nodeIdValue.setValue(listTheso1.getValue());
-                nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(listTheso1.getId()));
+                nodeIdValue.setStatus(thesaurus.getIsPrivate());
                 nodeListThesoAsAdmin.add(nodeIdValue);
             }
         } else { // sinon, on prend les thésaurus où l'utilisateur a un role Admin 
             for (NodeProjectThesoRole nodeProjectsWithThesosRole : currentUser.getUserPermissions().getNodeProjectsWithThesosRoles()) {
                 for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
                     if(nodeThesoRole.getIdRole() == 2 || nodeThesoRole.getIdRole() == 1) {
+                        var thesaurus = thesaurusService.getThesaurusById(nodeThesoRole.getIdTheso());
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(nodeThesoRole.getIdTheso());
                         nodeIdValue.setValue(nodeThesoRole.getThesoName());
-                        nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(nodeThesoRole.getIdTheso()));
+                        nodeIdValue.setStatus(thesaurus.getIsPrivate());
                         nodeListThesoAsAdmin.add(nodeIdValue);
                     }
                 }
@@ -247,7 +249,7 @@ public class RoleOnThesoBean implements Serializable {
             ThesoModel thesoModel = new ThesoModel();
             thesoModel.setId(idTheso1);
 
-            String title = thesaurusHelper.getTitleOfThesaurus(idTheso1, preferredIdLangOfTheso);
+            String title = thesaurusService.getTitleOfThesaurus(idTheso1, preferredIdLangOfTheso);
             if (StringUtils.isEmpty(title)) {
                 thesoModel.setNom("(" + idTheso1 + ")");
             } else {
@@ -257,12 +259,13 @@ public class RoleOnThesoBean implements Serializable {
             thesoModel.setDefaultLang(preferenceService.getWorkLanguageOfThesaurus(idTheso1));
             
             listTheso.add(thesoModel);
-            
-            // nouvel objet pour récupérer la liste des thésaurus autorisée pour l'utilisateur en cours
+
+            var thesaurus = thesaurusService.getThesaurusById(idTheso1);
+
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
             nodeIdValue.setValue(title);
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(idTheso1));
+            nodeIdValue.setStatus(thesaurus.getIsPrivate());
             nodeListTheso.add(nodeIdValue);
         }
         
@@ -286,7 +289,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     public void setPublicThesos(CurrentUser currentUser, SelectedTheso selectedTheso) {
         currentUser.initAllTheso();
-        authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(false);
+        authorizedTheso = thesaurusService.getAllIdOfThesaurus(false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso(currentUser, selectedTheso);
     }
@@ -410,10 +413,10 @@ public class RoleOnThesoBean implements Serializable {
 
         var conceptsCount = conceptStatusRepository.countValidConceptsByThesaurus(idTheso);
 
-        var conceptsList = conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idTheso, "CA");
+        var conceptsList = conceptRepository.findAllByIdThesaurusAndStatus(idTheso, "CA");
         var candidatesCount = CollectionUtils.isNotEmpty(conceptsList) ? conceptsList.size() : 0;
 
-        var deprecatedConceptsList = conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idTheso, "DEP");
+        var deprecatedConceptsList = conceptRepository.findAllByIdThesaurusAndStatus(idTheso, "DEP");
         var deprecatedCount = CollectionUtils.isNotEmpty(deprecatedConceptsList) ? deprecatedConceptsList.size() : 0;
 
         var message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),

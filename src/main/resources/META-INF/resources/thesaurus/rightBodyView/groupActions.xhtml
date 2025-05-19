@@ -45,7 +45,7 @@
             </div>
             <div class="col-5 offset-1">
                 <p:commandButton value="#{langueBean.getMsg('yes')}" styleClass="ui-button-success" icon="pi pi-check" style="width: 100%"
-                                 actionListener="#{editConcept.removeAllConceptFromCollection(groupView.nodeGroup.conceptGroup.idgroup)}"
+                                 actionListener="#{editConcept.removeAllConceptFromCollection(groupView.nodeGroup.conceptGroup.idGroup)}"
                                  update="messageIndex"
                                  ajax="true" process="@form"
                                  oncomplete="PF('confirmRemoveConceptFromCollection').hide();"/>

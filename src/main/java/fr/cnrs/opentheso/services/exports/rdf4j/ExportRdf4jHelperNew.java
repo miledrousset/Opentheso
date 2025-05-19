@@ -32,9 +32,10 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -65,13 +66,13 @@ public class ExportRdf4jHelperNew {
     private RelationGroupService relationGroupService;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private FacetHelper facetHelper;
 
     @Autowired
     private NoteHelper noteHelper;
+
+    @Autowired
+    private ThesaurusService thesaurusService;
 
     @Autowired
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
@@ -86,7 +87,9 @@ public class ExportRdf4jHelperNew {
     private String messages;
     
     // pour gérer les group/sousGroups
-    private HashMap<String, String> superGroupHashMap;    
+    private HashMap<String, String> superGroupHashMap;
+    @Autowired
+    private ConceptService conceptService;
 
     public ExportRdf4jHelperNew() {
         skosXmlDocument = new SKOSXmlDocument();
@@ -283,7 +286,7 @@ public class ExportRdf4jHelperNew {
      */
     public SKOSResource exportThesoV2(String idTheso, Preferences nodePreference) {
         this.nodePreference = nodePreference;
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
         SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.CONCEPT_SCHEME);
         for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
 
@@ -402,7 +405,7 @@ public class ExportRdf4jHelperNew {
         var childURIs = relationGroupService.getListGroupChildOfGroup(idTheso, idOfGroupChild);
         var nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
 
-        for (NodeUri nodeUri : nodeUris) {
+        for (var nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
         }
 

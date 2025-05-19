@@ -31,6 +31,10 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
     @Transactional
     void deleteByIdThesaurusAndIdTerm(String idThesaurus, String idTerm);
 
+    @Modifying
+    @Transactional
+    void deleteByIdThesaurus(String idThesaurus);
+
     Optional<NonPreferredTerm> findByIdTermAndLexicalValueAndLangAndIdThesaurus(String idTerm, String lexicalValue, String lang, String idThesaurus);
 
     List<NonPreferredTerm> findAllByIdThesaurusAndIdTermAndLangAndHidenNot(String idThesaurus, String idTerm, String lang, boolean hiden);
@@ -80,4 +84,9 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
     List<NodeEM> findNodeEMByConceptAndLang(@Param("idConcept") String idConcept,
                                             @Param("idThesaurus") String idThesaurus,
                                             @Param("idLang") String idLang);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE NonPreferredTerm t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -43,6 +44,7 @@ public class PropositionBean implements Serializable {
     private final PropositionService propositionService;
     private final LanguageBean languageBean;
     private final PreferenceService preferenceService;
+    private final ThesaurusService thesaurusService;
 
     private Proposition proposition;
     private PropositionDao propositionSelected;
@@ -351,7 +353,8 @@ public class PropositionBean implements Serializable {
             return;
         }
 
-        if (propositionService.envoyerProposition(proposition, nom, email, commentaire)) {
+        var thesaurusName = thesaurusService.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        if (propositionService.envoyerProposition(proposition, nom, email, commentaire, thesaurusName)) {
             showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalSent"));
         }
 

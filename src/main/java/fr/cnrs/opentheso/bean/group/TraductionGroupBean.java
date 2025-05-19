@@ -35,7 +35,7 @@ public class TraductionGroupBean implements Serializable {
     private SelectedTheso selectedTheso;
 
     private String selectedLang;
-    private ArrayList<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
     private List<NodeGroupTraductions> nodeGroupTraductionses;
     private String traductionValue;

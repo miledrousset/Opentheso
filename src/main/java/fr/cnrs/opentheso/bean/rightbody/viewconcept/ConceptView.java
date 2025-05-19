@@ -25,6 +25,7 @@ import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
@@ -174,6 +175,8 @@ public class ConceptView implements Serializable {
     private CurrentUser currentUser;
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private ConceptService conceptService;
 
     @PreDestroy
     public void destroy() {
@@ -577,8 +580,7 @@ public class ConceptView implements Serializable {
     }
 
     public void countTheTotalOfBranch(String idThesaurus) {
-        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(idThesaurus,
-                nodeFullConcept.getIdentifier());
+        List<String> listIdsOfBranch = conceptService.getIdsOfBranch2(idThesaurus, nodeFullConcept.getIdentifier());
         this.countOfBranch = listIdsOfBranch.size();
     }
 

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,12 @@ public interface ConceptGroupConceptRepository extends JpaRepository<ConceptGrou
     void deleteAllByIdGroupAndIdThesaurus(String idGroup, String idThesaurus);
 
     @Modifying
+    void deleteAllByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
+
+    @Modifying
+    void deleteAllByIdThesaurusAndIdConcept(String idThesaurus, String idConcept);
+
+    @Modifying
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Query(value = """
@@ -31,4 +38,9 @@ public interface ConceptGroupConceptRepository extends JpaRepository<ConceptGrou
         AND idconcept NOT IN (SELECT id_concept FROM concept WHERE id_thesaurus = :idThesaurus)
     """, nativeQuery = true)
     List<Object[]> findGroupConceptLinksWithMissingConcepts(@Param("idThesaurus") String idThesaurus);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ConceptGroupConcept t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

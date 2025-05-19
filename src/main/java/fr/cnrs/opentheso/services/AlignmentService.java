@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
 import fr.cnrs.opentheso.models.alignment.NodeSelectedAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.repositories.AlignementPreferencesRepository;
 import fr.cnrs.opentheso.repositories.AlignementRepository;
 import fr.cnrs.opentheso.repositories.AlignementSourceRepository;
 import fr.cnrs.opentheso.repositories.AlignementTypeRepository;
@@ -35,6 +36,7 @@ public class AlignmentService {
     private final AlignementRepository alignementRepository;
     private final AlignementTypeRepository alignementTypeRepository;
     private final AlignementSourceRepository alignementSourceRepository;
+    private final AlignementPreferencesRepository alignementPreferencesRepository;
 
 
     public List<NodeAlignment> getAllAlignmentOfConcept(String idConcept, String idThesaurus) {
@@ -184,12 +186,11 @@ public class AlignmentService {
         }
     }
 
-    public boolean deleteAlignmentOfConcept(String idConcept, String idThesaurus) {
+    public void deleteAlignmentOfConcept(String idConcept, String idThesaurus) {
         try {
-            return alignementRepository.deleteByConceptAndThesaurus(idConcept, idThesaurus) > 0;
+            alignementRepository.deleteByConceptAndThesaurus(idConcept, idThesaurus);
         } catch (Exception e) {
             log.error("Erreur lors de la suppression des alignements du concept : " + idConcept, e);
-            return false;
         }
     }
 
@@ -250,20 +251,19 @@ public class AlignmentService {
                 .toList();
     }
 
-    public boolean updateAlignmentUrlStatut(int idAlignment, boolean newStatut, String idConcept, String idThesaurus) {
+    public void updateAlignmentUrlStatut(int idAlignment, boolean newStatut, String idConcept, String idThesaurus) {
 
         log.info("Mise à jour du status de l'URL de l'alignement id {}, id Concept {} et id thesaurus {}", idAlignment, idConcept, idThesaurus);
         var alignement = alignementRepository.findByInternalIdThesaurusAndInternalIdConceptAndId(idThesaurus, idConcept, idAlignment);
 
         if(alignement.isEmpty()) {
             log.error("L'alignement {} n'existe pas !", idAlignment);
-            return false;
+            return;
         }
 
         log.info("Mise à jour de l'alignement dans la base");
         alignement.get().setUrlAvailable(newStatut);
         alignementRepository.save(alignement.get());
-        return true;
     }
 
     public List<NodeSelectedAlignment> getSelectedAlignementOfThisThesaurus(String idThesaurus) {
@@ -299,6 +299,24 @@ public class AlignmentService {
         log.info("Rechercher des relations vers les concepts dans le thésaurus id {} avec Ontome", idThesaurus);
         var alignements = alignementRepository.findAllLinkedConceptsWithOntome(idThesaurus);
         return formatAlignements(alignements, idThesaurus);
+    }
+
+    public void deleteAllAlignmentsByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de tous les alignements présents dans le thésaurus {}", idThesaurus);
+        alignementRepository.deleteByThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les préférences d'alignements dans le thésaurus {}", idThesaurus);
+        alignementPreferencesRepository.deleteByIdThesaurus(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour du thésaurus id pour les alignements présents dans le thésaurus {}", oldIdThesaurus);
+        alignementRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Mise à jour du thésaurus id pour les préférences d'alignements dans le thésaurus {}", oldIdThesaurus);
+        alignementPreferencesRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     private List<NodeIdValue> formatAlignements(List<NodeIdValueProjection> alignements, String idThesaurus) {

@@ -8,10 +8,12 @@ import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.services.ArkService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.utils.DateUtils;
 
@@ -54,7 +56,7 @@ public class RestoreTheso implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private ThesaurusService thesaurusService;
 
     @Autowired
     private ThesaurusRepository thesaurusRepository;
@@ -79,6 +81,10 @@ public class RestoreTheso implements Serializable {
 
     private boolean overwrite, overwriteLocalArk;
     private String naan, prefix;
+    @Autowired
+    private ConceptService conceptService;
+    @Autowired
+    private ArkService arkService;
 
 
     public void generateSitemap(String idTheso, String nameTheso) {
@@ -227,7 +233,7 @@ public class RestoreTheso implements Serializable {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         // nettoyage des null et d'espaces
-        if (!thesaurusHelper.cleaningTheso(idTheso)) {
+        if (!thesaurusService.cleaningThesaurus(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des espaces et des null"));
             return;
         }
@@ -278,8 +284,7 @@ public class RestoreTheso implements Serializable {
 
     private boolean removeTopTermForConceptWithBT(String idThesaurus){
         // récupération de tous les Id TT du thésaurus
-        var thesaurus = thesaurusRepository.findById(idThesaurus);
-        var tabIdTT = conceptRepository.findAllByThesaurusAndTopConceptAndStatusNotLike(thesaurus.get(), true, "CA");
+        var tabIdTT = conceptRepository.findAllByIdThesaurusAndTopConceptAndStatusNotLike(idThesaurus, true, "CA");
         for (var concept : tabIdTT) {
             if (relationsHelper.isConceptHaveRelationBT(concept.getIdConcept(), idThesaurus)) {
                 conceptRepository.setTopConceptTag(false, concept.getIdConcept(), idThesaurus);
@@ -347,11 +352,11 @@ public class RestoreTheso implements Serializable {
         for (String conceptId : allConcepts) {
             if(!overwrite) {
                 if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
-                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
+                    arkService.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
                     count++;
                 }
             } else {
-                conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
+                arkService.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
                 count++;
             }
         }
@@ -385,16 +390,14 @@ public class RestoreTheso implements Serializable {
             if(!overwriteLocalArk) {
                 if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
                     idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
-                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
-                            nodePreference.getNaanArkLocal() + "/" +
-                                    nodePreference.getPrefixArkLocal() + idArk);
+                    arkService.updateArkIdOfConcept(conceptId, idTheso, nodePreference.getNaanArkLocal() + "/"
+                                                                        + nodePreference.getPrefixArkLocal() + idArk);
                     count++;
                 }
             } else {
                 idArk = ToolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
-                conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
-                        nodePreference.getNaanArkLocal() + "/" +
-                                nodePreference.getPrefixArkLocal() + idArk);
+                arkService.updateArkIdOfConcept(conceptId, idTheso, nodePreference.getNaanArkLocal() + "/"
+                                                                    + nodePreference.getPrefixArkLocal() + idArk);
                 count++;
             }
         }

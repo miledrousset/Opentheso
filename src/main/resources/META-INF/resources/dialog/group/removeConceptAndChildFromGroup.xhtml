@@ -33,16 +33,16 @@
 
                 <p:column headerText="Label">
                     <h:outputText rendered="#{domaines.lexicalValue != ''}"
-                                  value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idgroup}"
+                                  value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idGroup}"
                                   style="color: #43B572"/>                    
                     <h:outputText rendered="#{domaines.lexicalValue == ''}" 
-                                  value="(#{domaines.conceptGroup.idgroup})" 
+                                  value="(#{domaines.conceptGroup.idGroup})"
                                   style="color: #FF7979"/>
                 </p:column>
 
                 <p:column width="80" headerText="Supprimer">
                     <p:commandLink style="color: #FF7979" ajax="true" process="@this"
-                                   action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(domaines.conceptGroup.idgroup)}"
+                                   action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(domaines.conceptGroup.idGroup)}"
                                    update="messageIndex containerIndex:formRightTab">
                         <i class="pi pi-trash" />
                     </p:commandLink>

@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
@@ -15,7 +14,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
 import fr.cnrs.opentheso.services.PreferenceService;
-import jakarta.inject.Inject;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -47,8 +46,8 @@ public class NewThesoBean implements Serializable {
     private final UserHelper userHelper;
     private final PreferenceService preferenceService;
     private final LanguageRepository languageRepository;
-    private final ThesaurusHelper thesaurusHelper;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final ThesaurusService thesaurusService;
 
     private List<LanguageIso639> allLangs;
     private List<UserGroupLabel> nodeProjects;
@@ -96,7 +95,7 @@ public class NewThesoBean implements Serializable {
         }
 
         // création du thésaurus
-        var idNewTheso = thesaurusHelper.addThesaurusRollBack();
+        var idNewTheso = thesaurusService.addThesaurusRollBack();
         if(idNewTheso == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -109,7 +108,7 @@ public class NewThesoBean implements Serializable {
         thesaurus.setId_thesaurus(idNewTheso);
         thesaurus.setTitle(title);
         thesaurus.setLanguage(selectedLang);
-        if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
+        if (!thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

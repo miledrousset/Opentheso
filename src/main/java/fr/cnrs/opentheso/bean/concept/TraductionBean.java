@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -43,6 +44,7 @@ public class TraductionBean implements Serializable {
     private final LanguageBean languageBean;
     private final ConceptHelper conceptHelper;
     private final TermService termService;
+    private final ConceptService conceptService;
     private final ConceptDcTermRepository conceptDcTermRepository;
 
     private String selectedLang, traductionValue;
@@ -190,7 +192,7 @@ public class TraductionBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
         log.info("Mise à jour de la date de mise à jour du concept");
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

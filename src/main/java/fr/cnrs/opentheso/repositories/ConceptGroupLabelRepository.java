@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,9 @@ public interface ConceptGroupLabelRepository extends JpaRepository<ConceptGroupL
     @Modifying
     void deleteByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
 
+    @Modifying
+    void deleteByIdThesaurus(String idThesaurus);
+
     @Query(value = """
         SELECT idgroup, lexicalvalue 
         FROM concept_group_label
@@ -49,4 +53,9 @@ public interface ConceptGroupLabelRepository extends JpaRepository<ConceptGroupL
         LIMIT 40
     """, nativeQuery = true)
     List<Object[]> getGroupAutoCompletions(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang, @Param("searchText") String searchText);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ConceptGroupLabel t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

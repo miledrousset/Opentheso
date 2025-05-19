@@ -20,6 +20,8 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -59,7 +61,7 @@ public class EditFacet implements Serializable {
     @Autowired
     private FacetHelper facetHelper;
 
-    private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
+    private List<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;
     private List<NodeFacet> facetTraductions;
 
@@ -80,9 +82,11 @@ public class EditFacet implements Serializable {
     private NodeNote definition;
     private NodeNote editorialNote;
     private NodeNote example;
-    private NodeNote historyNote;    
-    
-    
+    private NodeNote historyNote;
+    @Autowired
+    private TermService termService;
+
+
     @PreDestroy
     public void destroy(){
         clear();
@@ -372,8 +376,7 @@ public class EditFacet implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        String label = conceptHelper.getLexicalValueOfConcept(
-                conceptSelected.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        String label = termService.getLexicalValueOfConcept(conceptSelected.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
         TreeNodeData data = new TreeNodeData(conceptSelected.getId(), label, "", false,
                 false, true, false, "term");
         data.setIdFacetParent(facetSelected.getIdFacet());

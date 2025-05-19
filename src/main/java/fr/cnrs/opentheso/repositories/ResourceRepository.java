@@ -67,6 +67,5 @@ public interface ResourceRepository extends JpaRepository<Concept, Integer> {
              facets text, externalresources text, concepttype text)
     """, nativeQuery = true)
     Optional<FullConceptProjection> getFullConcept(@Param("idTheso") String idTheso, @Param("idConcept") String idConcept,
-                                                   @Param("idLang") String idLang, @Param("offset") int offset, @Param("step") int step
-    );
+                                                   @Param("idLang") String idLang, @Param("offset") int offset, @Param("step") int step);
 }

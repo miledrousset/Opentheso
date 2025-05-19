@@ -31,10 +31,10 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -91,9 +92,6 @@ public class CsvImportHelper {
     private RelationService relationService;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private FacetHelper facetHelper;
 
     @Autowired
@@ -123,6 +121,10 @@ public class CsvImportHelper {
     private int idUser;
     @Autowired
     private PreferredTermRepository preferredTermRepository;
+    @Autowired
+    private ThesaurusService thesaurusService;
+    @Autowired
+    private ConceptAddService conceptAddService;
 
 
     /**
@@ -138,11 +140,10 @@ public class CsvImportHelper {
             thesaurus.setContributor(nodeUser.getName());
             thesaurus.setLanguage(idLang);
 
-            thesaurusHelper.setIdentifierType("2");
             conn.setAutoCommit(false);
 
             String idTheso1;
-            if ((idTheso1 = thesaurusHelper.addThesaurusRollBack()) == null) {
+            if ((idTheso1 = thesaurusService.addThesaurusRollBack()) == null) {
                 conn.rollback();
                 conn.close();
                 return null;
@@ -155,7 +156,7 @@ public class CsvImportHelper {
             }
             thesaurus.setTitle(thesoName);
 
-            if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
+            if (thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
                 conn.rollback();
                 conn.close();
                 return null;
@@ -177,7 +178,7 @@ public class CsvImportHelper {
     public void addLangsToThesaurus(ArrayList<String> langs, String idTheso) {
 
         for (String idLang : langs) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(idTheso, idLang)) {
+            if (thesaurusService.isLanguageExistOfThesaurus(idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -193,7 +194,7 @@ public class CsvImportHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(thesaurus1);
+                thesaurusService.addThesaurusTraduction(thesaurus1);
             }
         }
     }
@@ -232,7 +233,7 @@ public class CsvImportHelper {
                 term.setLexicalValue(prefLabel.getLabel());
                 term.setSource("");
                 term.setStatus("");
-                idConcept = conceptHelper.addConcept(idConceptPere, "NT", concept, term, idUser);
+                idConcept = conceptAddService.addConcept(idConceptPere, "NT", concept, term, idUser);
                 if (idConcept == null) {
                     message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
                     return;

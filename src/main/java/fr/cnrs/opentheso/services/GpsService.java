@@ -5,12 +5,14 @@ import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.GpsRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class GpsService {
@@ -35,7 +37,7 @@ public class GpsService {
                 return false;
             }
 
-            return conceptRepository.setGpstTag(true, idConcept, idThesaurus) > 0;
+            return conceptRepository.setGpsTag(true, idConcept, idThesaurus) > 0;
         }
     }
 
@@ -64,6 +66,18 @@ public class GpsService {
 
     public void deleteGps(Gps gps) {
         gpsRepository.deleteById(gps.getId());
+    }
+
+    public void deleteGpsByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de tous les GPS présents dans le thésaurus id {}", idThesaurus);
+        gpsRepository.deleteByIdTheso(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldThesaurusId, String newThesaurusId) {
+
+        log.info("Mise à jour du thésaurus id pour les GPS dont l'id du thésaurus est {}", oldThesaurusId);
+        gpsRepository.updateThesaurusId(newThesaurusId, oldThesaurusId);
     }
 
 }

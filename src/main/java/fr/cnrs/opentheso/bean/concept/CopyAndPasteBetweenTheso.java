@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.CopyAndPasteBetweenThesoService;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -56,6 +57,8 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     
     // pour savoir si on récupère les identifiants pérennes ou non
     private String identifierType = "sans";
+    @Autowired
+    private ConceptService conceptService;
 
     @PreDestroy
     public void destroy(){
@@ -124,7 +127,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
 
         // on vérifie si les ids des concepts à copier n'existent pas déjà dans le thésaurus cible.
         for (String idConcept : conceptsToCopy) {
-            if(conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+            if(conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'identifiant " + idConcept + " existe déjà dans le thésaurus cible, c'est interdit !!! ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);            
                 return;                

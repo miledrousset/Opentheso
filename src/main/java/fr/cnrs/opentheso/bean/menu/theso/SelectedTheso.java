@@ -28,8 +28,8 @@ import java.util.ArrayList;
 
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
@@ -84,9 +84,6 @@ public class SelectedTheso implements Serializable {
     private LanguageRepository languageRepository;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private UserGroupLabelRepository userGroupLabelRepository;
 
     private List<UserGroupLabel> projects;
@@ -97,7 +94,7 @@ public class SelectedTheso implements Serializable {
     private String currentIdTheso;
     private String optionThesoSelected;
 
-    private ArrayList<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangs;
 
     private String selectedLang; // la langue qu'on vient de séléctionner
     private String currentLang; // la langue en cours dans la session
@@ -121,6 +118,8 @@ public class SelectedTheso implements Serializable {
     private List<ResultatAlignement> resultAlignementList;
 
     private boolean haveActiveCorpus;
+    @Autowired
+    private ThesaurusService thesaurusService;
 
     @PostConstruct
     public void initializing() {
@@ -173,12 +172,10 @@ public class SelectedTheso implements Serializable {
             return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
-            String idArk = thesaurusHelper.getIdArkOfThesaurus(currentIdTheso);
-            if(StringUtils.isEmpty(idArk)){
-                return baseUrl + "/?idt=" + currentIdTheso;
-            } else {
-                return baseUrl + "/api/ark:/" + idArk;
-            }
+            var thesaurus = thesaurusService.getThesaurusById(currentIdTheso);
+            return (StringUtils.isEmpty(thesaurus.getIdArk()))
+                    ? baseUrl + "/?idt=" + currentIdTheso
+                    : baseUrl + "/api/ark:/" + thesaurus.getIdArk();
         }
     }
     
@@ -458,12 +455,11 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedIdTheso, languageBean.getIdLangue());
+        nodeLangs = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedIdTheso, languageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;
-        thesoName = thesaurusHelper.getTitleOfThesaurus(
-                selectedIdTheso, selectedLang);
+        thesoName = thesaurusService.getTitleOfThesaurus(selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
         treeGroups.reset();
@@ -552,7 +548,7 @@ public class SelectedTheso implements Serializable {
             isActionFromConcept = true;
             idConceptFromUri = null;
             idThesoFromUri = null;
-            thesoName = thesaurusHelper.getTitleOfThesaurus(selectedIdTheso, selectedLang);
+            thesoName = thesaurusService.getTitleOfThesaurus(selectedIdTheso, selectedLang);
             return;
         }
 
@@ -591,8 +587,9 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;
     }
 
-    private boolean isValidTheso(String idTheso) {
-        return !thesaurusHelper.isThesoPrivate(idTheso);
+    private boolean isValidTheso(String idThesaurus) {
+        var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
+        return !thesaurus.getIsPrivate();
     }
 
     public String getIdConceptFromUri() {
@@ -619,7 +616,7 @@ public class SelectedTheso implements Serializable {
         this.idThesoFromUri = idThesoFromUri;
     }
 
-    public ArrayList<NodeLangTheso> getNodeLangs() {
+    public List<NodeLangTheso> getNodeLangs() {
         return nodeLangs;
     }
 

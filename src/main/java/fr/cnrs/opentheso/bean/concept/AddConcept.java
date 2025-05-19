@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
@@ -45,6 +46,7 @@ public class AddConcept implements Serializable {
     private final ConceptService conceptService;
     private final GroupService groupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final ConceptAddService conceptAddService;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
     private String prefLabel, notation, idNewConcept, source, relationType, idGroup, idBTfacet, idFacet;
@@ -80,7 +82,7 @@ public class AddConcept implements Serializable {
 
     public void addNewConceptForced(String idConceptParent, String idLang, String status, String idThesaurus, int idUser) {
 
-        isCreated = conceptService.addNewConcept(idThesaurus, idNewConcept, idGroup, idLang, prefLabel, status, source,
+        isCreated = conceptAddService.addNewConcept(idThesaurus, idNewConcept, idGroup, idLang, prefLabel, status, source,
                 idFacet, idConceptParent, notation, idBTfacet, relationType, idUser, isConceptUnderFacet, currentUser);
 
         duplicate = false;

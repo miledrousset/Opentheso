@@ -37,6 +37,9 @@ public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Inte
     @Modifying
     void deleteByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
 
+    @Modifying
+    void deleteByIdThesaurus(String idThesaurus);
+
     @Query(value = """
         SELECT idthesaurus 
         FROM concept_group 
@@ -74,4 +77,19 @@ public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Inte
         AND cgc.idthesaurus = :idThesaurus
     """, nativeQuery = true)
     List<Object[]> findGroupsOfConcept(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ConceptGroup cg SET cg.notation = '' WHERE cg.notation ilike 'null'")
+    void cleanNotation();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ConceptGroup cg SET cg.idTypeCode = 'MT' WHERE cg.idTypeCode ilike 'null'")
+    void cleanIdTypeCode();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ConceptGroup t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

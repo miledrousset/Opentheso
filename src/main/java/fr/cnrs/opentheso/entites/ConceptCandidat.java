@@ -3,12 +3,8 @@ package fr.cnrs.opentheso.entites;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -19,7 +15,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,21 +24,16 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@IdClass(ConceptCandidatId.class)
 @Table(name = "concept_candidat")
 @EntityListeners(AuditingEntityListener.class)
 public class ConceptCandidat implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String idConcept;
 
-    @OneToOne
-    @JoinColumn(name = "id_concept", referencedColumnName = "id_concept", nullable = false)
-    private Concept concept;
-
-    @ManyToOne
-    @JoinColumn(name = "id_thesaurus", referencedColumnName = "id_thesaurus", nullable = false)
-    private Thesaurus thesaurus;
+    @Id
+    private String idThesaurus;
 
     @CreatedDate
     @Column(name = "created", nullable = false, updatable = false)

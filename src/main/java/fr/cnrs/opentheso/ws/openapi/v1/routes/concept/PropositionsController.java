@@ -2,13 +2,14 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
 import fr.cnrs.opentheso.services.PropositionService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.core.MediaType;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,16 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/openapi/v1/concepts/propositions")
 @CrossOrigin(methods = { RequestMethod.POST })
 @Tag(name = "Proposition", description = "Ajouter une proposition")
 public class PropositionsController {
 
-    @Autowired
-    private ApiKeyHelper apiKeyHelper;
-
-    @Autowired
-    private PropositionService propositionService;
+    private final ApiKeyHelper apiKeyHelper;
+    private final UserService userService;
+    private final PropositionService propositionService;
 
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON)
@@ -45,8 +45,10 @@ public class PropositionsController {
         }
 
         var userId = apiKeyHelper.getIdUser(apiKey);
+        log.info("User id : " + userId);
+        var user = userService.getById(userId);
 
-        propositionService.createProposition(proposition, userId);
+        propositionService.createProposition(proposition, user);
         return ResponseEntity.status(201).build();
     }
 }

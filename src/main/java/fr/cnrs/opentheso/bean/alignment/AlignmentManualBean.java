@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.inject.Named;
@@ -40,6 +41,7 @@ public class AlignmentManualBean implements Serializable {
     private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final AlignmentService alignmentService;
+    private final ConceptService conceptService;
 
     private String manualAlignmentSource, manualAlignmentUri;
     private int manualAlignmentType;
@@ -202,7 +204,7 @@ public class AlignmentManualBean implements Serializable {
 
     private void updateDateOfConcept(String idThesaurus, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(idThesaurus, idConcept, idUser);
+        conceptService.updateDateOfConcept(idThesaurus, idConcept, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

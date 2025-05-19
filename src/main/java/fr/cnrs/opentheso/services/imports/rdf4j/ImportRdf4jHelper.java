@@ -39,6 +39,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -56,10 +57,10 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 
 import java.sql.Connection;
@@ -131,9 +132,6 @@ public class ImportRdf4jHelper {
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private FacetHelper facetHelper;
 
     @Autowired
@@ -183,6 +181,10 @@ public class ImportRdf4jHelper {
     private TermService termService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private ThesaurusService thesaurusService;
+    @Autowired
+    private ConceptService conceptService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -238,8 +240,6 @@ public class ImportRdf4jHelper {
         thesaurus.setCreator(creator);
         thesaurus.setContributor(contributor);
 
-        thesaurusHelper.setIdentifierType("2");
-
         String idTheso1;
         try (Connection conn = dataSource.getConnection()) {
 
@@ -247,7 +247,7 @@ public class ImportRdf4jHelper {
             if (thesaurus.getLanguage() == null) {
                 thesaurus.setLanguage(langueSource);
             }
-            if ((idTheso1 = thesaurusHelper.addThesaurusRollBack()) == null) {
+            if ((idTheso1 = thesaurusService.addThesaurusRollBack()) == null) {
                 conn.rollback();
                 conn.close();
                 message.append("Erreur lors de la création du thésaurus");
@@ -281,7 +281,7 @@ public class ImportRdf4jHelper {
                 if (thesaurus.getLanguage() == null) {
                     thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
                 }
-                if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
+                if (thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
                     conn.rollback();
                     conn.close();
                     message.append("Erreur lors de la création des traductions du thésaurus");
@@ -567,7 +567,7 @@ public class ImportRdf4jHelper {
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
         if (isCandidatImport) {
-            if (conceptHelper.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
+            if (conceptService.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
                 return;
             }
         }
@@ -1891,7 +1891,7 @@ public class ImportRdf4jHelper {
     public void addLangsToThesaurus(String idTheso) {
 
         for (String idLang : idLangsFound) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(idTheso, idLang)) {
+            if (thesaurusService.isLanguageExistOfThesaurus(idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -1907,7 +1907,7 @@ public class ImportRdf4jHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(thesaurus1);
+                thesaurusService.addThesaurusTraduction(thesaurus1);
             }
         }
     }

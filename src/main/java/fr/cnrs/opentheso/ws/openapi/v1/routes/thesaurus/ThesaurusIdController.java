@@ -2,8 +2,8 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.json.Json;
@@ -51,9 +50,10 @@ public class ThesaurusIdController {
     private RestRDFHelper restRDFHelper;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-    @Autowired
     private TermRepository termRepository;
+
+    @Autowired
+    private ThesaurusService thesaurusService;
 
 
     @GetMapping(produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
@@ -165,7 +165,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getListLang(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        ArrayList<String> listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(thesaurusId);
+        List<String> listLangOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurus(thesaurusId);
         JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();

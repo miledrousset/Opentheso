@@ -39,11 +39,11 @@ public class createArkFromConceptId {
         for (String conceptId : conceptIds) {
             if(!overwrite) {
                 if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
-                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
+                    //ark.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
                     count++;
                 }
             } else {
-                conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
+                //arkServic.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + conceptId);
                 count++;
             }
         }

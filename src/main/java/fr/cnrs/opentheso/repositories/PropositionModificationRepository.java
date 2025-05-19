@@ -16,6 +16,9 @@ public interface PropositionModificationRepository extends JpaRepository<Proposi
     List<PropositionModification> findAllByIdThesoAndStatus(String idTheso, String status);
 
     @Modifying
+    void deleteAllByIdTheso(String idThesaurus);
+
+    @Modifying
     @Transactional
     @Query("UPDATE PropositionModification pm SET pm.status = :newStatus WHERE pm.id = :idProposition")
     void updateStatus(@Param("idProposition") Integer idProposition, @Param("newStatus") String newStatus);
@@ -64,4 +67,5 @@ public interface PropositionModificationRepository extends JpaRepository<Proposi
         ORDER BY pro.id DESC
     """, nativeQuery = true)
     List<PropositionProjection> findAllPropositionsByStatusAndTheso(@Param("status") String status, @Param("idTheso") String idTheso);
+
 }

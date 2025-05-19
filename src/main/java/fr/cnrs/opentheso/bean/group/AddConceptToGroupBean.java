@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -35,6 +36,9 @@ public class AddConceptToGroupBean implements Serializable {
 
     @Autowired
     private GroupService groupService;
+
+    @Autowired
+    private ConceptService conceptService;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -90,7 +94,7 @@ public class AddConceptToGroupBean implements Serializable {
             return;
         }
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()

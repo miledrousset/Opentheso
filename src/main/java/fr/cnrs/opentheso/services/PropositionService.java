@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.PropositionModification;
 import fr.cnrs.opentheso.entites.PropositionModificationDetail;
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.PropositionProjection;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.propositions.Proposition;
@@ -27,24 +28,21 @@ import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
+import fr.cnrs.opentheso.repositories.PropositionRepository;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
-import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
-import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
@@ -68,12 +66,9 @@ public class PropositionService {
     private final SelectedTheso selectedTheso;
     private final RoleOnThesoBean roleOnThesoBean;
     private final MailBean mailBean;
-    private final ConceptDcTermRepository conceptDcTermRepository;
-    private final ThesaurusHelper thesaurusHelper;
-    private final ConceptHelper conceptHelper;
     private final NoteHelper noteHelper;
-    private final UserHelper userHelper;
     private final TermRepository termRepository;
+    private final ConceptDcTermRepository conceptDcTermRepository;
     private final PropositionModificationRepository propositionModificationRepository;
     private final PropositionModificationDetailRepository propositionModificationDetailRepository;
     private final NonPreferredTermRepository nonPreferredTermRepository;
@@ -81,9 +76,11 @@ public class PropositionService {
     private final TermService termService;
     private final PreferenceService preferenceService;
     private final PreferredTermRepository preferredTermRepository;
+    private final PropositionRepository propositionRepository;
+    private final ConceptService conceptService;
 
 
-    public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
+    public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire, String thesaurusName) {
 
         log.info("Début de l'envoi de la proposition");
         if (propositionModificationRepository.findPropositionByEmailConceptLang(email, proposition.getConceptID(),
@@ -107,7 +104,6 @@ public class PropositionService {
 
         log.info("Recherche du nom du thésaurus à partir de son id {} et la langue {}",
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        var thesaurusName = thesaurusHelper.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         try {
             var subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
@@ -257,18 +253,20 @@ public class PropositionService {
         return CollectionUtils.isEmpty(result) ? 0 : result.size();
     }
 
-    public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
+    public void sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
         if (currentUser.getNodeUser() != null) {
             if(!currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)) {
-                return mailBean.sendMail(emailDestination, subject, contentFile);
+                mailBean.sendMail(emailDestination, subject, contentFile);
+                return;
             }
             if (currentUser.getNodeUser().isAlertMail()) {
-                return mailBean.sendMail(emailDestination, subject, contentFile);
+                mailBean.sendMail(emailDestination, subject, contentFile);
+                return;
             } else {
-                return true;
+                return;
             }
         }
-        return mailBean.sendMail(emailDestination, subject, contentFile);
+        mailBean.sendMail(emailDestination, subject, contentFile);
     }
 
     public void refuserProposition(PropositionDao propositionSelected, String commentaireAdmin) {
@@ -452,7 +450,7 @@ public class PropositionService {
             }
         }
 
-        conceptHelper.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(), currentUser.getNodeUser().getIdUser());
+        conceptService.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(), currentUser.getNodeUser().getIdUser());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -930,14 +928,12 @@ public class PropositionService {
         return dao;
     }
 
+    public void createProposition(PropositionFromApi proposition, User user) {
 
-    public void createProposition(PropositionFromApi proposition, int userId) {
-
-        var user = userHelper.getUser(userId);
         var thesaurusLang = preferenceService.getWorkLanguageOfThesaurus(proposition.getIdTheso());
 
         int propositionId = propositionModificationRepository.save(PropositionModification.builder()
-                        .nom(user.getName())
+                        .nom(user.getUsername())
                         .email(user.getMail())
                         .commentaire(proposition.getCommentaire())
                         .date(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()))
@@ -969,6 +965,20 @@ public class PropositionService {
                 noteManagement(propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
             }
         }
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour du thésaurus id pour les propositions présentes dans le thésaurus id {}", oldIdThesaurus);
+        propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
+
+    public void deleteByThesaurus(String idThesaurus) {
+
+        log.info("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);
+        propositionModificationDetailRepository.deleteByIdThesaurus(idThesaurus);
+        propositionModificationRepository.deleteAllByIdTheso(idThesaurus);
+        propositionRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     private void saveTerme(PropositionFromApi proposition,  Integer propositionId, String thesaurusLang) {

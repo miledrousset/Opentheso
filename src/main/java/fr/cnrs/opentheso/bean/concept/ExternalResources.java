@@ -10,18 +10,19 @@ import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
@@ -29,34 +30,20 @@ import org.primefaces.PrimeFaces;
 @Data
 @Named(value = "externalResources")
 @SessionScoped
+@RequiredArgsConstructor
 public class ExternalResources implements Serializable {
 
-    private ConceptView conceptBean;
-    private SelectedTheso selectedTheso;
-    private CurrentUser currentUser;
-    private ConceptDcTermRepository conceptDcTermRepository;
-    private ConceptHelper conceptHelper;
-    private ExternalResourcesRepository externalResourcesRepository;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ConceptHelper conceptHelper;
+    private final ExternalResourcesRepository externalResourcesRepository;
+    private final ConceptService conceptService;
 
     private String uri, description;
     private List<NodeImage> nodeImages, nodeImagesForEdit;
 
-
-    @Inject
-    public ExternalResources(ConceptView conceptBean,
-                             SelectedTheso selectedTheso,
-                             CurrentUser currentUser,
-                             ConceptDcTermRepository conceptDcTermRepository,
-                             ConceptHelper conceptHelper,
-                             ExternalResourcesRepository externalResourcesRepository) {
-
-        this.currentUser = currentUser;
-        this.conceptBean = conceptBean;
-        this.selectedTheso = selectedTheso;
-        this.conceptHelper = conceptHelper;
-        this.conceptDcTermRepository = conceptDcTermRepository;
-        this.externalResourcesRepository = externalResourcesRepository;
-    }
 
     public void reset() {
         uri = null;
@@ -96,7 +83,7 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -131,9 +118,7 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -162,7 +147,7 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()

@@ -14,10 +14,18 @@ public interface ThesaurusDcTermRepository extends JpaRepository<ThesaurusDcTerm
 
     List<ThesaurusDcTerm> findAllByIdThesaurus(String idThesaurus);
 
+    @Modifying
+    void deleteAllByIdThesaurus(String idThesaurus);
+
 
     @Modifying
     @Transactional
     @Query("DELETE FROM ThesaurusDcTerm tdt WHERE tdt.idThesaurus = :idThesaurus AND tdt.id = :id")
     void deleteDcElementThesaurus(@Param("id") Integer id, @Param("idThesaurus") String idThesaurus);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ThesaurusDcTerm t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
 }

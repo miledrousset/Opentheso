@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,9 @@ public interface RelationGroupRepository extends JpaRepository<RelationGroup, In
 
     @Modifying
     void deleteByIdThesaurusAndIdGroup2(String idThesaurus, String idGroup2);
+
+    @Modifying
+    void deleteByIdThesaurus(String idThesaurus);
 
     @Query(value = """
         SELECT cg.idgroup 
@@ -43,6 +47,11 @@ public interface RelationGroupRepository extends JpaRepository<RelationGroup, In
         ORDER BY rg.id_group2 ASC
     """, nativeQuery = true)
     List<Object[]> findChildGroupDetails(@Param("idThesaurus") String idThesaurus, @Param("idGroupParent") String idGroupParent);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE RelationGroup t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
 
 }

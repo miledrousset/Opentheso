@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.services.exports.csv.StatistiquesRapportCSV;
 
@@ -40,11 +40,11 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 @Named(value = "statistiqueBean")
 public class StatistiqueBean implements Serializable {
     
-    private SelectedTheso selectedTheso;
-    private LanguageBean languageBean;
-    private ThesaurusHelper thesaurusHelper;
-    private ConceptHelper conceptHelper;
-    private StatistiqueService statistiqueService;
+    private final SelectedTheso selectedTheso;
+    private final LanguageBean languageBean;
+    private final ConceptHelper conceptHelper;
+    private final StatistiqueService statistiqueService;
+    private final ThesaurusService thesaurusService;
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat, selectedLanguage;
@@ -155,7 +155,7 @@ public class StatistiqueBean implements Serializable {
         log.info("Initialisation des champs de l'interface statistiques");
 
         log.info("Recupération de la liste des langues du thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
         log.info("Recherche de la liste des groupes présent dans le thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
         groupList = statistiqueService.getListGroupes(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
@@ -201,10 +201,10 @@ public class StatistiqueBean implements Serializable {
 
             nbrCanceptByThes = statistiqueService.countValidConceptsByThesaurus(selectedTheso.getCurrentIdTheso());
 
-            var conceptsList = statistiqueService.findAllByThesaurusIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "CA");
+            var conceptsList = statistiqueService.findAllByIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "CA");
             nbrCandidateByThes = CollectionUtils.isNotEmpty(conceptsList) ? conceptsList.size() : 0;
 
-            var deprecatedConceptsList = statistiqueService.findAllByThesaurusIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "DEP");
+            var deprecatedConceptsList = statistiqueService.findAllByIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "DEP");
             nbrDeprecatedByThes = CollectionUtils.isNotEmpty(deprecatedConceptsList) ? deprecatedConceptsList.size() : 0;
 
             derniereModification = conceptHelper.getLastModification(selectedTheso.getCurrentIdTheso());

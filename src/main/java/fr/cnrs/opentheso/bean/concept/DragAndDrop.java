@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -64,6 +65,9 @@ public class DragAndDrop implements Serializable {
 
     @Autowired
     private RelationsHelper relationsHelper;
+
+    @Autowired
+    private ConceptService conceptService;
 
     private boolean isCopyOn;
     private boolean isValidPaste;
@@ -1135,9 +1139,8 @@ public class DragAndDrop implements Serializable {
 
     private void reloadConcept(){
         PrimeFaces pf = PrimeFaces.current();
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
+
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

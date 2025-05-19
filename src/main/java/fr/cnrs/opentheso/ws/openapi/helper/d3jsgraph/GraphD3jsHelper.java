@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
@@ -18,34 +17,30 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class GraphD3jsHelper {
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private UriHelper uriHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-    
-    @Autowired
-    private PreferenceService preferenceService;
+    private final ConceptHelper conceptHelper;
+    private final UriHelper uriHelper;
+    private final PreferenceService preferenceService;
+    private final ThesaurusService thesaurusService;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
 
     private NodeGraphD3js nodeGraphD3js;
     private Preferences nodePreference;
-    @Autowired
-    private GroupService groupService;
 
     public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
@@ -61,7 +56,7 @@ public class GraphD3jsHelper {
         uriHelper.setNodePreference(nodePreference);
         
         // récupérer les conceptScheme
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
         if(nodeThesaurus == null){
             return;
         }
@@ -90,18 +85,18 @@ public class GraphD3jsHelper {
         uriHelper.setIdTheso(idTheso);
         uriHelper.setNodePreference(nodePreference);
 
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
         if(nodeThesaurus == null){
             return;
         }        
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        if(!conceptHelper.isIdExiste(idConcept)){
+        if(!conceptService.isIdExiste(idConcept)){
             return;
         }
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getIdsOfBranch2(idTheso, idConcept);
+        List<String> listIdConcept = conceptService.getIdsOfBranch2(idTheso, idConcept);
         if (listIdConcept.size() > 2000) {
             listIdConcept = listIdConcept.subList(0, 2000);
         }        

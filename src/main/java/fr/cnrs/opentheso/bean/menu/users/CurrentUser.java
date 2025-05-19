@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.entites.User;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -15,6 +14,7 @@ import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -101,9 +101,6 @@ public class CurrentUser implements Serializable {
     private UserRepository userRepository;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private Tree tree;
 
     private NodeUser nodeUser;
@@ -115,6 +112,8 @@ public class CurrentUser implements Serializable {
     
     // nouvel objet pour gérer les permissions
     private UserPermissions userPermissions;
+    @Autowired
+    private ThesaurusService thesaurusService;
 
 
     public void clear() {
@@ -153,11 +152,12 @@ public class CurrentUser implements Serializable {
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setPublicThesos(this, selectedTheso);
             if(StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())){
-                if (!thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
-                    indexSetting.setSelectedTheso(true);
-                } else {
+                var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+                if (thesaurus.getIsPrivate()) {
                     selectedTheso.setCurrentIdTheso(null);
                     indexSetting.setSelectedTheso(false);
+                } else {
+                    indexSetting.setSelectedTheso(true);
                 }
                 indexSetting.setProjectSelected(false);
             }
@@ -179,8 +179,8 @@ public class CurrentUser implements Serializable {
             roleOnThesoBean.addAuthorizedThesoToHM();
             roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
 
-            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())
-                    && thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
+            var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso()) && thesaurus.getIsPrivate()) {
                 indexSetting.setSelectedTheso(true);
                 indexSetting.setProjectSelected(false);
             }
@@ -264,11 +264,12 @@ public class CurrentUser implements Serializable {
         if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
             indexSetting.setProjectSelected(false);
             if(!StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-                if (!thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
-                    indexSetting.setSelectedTheso(true);
-                } else {
+                var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+                if (thesaurus.getIsPrivate()) {
                     selectedTheso.setCurrentIdTheso(null);
                     indexSetting.setSelectedTheso(false);
+                } else {
+                    indexSetting.setSelectedTheso(true);
                 }
             }
         } else {
@@ -318,7 +319,7 @@ public class CurrentUser implements Serializable {
     private void setAllListThesoOfAllProject(){
         // liste des thésaurus de l'utilisateur (tous les droits en partant du contributeur)
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListThesos(thesaurusHelper.getAllTheso(true));
+            userPermissions.setListThesos(thesaurusService.getAllThesaurus(true));
             userPermissions.setRole(1);
             userPermissions.setRoleName("superAdmin");   
             if(userPermissions.getSelectedProject() != -1) {
@@ -416,10 +417,10 @@ public class CurrentUser implements Serializable {
         int idProject, idRole; 
         userPermissions.setSelectedTheso(idTheso);
         userPermissions.setPreferredLangOfSelectedTheso(preferenceService.getWorkLanguageOfThesaurus(selectedTheso.getCurrentIdTheso()));
-        userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
+        userPermissions.setSelectedThesoName(thesaurusService.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
         
         
-        userPermissions.setListLangsOfSelectedTheso(thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+        userPermissions.setListLangsOfSelectedTheso(thesaurusService.getAllUsedLanguagesOfThesaurusNode(
                 selectedTheso.getCurrentIdTheso(), userPermissions.getPreferredLangOfSelectedTheso()));
         
         idProject = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());
@@ -547,7 +548,7 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
 
-        userPermissions.setListThesos(thesaurusHelper.getAllTheso(nodeUser != null));
+        userPermissions.setListThesos(thesaurusService.getAllThesaurus(nodeUser != null));
 
         // contrôle si le thésaurus actuel est dans la liste, sinon, on initialise le thésaurus à null
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){

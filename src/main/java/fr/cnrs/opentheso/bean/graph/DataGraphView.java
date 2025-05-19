@@ -14,8 +14,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 import fr.cnrs.opentheso.models.graphs.GraphObject;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.graphs.GraphService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -76,6 +77,9 @@ public class DataGraphView implements Serializable {
     @Value("${neo4j.databaseName}")
     private String databaseNameNeo4j;
 
+    @Autowired
+    private ThesaurusService thesaurusService;
+
     private List<GraphObject> graphObjects;
 
     private GraphObject selectedGraph;
@@ -91,14 +95,14 @@ public class DataGraphView implements Serializable {
     private String selectedIdTheso;
     private NodeSearchMini searchSelected;
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-    @Autowired
     private ConceptHelper conceptHelper;
     @Autowired
     private LanguageBean langueBean;
 
     @Autowired
     private PreferenceService preferenceService;
+    @Autowired
+    private TermService termService;
 
     @jakarta.inject.Inject
     public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
@@ -151,7 +155,7 @@ public class DataGraphView implements Serializable {
     public void onSelectTheso(AjaxBehaviorEvent e) {
         String idTheso = ((Chip) e.getSource()).getLabel();
         String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
-        String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        String nameOfTheso = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
@@ -165,8 +169,8 @@ public class DataGraphView implements Serializable {
         String idConcept = idValue[1].trim();
 
         String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
-        String nameOfTheso = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
-        String nameOfConcept = conceptHelper.getLexicalValueOfConcept(idConcept,idTheso,idLang);
+        String nameOfTheso = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
+        String nameOfConcept = termService.getLexicalValueOfConcept(idConcept,idTheso,idLang);
         FacesMessage message1 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
         FacesMessage message2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Concept", nameOfConcept);
         FacesContext.getCurrentInstance().addMessage(null, message1);

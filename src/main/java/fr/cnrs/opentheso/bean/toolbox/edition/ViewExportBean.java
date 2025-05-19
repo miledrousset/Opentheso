@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -11,6 +10,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -29,10 +30,13 @@ import org.primefaces.event.ToggleSelectEvent;
  */
 @Named(value = "viewExportBean")
 @SessionScoped
+@RequiredArgsConstructor
 public class ViewExportBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
+
+    private final ThesaurusService thesaurusService;
 
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private ExportFileBean downloadBean;
@@ -44,10 +48,7 @@ public class ViewExportBean implements Serializable {
     @Autowired
     private GroupService groupService;
 
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    private ArrayList<NodeLangTheso> languagesOfTheso;
+    private List<NodeLangTheso> languagesOfTheso;
     private List<NodeGroup> groupList;
     private Preferences nodePreference;
 
@@ -141,7 +142,7 @@ public class ViewExportBean implements Serializable {
         if (idLang == null || idLang.isEmpty()) {
             idLang = workLanguage;
         }
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), idLang);
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), idLang);
 
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
@@ -274,7 +275,7 @@ public class ViewExportBean implements Serializable {
         return formatFile;
     }
 
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
+    public List<NodeLangTheso> getLanguagesOfTheso() {
         return languagesOfTheso;
     }
 

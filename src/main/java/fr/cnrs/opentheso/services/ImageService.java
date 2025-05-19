@@ -82,4 +82,16 @@ public class ImageService {
 
         return imagesRepository.save(image);
     }
+
+    public void deleteImagesByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de toutes les images présentes dans le thésaurus id {}", idThesaurus);
+        imagesRepository.deleteByIdThesaurus(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour du thésaurus id de toutes les images présentes dans le thésaurus id {}", oldIdThesaurus);
+        imagesRepository.updateThesaurusId(newIdThesaurus, newIdThesaurus);
+    }
 }

@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +25,15 @@ public interface UserRoleOnlyOnRepository extends JpaRepository<UserRoleOnlyOn, 
             "ORDER BY LOWER(u.theso.idThesaurus)")
     List<NodeUserRole> getListRoleByThesoLimited(@Param("idGroup") int idGroup, @Param("idUser") int idUser);
 
+    @Modifying
     @Transactional
     void deleteByUserAndGroup(User user, UserGroupLabel group);
 
+    @Modifying
     @Transactional
+    void deleteByTheso(Thesaurus thesaurus);
+
+    @Modifying
     void deleteByUserAndGroupAndRoleAndTheso(User user, UserGroupLabel group, Roles role, Thesaurus theso);
 
     List<UserRoleOnlyOn> findAllByUserOrderByTheso(User user);

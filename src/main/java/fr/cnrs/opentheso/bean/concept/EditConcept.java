@@ -21,8 +21,12 @@ import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.ArkService;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.HandleConceptService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.utils.MessageUtils;
@@ -128,6 +132,14 @@ public class EditConcept implements Serializable {
     
     private NodeConceptType nodeConceptTypeToDelete;
     private NodeConceptType nodeConceptTypeToAdd;
+    @Autowired
+    private ConceptService conceptService;
+    @Autowired
+    private ConceptAddService conceptAddService;
+    @Autowired
+    private HandleConceptService handleConceptService;
+    @Autowired
+    private ArkService arkService;
 
 
     public void clear() {
@@ -320,10 +332,7 @@ public class EditConcept implements Serializable {
             }            
         }
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -424,8 +433,7 @@ public class EditConcept implements Serializable {
             termService.addTermTraduction(term, idUser);
         }
 
-        conceptHelper.updateDateOfConcept(idTheso,
-                conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -493,19 +501,14 @@ public class EditConcept implements Serializable {
 
         if (conceptView.getNodeConcept().getNodeNT().isEmpty()) {
             // suppression du concept
-            if (!conceptHelper.deleteConcept(
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    idTheso,
-                    idUser)) {
+            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         } else {
             /// suppression d'une branche
-            if(!conceptHelper.deleteBranchConcept(
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    idTheso, idUser)){
+            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idUser)){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué, vérifier la poly-hiérarchie pour le concept : " 
                         + conceptHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -561,9 +564,8 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                idConcept, idUser);
+
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -614,7 +616,7 @@ public class EditConcept implements Serializable {
             }
         }
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -660,9 +662,8 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated, idUser);
+
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConceptDeprecated, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -705,9 +706,7 @@ public class EditConcept implements Serializable {
             return;
         }
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated, idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConceptDeprecated, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -747,7 +746,7 @@ public class EditConcept implements Serializable {
         ArrayList<String> idConcepts = new ArrayList<>();
         idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        generateArkIds(conceptHelper, idConcepts);
+        generateArkIds(idConcepts);
     }
 
     /**
@@ -762,7 +761,7 @@ public class EditConcept implements Serializable {
             return;
         }
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        generateArkIds(conceptHelper, idConcepts);
+        generateArkIds(idConcepts);
     }
     
     /**
@@ -782,7 +781,7 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso());
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeIdValues = generateArkIds(conceptHelper, idConcepts);
+        nodeIdValues = generateArkIds(idConcepts);
     }
 
     /**
@@ -815,7 +814,7 @@ public class EditConcept implements Serializable {
         }
         nodeIdValues = new ArrayList<>();
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeIdValues = generateArkIds(conceptHelper, idConcepts);
+        nodeIdValues = generateArkIds(idConcepts);
     }
     
     /**
@@ -832,7 +831,7 @@ public class EditConcept implements Serializable {
         nodeIdValues = new ArrayList<>();
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        nodeIdValues = conceptHelper.generateArkIdFast(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang());
+        nodeIdValues = arkService.generateArkIdFast(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang());
 
         FacesMessage msg;
         if(nodeIdValues == null) {
@@ -846,9 +845,9 @@ public class EditConcept implements Serializable {
         }        
     }    
 
-    private List<NodeIdValue> generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
+    private List<NodeIdValue> generateArkIds(ArrayList<String> idConcepts) {
         FacesMessage msg;
-        nodeIdValues = conceptHelper.generateArkId(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang());
+        nodeIdValues = conceptAddService.generateArkId(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang(), null);
         if(nodeIdValues == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée avec succès !!");
         } else {
@@ -864,7 +863,7 @@ public class EditConcept implements Serializable {
 
     private void updateUriArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
         FacesMessage msg;
-        if(!conceptHelper.updateUriArk(selectedTheso.getCurrentIdTheso(), idConcepts)){
+        if(!arkService.updateUriArk(selectedTheso.getCurrentIdTheso(), idConcepts)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La mise à jour des URIs Ark a échoué !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
@@ -942,10 +941,7 @@ public class EditConcept implements Serializable {
                 return;
             }
 
-            conceptHelper.updateHandleIdOfConcept(
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    "");
+            handleConceptService.updateHandleIdOfConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), "");
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);            
         } else {
@@ -962,11 +958,8 @@ public class EditConcept implements Serializable {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
-            }    
-            conceptHelper.updateHandleIdOfConcept(
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    "");            
+            }
+            handleConceptService.updateHandleIdOfConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), "");
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);                
         }
@@ -1040,7 +1033,7 @@ public class EditConcept implements Serializable {
 
     private void generateHandleIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
         FacesMessage msg;
-        if (!conceptHelper.generateHandleId(idConcepts, selectedTheso.getCurrentIdTheso())) {
+        if (!handleConceptService.generateHandleId(idConcepts, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Handle a échoué !!");

@@ -17,11 +17,13 @@ import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-import fr.cnrs.opentheso.services.GroupService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -62,11 +64,14 @@ public class NoteBean implements Serializable {
 
     @Autowired
     private NoteHelper noteHelper;
+
+    @Autowired
+    private ConceptService conceptService;
     
     private String selectedLang;
     
-    private ArrayList<NoteHelper.NoteType> noteTypes;
-    private ArrayList<NodeLangTheso> nodeLangs;
+    private List<NoteHelper.NoteType> noteTypes;
+    private List<NodeLangTheso> nodeLangs;
     private String selectedTypeNote;
     private String noteValue;
     private NodeNote selectedNodeNote;
@@ -190,13 +195,10 @@ public class NoteBean implements Serializable {
             selectedNodeNote = noteHelper.getNodeNote(selectedNodeNote.getIdentifier(),selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode());
         }
         if(isConceptNote) {
-            conceptBean.getConcept(
-                    selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+            conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang(), currentUser);
-            conceptHelper.updateDateOfConcept(
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedNodeNote.getIdentifier(), idUser);
+
+            conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), selectedNodeNote.getIdentifier(), idUser);
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()
                     .name(DCMIResource.CONTRIBUTOR)
@@ -468,9 +470,8 @@ public class NoteBean implements Serializable {
             printErreur();
             return;
         }
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -711,9 +712,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

@@ -1,15 +1,15 @@
 package fr.cnrs.opentheso.services.alignements;
 
 import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -26,17 +26,12 @@ import java.util.stream.Collectors;
 
 
 @Service
+@AllArgsConstructor
 public class AlignementAutomatique {
 
-    @Autowired
     private DataSource dataSource;
-
-    @Autowired
     private NoteHelper noteHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-    @Autowired
+    private ThesaurusService thesaurusService;
     private AlignmentService alignmentService;
 
 
@@ -47,9 +42,9 @@ public class AlignementAutomatique {
 
         List<NodeAlignment> allAlignementFound = new ArrayList<>();
 
-        var thesaurusLangs = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
+        var thesaurusLangs = thesaurusService.getIsoLanguagesOfThesaurus(idTheso);
         thesaurusLangs.remove(idCurrentLang);
-        var allLangsTheso = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
+        var allLangsTheso = thesaurusService.getIsoLanguagesOfThesaurus(idTheso);
 
         var listConcepts = new HashSet<>(allignementsList);
 

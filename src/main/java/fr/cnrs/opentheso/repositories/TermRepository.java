@@ -23,7 +23,16 @@ public interface TermRepository extends JpaRepository<Term, Integer> {
     """, nativeQuery = true)
     boolean existsPrefLabel(@Param("title") String title, @Param("lang") String lang, @Param("idThesaurus") String idThesaurus);
 
+    @Query(value = """
+        SELECT DISTINCT lang FROM term WHERE id_thesaurus = :idThesaurus
+    """, nativeQuery = true)
+    List<String> searchDistinctLangInThesaurus(@Param("idThesaurus") String idThesaurus);
+
     Optional<Term> findByIdTermAndIdThesaurusAndLang(String idTerm, String idThesaurus, String lang);
+
+    @Transactional
+    @Modifying
+    void deleteByIdThesaurus(String idThesaurus);
 
     @Transactional
     @Modifying
@@ -99,4 +108,19 @@ public interface TermRepository extends JpaRepository<Term, Integer> {
                                              @Param("idThesaurus") String idThesaurus,
                                              @Param("currentLang") String currentLang);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Term t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Query(value = """
+        SELECT t.lexical_value
+        FROM term t JOIN preferred_term pt ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+        WHERE t.id_thesaurus = :idThesaurus
+        AND pt.id_concept = :idConcept
+        AND t.lang = :idLang
+        LIMIT 1
+    """, nativeQuery = true)
+    Optional<String> getLexicalValueOfConcept(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
+                                              @Param("idLang") String idLang);
 }

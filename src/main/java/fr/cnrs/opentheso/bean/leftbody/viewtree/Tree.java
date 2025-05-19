@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
@@ -21,6 +22,8 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
+import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.TermService;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,7 +32,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.ResourceService;
 import jakarta.enterprise.context.SessionScoped;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -70,7 +72,9 @@ public class Tree implements Serializable {
     private final PathService pathService;
     private final FacetHelper facetHelper;
     private final DragAndDrop dragAndDrop;
+    private final ConceptService conceptService;
     private final ResourceService resourceService;
+    private final TermService termService;
 
     private DataService dataService;
     private TreeNode selectedNode;
@@ -283,13 +287,13 @@ public class Tree implements Serializable {
             boolean haveConceptChild = conceptHelper.haveChildren(idTheso,
                     nodeIdValue.getId());
             if (haveConceptChild) {
-                if (conceptHelper.isDeprecated(nodeIdValue.getId(), idTheso)) {
+                if (conceptService.isDeprecated(nodeIdValue.getId(), idTheso)) {
                     dataService.addNodeWithChild("deprecated", data, parent);
                 } else {
                     dataService.addNodeWithChild("concept", data, parent);
                 }
             } else {
-                if (conceptHelper.isDeprecated(nodeIdValue.getId(), idTheso)) {
+                if (conceptService.isDeprecated(nodeIdValue.getId(), idTheso)) {
                     dataService.addNodeWithoutChild("deprecated", data, parent);
                 } else {
                     dataService.addNodeWithoutChild("file", data, parent);
@@ -391,7 +395,7 @@ public class Tree implements Serializable {
     public void addNewChild(TreeNode parent, String idConcept, String idTheso, String idLang, String notation) {
 
         TreeNodeData data;
-        String label = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+        String label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
         if (label == null || label.isEmpty()) {
             label = "(" + idConcept + ")";
         }

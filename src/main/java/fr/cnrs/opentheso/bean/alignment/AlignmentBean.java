@@ -30,12 +30,13 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.AlignmentSourceService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
 
 import jakarta.inject.Named;
@@ -81,7 +82,7 @@ public class AlignmentBean implements Serializable {
     private final ConceptView conceptBean;
     private final LanguageBean languageBean;
     private final CurrentUser currentUser;
-    private final ThesaurusHelper thesaurusHelper;
+    private final ThesaurusService thesaurusService;
     private final ConceptHelper conceptHelper;
     private final AlignementAutomatique alignementAutomatique;
     private final ConceptDcTermRepository conceptDcTermRepository;
@@ -92,6 +93,7 @@ public class AlignmentBean implements Serializable {
     private final AlignmentService alignmentService;
     private final TermService termService;
     private final AlignmentSourceService alignementSourceService;
+    private final ConceptService conceptService;
 
     private boolean isViewResult = true;
     private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible,
@@ -671,9 +673,9 @@ public class AlignmentBean implements Serializable {
 
         initAlignmentType();
 
-        thesaurusUsedLanguage = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
+        thesaurusUsedLanguage = thesaurusService.getIsoLanguagesOfThesaurus(idTheso);
 
-        thesaurusUsedLanguageWithoutCurrentLang = thesaurusHelper.getIsoLanguagesOfThesaurus(idTheso);
+        thesaurusUsedLanguageWithoutCurrentLang = thesaurusService.getIsoLanguagesOfThesaurus(idTheso);
         thesaurusUsedLanguageWithoutCurrentLang.remove(currentLang);
 
         withLang = true;
@@ -1445,7 +1447,7 @@ public class AlignmentBean implements Serializable {
 
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(idTheso, idConcept, idUser);
+        conceptService.updateDateOfConcept(idTheso, idConcept, idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

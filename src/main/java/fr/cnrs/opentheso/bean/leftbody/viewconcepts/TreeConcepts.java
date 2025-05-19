@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ResourceService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,6 +59,8 @@ public class TreeConcepts implements Serializable {
     private GroupService groupService;
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private ConceptService conceptService;
 
 
     public void reset() {
@@ -143,7 +145,7 @@ public class TreeConcepts implements Serializable {
     private boolean addConceptsChild(TreeNode parent) {
         
         // il faut ici récupérer les Topterms de la collection #MR        
-        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListTopConceptsOfGroup(idTheso, idLang,
+        var listeConceptsOfGroup = conceptService.getListTopConceptsOfGroup(idTheso, idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
         
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {

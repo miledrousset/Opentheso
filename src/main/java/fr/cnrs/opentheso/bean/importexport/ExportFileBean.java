@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ExportHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -13,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
+import fr.cnrs.opentheso.services.ExportService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
@@ -88,7 +88,7 @@ public class ExportFileBean implements Serializable {
     private CsvWriteHelper csvWriteHelper;
 
     @Autowired
-    private ExportHelper exportHelper;
+    private ExportService exportService;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -815,11 +815,10 @@ public class ExportFileBean implements Serializable {
         sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
         skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(idTheso, idGroup));
 
-        concepts.addAll(exportHelper.getAllConcepts(
-                idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
+        concepts.addAll(exportService.getAllConcepts(idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
 
         // export des facettes filtrées
-        List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl,
+        List<SKOSResource> facettes = exportService.getAllFacettes(idTheso, baseUrl,
                 nodePreference.getOriginalUri(), nodePreference);
         List<String> groups = new ArrayList<>();
         groups.add(idGroup);
@@ -891,11 +890,11 @@ public class ExportFileBean implements Serializable {
                 skosXmlDocument.addGroup(group);
             }
 
-            concepts = exportHelper.getAllConcepts(idTheso, baseUrl, null,
+            concepts = exportService.getAllConcepts(idTheso, baseUrl, null,
                     nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter());
             
             // export des facettes
-            List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl,
+            List<SKOSResource> facettes = exportService.getAllFacettes(idTheso, baseUrl,
                     nodePreference.getOriginalUri(), nodePreference);
             for (SKOSResource facette : facettes) {
                 skosXmlDocument.addFacet(facette);
@@ -909,12 +908,11 @@ public class ExportFileBean implements Serializable {
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
                 skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(idTheso, idGroup));
 
-                concepts.addAll(exportHelper.getAllConcepts(
-                        idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
+                concepts.addAll(exportService.getAllConcepts(idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
             }
             
             // export des facettes filtrées
-            List<SKOSResource> facettes = exportHelper.getAllFacettes(idTheso, baseUrl,
+            List<SKOSResource> facettes = exportService.getAllFacettes(idTheso, baseUrl,
                     nodePreference.getOriginalUri(), nodePreference);
             for (SKOSResource facette : facettes) {
                 if(facetHelper.isFacetInGroups(idTheso, facette.getIdentifier(),  viewExportBean.getSelectedIdGroups())){

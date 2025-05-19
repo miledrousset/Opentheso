@@ -25,6 +25,7 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,10 +44,9 @@ public class UserHelper implements Serializable {
     private DataSource dataSource;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private PreferenceService preferenceService;
+    @Autowired
+    private ThesaurusService thesaurusService;
 
 
     public List<NodeUser> searchUserByCriteria(String mail, String username) {
@@ -294,13 +294,13 @@ public class UserHelper implements Serializable {
             if (StringUtils.isEmpty(idLangTemp)) {
                 idLangTemp = idLang;
             }
-            title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLangTemp);
-
+            title = thesaurusService.getTitleOfThesaurus(idTheso, idLangTemp);
+            var thesaurus = thesaurusService.getThesaurusById(idTheso);
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso);
             nodeIdValue.setValue(title);
             nodeIdValues.add(nodeIdValue);
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(idTheso));
+            nodeIdValue.setStatus(thesaurus.getIsPrivate());
         }
         return nodeIdValues;
     }
@@ -339,7 +339,7 @@ public class UserHelper implements Serializable {
 
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(idTheso);
-                nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(idTheso, idLangTemp));
+                nodeIdValue.setValue(thesaurusService.getTitleOfThesaurus(idTheso, idLangTemp));
                 return nodeIdValue;
             }).collect(Collectors.toList());
         } else {
@@ -488,7 +488,7 @@ public class UserHelper implements Serializable {
                 nodeThesoRole.setRoleName(getRoleName(idRole));
                 nodeThesoRole.setIdTheso(idTheso);
                 idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
-                nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, idLang));
+                nodeThesoRole.setThesoName(thesaurusService.getTitleOfThesaurus(idTheso, idLang));
                 nodeThesoRoles.add(nodeThesoRole);
             }
         }
@@ -530,7 +530,7 @@ public class UserHelper implements Serializable {
                         nodeUserRole.setRoleName(resultSet.getString("name"));
                         nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
                         idLang = preferenceService.getWorkLanguageOfThesaurus(nodeUserRole.getIdTheso());
-                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeUserRole.getIdTheso(), idLang));
+                        nodeUserRole.setThesoName(thesaurusService.getTitleOfThesaurus(nodeUserRole.getIdTheso(), idLang));
                         listUser.add(nodeUserRole);
                     }
                 }

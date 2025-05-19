@@ -1,16 +1,16 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,13 +27,13 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/openapi/v1/thesaurus")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class ThesaurusController {
 
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private final ThesaurusService thesaurusService;
 
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
@@ -47,7 +47,7 @@ public class ThesaurusController {
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {
 
-        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(false);
+        var listPublicTheso = thesaurusService.getAllIdOfThesaurus(false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -56,7 +56,7 @@ public class ThesaurusController {
             job.add("idTheso", idTheso);
             var jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+            var nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 var jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());

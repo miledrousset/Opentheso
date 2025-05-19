@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
 import fr.cnrs.opentheso.repositories.candidats.NoteDao;
@@ -33,6 +32,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.CandidatService;
@@ -46,6 +46,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -77,6 +78,7 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
 
+    private final ConceptService conceptService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -99,12 +101,12 @@ public class CandidatBean implements Serializable {
     private final ConceptHelper conceptHelper;
     private final CandidatService candidatService;
     private final TermeDao termeDao;
-    private final ThesaurusHelper thesaurusHelper;
     private final TermRepository termRepository;
     private final TermService termService;
     private final AlignmentService alignmentService;
     private final GroupService groupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final ThesaurusService thesaurusService;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
     private boolean isRejectCandidatsActivate, isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate;
@@ -161,7 +163,7 @@ public class CandidatBean implements Serializable {
         selectedExportFormat = "skos";
 
         try {
-            languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+            languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
             languagesOfTheso.forEach((nodeLang) -> {
                 selectedLanguages.add(nodeLang);
             });
@@ -222,8 +224,7 @@ public class CandidatBean implements Serializable {
         }
 
         for (CandidatDto selectedCandidate : selectedCandidates) {
-            if (!conceptHelper.deleteConcept(selectedCandidate.getIdConcepte(),
-                    selectedCandidate.getIdThesaurus(), idUser)) {
+            if (!conceptService.deleteConcept(selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus(), idUser)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
                 return;
             }
@@ -240,7 +241,7 @@ public class CandidatBean implements Serializable {
         if (candidatSelected == null) {
             return;
         }
-        if (!conceptHelper.deleteConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), idUser)) {
+        if (!conceptService.deleteConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), idUser)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
             return;
         }

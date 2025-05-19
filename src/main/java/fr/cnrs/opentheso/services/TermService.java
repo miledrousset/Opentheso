@@ -8,19 +8,20 @@ import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PermutedRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.utils.StringUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +42,7 @@ public class TermService {
     private final TermHistoriqueRepository termHistoriqueRepository;
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final NonPreferredTermHistoriqueRepository nonPreferredTermHistoriqueRepository;
 
 
     public String addTerm(Term term, String idConcept, int idUser) {
@@ -221,6 +223,44 @@ public class TermService {
         nonPreferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
     }
 
+    @Transactional
+    public void deleteAllTermsInThesaurus(String idThesaurus) {
+
+        log.info("Suppression des relations Term_Concept");
+        preferredTermRepository.deleteByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des synonymes");
+        nonPreferredTermRepository.deleteByIdThesaurus(idThesaurus);
+
+        log.info("Suppression du historique des synonymes");
+        nonPreferredTermHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les termes présents dans le thésaurus id {}", idThesaurus);
+        termRepository.deleteByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des traces de terms");
+        termHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+    }
+
+    @Transactional
+    public void updateThesaurusId(String newIdThesaurus, String oldIdThesaurus) {
+
+        log.info("Suppression des relations Term_Concept");
+        preferredTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Suppression des synonymes");
+        nonPreferredTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Suppression du historique des synonymes");
+        nonPreferredTermHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Suppression de tous les termes présents dans le thésaurus");
+        termRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+
+        log.info("Suppression des traces de terms");
+        termHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
+
     public void addTermTraduction(Term term, int idUser) {
 
         log.info("Ajout d'un nouveau term traduction {}", term.getLexicalValue());
@@ -333,4 +373,31 @@ public class TermService {
         log.info("Suppression d'un term id {}", idTerm);
         termRepository.deleteByIdTermAndLangAndIdThesaurus(idTerm, idLang, idThesaurus);
     }
+
+    public List<String> searchDistinctLangInThesaurus(String idThesaurus) {
+
+        log.info("Recherche des langues utilisées par le thésaurus id {}", idThesaurus);
+        var langues = termRepository.searchDistinctLangInThesaurus(idThesaurus);
+        if (CollectionUtils.isEmpty(langues)) {
+            log.info("Aucune langue n'est utilisée par le thésaurus id {}", idThesaurus);
+            return List.of();
+        }
+
+        log.info("{} langues utilisées par le thésaurus id {}", langues.size(), idThesaurus);
+        return langues;
+    }
+
+    public String getLexicalValueOfConcept(String idConcept, String idThesaurus, String idLang) {
+
+        log.info("Recherche du nom du concept avec l'id {}", idConcept);
+        Optional<String> label = termRepository.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
+        if (label.isEmpty()) {
+            log.error("Aucun nom n'est trouvé pour le concept avec l'id {}", idConcept);
+            return null;
+        }
+
+        log.info("Le nom du concept dont l'id {} est {}", idConcept, label.get());
+        return label.get();
+    }
+
 }

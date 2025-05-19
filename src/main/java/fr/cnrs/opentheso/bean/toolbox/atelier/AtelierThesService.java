@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -24,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,15 +50,14 @@ public class AtelierThesService implements Serializable {
     private UserHelper userHelper;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private PreferenceService preferenceService;
 
     @Autowired
     private SearchHelper searchHelper;
-    
-    
+    @Autowired
+    private ThesaurusService thesaurusService;
+
+
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
 
         var nodePreference = preferenceService.getThesaurusPreferences(thesoSelected.getId());
@@ -154,7 +153,7 @@ public class AtelierThesService implements Serializable {
 
         List<String> authorizedTheso;
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(true);
+            authorizedTheso = thesaurusService.getAllIdOfThesaurus(true);
         } else {
             authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
         }
@@ -173,11 +172,11 @@ public class AtelierThesService implements Serializable {
                 preferredIdLangOfTheso = workLanguage.toLowerCase();
             }
 
+            var thesaurus = thesaurusService.getThesaurusById(idTheso1);
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
-            nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(
-                    idTheso1, preferredIdLangOfTheso));
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(idTheso1));
+            nodeIdValue.setValue(thesaurusService.getTitleOfThesaurus(idTheso1, preferredIdLangOfTheso));
+            nodeIdValue.setStatus(thesaurus.getIsPrivate());
             nodeListTheso.add(nodeIdValue);
             
         }

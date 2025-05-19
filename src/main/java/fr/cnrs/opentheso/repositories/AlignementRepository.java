@@ -21,7 +21,6 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     """, nativeQuery = true)
     List<Alignement> findAlignementsNotInConceptGroup(@Param("idThesaurus") String idThesaurus);
 
-
     @Query(value = """
         SELECT a.*
         FROM concept_group_concept cgc, alignement a
@@ -34,8 +33,6 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
 
     Optional<Alignement> findByInternalIdThesaurusAndInternalIdConceptAndId(String internalIdThesaurus, String internalIdConcept, Integer id);
 
-    List<Alignement> findByInternalIdThesaurusAndInternalIdConcept(String internalIdThesaurus, String internalIdConcept);
-
     @Transactional
     @Modifying
     @Query("DELETE FROM Alignement a WHERE a.id = :idAlignment AND a.internalIdThesaurus = :idThesaurus")
@@ -46,6 +43,11 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     @Query("DELETE FROM Alignement a WHERE a.uriTarget = :uri AND a.internalIdThesaurus = :idThesaurus AND a.internalIdConcept = :idConcept")
     int deleteByUriAndConceptAndThesaurus(@Param("uri") String uri, @Param("idConcept") String idConcept,
                                           @Param("idThesaurus") String idThesaurus);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Alignement a WHERE a.internalIdThesaurus = :idThesaurus")
+    int deleteByThesaurus(@Param("idThesaurus") String idThesaurus);
 
     @Transactional
     @Modifying
@@ -107,4 +109,8 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     """, nativeQuery = true)
     List<NodeIdValueProjection> findAllLinkedConceptsWithOntome(@Param("idTheso") String idTheso);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Alignement t SET t.internalIdThesaurus = :newIdThesaurus WHERE t.internalIdThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

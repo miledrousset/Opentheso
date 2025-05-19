@@ -6,8 +6,8 @@ import java.util.Map;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -67,9 +67,6 @@ public class Rest_new {
     private RestRDFHelper restRDFHelper;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
     private GroupService groupService;
 
     private static final String JSON_FORMAT = "application/json";
@@ -82,6 +79,8 @@ public class Rest_new {
             "turtle", CustomMediaType.APPLICATION_TURTLE,
             "json", JSON_FORMAT
     );
+    @Autowired
+    private ThesaurusService thesaurusService;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -712,7 +711,7 @@ public class Rest_new {
     }
 
     private String getlistAllPublicTheso__() {
-        List<String> listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(false);
+        List<String> listPublicTheso = thesaurusService.getAllIdOfThesaurus(false);
 
         NodeThesaurus nodeThesaurus;
 
@@ -723,7 +722,7 @@ public class Rest_new {
             job.add("idTheso", idTheso);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+            nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());
@@ -826,7 +825,7 @@ public class Rest_new {
 
     private String getlistLangOfTheso__(String idTheso) {
 
-        var listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(idTheso);
+        var listLangOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurus(idTheso);
         var jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();

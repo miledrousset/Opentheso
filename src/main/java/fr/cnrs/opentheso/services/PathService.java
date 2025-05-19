@@ -33,6 +33,7 @@ public class PathService {
     private final PreferenceService preferenceService;
     private final RelationGroupService relationGroupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final ConceptService conceptService;
 
     private String message;
 
@@ -142,7 +143,7 @@ public class PathService {
             for (String idConcept : path) {
                 NodePath nodePath = new NodePath();
                 nodePath.setIdConcept(idConcept);
-                label = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+                label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 nodePath.setTitle(label);
@@ -170,11 +171,13 @@ public class PathService {
             for (String idConcept : path1.getPath()) {
                 JsonObjectBuilder job = Json.createObjectBuilder();
 
-                label = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+                var concept = conceptService.getConcept(idConcept, idTheso);
+
+                label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 job.add("id", idConcept);
-                job.add("arkId", conceptHelper.getIdArkOfConcept(idConcept, idTheso));
+                job.add("arkId", concept.getIdArk());
                 job.add("label", label);
                 
                 

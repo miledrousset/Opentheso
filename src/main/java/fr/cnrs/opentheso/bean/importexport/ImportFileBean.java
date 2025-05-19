@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
@@ -25,15 +24,18 @@ import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ArkService;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
@@ -61,6 +63,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,10 +92,13 @@ import jakarta.faces.application.FacesMessage;
 @Slf4j
 @Named(value = "importFileBean")
 @SessionScoped
+@RequiredArgsConstructor
 public class ImportFileBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
+
+    private final ThesaurusService thesaurusService;
     
     @Autowired @Lazy
     private CurrentUser currentUser;
@@ -139,9 +146,6 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private DeprecateService deprecateHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
 
     @Autowired
     private ImageService imageService;
@@ -220,6 +224,12 @@ public class ImportFileBean implements Serializable {
     private String selectedSearchType;
     @Autowired
     private NonPreferredTermRepository nonPreferredTermRepository;
+    @Autowired
+    private ConceptService conceptService;
+    @Autowired
+    private ConceptAddService conceptAddService;
+    @Autowired
+    private ArkService arkService;
 
 
     public void init() {
@@ -1008,7 +1018,7 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
-            ArrayList<String> usedLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurus(selectedTheso.getCurrentIdTheso());
+            var usedLangs = thesaurusService.getAllUsedLanguagesOfThesaurus(selectedTheso.getCurrentIdTheso());
             try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
                 /// option true to read empty data
                 if (!csvReadHelper.readFileReplaceValueByNewValue(reader, usedLangs)) {
@@ -1214,8 +1224,7 @@ public class ImportFileBean implements Serializable {
         terme.setStatus("D");
         concept.setTopConcept(false);
 
-        String idConcept = conceptHelper.addConcept(
-                idConceptParent, "NT", concept, terme, currentUser.getNodeUser().getIdUser());
+        String idConcept = conceptAddService.addConcept(idConceptParent, "NT", concept, terme, currentUser.getNodeUser().getIdUser());
 
         for (NodeTree node : nodeTree.getChildrens()) {
             insertDB(node, idNewTheso, idConcept);
@@ -1448,7 +1457,7 @@ public class ImportFileBean implements Serializable {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
                 if (csvImportHelper.updateConcept(idTheso, conceptObject, idUser1)) {
                     total++;
-                    conceptHelper.updateDateOfConcept(idTheso, conceptObject.getIdConcept(), idUser1);
+                    conceptService.updateDateOfConcept(idTheso, conceptObject.getIdConcept(), idUser1);
 
                     conceptDcTermRepository.save(ConceptDcTerm.builder()
                             .name(DCMIResource.CONTRIBUTOR)
@@ -1523,7 +1532,7 @@ public class ImportFileBean implements Serializable {
                 branchIds = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
             } else {
                 // on exporte la branche
-                if (!conceptHelper.isIdExiste(selectedConcept, idTheso)) {
+                if (!conceptService.isIdExiste(selectedConcept, idTheso)) {
                     error.append("L'identifiant n'existe pas !!");
                     showError();
                     return null;
@@ -1641,12 +1650,13 @@ public class ImportFileBean implements Serializable {
                 for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
                     if (nodeSearchMini.isConcept() || nodeSearchMini.isAltLabel()) {
                         writtenInfo = true;
+                        var concept = conceptService.getConcept(nodeSearchMini.getIdConcept(), idTheso);
                         NodeCompareTheso nodeCompareTheso2 = new NodeCompareTheso();
                         nodeCompareTheso2.setOriginalPrefLabel(nodeCompareTheso.getOriginalPrefLabel());
                         nodeCompareTheso2.setIdConcept(nodeSearchMini.getIdConcept());
                         nodeCompareTheso2.setPrefLabel(nodeSearchMini.getPrefLabel());
                         nodeCompareTheso2.setAltLabel(nodeSearchMini.getAltLabelValue());
-                        nodeCompareTheso2.setIdArk(conceptHelper.getIdArkOfConcept(nodeSearchMini.getIdConcept(), idTheso));
+                        nodeCompareTheso2.setIdArk(concept.getIdArk());
                         nodeCompareThesosTemp.add(nodeCompareTheso2);
                     }
                 }
@@ -1731,7 +1741,7 @@ public class ImportFileBean implements Serializable {
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
-                if (!conceptHelper.isIdExiste(idConcept, idTheso)) {
+                if (!conceptService.isIdExiste(idConcept, idTheso)) {
                     continue;
                 }
                 if (!deprecateHelper.deprecateConcept(idConcept, idTheso, idUser1, conceptHelper)) {
@@ -1754,9 +1764,7 @@ public class ImportFileBean implements Serializable {
                             "note", "", idUser1);
                 }
 
-                conceptHelper.updateDateOfConcept(
-                        selectedTheso.getCurrentIdTheso(),
-                        idConcept, idUser1);
+                conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, idUser1);
 
                 conceptDcTermRepository.save(ConceptDcTerm.builder()
                         .name(DCMIResource.CONTRIBUTOR)
@@ -1842,7 +1850,7 @@ public class ImportFileBean implements Serializable {
                 }
                 nodeReplaceValueByValue.setIdConcept(idConcept);
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -1863,7 +1871,7 @@ public class ImportFileBean implements Serializable {
                 }
                 if (csvImportHelper.updateConceptValueByNewValue(idTheso, nodeReplaceValueByValue, idUser1)) {
                     total++;
-                    conceptHelper.updateDateOfConcept(idTheso, idConcept, currentUser.getNodeUser().getIdUser());
+                    conceptService.updateDateOfConcept(idTheso, idConcept, currentUser.getNodeUser().getIdUser());
 
                     conceptDcTermRepository.save(ConceptDcTerm.builder()
                             .name(DCMIResource.CONTRIBUTOR)
@@ -1968,17 +1976,17 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
                 if (clearBefore) {
-                    if (conceptHelper.updateArkIdOfConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
+                    if (arkService.updateArkIdOfConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                         total++;
                     }
                 } else {
                     if (!conceptHelper.isHaveIdArk(selectedTheso.getCurrentIdTheso(), nodeIdValue.getId())) {
-                        if (conceptHelper.updateArkIdOfConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
+                        if (arkService.updateArkIdOfConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                             total++;
                         }
                     }
@@ -1991,7 +1999,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "import réussi, Arks importés = " + (int) total;
+            info = "import réussi, Arks importés = " + total;
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -2027,10 +2035,11 @@ public class ImportFileBean implements Serializable {
             }
             multipleIds1 = nodeIdValue.getId().split("##");
             for (String multipleId : multipleIds1) {
+                var concept = conceptService.getConcept(multipleId, selectedTheso.getCurrentIdTheso());
                 if(StringUtils.isEmpty(multipleIds2)){
-                    multipleIds2 = conceptHelper.getIdArkOfConcept(multipleId, selectedTheso.getCurrentIdTheso());
+                    multipleIds2 = concept.getIdArk();
                 } else
-                    multipleIds2 = multipleIds2 + "##" + conceptHelper.getIdArkOfConcept(multipleId, selectedTheso.getCurrentIdTheso());;
+                    multipleIds2 = multipleIds2 + "##" + concept.getIdArk();;
             }
             nodeIdValue.setValue(multipleIds2);
         }
@@ -2144,7 +2153,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2291,7 +2300,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2367,7 +2376,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2459,7 +2468,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2540,7 +2549,7 @@ public class ImportFileBean implements Serializable {
                 }
 
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2617,7 +2626,7 @@ public class ImportFileBean implements Serializable {
                 }
 
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2690,7 +2699,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2771,7 +2780,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
@@ -2872,7 +2881,7 @@ public class ImportFileBean implements Serializable {
                             }
                             conceptObject.setIdConcept(idConcept);
                             // controle pour vérifier l'existance de l'Id
-                            if (conceptHelper.isIdExiste(conceptObject.getIdConcept(), idTheso)) {
+                            if (conceptService.isIdExiste(conceptObject.getIdConcept(), idTheso)) {
                                 continue;
                             }
                         }

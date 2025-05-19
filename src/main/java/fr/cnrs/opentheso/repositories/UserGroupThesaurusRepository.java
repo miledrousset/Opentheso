@@ -15,9 +15,11 @@ public interface UserGroupThesaurusRepository extends JpaRepository<UserGroupThe
 
     List<UserGroupThesaurus> findAllByIdGroup(Integer idGroup);
 
+    @Modifying
     @Transactional
     void deleteByIdGroup(int groupId);
 
+    @Modifying
     @Transactional
     void deleteByIdThesaurus(String thesaurusId);
 
@@ -29,5 +31,10 @@ public interface UserGroupThesaurusRepository extends JpaRepository<UserGroupThe
             "WHERE tl.lang = :idLang " +
             "ORDER BY LOWER(tl.title)")
     List<NodeUserGroupThesaurus> getAllGroupTheso(@Param("idLang") String idLang);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserGroupThesaurus t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
 }

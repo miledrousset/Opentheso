@@ -45,6 +45,12 @@ public class CopyAndPasteBetweenThesoService {
 
     @Autowired
     private PreferenceService preferenceService;
+    @Autowired
+    private ConceptAddService conceptAddService;
+    @Autowired
+    private ConceptService conceptService;
+    @Autowired
+    private ArkService arkService;
 
     public boolean pasteBranchLikeNT(String currentIdTheso, String currentIdConcept, String fromIdTheso,
                                      String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
@@ -64,7 +70,7 @@ public class CopyAndPasteBetweenThesoService {
         if("ark".equalsIgnoreCase(identifierType)){
             for(SKOSResource skosResource : sKOSXmlDocument.getConceptList()){
                 if(StringUtils.isNotEmpty(skosResource.getArkId())) {
-                    conceptHelper.updateArkIdOfConcept(skosResource.getIdentifier(), fromIdTheso, "");
+                    arkService.updateArkIdOfConcept(skosResource.getIdentifier(), fromIdTheso, "");
                 }
             }
         }
@@ -146,7 +152,6 @@ public class CopyAndPasteBetweenThesoService {
         String formatDate = "yyyy-MM-dd";
 
         importRdf4jHelper.setInfos(formatDate, idUser, idGroup, "");
-        // pour récupérer les identifiants pérennes type Ark ou Handle
         importRdf4jHelper.setSelectedIdentifier(identifierType);
 
         importRdf4jHelper.setPrefixHandle("");
@@ -166,8 +171,7 @@ public class CopyAndPasteBetweenThesoService {
             // mise à jour des IdArk après une copie entre thésaurus
             if("ark".equalsIgnoreCase(identifierType)){
                 if(CollectionUtils.isNotEmpty(idConcepts)) {
-                    conceptHelper.setNodePreference(nodePreference);
-                    conceptHelper.generateArkId(idTheso, idConcepts, nodePreference.getSourceLang());
+                    conceptAddService.generateArkId(idTheso, idConcepts, nodePreference.getSourceLang(), null);
                 }
             }
             return true;

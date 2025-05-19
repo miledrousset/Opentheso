@@ -5,10 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.EntityListeners;
 import lombok.Setter;
 import lombok.Getter;
@@ -37,9 +34,7 @@ public class Concept implements Serializable {
     @Column(name = "id_concept", nullable = false)
     private String idConcept;
 
-    @ManyToOne
-    @JoinColumn(name = "id_thesaurus", referencedColumnName = "id_thesaurus", nullable = false)
-    private Thesaurus thesaurus;
+    private String idThesaurus;
 
     @Column(name = "id_ark", nullable = false)
     private String idArk = "";
@@ -81,6 +76,5 @@ public class Concept implements Serializable {
     @Column(name = "concept_type", nullable = false)
     private String conceptType = "concept";
 
-    @OneToOne(mappedBy = "concept")
-    private ConceptFacet conceptFacet;
+    private Integer id;
 }

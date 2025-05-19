@@ -96,4 +96,16 @@ public class RelationGroupService {
         relationGroupRepository.deleteByIdThesaurusAndIdGroup2(idThesaurus, idGroupFils);
     }
 
+    public void deleteRelationGroupByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de toutes les relations entre les groups présents dans le thésaurus id {}", idThesaurus);
+        relationGroupRepository.deleteByIdThesaurus(idThesaurus);
+    }
+
+    public void updateIdThesaurus(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour de toutes les relations entre les groups présents dans le thésaurus id {}", oldIdThesaurus);
+        relationGroupRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
+
 }

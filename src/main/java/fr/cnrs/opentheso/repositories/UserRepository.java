@@ -34,4 +34,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "WHERE u.isSuperAdmin = true " +
             "ORDER BY LOWER(u.username)")
     List<NodeUserGroupUser> getAllUsersSuperadmin();
+
+    User getById(Integer id);
 }

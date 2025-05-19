@@ -1,13 +1,13 @@
 package fr.cnrs.opentheso.bean.setting;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.HomePageService;
 import fr.cnrs.opentheso.services.PreferenceService;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 
@@ -29,9 +29,9 @@ public class PreferenceBean implements Serializable {
 
     private final RoleOnThesoBean roleOnThesoBean;
     private final SelectedTheso selectedTheso;
-    private final ThesaurusHelper thesaurusHelper;
     private final PreferenceService preferenceService;
     private final HomePageService homePageService;
+    private final ThesaurusService thesaurusService;
 
     private String uriType;
     private Preferences nodePreference;
@@ -45,7 +45,7 @@ public class PreferenceBean implements Serializable {
         }
         nodePreference = roleOnThesoBean.getNodePreference();
         // les langues du thésaurus
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
 
         uriType = "uri";
         if (nodePreference.isOriginalUriIsHandle()) {

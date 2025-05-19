@@ -6,6 +6,8 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -33,7 +35,7 @@ public class NoteBeanCandidat implements Serializable {
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
-    private ArrayList<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangs;
 
     private String selectedTypeNote;
     private String noteValue;
@@ -236,7 +238,7 @@ public class NoteBeanCandidat implements Serializable {
         this.noteValue = noteValue;
     }
 
-    public ArrayList<NodeLangTheso> getNodeLangs() {
+    public List<NodeLangTheso> getNodeLangs() {
         return nodeLangs;
     }
 

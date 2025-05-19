@@ -2,13 +2,14 @@ package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.PreferenceService;
-import fr.cnrs.opentheso.services.ResourceService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -28,14 +29,13 @@ public class D3jsHelper {
     @Autowired
     private PreferenceService preferenceService;
 
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
 
     private int count = 0;
     private Preferences nodePreference;
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private ThesaurusService thesaurusService;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
         count = 0;
@@ -271,7 +271,7 @@ public class D3jsHelper {
     
     private NodeDatas getTopNodeDatasForTheso(String idTheso, String idLang){
 
-        String title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        String title = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         NodeDatas nodeDatas = new NodeDatas();
         
         nodeDatas.setType("type2");

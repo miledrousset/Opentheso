@@ -7,18 +7,19 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -26,6 +27,7 @@ import org.primefaces.PrimeFaces;
 @Data
 @SessionScoped
 @Named(value = "imageBean")
+@RequiredArgsConstructor
 public class ImageBean implements Serializable {
 
     private final ConceptView conceptBean;
@@ -34,23 +36,11 @@ public class ImageBean implements Serializable {
     private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final ImageService imageService;
+    private final ConceptService conceptService;
 
     private String uri, copyright, name, creator;
     private List<NodeImage> nodeImages, nodeImagesForEdit;
 
-
-    @Inject
-    public ImageBean(ConceptView conceptBean, SelectedTheso selectedThes, CurrentUser currentUser,
-                     ConceptHelper conceptHelper, ConceptDcTermRepository conceptDcTermRepository,
-                     ImageService imageService) {
-
-        this.conceptBean = conceptBean;
-        this.selectedTheso = selectedThes;
-        this.currentUser = currentUser;
-        this.conceptHelper = conceptHelper;
-        this.conceptDcTermRepository = conceptDcTermRepository;
-        this.imageService = imageService;
-    }
 
     public void reset() {
         nodeImages = conceptBean.getNodeConcept().getNodeimages();
@@ -84,7 +74,7 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
@@ -122,9 +112,7 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(
-                selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -153,7 +141,7 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

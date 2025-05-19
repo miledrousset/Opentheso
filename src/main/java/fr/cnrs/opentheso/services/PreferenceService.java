@@ -153,4 +153,16 @@ public class PreferenceService {
         log.info("Mise à jour terminé de 'use handle' pour le thésaurus {}", idThesaurus);
         return true;
     }
+
+    public void deletePreferenceThesaurus(String idThesaurus) {
+
+        log.info("Suppression des préférences du thésaurus id {}", idThesaurus);
+        preferencesRepository.deleteByIdThesaurus(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.info("Mise à jour du thésaurus id pour les préférences du thésaurus id {}", oldIdThesaurus);
+        preferencesRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
 }

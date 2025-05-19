@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -11,6 +10,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
 
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -34,8 +34,8 @@ public class DeleteThesoBean implements Serializable {
     private final RoleOnThesoBean roleOnThesoBean;
     private final ConceptHelper conceptHelper;
     private final PreferenceService preferenceService;
-    private final ThesaurusHelper thesaurusHelper;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final ThesaurusService thesaurusService;
     
     private String idThesoToDelete, valueOfThesoToDelelete, currentIdTheso;
     private boolean isDeleteOn, deletePerennialIdentifiers;
@@ -77,7 +77,7 @@ public class DeleteThesoBean implements Serializable {
         userGroupThesaurusRepository.deleteByIdThesaurus(idThesoToDelete);
         
         // suppression complète du thésaurus
-        if(!thesaurusHelper.deleteThesaurus(idThesoToDelete)){
+        if(!thesaurusService.deleteThesaurus(idThesoToDelete)){
             var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");

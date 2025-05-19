@@ -11,10 +11,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -23,10 +23,12 @@ import javax.sql.DataSource;
 @Data
 @Slf4j
 @Service
+@AllArgsConstructor
 public class DeprecateService {
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource;
+    private final TermService termService;
+    private final ConceptAddService conceptAddService;
 
     /**
      * permet de retourner les concepts qui remplacent ce concept déprécié
@@ -51,7 +53,7 @@ public class DeprecateService {
                     }
 
                     for (NodeIdValue nodeIdValue : nodeIdValues) {
-                        var label = conceptHelper.getLexicalValueOfConcept(nodeIdValue.getId(), idTheso, idLang);
+                        var label = termService.getLexicalValueOfConcept(nodeIdValue.getId(), idTheso, idLang);
                         if (StringUtils.isEmpty(label)) {
                             nodeIdValue.setValue("");
                         } else {
@@ -134,7 +136,7 @@ public class DeprecateService {
                         nodeIdValues.add(nodeIdValue);
                     }
                     for (NodeIdValue nodeIdValue : nodeIdValues) {
-                        var label = conceptHelper.getLexicalValueOfConcept(nodeIdValue.getId(), idTheso, idLang);
+                        var label = termService.getLexicalValueOfConcept(nodeIdValue.getId(), idTheso, idLang);
                         if (label == null || label.isEmpty()) {
                             nodeIdValue.setValue("");
                         } else {
@@ -210,15 +212,10 @@ public class DeprecateService {
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set status='DEP' WHERE id_concept ='" + idConcept
-                        + "' AND id_thesaurus='" + idTheso + "'");
+                stmt.executeUpdate("UPDATE concept set status='DEP' WHERE id_concept ='" + idConcept + "' AND id_thesaurus='" + idTheso + "'");
                 conn.commit();
                 Concept concept = conceptHelper.getThisConcept(idConcept, idTheso);
-                if (!conceptHelper.addConceptHistorique(conn, concept, idUser)) {
-                    conn.rollback();
-                    conn.close();
-                    return false;
-                }
+                conceptAddService.addConceptHistorique(concept, idUser);
                 conn.commit();
             }
         } catch (SQLException sqle) {
@@ -238,11 +235,7 @@ public class DeprecateService {
                 stmt.executeUpdate("UPDATE concept set status='D' WHERE id_concept ='" + idConcept + "' AND id_thesaurus='" + idTheso + "'");
                 conn.commit();
                 var concept = conceptHelper.getThisConcept(idConcept, idTheso);
-                if (!conceptHelper.addConceptHistorique(conn, concept, idUser)) {
-                    conn.rollback();
-                    conn.close();
-                    return false;
-                }
+                conceptAddService.addConceptHistorique(concept, idUser);
                 conn.commit();
                 deleteAllReplacedBy(idConcept, idTheso);
             }

@@ -144,8 +144,8 @@ public class StatistiqueService {
         return conceptStatusRepository.countValidConceptsByThesaurus(idThesaurus);
     }
 
-    public List<Concept> findAllByThesaurusIdThesaurusAndStatus(String idThesaurus, String status) {
-        return conceptRepository.findAllByThesaurusIdThesaurusAndStatus(idThesaurus, status);
+    public List<Concept> findAllByIdThesaurusAndStatus(String idThesaurus, String status) {
+        return conceptRepository.findAllByIdThesaurusAndStatus(idThesaurus, status);
     }
 
     private List<ConceptStatisticData> conceptStatisticDataMapper(List<ConceptGroupProjection> conceptGroupProjectionsList) {

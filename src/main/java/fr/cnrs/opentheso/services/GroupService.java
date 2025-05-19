@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptGroupHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
@@ -44,6 +45,7 @@ public class GroupService {
     private final ConceptGroupLabelRepository conceptGroupLabelRepository;
     private final ConceptGroupConceptRepository conceptGroupConceptRepository;
     private final ConceptGroupLabelHistoriqueRepository conceptGroupLabelHistoriqueRepository;
+    private final ConceptGroupHistoriqueRepository conceptGroupHistoriqueRepository;
 
     private final RelationGroupService relationGroupService;
 
@@ -798,7 +800,7 @@ public class GroupService {
     public boolean deleteConceptsWithEmptyRelation(String idThesaurus) {
 
         log.info("Supprimer l'appartenance des concepts avec des relations vide vers une collection");
-        conceptGroupConceptRepository.deleteAllByIdThesaurus(idThesaurus);
+        conceptGroupConceptRepository.deleteAllByIdThesaurusAndIdGroup(idThesaurus, "");
         return true;
     }
 
@@ -864,6 +866,53 @@ public class GroupService {
                     .idDoi(row[3] != null ? (String) row[3] : "")
                     .build()
         ).toList();
+    }
+
+    public void cleanGroup() {
+
+        log.info("Nettoyage des valeurs des notations");
+        conceptGroupRepository.cleanNotation();
+
+        log.info("Nettoyage des valeurs des idTypeCode");
+        conceptGroupRepository.cleanIdTypeCode();
+    }
+
+    public void deleteAllGroupsByThesaurus(String idThesaurus) {
+
+        log.info("Suppression de tous les groups du thésaurus {}", idThesaurus);
+        conceptGroupRepository.deleteByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les traduction des groups du thésaurus {}", idThesaurus);
+        conceptGroupLabelRepository.deleteByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les labels des groups du thésaurus {}", idThesaurus);
+        conceptGroupLabelHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression de tous les relations entre les groups et les concepts du thésaurus {}", idThesaurus);
+        conceptGroupConceptRepository.deleteAllByIdThesaurus(idThesaurus);
+
+        log.info("Suppression des relations entre les groups");
+        relationGroupService.deleteRelationGroupByThesaurus(idThesaurus);
+
+        log.info("Suppression des historiques des groups du thésaurus id {}", idThesaurus);
+        conceptGroupHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+    }
+
+    public void updateThesaurusId(String oldThesaurusID, String newThesaurusID) {
+
+        log.info("Mise à jour du thésaurus id pour les groups (du {} vers {})", oldThesaurusID, newThesaurusID);
+        conceptGroupRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
+        conceptGroupLabelRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
+        conceptGroupLabelHistoriqueRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
+        conceptGroupConceptRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
+        relationGroupService.updateIdThesaurus(newThesaurusID, oldThesaurusID);
+        conceptGroupHistoriqueRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
+    }
+
+    public void deleteAllGroupOfConcept(String idConcept, String idThesaurus) {
+
+        log.info("Supprimer tous les groupes du concept id {}", idConcept);
+        conceptGroupConceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
     }
 
 }

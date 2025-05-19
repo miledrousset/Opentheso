@@ -6,6 +6,7 @@ import java.util.List;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -71,6 +72,8 @@ public class TreeGroups implements Serializable {
     private boolean sortByNotation;
     @Autowired
     private RelationGroupService relationGroupService;
+    @Autowired
+    private ConceptService conceptService;
 
     public void reset() {
         root = null;
@@ -166,7 +169,7 @@ public class TreeGroups implements Serializable {
     private boolean addConceptsChild(TreeNode parent) {
         TreeNodeData data;
 
-        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListConceptsOfGroup(idTheso, idLang,
+        List<NodeIdValue> listeConceptsOfGroup = conceptService.getListConceptsOfGroup(idTheso, idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 selectedTheso.isSortByNotation());
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
