@@ -58,8 +58,10 @@ import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ResourceService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
@@ -160,6 +162,10 @@ public class ConceptHelper implements Serializable {
 
     @Autowired
     private ThesaurusService thesaurusService;
+    @Autowired
+    private RelationService relationService;
+    @Autowired
+    private NoteService noteService;
 
 
     /**
@@ -2200,7 +2206,7 @@ public class ConceptHelper implements Serializable {
         //récupération des Groupes ou domaines 
         nodeConceptExport.setNodeListIdsOfConceptGroup(groupService.getListGroupOfConceptArk(idThesaurus, idConcept));
 
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(idConcept, idThesaurus);
+        var nodeNotes = noteService.getListNotesAllLang(idConcept, idThesaurus);
         if (isCandidatExport) {
             for (NodeNote note : nodeNotes) {
                 String str = formatLinkTag(note.getLexicalValue());
@@ -2304,7 +2310,7 @@ public class ConceptHelper implements Serializable {
         NodeConcept nodeConcept = new NodeConcept();
 
         // récupération des BT
-        ArrayList<NodeBT> nodeListBT = relationsHelper.getListBT(idConcept, idThesaurus, idLang);
+        var nodeListBT = relationService.getListBT(idConcept, idThesaurus, idLang);
         nodeConcept.setNodeBT(nodeListBT);
 
         //récupération du Concept
@@ -2325,7 +2331,7 @@ public class ConceptHelper implements Serializable {
         nodeConcept.setNodeNT(relationsHelper.getListNT(idConcept, idThesaurus, idLang, step, offset));
 
         //récupération des termes associés
-        nodeConcept.setNodeRT(relationsHelper.getListRT(idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeRT(relationService.getListRT(idConcept, idThesaurus, idLang));
 
         //récupération des Non Prefered Term
         nodeConcept.setNodeEM(nonPreferredTermService.getNonPreferredTerms(idConcept, idThesaurus, idLang));

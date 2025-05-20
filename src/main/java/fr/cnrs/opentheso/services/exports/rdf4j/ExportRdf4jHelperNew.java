@@ -34,6 +34,7 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -90,6 +91,8 @@ public class ExportRdf4jHelperNew {
     private HashMap<String, String> superGroupHashMap;
     @Autowired
     private ConceptService conceptService;
+    @Autowired
+    private NoteService noteService;
 
     public ExportRdf4jHelperNew() {
         skosXmlDocument = new SKOSXmlDocument();
@@ -430,7 +433,7 @@ public class ExportRdf4jHelperNew {
         }
 
         /// Ajout des notes
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(idOfGroupChild, idTheso);
+        var nodeNotes = noteService.getListNotesAllLang(idOfGroupChild, idTheso);
         addNoteGiven(nodeNotes, sKOSResource);
 
         return sKOSResource;
@@ -571,7 +574,7 @@ public class ExportRdf4jHelperNew {
         }
         
         /// Ajout des notes
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(idOfGroupChild, idTheso);
+        var nodeNotes = noteService.getListNotesAllLang(idOfGroupChild, idTheso);
         addNoteGiven(nodeNotes, sKOSResource);
         
         skosXmlDocument.addGroup(sKOSResource);
@@ -673,7 +676,7 @@ public class ExportRdf4jHelperNew {
             skosVote.setTypeVote(vote.getTypeVote());
             if (!StringUtils.isEmpty(vote.getIdNote()) && !"null".equalsIgnoreCase(vote.getIdNote())) {
                 String htmlTagsRegEx = "<[^>]*>";
-                NodeNote nodeNote = noteHelper.getNoteByIdNote(Integer.parseInt(vote.getIdNote()));
+                NodeNote nodeNote = noteService.getNoteByIdNote(Integer.parseInt(vote.getIdNote()));
                 if (nodeNote != null) {
                     String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalValue());
                     skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));

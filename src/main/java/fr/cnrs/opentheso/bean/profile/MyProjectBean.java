@@ -3,14 +3,13 @@ package fr.cnrs.opentheso.bean.profile;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+import fr.cnrs.opentheso.services.UserService;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -19,44 +18,28 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "myProjectBean")
 public class MyProjectBean implements Serializable {
 
-    private CurrentUser currentUser;
-    private UserHelper userHelper;
-    private RoleRepository roleRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserGroupLabelRepository userGroupLabelRepository;
+    private final CurrentUser currentUser;
+    private final RoleRepository roleRepository;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
 
     private List<NodeIdValue> listeThesoOfProject, myAuthorizedRoles;
     private Map<String, String> listeGroupsOfUser;
     private List<NodeUserRole> listeUserLimitedRole, listeUser;
     private NodeUserRoleGroup nodeUserRoleOnThisGroup, nodeUserRoleSuperAdmin, myRoleOnThisProject;
     private String selectedProject, selectedProjectName, selectedIndex, workLanguage;
+    private UserService userService;
 
-
-    @Inject
-    public MyProjectBean(@Value("${settings.workLanguage:fr}")String workLanguage,
-                         UserGroupLabelRepository userGroupLabelRepository,
-                         RoleRepository roleRepository,
-                         UserRoleGroupRepository userRoleGroupRepository,
-                         CurrentUser currentUser, UserHelper userHelper) {
-
-        this.workLanguage = workLanguage;
-        this.currentUser = currentUser;
-        this.userHelper = userHelper;
-        this.roleRepository = roleRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-    }
 
     public void init() {
         listeThesoOfProject = null;
@@ -73,7 +56,7 @@ public class MyProjectBean implements Serializable {
     
     private void initMyAuthorizedRoleOnThisGroup(){
         if(selectedProject.isEmpty()) return;
-        myRoleOnThisProject = userHelper.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(),
+        myRoleOnThisProject = userService.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(),
                 Integer.parseInt(selectedProject));
     }    
     
@@ -113,7 +96,7 @@ public class MyProjectBean implements Serializable {
                     .collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel));
             return;
         }
-        listeGroupsOfUser = userHelper.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
+        listeGroupsOfUser = userService.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
     }    
     
     public void setLists() {
@@ -145,7 +128,7 @@ public class MyProjectBean implements Serializable {
         }
 
         int idGroup = Integer.parseInt(selectedProject);
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
+        listeUserLimitedRole = userService.getAllUsersRolesLimitedByTheso(idGroup);
     }
 
     
@@ -159,7 +142,7 @@ public class MyProjectBean implements Serializable {
         }
         
         var idGroup = Integer.parseInt(selectedProject);
-        listeThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
+        listeThesoOfProject = userService.getThesaurusOfProject(idGroup, workLanguage);
     } 
     
     /**
@@ -173,10 +156,10 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleSuperAdmin.getIdRole());
+            listeUser = userService.getUsersRolesByGroup(idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
             if (nodeUserRoleOnThisGroup != null) {
-                listeUser = userHelper.getUsersRolesByGroup(idGroup, nodeUserRoleOnThisGroup.getIdRole());
+                listeUser = userService.getUsersRolesByGroup(idGroup, nodeUserRoleOnThisGroup.getIdRole());
             } else {
                 if (listeUser != null) {
                     listeUser.clear(); //cas où on supprime l'utilisateur en cours
@@ -204,7 +187,7 @@ public class MyProjectBean implements Serializable {
             nodeUserRoleSuperAdmin = NodeUserRoleGroup.builder().idRole(role.getId()).roleName(role.getName()).build();
             return;
         }
-        nodeUserRoleOnThisGroup = userHelper.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
+        nodeUserRoleOnThisGroup = userService.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
     } 
     
     

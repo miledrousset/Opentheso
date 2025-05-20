@@ -39,6 +39,6 @@ public class UserRoleOnlyOn {
     @Id
     @ManyToOne
     @JoinColumn(name = "id_theso", insertable = false, updatable = false)
-    private Thesaurus theso;
+    private Thesaurus thesaurus;
 
 }

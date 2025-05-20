@@ -61,7 +61,7 @@ public class UserRoleGroupService {
                     .user(user)
                     .role(role)
                     .group(group)
-                    .theso(thesaurus.get())
+                    .thesaurus(thesaurus.get())
                     .build();
             userRoleOnlyOnRepository.save(userRoleGroupOn);
         }

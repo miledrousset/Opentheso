@@ -21,5 +21,4 @@ public interface ConceptDcTermRepository extends JpaRepository<ConceptDcTerm, In
     @Transactional
     @Query("UPDATE ConceptDcTerm t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
-
 }

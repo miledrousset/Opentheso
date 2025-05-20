@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.repositories.ThesaurusHomePageRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusLabelRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,7 @@ public class ThesaurusService {
     private final ImageService imageService;
     private final PreferenceService preferenceService;
     private final NoteService noteService;
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
 
     public Thesaurus getThesaurusById(String idThesaurus) {
@@ -450,6 +452,7 @@ public class ThesaurusService {
         thesaurusLabelRepository.deleteByIdThesaurus(idThesaurus);
         thesaurusHomePageRepository.deleteAllByIdTheso(idThesaurus);
         userGroupThesaurusRepository.deleteByIdThesaurus(idThesaurus);
+        userRoleOnlyOnRepository.deleteByThesaurusIdThesaurus(idThesaurus);
         thesaurusAlignementSourceRepository.deleteAllByIdThesaurus(idThesaurus);
         thesaurusDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         thesaurusArrayRepository.deleteAllByIdThesaurus(idThesaurus);
@@ -499,6 +502,7 @@ public class ThesaurusService {
         nodeLabelRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusHomePageRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         userGroupThesaurusRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        userRoleOnlyOnRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusAlignementSourceRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusDcTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusAlignementRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
@@ -530,6 +534,7 @@ public class ThesaurusService {
         noteService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
 
         conceptService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
+
         return true;
     }
 }

@@ -8,19 +8,20 @@ import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHomePageRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.UserService;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,42 +34,24 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
-    private UserHelper userHelper;
-    private ConceptHelper conceptHelper;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private ThesaurusDcTermRepository thesaurusDcTermRepository;
-    private ThesaurusHomePageRepository thesaurusHomePageRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptStatusRepository conceptStatusRepository;
+
+    private final UserService userService;
+    private final ConceptHelper conceptHelper;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final ThesaurusDcTermRepository thesaurusDcTermRepository;
+    private final ThesaurusHomePageRepository thesaurusHomePageRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptStatusRepository conceptStatusRepository;
 
     private boolean isViewPlainText, isInEditing;
     private String text, colorOfHtmlButton, colorOfTextButton;
 
-
-    @Inject
-    public ViewEditorThesoHomeBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                                   ConceptHelper conceptHelper,
-                                   UserHelper userHelper,
-                                   ThesaurusHomePageRepository thesaurusHomePageRepository,
-                                   ThesaurusDcTermRepository thesaurusDcTermRepository,
-                                   UserGroupLabelRepository userGroupLabelRepository,
-                                   ConceptRepository conceptRepository,
-                                   ConceptStatusRepository conceptStatusRepository) {
-
-        this.workLanguage = workLanguage;
-        this.thesaurusDcTermRepository = thesaurusDcTermRepository;
-        this.thesaurusHomePageRepository = thesaurusHomePageRepository;
-        this.conceptHelper = conceptHelper;
-        this.userHelper = userHelper;
-        this.conceptRepository = conceptRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.conceptStatusRepository = conceptStatusRepository;
-    }
 
     public void reset(){
         isInEditing = false;
@@ -159,7 +142,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getProjectName(String idThesaurus){
-        var idProject = userHelper.getGroupOfThisTheso(idThesaurus);
+        var idProject = userService.getGroupOfThisThesaurus(idThesaurus);
         return (idProject != -1) ? userGroupLabelRepository.findById(idProject).get().getLabel() : "";
     }
 

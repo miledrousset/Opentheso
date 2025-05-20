@@ -20,6 +20,18 @@ public interface UserGroupLabelRepository extends JpaRepository<UserGroupLabel, 
             "ORDER BY ugl.label")
     List<UserGroupLabel> findProjectsByRole(@Param("idUser") int idUser, @Param("idRole") int idRole);
 
+    @Query("""
+        SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label)
+        FROM UserGroupLabel ugl
+        WHERE ugl.id IN (
+            SELECT urg.group.id FROM UserRoleGroup urg WHERE urg.user.id = :userId
+            UNION
+            SELECT uro.group.id FROM UserRoleOnlyOn uro WHERE uro.user.id = :userId
+        )
+        ORDER BY LOWER(ugl.label)
+    """)
+    List<UserGroupLabel> findAllGroupsOfUser(@Param("userId") int userId);
+
     Optional<UserGroupLabel> findByLabelLike(String label);
 
     @Query("SELECT DISTINCT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +

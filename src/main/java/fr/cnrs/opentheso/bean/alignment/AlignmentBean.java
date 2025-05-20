@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.services.AlignmentSourceService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
@@ -94,6 +95,7 @@ public class AlignmentBean implements Serializable {
     private final TermService termService;
     private final AlignmentSourceService alignementSourceService;
     private final ConceptService conceptService;
+    private final NoteService noteService;
 
     private boolean isViewResult = true;
     private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible,
@@ -317,7 +319,6 @@ public class AlignmentBean implements Serializable {
             int responseCode = connection.getResponseCode();
             return (200 <= responseCode && responseCode <= 399);  // Consider 2xx and 3xx responses as reachable
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -476,7 +477,7 @@ public class AlignmentBean implements Serializable {
                     if(!noteHelper.isNoteExist(
                             idConcept, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
 
-                        noteHelper.addNote(idConcept, selectedResource.getIdLang(), idTheso,
+                        noteService.addNote(idConcept, selectedResource.getIdLang(), idTheso,
                                 selectedResource.getGettedValue(), "definition", alignementSource.getSource(), idUser);
                     }
                 }
@@ -512,7 +513,7 @@ public class AlignmentBean implements Serializable {
                 .collect(Collectors.toList());
 
         // Mettre à jour la valeur de local libelle et local definition par rapport au nouveau alignement
-        allAlignementFound.stream().forEach(element -> {
+        allAlignementFound.forEach(element -> {
             if (isEquals(element, alignementSelect)) {
                 element.setLabelLocal(alignementSelect.getConcept_target());
                 var definitionFound = alignementSelect.getSelectedDefinitionsList().stream()
@@ -536,7 +537,7 @@ public class AlignmentBean implements Serializable {
 
         //Supprimer définition
         if (ObjectUtils.isNotEmpty(conceptView.getDefinition())) {
-            noteHelper.deleteNotes(conceptView.getDefinition().getIdNote() + "", idThesaurus);
+            noteService.deleteNotes(conceptView.getDefinition().getIdNote() + "", idThesaurus);
         }
 
         //Supprimer l'alignement
@@ -640,7 +641,7 @@ public class AlignmentBean implements Serializable {
             if (conceptValueForAlignment == null || conceptValueForAlignment.isEmpty()) {
                 return;
             }
-            String valuesTemp[] = conceptValueForAlignment.split(",");
+            String[] valuesTemp = conceptValueForAlignment.split(",");
             if (valuesTemp.length == 1) {
                 nom = valuesTemp[0];
             }
@@ -1136,7 +1137,7 @@ public class AlignmentBean implements Serializable {
      */
     private void getValuesOfLocalConcept(String idTheso, String idConcept) {
         nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
-        nodeNotes = noteHelper.getListNotesAllLang(idConcept, idTheso);
+        nodeNotes = noteService.getListNotesAllLang(idConcept, idTheso);
         nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idTheso);
         nodeAlignmentSmall = alignmentService.getAllAlignmentsOfConcept(idConcept, idTheso);
     }
@@ -1541,12 +1542,8 @@ public class AlignmentBean implements Serializable {
                     continue;
                 }
 
-                if (!noteHelper.addNote(
-                        idConcept, selectedResource.getIdLang(),
-                        idTheso,
-                        selectedResource.getGettedValue(),
-                        "definition", selectedAlignement,
-                        idUser)) {
+                if (!noteService.addNote(idConcept, selectedResource.getIdLang(), idTheso, selectedResource.getGettedValue(),
+                        "definition", selectedAlignement, idUser)) {
                     error = true;
                     alignementResult = alignementResult + ": Erreur dans l'ajout des définitions";
                 }

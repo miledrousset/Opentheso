@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.entites.NonPreferredTerm;
+import fr.cnrs.opentheso.models.NodeEMProjection;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,6 +31,10 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
     @Modifying
     @Transactional
     void deleteByIdThesaurusAndIdTerm(String idThesaurus, String idTerm);
+
+    @Modifying
+    @Transactional
+    void deleteByIdThesaurusAndIdTermAndLang(String idThesaurus, String idTerm, String lang);
 
     @Modifying
     @Transactional
@@ -89,4 +94,15 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
     @Transactional
     @Query("UPDATE NonPreferredTerm t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Query(value = """
+        SELECT npt.lexical_value AS lexicalValue, npt.created AS created, npt.modified AS modified, npt.source AS source, npt.status AS status, npt.hiden AS hiden
+        FROM non_preferred_term npt
+            JOIN preferred_term pt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
+        WHERE pt.id_concept = :idConcept
+        AND npt.id_thesaurus = :idThesaurus
+        AND npt.lang = :idLang
+        ORDER BY npt.lexical_value ASC
+    """, nativeQuery = true)
+    List<NodeEMProjection> findNonPreferredTerms(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);
 }

@@ -78,6 +78,7 @@ public class PropositionService {
     private final PreferredTermRepository preferredTermRepository;
     private final PropositionRepository propositionRepository;
     private final ConceptService conceptService;
+    private final NoteService noteService;
 
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire, String thesaurusName) {
@@ -492,17 +493,13 @@ public class PropositionService {
     }
 
     private void deleteNote(NotePropBean notePropBean) {
-        if (!noteHelper.deleteThisNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
+        noteService.deleteThisNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
                 selectedTheso.getCurrentIdTheso(), notePropBean.getNoteTypeCode(), notePropBean.getLexicalValue(),
-                currentUser.getNodeUser().getIdUser())) {
-
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+                currentUser.getNodeUser().getIdUser());
     }
 
     private void updateNote(NotePropBean notePropBean) {
-        if (!noteHelper.updateNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
+        if (!noteService.updateNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
                 selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), notePropBean.getNoteSource(),
                 notePropBean.getNoteTypeCode(), currentUser.getNodeUser().getIdUser())) {
 
@@ -512,7 +509,7 @@ public class PropositionService {
     }
 
     private void addNewNote(NotePropBean notePropBean, String typeNote) {
-        if (!noteHelper.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
+        if (!noteService.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
                 selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), typeNote, "", currentUser.getNodeUser().getIdUser())) {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");

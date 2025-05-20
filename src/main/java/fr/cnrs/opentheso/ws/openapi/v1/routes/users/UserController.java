@@ -2,9 +2,9 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.users;
 
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.users.NodeUserResource;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.services.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -44,21 +44,21 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final ApiKeyHelper apiKeyHelper;
-    private final UserHelper userHelper;
     private final UserRoleGroupService userRoleGroupService;
+    private final UserService userService;
 
 
     @PostMapping("/authentification")
     @Operation(summary = "Authentification d'un utilisateur")
     public ResponseEntity createUser(@RequestBody @Valid AuthentificationDto authentificationDto) {
 
-        var user = userHelper.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
+        var user = userService.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
         if (ObjectUtils.isEmpty(user)) {
             return ResponseEntity.notFound().build();
         }
 
         if (!user.isSuperAdmin()) {
-            user.setThesorusList(userHelper.getThesaurusOfUser(user.getIdUser()));
+            user.setThesorusList(userService.getThesaurusOfUser(user.getIdUser()));
         }
         if (StringUtils.isEmpty(user.getApiKey())) {
             var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
@@ -91,7 +91,7 @@ public class UserController {
             }
 
             if (!ObjectUtils.isEmpty(userDto.getIdRole()) && !ObjectUtils.isEmpty(userDto.getIdThesaurus())) {
-                var idGroup = userHelper.getGroupOfThisTheso(userDto.getIdThesaurus());
+                var idGroup = userService.getGroupOfThisThesaurus(userDto.getIdThesaurus());
                 userRoleGroupService.addUserRoleOnGroup(userCreated.getId(), userDto.getIdRole(), idGroup);
             }
 
@@ -140,7 +140,7 @@ public class UserController {
                 userRepository.save(user.get());
 
                 if (!ObjectUtils.isEmpty(userDto.getIdRole()) && !ObjectUtils.isEmpty(userDto.getIdProject())) {
-                    var idGroup = userHelper.getGroupOfThisTheso(userDto.getIdThesaurus());
+                    var idGroup = userService.getGroupOfThisThesaurus(userDto.getIdThesaurus());
                     userRoleGroupService.updateUserRoleOnGroup(user.get().getId(), userDto.getIdRole(), idGroup);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body("");
@@ -157,7 +157,7 @@ public class UserController {
                                      @ParameterObject NodeUserResource userResource) {
 
         if (getUser(apiKey).getIsSuperAdmin()) {
-            var users = userHelper.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
+            var users = userService.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");

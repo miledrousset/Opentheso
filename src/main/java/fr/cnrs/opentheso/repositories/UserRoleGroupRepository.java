@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
+import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -63,5 +64,25 @@ public interface UserRoleGroupRepository extends JpaRepository<UserRoleGroup, In
             "AND LOWER(ugl.label) LIKE LOWER(CONCAT('%', :projectName, '%')) " +
             "ORDER BY ugl.label")
     List<NodeUserGroup> findGroupByUserAndProject(@Param("idUser") int idUser, @Param("projectName") String projectName);
+
+    @Query("""
+        SELECT urg.group.id
+        FROM UserRoleGroup urg
+        JOIN UserGroupThesaurus ugt ON urg.group.id = ugt.idGroup
+        WHERE urg.user.id = :userId AND ugt.idThesaurus = :thesoId
+    """)
+    Optional<Integer> findGroupIdByUserIdAndThesaurus(@Param("userId") int userId, @Param("thesoId") String thesoId);
+
+    @Query("""
+        SELECT new fr.cnrs.opentheso.models.users.NodeUserRole(u.id, u.username, u.active, r.id, r.name)
+        FROM UserRoleGroup urg
+            JOIN User u ON urg.user.id = u.id
+            JOIN Roles r ON urg.role.id = r.id
+        WHERE urg.group.id = :idGroup
+          AND u.isSuperAdmin = false
+          AND urg.role.id >= :idRole
+        ORDER BY LOWER(u.username)
+    """)
+    List<NodeUserRole> findUsersByGroupAndRole(@Param("idGroup") int idGroup, @Param("idRole") int idRole);
 
 }

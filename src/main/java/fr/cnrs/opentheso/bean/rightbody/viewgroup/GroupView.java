@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
+import fr.cnrs.opentheso.services.NoteService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -79,6 +80,8 @@ public class GroupView implements Serializable {
     private boolean toggleSwitchNotesLang;
     @Autowired
     private GroupTypeService groupTypeService;
+    @Autowired
+    private NoteService noteService;
 
     @PreDestroy
     public void destroy(){
@@ -140,13 +143,11 @@ public class GroupView implements Serializable {
     }
 
     public void setNotes(String idTheso, String idGroup, String idLang) {
-        ArrayList<NodeNote> nodeNotes;
+
         if (toggleSwitchNotesLang) {
-            nodeNotes = noteHelper.getListNotesAllLang(idGroup, idTheso);
-            setNotesForAllLang(nodeNotes);
+            setNotesForAllLang(noteService.getListNotesAllLang(idGroup, idTheso));
         } else {
-            nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
-            setAllNotes(nodeNotes);
+            setAllNotes(noteHelper.getListNotes(idGroup, idTheso, idLang));
         }
     };
     
@@ -184,7 +185,7 @@ public class GroupView implements Serializable {
         }
     }
 
-    private void setNotesForAllLang(ArrayList<NodeNote> nodeNotes) {
+    private void setNotesForAllLang(List<NodeNote> nodeNotes) {
         clearNotesAllLang();
         clearNotes();
 

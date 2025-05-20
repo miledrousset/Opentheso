@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationGroupService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -69,6 +70,8 @@ public class AddGroupBean implements Serializable {
     private ArrayList<NodeNote> historyNotes;
     @Autowired
     private GroupTypeService groupTypeService;
+    @Autowired
+    private NoteService noteService;
 
 
     public void init() {
@@ -140,8 +143,7 @@ public class AddGroupBean implements Serializable {
 
         // ajout de la définition s'il elle est renseignée
         if(StringUtils.isNotEmpty(definition)) {
-            noteHelper.addNote(idGroup, idLang, idTheso,
-                    definition, "definition", "",  idUser);
+            noteService.addNote(idGroup, idLang, idTheso, definition, "definition", "",  idUser);
         }
 
 

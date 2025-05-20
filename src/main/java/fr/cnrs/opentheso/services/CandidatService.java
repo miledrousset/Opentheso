@@ -5,9 +5,9 @@ import fr.cnrs.opentheso.entites.CandidatMessages;
 import fr.cnrs.opentheso.entites.CandidatStatus;
 import fr.cnrs.opentheso.entites.CandidatVote;
 import fr.cnrs.opentheso.entites.NonPreferredTerm;
-import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.ConceptGroupConcept;
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
@@ -32,22 +32,16 @@ import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.TermCandidatRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
-import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
-import fr.cnrs.opentheso.repositories.candidats.TermeDao;
-import fr.cnrs.opentheso.repositories.candidats.NoteDao;
-import fr.cnrs.opentheso.repositories.candidats.RelationDao;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
+import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,12 +53,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CandidatService {
-
-    private final NoteDao noteDao;
-    private final CandidatDao candidatDao;
-    private final DomaineDao domaineDao;
-    private final TermeDao termeDao;
-    private final RelationDao relationDao;
 
     private final ImageService imageService;
     private final StatusRepository statusRepository;
@@ -85,13 +73,16 @@ public class CandidatService {
     private final ConceptCandidatRepository conceptCandidatRepository;
     private final TermCandidatRepository termCandidatRepository;
     private final ConceptAddService conceptAddService;
+    private final NoteService noteService;
+    private final RelationService relationService;
+    private final GroupService groupService;
+    private final UserRepository userRepository;
 
 
-    /**
-     * Permet de récupérer la liste des candidats qui sont en attente
-     */
-    public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int etat) {
-        List<CandidatDto> candidatList = candidatDao.getCandidatsByStatus(idThesaurus, lang, etat);
+    public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int stat) {
+
+        log.info("Rechercher la liste des candidats dans le thésaurus {} avec le status {}", idThesaurus, stat);
+        var candidatList = getCandidatsByThesaurusAndStatus(idThesaurus, lang, stat);
         candidatList.forEach(candidatDto -> {
             var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
             candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
@@ -115,7 +106,7 @@ public class CandidatService {
      */
     public List<CandidatDto> searchCandidats(String value, String idThesaurus, String lang, int etat, String statut) {
 
-        List<CandidatDto> temps = candidatDao.searchCandidatsByValue(value, idThesaurus, lang, etat, statut);
+        List<CandidatDto> temps = searchCandidatsByValue(value, idThesaurus, lang, etat, statut);
         temps.forEach(candidatDto -> {
 
             var candidatStatus = candidatStatusRepository.findAllByIdConceptAndIdThesaurus(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
@@ -169,37 +160,38 @@ public class CandidatService {
     }
 
     public void updateIntitule(String intitule, String idThesaurus, String lang, String idTerm) {
-        termeDao.updateIntitule(intitule, idTerm, idThesaurus, lang);
+        termService.updateIntitule(intitule, idTerm, idThesaurus, lang);
     }
 
     public void updateDetailsCondidat(CandidatDto candidatSelected) {
 
         //update domaine
-        domaineDao.deleteAllDomaine(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+        groupService.deleteAllGroupOfConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
         
         for (NodeIdValue collection : candidatSelected.getCollections()) {
-            domaineDao.addNewDomaine(collection.getId(), candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+            groupService.addNewDomaine(collection.getId(), candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
         }
 
         // gestion des relations
-        relationDao.deleteAllRelations(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
+        relationService.deleteAllRelationOfConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
 
         //update terme générique
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
-            candidatSelected.getTermesGenerique().forEach(nodeBT -> relationDao.addRelationBT(candidatSelected.getIdConcepte(), nodeBT.getId(), candidatSelected.getIdThesaurus()));
+            candidatSelected.getTermesGenerique().forEach(nodeBT ->
+                    relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), "BT", nodeBT.getId()));
         }
 
         //update terme associés
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
-            candidatSelected.getTermesAssocies().forEach(nodeRT -> relationDao.addRelationRT(candidatSelected.getIdConcepte(), nodeRT.getId(), candidatSelected.getIdThesaurus()));
+            candidatSelected.getTermesAssocies().forEach(nodeRT ->
+                    relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), "RT", nodeRT.getId()));
         }
 
         // Employé pour
-        termeDao.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(),
-                candidatSelected.getIdThesaurus(), candidatSelected.getLang());
+        termService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
-            candidatSelected.getEmployePourList().forEach(employe -> termeDao.addNewEmployePour(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
+            candidatSelected.getEmployePourList().forEach(employe -> termService.addSynonyme(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
                     candidatSelected.getIdTerm()));
         }
     }
@@ -209,19 +201,19 @@ public class CandidatService {
         var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
         candidatSelected.setIdTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null));
 
-        candidatSelected.setCollections(domaineDao.getDomaineCandidatByConceptAndThesaurusAndLang(candidatSelected.getIdConcepte(),
+        candidatSelected.setCollections(groupService.getDomaineCandidatByConceptAndThesaurusAndLang(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-        candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
+        candidatSelected.setTermesGenerique(relationService.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-        candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(candidatSelected.getIdConcepte(),
+        candidatSelected.setTermesAssocies(relationService.getCandidatRelationsRT(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-        candidatSelected.setEmployePourList(termeDao.getEmployePour(candidatSelected.getIdConcepte(),
+        candidatSelected.setEmployePourList(termService.getSynonymesParConcept(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-        candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+        candidatSelected.setNodeNotes(noteService.getNotesCandidat(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
         candidatSelected.getNodeNotes().forEach(note -> note.setVoted(getVote(candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte(), candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE)));
@@ -312,25 +304,17 @@ public class CandidatService {
     /**
      * permet de récupérer les anciens candidats saisies dans l'ancien module uniquement les candidats qui étatient en attente
      */    
-    public String getOldCandidates(String idTheso, int idUser, Preferences nodePreference) {
+    public String getOldCandidates(String idTheso, int idUser) {
 
         StringBuilder messages = new StringBuilder();
-        
-        //// récupération des anciens candidats
-        ArrayList<NodeCandidateOld> nodeCandidateOlds;
-        try {
-            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(idTheso);
-        } catch (SQLException e) {
-            messages.append("Erreur : ").append(e.getMessage());
-            return messages.toString();
-        }
+
+        var nodeCandidateOlds = getCandidatesIdFromOldModule(idTheso);
         if(nodeCandidateOlds == null || nodeCandidateOlds.isEmpty()) {
             return "Pas d'anciens candidats à récupérer";
         }
         
         for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
-            nodeCandidateOld.setNodeTraductions(candidatDao.getCandidatesTraductionsFromOldModule(nodeCandidateOld.getIdCandidate(), idTheso));
-
+            nodeCandidateOld.setNodeTraductions(getCandidatesTraductionsFromOldModule(nodeCandidateOld.getIdCandidate(), idTheso));
             var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(nodeCandidateOld.getIdCandidate(), idTheso);
             if (CollectionUtils.isNotEmpty(proposition)) {
                 nodeCandidateOld.setNodePropositions(proposition.stream()
@@ -506,7 +490,7 @@ public class CandidatService {
         }
 
         if (StringUtils.isNotEmpty(candidate.getConceptGenericId())) {
-            relationDao.addRelationBT(idConcept, candidate.getConceptGenericId(), candidate.getThesoId());
+            relationService.addHierarchicalRelation(idConcept, candidate.getThesoId(), "BT", candidate.getConceptGenericId());
         }
 
         preferredTermRepository.save(PreferredTerm.builder()
@@ -585,5 +569,87 @@ public class CandidatService {
 
         log.info("Mise à jour des terms des candidats dans le thésaurus id {}", oldIdThesaurus);
         termCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
+
+    private List<NodeCandidateOld> getCandidatesIdFromOldModule(String idThesaurus) {
+
+        log.info("Recherche des candidats présent dans le thésaurus id {}", idThesaurus);
+        var candidats = conceptCandidatRepository.findAllByIdThesaurusAndStatus(idThesaurus, "a");
+        if (CollectionUtils.isEmpty(candidats)) {
+            log.info("Aucun candidat n'est trouvé dans le thésaurus id {} avec le status 'a'", idThesaurus);
+        }
+
+        log.info("{} cadidats sont trouvés dans le thésaurus id {}", candidats.size(), idThesaurus);
+        return candidats.stream()
+                .map(candidat -> NodeCandidateOld.builder()
+                        .idCandidate(candidat.getIdConcept())
+                        .status(candidat.getStatus())
+                        .build())
+                .toList();
+    }
+
+    private List<CandidatDto> getCandidatsByThesaurusAndStatus(String idThesaurus, String lang, int stat) {
+
+        log.info("Chargement des candidats en statut {} pour le thésaurus {}", stat, idThesaurus);
+        var projections = candidatStatusRepository.findCandidatesByStatus(idThesaurus, stat);
+        if (CollectionUtils.isEmpty(projections)) {
+            log.info("Aucun candidat n'est trouvé dans le thésaurus id {}", idThesaurus);
+            return List.of();
+        }
+
+        log.info("{} candidats trouvés dans le thésaurus id {} avec l'état {}", projections.size(), idThesaurus, stat);
+        return projections.stream()
+                .map(projection ->
+                    CandidatDto.builder()
+                        .idConcepte(projection.getIdConcept())
+                        .creationDate(projection.getCreated())
+                        .insertionDate(projection.getModified())
+                        .statut(String.valueOf(stat))
+                        .createdById(projection.getIdUser())
+                        .createdByIdAdmin(projection.getIdUserAdmin())
+                        .idThesaurus(idThesaurus)
+                        .adminMessage(projection.getMessage())
+                        .nomPref(termService.getLexicalValueOfConcept(projection.getIdConcept(), idThesaurus, lang))
+                        .createdBy(userRepository.findById(projection.getIdUser()).map(User::getUsername).orElse("Utilisateur inconnu"))
+                        .createdByAdmin(userRepository.findById(projection.getIdUserAdmin()).map(User::getUsername).orElse("Utilisateur inconnu"))
+                        .build())
+                .toList();
+    }
+
+    private List<CandidatDto> searchCandidatsByValue(String value, String idThesaurus, String lang, int etat, String statut) {
+
+        log.info("Recherche de candidats avec la valeur '{}' pour le thésaurus '{}', langue '{}', statut '{}', état {}",
+                value, idThesaurus, lang, statut, etat);
+        var results = conceptCandidatRepository.searchCandidatesByValue(value, idThesaurus, lang, etat, statut);
+        if (CollectionUtils.isEmpty(results)) {
+            log.info("Aucun candidat n'est trouvé avec la valeur {}", value);
+            return List.of();
+        }
+
+        log.info("{} candidats est trouvé avec la valeur {}", results.size(), value);
+        return results.stream()
+                .map(projection ->
+                        CandidatDto.builder()
+                                .idTerm(projection.getIdTerm())
+                                .nomPref(projection.getLexicalValue())
+                                .idConcepte(projection.getIdConcept())
+                                .idThesaurus(projection.getIdThesaurus())
+                                .creationDate(projection.getCreated())
+                                .user(projection.getUsername())
+                                .userId(projection.getContributor())
+                                .build())
+                .toList();
+    }
+
+    private List<NodeTraductionCandidat> getCandidatesTraductionsFromOldModule(String idOldCandidat, String idThesaurus) {
+
+        log.info("Récupération des traductions du candidat '{}' pour le thésaurus '{}'", idOldCandidat, idThesaurus);
+        return conceptTermCandidatRepository.getCandidateTranslations(idOldCandidat, idThesaurus).stream()
+                .map(proj ->
+                    NodeTraductionCandidat.builder()
+                            .idLang(proj.getLang())
+                            .title(proj.getLang())
+                            .build())
+                .toList();
     }
 }

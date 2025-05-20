@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.NoteService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -44,6 +45,8 @@ public class NoteBeanCandidat implements Serializable {
     private String noteValueToChange;
     private boolean visible;
     private boolean isEditMode;
+    @Autowired
+    private NoteService noteService;
 
 
     public void clear(){
@@ -138,7 +141,7 @@ public class NoteBeanCandidat implements Serializable {
 
         FacesMessage msg;        
 
-        if (!noteHelper.updateNote(
+        if (noteService.updateNote(
                 selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
@@ -164,17 +167,9 @@ public class NoteBeanCandidat implements Serializable {
     public void deleteNote(int idUser) {
         FacesMessage msg;
 
-        if (!noteHelper.deleteThisNote(
-                selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
-                selectedNodeNote.getIdConcept(),
-                selectedNodeNote.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                selectedNodeNote.getNoteTypeCode(),
-                noteValueToChange, idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        noteService.deleteThisNote(selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+                selectedNodeNote.getIdConcept(), selectedNodeNote.getLang(), selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getNoteTypeCode(), noteValueToChange, idUser);
 
         noteHelper.deleteVoteByNoteId(selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getIdConcept());
@@ -196,7 +191,7 @@ public class NoteBeanCandidat implements Serializable {
     }
 
     private boolean addNote(int idUser) {
-        return noteHelper.addNote(candidatBean.getCandidatSelected().getIdConcepte(), selectedLang, selectedTheso.getCurrentIdTheso(),
+        return noteService.addNote(candidatBean.getCandidatSelected().getIdConcepte(), selectedLang, selectedTheso.getCurrentIdTheso(),
                 noteValue, selectedTypeNote, "", idUser);
     }
 

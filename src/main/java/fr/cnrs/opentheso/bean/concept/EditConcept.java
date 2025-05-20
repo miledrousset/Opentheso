@@ -501,14 +501,14 @@ public class EditConcept implements Serializable {
 
         if (conceptView.getNodeConcept().getNodeNT().isEmpty()) {
             // suppression du concept
-            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idUser)) {
+            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         } else {
             /// suppression d'une branche
-            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idUser)){
+            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso)){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué, vérifier la poly-hiérarchie pour le concept : " 
                         + conceptHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -915,4 +915,28 @@ public class GroupService {
         conceptGroupConceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
     }
 
+    public List<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(String idconcept, String idThesaurus, String lang) {
+
+        var nodeGroups = getListGroupOfConcept(idThesaurus, idconcept, lang);
+
+        List<NodeIdValue> nodeIdValues = new ArrayList<>();
+        for (NodeGroup nodeGroup : nodeGroups) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setValue(nodeGroup.getLexicalValue());
+            nodeIdValue.setId(nodeGroup.getConceptGroup().getIdGroup());
+            nodeIdValues.add(nodeIdValue);
+        }
+        return nodeIdValues;
+    }
+
+    public void addNewDomaine(String idGroup, String idThesaurus, String idConcept) {
+
+        log.info("Création d'un nouveau group");
+        conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
+                .idGroup(idGroup)
+                .idConcept(idConcept)
+                .idThesaurus(idThesaurus)
+                .build());
+    }
+
 }

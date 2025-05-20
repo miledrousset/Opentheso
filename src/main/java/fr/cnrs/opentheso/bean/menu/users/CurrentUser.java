@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
@@ -15,6 +14,7 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -95,9 +95,6 @@ public class CurrentUser implements Serializable {
     private TreeGroups treeGroups;
 
     @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -114,6 +111,8 @@ public class CurrentUser implements Serializable {
     private UserPermissions userPermissions;
     @Autowired
     private ThesaurusService thesaurusService;
+    @Autowired
+    private UserService userService;
 
 
     public void clear() {
@@ -310,7 +309,7 @@ public class CurrentUser implements Serializable {
         if (nodeUser.isSuperAdmin()) {
             userPermissions.setListProjects(userGroupLabelRepository.findAll());
         } else {  
-            userPermissions.setListProjects(userHelper.getProjectOfUser(nodeUser.getIdUser()));
+            userPermissions.setListProjects(userService.getProjectOfUser(nodeUser.getIdUser()));
             setListProjectForUser();
         }
         setAllListThesoOfAllProject();
@@ -334,7 +333,7 @@ public class CurrentUser implements Serializable {
                 nodeProjectThesoRole.setIdProject(userGroupLabel.getId()); // id du projet
                 nodeProjectThesoRole.setProjectName(userGroupLabel.getLabel()); // label du projet
 
-                List<NodeThesoRole> nodeThesoRoles = userHelper.getAllRolesThesosByUserGroup(nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
+                List<NodeThesoRole> nodeThesoRoles = userService.getAllRolesThesosByUserGroup(nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
 
                 nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
                 nodeProjectThesoRoles.add(nodeProjectThesoRole);
@@ -423,14 +422,14 @@ public class CurrentUser implements Serializable {
         userPermissions.setListLangsOfSelectedTheso(thesaurusService.getAllUsedLanguagesOfThesaurusNode(
                 selectedTheso.getCurrentIdTheso(), userPermissions.getPreferredLangOfSelectedTheso()));
         
-        idProject = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());
+        idProject = userService.getGroupOfThisThesaurus(selectedTheso.getCurrentIdTheso());
         
         if(nodeUser != null) {
             if(nodeUser.isSuperAdmin()) {
                 userPermissions.setRole(1);
                 userPermissions.setRoleName("superAdmin");                
             } else {
-                idRole = userHelper.getRoleOnThisTheso(nodeUser.getIdUser(), idProject, idTheso);
+                idRole = userService.getRoleOnThisThesaurus(nodeUser.getIdUser(), idProject, idTheso);
                 userPermissions.setRole(idRole);
                 userPermissions.setRoleName(getRoleName(idRole));
             }
@@ -464,7 +463,7 @@ public class CurrentUser implements Serializable {
 
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userGroupLabelRepository.findById(idProject).get().getLabel());
-        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
+        userPermissions.setListThesos(userService.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
             for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
@@ -622,7 +621,7 @@ public class CurrentUser implements Serializable {
         if (nodeUser == null) {
             return;
         }
-        nodeUser = userHelper.getUser(nodeUser.getIdUser());
+        nodeUser = userService.getUser(nodeUser.getIdUser());
     }
 
     public String formatUserName(String userName) {

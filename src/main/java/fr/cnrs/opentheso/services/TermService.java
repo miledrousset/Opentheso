@@ -1,8 +1,10 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.NonPreferredTerm;
 import fr.cnrs.opentheso.entites.Permuted;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.TermHistorique;
+import fr.cnrs.opentheso.models.NodeEMProjection;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -400,4 +402,63 @@ public class TermService {
         return label.get();
     }
 
+    public void deleteEMByIdTermAndLang(String idTerm, String idThesaurus, String idLang) {
+
+        log.info("Suppression du terme id {} (langue : {} et thésaurus id {})", idTerm, idLang, idThesaurus);
+        nonPreferredTermRepository.deleteByIdThesaurusAndIdTermAndLang(idThesaurus, idTerm, idLang);
+    }
+
+    public void updateIntitule(String intitule, String idTerm, String idThesaurus, String lang) {
+
+        log.info("Mise à jour de la valeur du term avec id {}", idTerm);
+        var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, lang);
+        if (term.isEmpty()) {
+            log.error("Aucun term n'est trouvé avec l'id {} et id thésaurus {}", idTerm, idThesaurus);
+            return;
+        }
+
+        term.get().setLexicalValue(intitule);
+        termRepository.save(term.get());
+        log.info("Mise à jour du term id {} terminée", idTerm);
+    }
+
+    public List<String> getSynonymesParConcept(String idConcept, String idThesaurus, String idLang){
+
+        log.info("Recherche des synonymes pour le concept '{}', thésaurus '{}', langue '{}'", idConcept, idThesaurus, idLang);
+        var synonymes = nonPreferredTermRepository.findNonPreferredTerms(idConcept, idThesaurus, idLang);
+        if(CollectionUtils.isEmpty(synonymes)) {
+            log.info("Aucun synonymes n'est trouvé pour le concept id {}", idConcept);
+            return new ArrayList<>();
+        }
+
+        log.info("Nombre de non-preferred terms récupérés : {}", synonymes.size());
+        return synonymes.stream().map(NodeEMProjection::getLexicalValue).toList();
+    }
+
+    public void addSynonyme(String intitule, String idThesaurus, String lang, String idTerm) {
+
+        log.info("Ajout d'un nouveau synonymes");
+        nonPreferredTermRepository.save(NonPreferredTerm.builder()
+                .lexicalValue(intitule)
+                .lang(lang)
+                .idThesaurus(idThesaurus)
+                .hiden(false)
+                .idTerm(idTerm)
+                .build());
+    }
+
+    public void addNewTerme(Term term) {
+
+        log.info("Ajout d'un nouveau terme");
+        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
+        termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                .idTerm(term.getIdTerm())
+                .lexicalValue(term.getLexicalValue())
+                .lang(term.getLang())
+                .idThesaurus(term.getIdThesaurus())
+                .status(term.getStatus())
+                .contributor(term.getContributor())
+                .creator(term.getCreator())
+                .build());
+    }
 }

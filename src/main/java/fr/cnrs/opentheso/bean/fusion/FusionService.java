@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
@@ -72,6 +73,8 @@ public class FusionService implements Serializable {
     private String uri;
     private double total;
     private List<String> conceptsAjoutes, conceptsModifies, conceptsExists;
+    @Autowired
+    private NoteService noteService;
 
     public void lancerFussion(NodeIdValue thesoSelected) {
 
@@ -195,18 +198,11 @@ public class FusionService implements Serializable {
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
                             if (nodeNote.getNoteTypeCode().equalsIgnoreCase("definition")) {
-                                if (!noteHelper.isNoteExist(
-                                        acs.concept.getIdConcept(), 
-                                        conceptFound.getConcept().getIdThesaurus(),
+                                if (!noteHelper.isNoteExist(acs.concept.getIdConcept(), conceptFound.getConcept().getIdThesaurus(),
                                         nodeNote.getLang(), nodeNote.getLexicalValue(), "definition")) {
-                                    noteHelper.addNote(
-                                            acs.concept.getIdConcept(),
-                                            nodeNote.getLang(),
-                                            conceptFound.getConcept().getIdThesaurus(),
-                                            nodeNote.getLexicalValue(),
-                                            nodeNote.getNoteTypeCode(),
-                                            "",
-                                            nodeNote.getIdUser());
+
+                                    noteService.addNote(acs.concept.getIdConcept(), nodeNote.getLang(), conceptFound.getConcept().getIdThesaurus(),
+                                            nodeNote.getLexicalValue(), nodeNote.getNoteTypeCode(), "", nodeNote.getIdUser());
                                     isUpdated = true;
                                 }
                             }

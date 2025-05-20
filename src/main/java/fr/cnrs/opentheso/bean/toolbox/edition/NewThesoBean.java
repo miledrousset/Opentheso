@@ -8,13 +8,11 @@ import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
-
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -43,7 +41,6 @@ public class NewThesoBean implements Serializable {
     private final ViewEditionBean viewEditionBean;
     private final UserGroupLabelRepository userGroupLabelRepository;
     private final SelectedTheso selectedTheso;
-    private final UserHelper userHelper;
     private final PreferenceService preferenceService;
     private final LanguageRepository languageRepository;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;

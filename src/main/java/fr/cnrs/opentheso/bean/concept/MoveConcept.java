@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -23,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.UserService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -62,9 +62,6 @@ public class MoveConcept implements Serializable {
     private SearchHelper searchHelper;
 
     @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
     private GroupService groupService;
 
     @Autowired
@@ -86,6 +83,8 @@ public class MoveConcept implements Serializable {
     private NodeSearchMini nodeSearchSelected;
     
     private List<String> idConceptsToMove;
+    @Autowired
+    private UserService userService;
 
 
     public void initForCandidate(List idConcepts1, String idThesoFrom) {
@@ -210,7 +209,7 @@ public class MoveConcept implements Serializable {
         if(currentUser.getNodeUser().isSuperAdmin()) {
             authorizedThesoAsAdmin = thesaurusService.getAllIdOfThesaurus(true);
         } else {
-            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
+            authorizedThesoAsAdmin = userService.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
         }
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
 

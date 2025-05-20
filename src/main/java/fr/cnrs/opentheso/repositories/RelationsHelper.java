@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.entites.HierarchicalRelationship;
-import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
 import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
@@ -417,101 +416,6 @@ public class RelationsHelper {
             log.error("Error while getting type Of relations NT ", sqle);
         }
         return typesRelationsNT;
-    }
-
-    /**
-     * Cette fonction permet de rÃ©cupÃ©rer les termes gÃ©nÃ©riques d'un concept
-     *
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
-     */
-    public ArrayList<NodeBT> getListBT(String idConcept, String idThesaurus, String idLang) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        ArrayList<NodeBT> nodeListBT = null;
-
-        try {
-            // Get connection from pool
-            conn = dataSource.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT hierarchical_relationship.id_concept2,"
-                            + " concept.status, hierarchical_relationship.role FROM hierarchical_relationship,"
-                            + " concept WHERE "
-                            + " concept.id_thesaurus = hierarchical_relationship.id_thesaurus"
-                            + " AND "
-                            + " concept.id_concept = hierarchical_relationship.id_concept1"
-                            + " AND"
-                            + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
-                            + " AND"
-                            + " hierarchical_relationship.id_concept1 = '" + idConcept + "'"
-                            + " AND"
-                            + " hierarchical_relationship.role LIKE 'BT%'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        nodeListBT = new ArrayList<>();
-                        while (resultSet.next()) {
-                            NodeBT nodeBT = new NodeBT();
-                            nodeBT.setIdConcept(resultSet.getString("id_concept2"));
-                            nodeBT.setRole(resultSet.getString("role"));
-                            nodeBT.setStatus(resultSet.getString("status"));
-                            nodeListBT.add(nodeBT);
-                        }
-                    }
-                    for (NodeBT nodeBT : nodeListBT) {
-                        query = "SELECT term.lexical_value, term.status FROM term, preferred_term"
-                                + " WHERE preferred_term.id_term = term.id_term"
-                                + " and preferred_term.id_thesaurus = term.id_thesaurus "
-                                + " and preferred_term.id_concept ='" + nodeBT.getIdConcept() + "'"
-                                + " and term.lang = '" + idLang + "'"
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + " order by upper(unaccent_string(lexical_value)) DESC";
-
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
-                            if (resultSet.getRow() == 0) {
-                                nodeBT.setTitle("");
-                                nodeBT.setStatus("");
-                            } else {
-                                if (resultSet.getString("lexical_value") == null || resultSet.getString("lexical_value").equals("")) {
-                                    nodeBT.setTitle("");
-                                } else {
-                                    nodeBT.setTitle(resultSet.getString("lexical_value"));
-                                }
-                                if (resultSet.getString("status") == null || resultSet.getString("status").equals("")) {
-                                    nodeBT.setStatus("");
-                                } else {
-                                    nodeBT.setStatus(resultSet.getString("status"));
-                                }
-
-                            }
-                        }
-                    }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting BT of Concept : " + idConcept, sqle);
-        }
-        Collections.sort(nodeListBT);
-        return nodeListBT;
     }
 
     /**

@@ -17,6 +17,6 @@ public class UserRoleGroupOnId implements Serializable {
     private Integer user;
     private Integer role;
     private Integer group;
-    private String theso;
+    private String thesaurus;
 
 }

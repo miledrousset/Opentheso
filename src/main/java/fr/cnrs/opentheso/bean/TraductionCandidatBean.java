@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.repositories.candidats.TermeDao;
 import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -30,7 +29,6 @@ public class TraductionCandidatBean implements Serializable {
     private final CandidatBean candidatBean;
     private final LanguageBean languageBean;
     private final SelectedTheso selectedTheso;
-    private final TermeDao termeDao;
     private final TermService termService;
 
     private String langage, traduction, langageOld, traductionOld, newLangage, newTraduction;
@@ -77,8 +75,7 @@ public class TraductionCandidatBean implements Serializable {
      */
     public void deleteTraduction() {
 
-        termeDao.deleteTermByIdTermAndLang(candidatBean.getCandidatSelected().getIdTerm(), langage,
-                candidatBean.getCandidatSelected().getIdThesaurus());
+        termService.deleteTerm(candidatBean.getCandidatSelected().getIdThesaurus(), candidatBean.getCandidatSelected().getIdTerm(), langage);
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
 
@@ -90,7 +87,7 @@ public class TraductionCandidatBean implements Serializable {
      * permet de modifier une traduction #MR
      */
     public void updateTraduction() {
-        termeDao.updateIntitule(traduction, candidatBean.getCandidatSelected().getIdTerm(),
+        termService.updateIntitule(traduction, candidatBean.getCandidatSelected().getIdTerm(),
                 candidatBean.getCandidatSelected().getIdThesaurus(), langage);
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg3"));
@@ -119,7 +116,7 @@ public class TraductionCandidatBean implements Serializable {
         term.setCreator(candidatBean.getCandidatSelected().getUserId());
         term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
 
-        termeDao.addNewTerme(term);
+        termService.addNewTerme(term);
 
         candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));

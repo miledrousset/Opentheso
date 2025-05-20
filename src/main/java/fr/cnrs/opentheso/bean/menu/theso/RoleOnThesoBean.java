@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
@@ -20,6 +19,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -51,15 +51,15 @@ import java.util.Map;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RoleOnThesoBean implements Serializable {
 
-    private final ThesaurusService thesaurusService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
+    private final ThesaurusService thesaurusService;
+    private final UserService userService;
     private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
     private final UserRepository userRepository;
     private final LanguageBean languageBean;
     private final UserRoleGroupRepository userRoleGroupRepository;
-    private final UserHelper userHelper;
     private final PreferenceService preferenceService;
     private final RoleRepository roleRepository;
     private final ThesaurusRepository thesaurusRepository;
@@ -136,12 +136,12 @@ public class RoleOnThesoBean implements Serializable {
             authorizedThesoAsAdmin = thesaurusService.getAllIdOfThesaurus(withPrivateTheso);
 
         } else {
-            authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
+            authorizedTheso = userService.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
 
             var user = userRepository.findById(currentUser.getNodeUser().getIdUser());
             // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            List<String> listThesoTemp = userRoleOnlyOnRepository.findAllByUserOrderByTheso(user.get()).stream()
-                    .map(element -> element.getTheso().getIdThesaurus())
+            List<String> listThesoTemp = userRoleOnlyOnRepository.findAllByUserOrderByThesaurus(user.get()).stream()
+                    .map(element -> element.getThesaurus().getIdThesaurus())
                     .toList();
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedTheso.contains(idThesoTemp)) {
@@ -149,10 +149,10 @@ public class RoleOnThesoBean implements Serializable {
                 }
             }
 
-            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
+            authorizedThesoAsAdmin = userService.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
             
             // récupération de la liste des thésaurus pour les utilisateurs avec les droits admin, mais qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            listThesoTemp = userHelper.getListThesoLimitedRoleByUserAsAdmin(currentUser.getNodeUser().getIdUser());
+            listThesoTemp = userService.getListThesaurusLimitedRoleByUserAsAdmin(currentUser.getNodeUser().getIdUser());
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedThesoAsAdmin.contains(idThesoTemp)) {
                     authorizedThesoAsAdmin.add(idThesoTemp);
@@ -318,7 +318,7 @@ public class RoleOnThesoBean implements Serializable {
             isAdminOnThisTheso = false;
             return;
         }
-        int idGroup = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());
+        int idGroup = userService.getGroupOfThisThesaurus(selectedTheso.getCurrentIdTheso());
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1, currentUser); // cas de superadmin, on a accès à tous les groupes
             setRole();
@@ -332,7 +332,7 @@ public class RoleOnThesoBean implements Serializable {
             var user = userRepository.findById(currentUser.getNodeUser().getIdUser()).get();
             var group = userGroupLabelRepository.findById(idGroup).get();
             var thesaurus = thesaurusRepository.findById(selectedTheso.getCurrentIdTheso()).get();
-            var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndTheso(user, group, thesaurus);
+            var tmp = userRoleOnlyOnRepository.findByUserAndGroupAndThesaurus(user, group, thesaurus);
             if(ObjectUtils.isNotEmpty(tmp)) {
                 nodeUserRoleGroup = NodeUserRoleGroup.builder().idRole(tmp.getRole().getId()).build();
                 setRole();
@@ -378,7 +378,7 @@ public class RoleOnThesoBean implements Serializable {
         if (idGroup == -1) {
             return null;
         }
-        return userHelper.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
+        return userService.getUserRoleOnThisGroup(currentUser.getNodeUser().getIdUser(), idGroup);
     }    
     
     /**

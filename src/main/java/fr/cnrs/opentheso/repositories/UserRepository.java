@@ -3,13 +3,15 @@ package fr.cnrs.opentheso.repositories;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
     List<User> findAllByUsernameLike(String username);
 
@@ -35,5 +37,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "ORDER BY LOWER(u.username)")
     List<NodeUserGroupUser> getAllUsersSuperadmin();
 
-    User getById(Integer id);
+    @Query("""
+        SELECT u FROM User u
+        WHERE LOWER(u.mail) LIKE LOWER(CONCAT('%', :mail, '%')) AND LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))
+    """)
+    List<User> searchByMailAndUsername(@Param("mail") String mail, @Param("username") String username);
 }

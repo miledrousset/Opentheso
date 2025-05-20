@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
@@ -85,6 +86,8 @@ public class EditFacet implements Serializable {
     private NodeNote historyNote;
     @Autowired
     private TermService termService;
+    @Autowired
+    private NoteService noteService;
 
 
     @PreDestroy
@@ -560,7 +563,7 @@ public class EditFacet implements Serializable {
 
         // ajout de la définition s'il elle est renseignée
         if(StringUtils.isNotEmpty(definition1)) {
-            noteHelper.addNote(idFacet, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
+            noteService.addNote(idFacet, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
                     definition1, "definition", "",  currentUser.getNodeUser().getIdUser());            
         }
         

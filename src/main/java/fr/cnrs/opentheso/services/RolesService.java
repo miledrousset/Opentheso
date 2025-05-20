@@ -19,7 +19,7 @@ public class RolesService {
 
     public List<NodeUserRole> getListRoleByThesoLimited(int idGroup, int idUser) {
 
-        var roles = userRoleOnlyOnRepository.getListRoleByThesoLimited(idGroup, idUser);
+        var roles = userRoleOnlyOnRepository.getListRoleByThesaurusLimited(idGroup, idUser);
 
         roles.forEach(role -> {
             //getTitleOfThesaurus(

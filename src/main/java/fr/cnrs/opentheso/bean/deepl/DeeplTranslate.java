@@ -12,6 +12,8 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.NoteService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -25,6 +27,7 @@ import jakarta.inject.Named;
 @SessionScoped
 public class DeeplTranslate implements Serializable {
 
+    private final NoteService noteService;
     private RoleOnThesoBean roleOnThesoBean;
     private CurrentUser currentUser;
     private SelectedTheso selectedTheso;
@@ -135,10 +138,8 @@ public class DeeplTranslate implements Serializable {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(nodeNote.getIdConcept(), toLang,
-                selectedTheso.getCurrentIdTheso(),
-                translatingText, nodeNote.getNoteTypeCode(),
-                source,//nodeNote.getNoteSource(),
+        if (!noteService.addNote(nodeNote.getIdConcept(), toLang, selectedTheso.getCurrentIdTheso(),
+                translatingText, nodeNote.getNoteTypeCode(), source,//nodeNote.getNoteSource(),
 
                 currentUser.getNodeUser().getIdUser())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
@@ -154,7 +155,7 @@ public class DeeplTranslate implements Serializable {
 
     public void saveExistingTranslatedText() {
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(nodeNote.getIdConcept(), toLang,
+        if (!noteService.addNote(nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),
                 nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())) {

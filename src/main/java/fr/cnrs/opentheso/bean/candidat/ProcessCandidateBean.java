@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -16,6 +15,7 @@ import fr.cnrs.opentheso.services.CandidatService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.HandleConceptService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 
 import java.io.ByteArrayInputStream;
@@ -65,9 +65,6 @@ public class ProcessCandidateBean implements Serializable {
 
     @Autowired
     private CsvWriteHelper csvWriteHelper;
-
-    @Autowired
-    private UserHelper userHelper;
     
     private CandidatDto selectedCandidate;
     private String adminMessage;
@@ -77,6 +74,8 @@ public class ProcessCandidateBean implements Serializable {
     private HandleConceptService handleConceptService;
     @Autowired
     private ArkService arkService;
+    @Autowired
+    private UserService userService;
 
 
     public void reset(CandidatDto candidatSelected) {
@@ -121,7 +120,7 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
         // envoie de mail au créateur du candidat si l'option mail est activée
-        NodeUser nodeUser = userHelper.getUser(selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userService.getUser(selectedCandidate.getCreatedById());
 
         if(nodeUser != null && nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
@@ -197,7 +196,7 @@ public class ProcessCandidateBean implements Serializable {
 
         // envoie de mail au créateur du candidat si l'option mail est activée
 
-        NodeUser nodeUser = userHelper.getUser(selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userService.getUser(selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate);
 
@@ -246,7 +245,7 @@ public class ProcessCandidateBean implements Serializable {
                     .build());
             
             generateArk(nodePreference, selectedCandidate1);
-            nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
+            nodeUser = userService.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
@@ -278,7 +277,7 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
+            nodeUser = userService.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
             conceptService.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),

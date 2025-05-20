@@ -32,13 +32,13 @@ import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 
@@ -78,9 +78,6 @@ public class CsvImportHelper {
 
     @Autowired
     private GpsService gpsService;
-
-    @Autowired
-    private UserHelper userHelper;
 
     @Autowired
     private NoteHelper noteHelper;
@@ -125,6 +122,8 @@ public class CsvImportHelper {
     private ThesaurusService thesaurusService;
     @Autowired
     private ConceptAddService conceptAddService;
+    @Autowired
+    private NoteService noteService;
 
 
     /**
@@ -930,32 +929,25 @@ public class CsvImportHelper {
     private boolean addNotes(String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "note","", idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "note","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "definition","", idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "definition","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "changeNote","", idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "changeNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "editorialNote","", idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "editorialNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "historyNote", "",idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "historyNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "scopeNote", "",idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "scopeNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
-            noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "example", "",idUser);
+            noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "example", "",idUser);
         }
         return true;
     }
@@ -1239,18 +1231,18 @@ public class CsvImportHelper {
         if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                 // on supprime d'abord l'ancienne note
-                int idNote = noteHelper.getNoteByValueAndThesaurus(nodeReplaceValueByValue.getOldValue(),
+                int idNote = noteService.getNoteByValueAndThesaurus(nodeReplaceValueByValue.getOldValue(),
                         "definition", nodeReplaceValueByValue.getIdLang(), idTheso); 
                 if(idNote != -1){
                     // on remplace la valeur du altLabel par la nouvelle valeur
-                    if(!noteHelper.updateNote(idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
+                    if(noteService.updateNote(idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                             nodeReplaceValueByValue.getNewValue(), "", "definition", idUser1)) {
                         addMessage("Rename definition error :", nodeReplaceValueByValue);
                     }                      
                 } else {
                     if (!noteHelper.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                             nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
-                        if(!noteHelper.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
+                        if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                                 nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
                             addMessage("add definition error :", nodeReplaceValueByValue);
                         }
@@ -1262,7 +1254,7 @@ public class CsvImportHelper {
                 // on ajoute une nouvelle définition
                 if (!noteHelper.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                         nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
-                    if(!noteHelper.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
+                    if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                             nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
                         addMessage("add definition error :", nodeReplaceValueByValue);
                     }     
@@ -1429,8 +1421,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "note","", idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "note","", idUser1);
             }
         }
         langs = getLangs(conceptObject.getScopeNotes());
@@ -1441,7 +1432,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "scopeNote","", idUser1);
             }
         }
@@ -1454,8 +1445,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "definition", "",idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "definition", "",idUser1);
             }
         }
 
@@ -1467,8 +1457,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "changeNote", "",idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "changeNote", "",idUser1);
             }
         }
 
@@ -1480,8 +1469,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "editorialNote", "",idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "editorialNote", "",idUser1);
             }
         }
 
@@ -1493,8 +1481,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "historyNote", "",idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "historyNote", "",idUser1);
             }
         }
 
@@ -1506,8 +1493,7 @@ public class CsvImportHelper {
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "example", "",idUser1);
+                noteService.addNote(conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(), "example", "",idUser1);
             }
         }
         return true;

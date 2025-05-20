@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.NoteService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -83,7 +84,9 @@ public class NoteBean implements Serializable {
     private NodeNote noteToEdit;
 
     private ArrayList<NodeNote> nodeNotesByLanguage;
-    
+    @Autowired
+    private NoteService noteService;
+
     /**
      * permet d'initialiser l'édition des notes pour les facettes
      * @param nodeFacet 
@@ -183,11 +186,10 @@ public class NoteBean implements Serializable {
         }
         noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(selectedNodeNote.getLexicalValue());
         noteValue = StringEscapeUtils.unescapeXml(selectedNodeNote.getLexicalValue());
-        if(noteHelper.isNoteExistInThatLang(selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode())){
-            // update Note
+        if(noteService.isNoteExistInThatLang(selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode())){
             updateNoteNewVersion(selectedNodeNote, idUser);
         } else {
-            // Ajout de Note
             if (!addNoteNewVersion(selectedNodeNote, idUser)) {
                 printErreur();
                 return;
@@ -231,7 +233,7 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-        if(!noteHelper.addNote(nodeNote.getIdentifier(),
+        if(!noteService.addNote(nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
@@ -261,15 +263,9 @@ public class NoteBean implements Serializable {
         nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
         nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
         nodeNote.setNoteSource(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()));
-        if (!noteHelper.updateNote(
-                nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
-                nodeNote.getIdentifier(),
-                nodeNote.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeNote.getLexicalValue(),
-                nodeNote.getNoteSource(),
-                nodeNote.getNoteTypeCode(),
-                idUser)) {
+        if (noteService.updateNote(nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+                nodeNote.getIdentifier(), nodeNote.getLang(), selectedTheso.getCurrentIdTheso(),
+                nodeNote.getLexicalValue(), nodeNote.getNoteSource(), nodeNote.getNoteTypeCode(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -553,7 +549,7 @@ public class NoteBean implements Serializable {
             return false;
         }
 
-        return noteHelper.addNote(identifier, selectedLang, selectedTheso.getCurrentIdTheso(), noteValue, selectedTypeNote, "", idUser);
+        return noteService.addNote(identifier, selectedLang, selectedTheso.getCurrentIdTheso(), noteValue, selectedTypeNote, "", idUser);
     }
 
 
@@ -698,7 +694,7 @@ public class NoteBean implements Serializable {
             return;
         }            
         
-        if (!noteHelper.updateNote(
+        if (noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getLang(),
@@ -733,7 +729,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les facettes
     private void updateFacetNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.updateNote(
+        if (noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),
@@ -768,7 +764,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les collections
     private void updateGroupNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.updateNote(
+        if (noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),
@@ -811,17 +807,13 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        if (!noteHelper.deleteThisNote(
+        noteService.deleteThisNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdConcept(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getNoteTypeCode(),
-                nodeNote.getLexicalValue(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+                nodeNote.getLexicalValue(), idUser);
         resetNotes(nodeNote.getIdentifier(), nodeNote.getLang());
 
         if(isFacetNote){
@@ -845,17 +837,12 @@ public class NoteBean implements Serializable {
 
     private void deleteThisNoteFacet(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.deleteThisNote(
-                nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+        noteService.deleteThisNote(nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdConcept(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getNoteTypeCode(),
-                nodeNote.getLexicalValue(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+                nodeNote.getLexicalValue(), idUser);
         editFacet.initEditFacet(nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
@@ -863,17 +850,13 @@ public class NoteBean implements Serializable {
     }
     private void deleteThisNoteGroup(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.deleteThisNote(
+        noteService.deleteThisNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getNoteTypeCode(),
-                nodeNote.getLexicalValue(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+                nodeNote.getLexicalValue(), idUser);
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeNote.getIdentifier(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");

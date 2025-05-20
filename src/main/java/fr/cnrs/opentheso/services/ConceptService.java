@@ -13,8 +13,6 @@ import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PermutedRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.ws.handle.HandleHelper;
-import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +40,6 @@ public class ConceptService {
     private final ConceptRepository conceptRepository;
     private final PermutedRepository permutedRepository;
     private final PreferenceService preferenceService;
-    private final HandleHelper handleHelper;
-    private final HandleService handleService;
     private final TermService termService;
     private final RelationsHelper relationsHelper;
     private final NonPreferredTermService nonPreferredTermService;
@@ -54,6 +50,8 @@ public class ConceptService {
     private final AlignmentService alignmentService;
     private final NoteHelper noteHelper;
     private final HandleConceptService handleConceptService;
+    private final RelationService relationService;
+    private final NoteService noteService;
 
 
     public fr.cnrs.opentheso.entites.Concept getConcept(String idConcept) {
@@ -168,13 +166,13 @@ public class ConceptService {
         node.setNodeTermTraductions(termService.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
 
         log.debug("Récupération des termes génériques (BT)...");
-        node.setNodeBT(relationsHelper.getListBT(idConcept, idThesaurus, idLang));
+        node.setNodeBT(relationService.getListBT(idConcept, idThesaurus, idLang));
 
         log.debug("Récupération des termes spécifiques (NT)...");
         node.setNodeNT(relationsHelper.getListNT(idConcept, idThesaurus, idLang, 21, 0));
 
         log.debug("Récupération des termes associés (RT)...");
-        node.setNodeRT(relationsHelper.getListRT(idConcept, idThesaurus, idLang));
+        node.setNodeRT(relationService.getListRT(idConcept, idThesaurus, idLang));
 
         log.debug("Récupération des termes non préférés (EM)...");
         node.setNodeEM(nonPreferredTermService.getNonPreferredTerms(idConcept, idThesaurus, idLang));
@@ -201,7 +199,7 @@ public class ConceptService {
         return conceptRepository.findConceptIdFromLabel(idTheso, normalizedLabel, idLang).orElse(null);
     }
 
-    public boolean deleteConcept(String idConcept, String idThesaurus, int idUser) {
+    public boolean deleteConcept(String idConcept, String idThesaurus) {
 
         log.info("Suppression du Concept id {} avec ses relations et traductions", idConcept);
         var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
@@ -211,13 +209,13 @@ public class ConceptService {
 
         termService.deleteTerm(preferredTerm.get().getIdTerm(), idThesaurus);
         relationsHelper.deleteAllRelationOfConcept(idConcept, idThesaurus);
-        noteHelper.deleteNotes(idConcept, idThesaurus);
+        noteService.deleteNotes(idConcept, idThesaurus);
         alignmentService.deleteAlignmentOfConcept(idConcept, idThesaurus);
         conceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
         facetService.deleteConceptFromFacets(idThesaurus, idConcept);
-        deleteConceptReplacedby(idThesaurus, idConcept);
         facetService.deleteFacets(idThesaurus, idConcept);
         groupService.deleteAllGroupOfConcept(idConcept, idThesaurus);
+        deleteConceptReplacedby(idThesaurus, idConcept);
 
         var preferences = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preferences != null && preferences.isUseHandle()) {
@@ -229,7 +227,7 @@ public class ConceptService {
         return true;
     }
 
-    public boolean deleteBranchConcept(String idConceptTop, String idThesaurus, int idUser) {
+    public boolean deleteBranchConcept(String idConceptTop, String idThesaurus) {
 
         log.info("Suppression du concept (id {}) avec ses relations et traductions", idConceptTop);
         var idConcepts = getIdsOfBranch2(idThesaurus, idConceptTop);
@@ -244,7 +242,7 @@ public class ConceptService {
 
         // supprimer les concepts
         for (String idConcept : idConcepts) {
-            deleteConcept(idConcept, idThesaurus, idUser);
+            deleteConcept(idConcept, idThesaurus);
         }
         return true;
     }

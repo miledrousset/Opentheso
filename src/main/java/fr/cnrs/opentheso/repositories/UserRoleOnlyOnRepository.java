@@ -13,17 +13,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserRoleOnlyOnRepository extends JpaRepository<UserRoleOnlyOn, Integer> {
 
-    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRole(u.theso.idThesaurus, r.name, r.id) " +
+    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserRole(u.thesaurus.idThesaurus, r.name, r.id) " +
             "FROM UserRoleOnlyOn u " +
             "JOIN u.role r " +
             "WHERE u.group.id = :idGroup " +
             "AND u.user.id = :idUser " +
-            "ORDER BY LOWER(u.theso.idThesaurus)")
-    List<NodeUserRole> getListRoleByThesoLimited(@Param("idGroup") int idGroup, @Param("idUser") int idUser);
+            "ORDER BY LOWER(u.thesaurus.idThesaurus)")
+    List<NodeUserRole> getListRoleByThesaurusLimited(@Param("idGroup") int idGroup, @Param("idUser") int idUser);
+
+    List<UserRoleOnlyOn> findAllByUserAndRoleOrderByThesaurus(User user, Roles role);
 
     @Modifying
     @Transactional
@@ -31,12 +34,44 @@ public interface UserRoleOnlyOnRepository extends JpaRepository<UserRoleOnlyOn, 
 
     @Modifying
     @Transactional
-    void deleteByTheso(Thesaurus thesaurus);
+    void deleteByThesaurusIdThesaurus(String thesaurus);
 
     @Modifying
-    void deleteByUserAndGroupAndRoleAndTheso(User user, UserGroupLabel group, Roles role, Thesaurus theso);
+    void deleteByUserAndGroupAndRoleAndThesaurus(User user, UserGroupLabel group, Roles role, Thesaurus thesaurus);
 
-    List<UserRoleOnlyOn> findAllByUserOrderByTheso(User user);
+    List<UserRoleOnlyOn> findAllByUserOrderByThesaurus(User user);
 
-    UserRoleOnlyOn findByUserAndGroupAndTheso(User user, UserGroupLabel group, Thesaurus theso);
+    UserRoleOnlyOn findByUserAndGroupAndThesaurus(User user, UserGroupLabel group, Thesaurus thesaurus);
+
+    @Query("""
+        SELECT new fr.cnrs.opentheso.models.users.NodeUserRole(u.id, u.username, u.active, r.id, r.name, uroo.thesaurus.idThesaurus)
+        FROM UserRoleOnlyOn uroo
+            JOIN User u ON uroo.user.id = u.id
+            JOIN Roles r ON uroo.role.id = r.id
+        WHERE uroo.group.id = :idGroup
+          AND u.isSuperAdmin = false
+        ORDER BY LOWER(u.username)
+    """)
+    List<NodeUserRole> findAllUsersWithLimitedRoleByGroup(@Param("idGroup") int idGroup);
+
+
+    @Query("""
+        SELECT ro.role.id 
+        FROM UserRoleOnlyOn ro 
+        WHERE ro.user.id = :idUser AND ro.group.id = :idGroup AND ro.thesaurus.idThesaurus = :idThesaurus
+    """)
+    Optional<Integer> findRoleFromOnlyOn(@Param("idUser") int idUser, @Param("idGroup") int idGroup, @Param("idThesaurus") String idThesaurus);
+
+    @Query("""
+        SELECT rg.role.id
+        FROM UserRoleGroup rg
+        JOIN UserGroupThesaurus ugt ON rg.group.id = ugt.idGroup
+        WHERE rg.user.id = :idUser AND rg.group.id = :idGroup AND ugt.idThesaurus = :idThesaurus
+    """)
+    Optional<Integer> findRoleFromGroup(@Param("idUser") int idUser, @Param("idGroup") int idGroup, @Param("idThesaurus") String idThesaurus);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserGroupThesaurus t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 }

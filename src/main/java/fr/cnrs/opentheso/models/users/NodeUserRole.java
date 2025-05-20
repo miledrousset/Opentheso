@@ -27,4 +27,20 @@ public class NodeUserRole {
         this.idRole = idRole;
     }
 
+    public NodeUserRole(int idUser, String userName, boolean active, int idRole, String roleName) {
+        this.userName = userName;
+        this.isActive = active;
+        this.idRole = idRole;
+        this.roleName = roleName;
+        this.idUser = idUser;
+    }
+
+    public NodeUserRole(int idUser, String userName, boolean active, int idRole, String roleName, String idThesaurus) {
+        this.idTheso = idThesaurus;
+        this.userName = userName;
+        this.isActive = active;
+        this.idRole = idRole;
+        this.roleName = roleName;
+        this.idUser = idUser;
+    }
 }

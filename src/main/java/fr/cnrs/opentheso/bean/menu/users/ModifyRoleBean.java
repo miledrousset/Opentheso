@@ -24,6 +24,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,19 +34,19 @@ import org.primefaces.PrimeFaces;
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "modifyRoleBean")
 public class ModifyRoleBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    private MyProjectBean myProjectBean;
-    private RoleRepository roleRepository;
-    private UserRepository userRepository;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private final MyProjectBean myProjectBean;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
 
     private ThesaurusService thesaurusService;
     private UserRoleGroupService userRoleGroupService;
@@ -63,22 +64,6 @@ public class ModifyRoleBean implements Serializable {
     private NodeUserRole selectedNodeUserRole;
     private List<NodeUserRole> listeLimitedThesoRoleForUser; // la liste des roles / thesos de l'utilisateur et du groupe avec des droits limités
 
-
-    @Inject
-    public ModifyRoleBean(MyProjectBean myProjectBean, RoleRepository roleRepository, UserRepository userRepository,
-                          UserGroupLabelRepository userGroupLabelRepository, UserRoleGroupRepository userRoleGroupRepository,
-                          UserRoleOnlyOnRepository userRoleOnlyOnRepository,
-                          ThesaurusService thesaurusService, UserRoleGroupService userRoleGroupService) {
-
-        this.myProjectBean = myProjectBean;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userRoleOnlyOnRepository = userRoleOnlyOnRepository;
-        this.thesaurusService = thesaurusService;
-        this.userRoleGroupService = userRoleGroupService;
-    }
 
     /**
      * permet de selectionner l'utilisateur dans la liste avec toutes les informations nécessaires pour sa modification
@@ -107,7 +92,7 @@ public class ModifyRoleBean implements Serializable {
         myAuthorizedRolesLimited = null;
         selectedThesos = new ArrayList<>();
 
-        List<NodeUserRole> nodeUserRoles = userRoleOnlyOnRepository.getListRoleByThesoLimited(Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
+        List<NodeUserRole> nodeUserRoles = userRoleOnlyOnRepository.getListRoleByThesaurusLimited(Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
         for (NodeUserRole nodeUserRole1 : nodeUserRoles) {
             selectedThesos.add(nodeUserRole1.getIdTheso());
         }
@@ -127,7 +112,7 @@ public class ModifyRoleBean implements Serializable {
         var idGroup = Integer.parseInt(selectedProject);
 
         if (ObjectUtils.isNotEmpty(selectedNodeUserRole)) {
-            listeLimitedThesoRoleForUser = userRoleOnlyOnRepository.getListRoleByThesoLimited(idGroup, selectedNodeUserRole.getIdUser());
+            listeLimitedThesoRoleForUser = userRoleOnlyOnRepository.getListRoleByThesaurusLimited(idGroup, selectedNodeUserRole.getIdUser());
         } else if (ObjectUtils.isEmpty(selectedNodeUserRole) && ObjectUtils.isNotEmpty(listeLimitedThesoRoleForUser)) {
             listeLimitedThesoRoleForUser.clear(); //cas où on supprime l'utilisateur en cour
         }
@@ -176,7 +161,7 @@ public class ModifyRoleBean implements Serializable {
                             .user(user)
                             .role(role)
                             .group(userGroupLabel)
-                            .theso(thesaurus)
+                            .thesaurus(thesaurus)
                             .build());
                 }
             }
@@ -233,7 +218,7 @@ public class ModifyRoleBean implements Serializable {
         var role = roleRepository.findById(selectedNodeUserRole.getIdRole()).get();
         var group = userGroupLabelRepository.findById(Integer.parseInt(selectedProject)).get();
         var thesaurus = thesaurusService.getThesaurusById(selectedNodeUserRole.getIdTheso());
-        userRoleOnlyOnRepository.deleteByUserAndGroupAndRoleAndTheso(user, group, role, thesaurus);
+        userRoleOnlyOnRepository.deleteByUserAndGroupAndRoleAndThesaurus(user, group, role, thesaurus);
 
         showMessage(FacesMessage.SEVERITY_INFO, "Le rôle a été supprimé !!!");
         myProjectBean.resetListLimitedRoleUsers();

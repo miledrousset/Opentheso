@@ -45,6 +45,7 @@ import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.RelationService;
@@ -58,8 +59,6 @@ import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.services.ThesaurusService;
 
 
@@ -108,9 +107,6 @@ public class ImportRdf4jHelper {
     private ImageService imageService;
 
     @Autowired
-    private CandidatDao candidatDao;
-
-    @Autowired
     private NoteHelper noteHelper;
 
     @Autowired
@@ -124,9 +120,6 @@ public class ImportRdf4jHelper {
 
     @Autowired
     private ExternalResourcesRepository externalResourcesRepository;
-
-    @Autowired
-    private UserHelper userHelper;
 
     @Autowired
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
@@ -185,6 +178,8 @@ public class ImportRdf4jHelper {
     private ThesaurusService thesaurusService;
     @Autowired
     private ConceptService conceptService;
+    @Autowired
+    private NoteService noteService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -541,8 +536,7 @@ public class ImportRdf4jHelper {
                         break;
                 }
 
-                noteHelper.addNote(idGroup, documentation.getLanguage(),
-                        idTheso, documentation.getText(), noteTypeCode, "", idUser);
+                noteService.addNote(idGroup, documentation.getLanguage(), idTheso, documentation.getText(), noteTypeCode, "", idUser);
             }
         }
         addGroupConceptGroup(idTheso);
@@ -1367,8 +1361,7 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-            noteHelper.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                    idTheso, nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
+            noteService.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(), idTheso, nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {

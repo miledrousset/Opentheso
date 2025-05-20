@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -24,6 +23,7 @@ import java.util.List;
 
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,15 +47,14 @@ public class AtelierThesService implements Serializable {
     private ConceptHelper conceptHelper;
 
     @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
     private PreferenceService preferenceService;
 
     @Autowired
     private SearchHelper searchHelper;
     @Autowired
     private ThesaurusService thesaurusService;
+    @Autowired
+    private UserService userService;
 
 
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
@@ -155,7 +154,7 @@ public class AtelierThesService implements Serializable {
         if (currentUser.getNodeUser().isSuperAdmin()) {
             authorizedTheso = thesaurusService.getAllIdOfThesaurus(true);
         } else {
-            authorizedTheso = userHelper.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
+            authorizedTheso = userService.getThesaurusOfUser(currentUser.getNodeUser().getIdUser());
         }
         
         if (authorizedTheso == null) {
