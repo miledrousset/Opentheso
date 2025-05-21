@@ -28,6 +28,7 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.TermService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,16 +47,14 @@ public class SearchHelper {
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
     @Autowired
     private GroupService groupService;
     @Autowired
     private TermService termService;
     @Autowired
     private NonPreferredTermService nonPreferredTermService;
+    @Autowired
+    private NoteService noteService;
 
     /**
      * Permet de chercher les terms avec précision pour limiter le bruit avec filtre par langue et ou par groupe
@@ -112,8 +111,9 @@ public class SearchHelper {
                         nodeAutoCompletions.add(node);
                     }
 
-                    if (withNotes && noteHelper != null) {
-                        node.setDefinition(noteHelper.getDefinition(node.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
+                    if (withNotes) {
+                        var definitionNotes = noteService.getNoteByConceptAndThesaurusAndLangAndType(node.getIdConcept(), idTheso, resultSet.getString("lang"), "definition");
+                        node.setDefinition(definitionNotes.stream().map(NodeNote::getLexicalValue).toList().toString());
                     }
                 }
             }
@@ -179,15 +179,15 @@ public class SearchHelper {
                             .orElse(Collections.emptyList()));
 
                     var notes = new ArrayList<NodeElement>();
-                    var noteFr = noteHelper.getNodeNote(idConcept, idTheso, "fr", "note");
+                    var noteFr = noteService.getNodeNote(idConcept, idTheso, "fr", "note");
                     if (ObjectUtils.isNotEmpty(noteFr)) notes.add(toElement(noteFr));
-                    var noteAr = noteHelper.getNodeNote(idConcept, idTheso, "ar", "note");
+                    var noteAr = noteService.getNodeNote(idConcept, idTheso, "ar", "note");
                     if (ObjectUtils.isNotEmpty(noteAr)) notes.add(toElement(noteAr));
 
                     var definitions = new ArrayList<NodeElement>();
-                    var definitionFr = noteHelper.getNodeNote(idConcept, idTheso, "fr", "definition");
+                    var definitionFr = noteService.getNodeNote(idConcept, idTheso, "fr", "definition");
                     if (ObjectUtils.isNotEmpty(definitionFr)) definitions.add(toElement(definitionFr));
-                    var definitionAr = noteHelper.getNodeNote(idConcept, idTheso, "ar", "definition");
+                    var definitionAr = noteService.getNodeNote(idConcept, idTheso, "ar", "definition");
                     if (ObjectUtils.isNotEmpty(definitionAr)) definitions.add(toElement(definitionAr));
 
                     var terms = new ArrayList<NodeElement>();

@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.fusion;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -51,9 +50,6 @@ public class FusionService implements Serializable {
 
     @Autowired
     private ConceptHelper conceptHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -198,7 +194,7 @@ public class FusionService implements Serializable {
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
                             if (nodeNote.getNoteTypeCode().equalsIgnoreCase("definition")) {
-                                if (!noteHelper.isNoteExist(acs.concept.getIdConcept(), conceptFound.getConcept().getIdThesaurus(),
+                                if (!noteService.isNoteExist(acs.concept.getIdConcept(), conceptFound.getConcept().getIdThesaurus(),
                                         nodeNote.getLang(), nodeNote.getLexicalValue(), "definition")) {
 
                                     noteService.addNote(acs.concept.getIdConcept(), nodeNote.getLang(), conceptFound.getConcept().getIdThesaurus(),

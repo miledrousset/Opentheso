@@ -2,10 +2,10 @@ package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PathService {
 
-    private final NoteHelper noteHelper;
     private final TermService termService;
     private final ConceptHelper conceptHelper;
     private final RelationsHelper relationsHelper;
@@ -34,6 +34,7 @@ public class PathService {
     private final RelationGroupService relationGroupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptService conceptService;
+    private final NoteService noteService;
 
     private String message;
 
@@ -194,22 +195,29 @@ public class PathService {
                             job.add("altLabel", jsonArrayBuilderAltLabels.build());  
                         
                         // défintion
-                        ArrayList<String> definitions = noteHelper.getDefinition(idConcept, idTheso, idLang);
-                        JsonArrayBuilder jsonArrayBuilderDefinitions = Json.createArrayBuilder();
-                        for (String def : definitions) {
-                            jsonArrayBuilderDefinitions.add(def);
+                        var definitionNotes = noteService.getNoteByConceptAndThesaurusAndLangAndType(idConcept, idTheso, idLang, "definition");
+                        if (CollectionUtils.isNotEmpty(definitionNotes)) {
+                            List<String> definitions = definitionNotes.stream().map(NodeNote::getLexicalValue).toList();
+                            JsonArrayBuilder jsonArrayBuilderDefinitions = Json.createArrayBuilder();
+                            for (String def : definitions) {
+                                jsonArrayBuilderDefinitions.add(def);
+                            }
+                            if(jsonArrayBuilderDefinitions != null && !definitions.isEmpty())
+                                job.add("definition", jsonArrayBuilderDefinitions.build());
                         }
-                        if(jsonArrayBuilderDefinitions != null && !definitions.isEmpty())
-                            job.add("definition", jsonArrayBuilderDefinitions.build());      
+
                         
                         // note d'application
-                        ArrayList<String> scopeNotes = noteHelper.getScopeNote(idConcept, idTheso, idLang);
-                        JsonArrayBuilder jsonArrayBuilderScopeNotes = Json.createArrayBuilder();
-                        for (String scope : scopeNotes) {
-                            jsonArrayBuilderScopeNotes.add(scope);
+                        var notes = noteService.getNoteByConceptAndThesaurusAndLangAndType(idConcept, idTheso, idLang, "scopeNote");
+                        if (CollectionUtils.isNotEmpty(notes)) {
+                            var scopeNotes = notes.stream().map(NodeNote::getLexicalValue).toList();
+                            var jsonArrayBuilderScopeNotes = Json.createArrayBuilder();
+                            for (String scope : scopeNotes) {
+                                jsonArrayBuilderScopeNotes.add(scope);
+                            }
+                            if(jsonArrayBuilderScopeNotes != null && !scopeNotes.isEmpty())
+                                job.add("scopeNote", jsonArrayBuilderScopeNotes.build());
                         }
-                        if(jsonArrayBuilderScopeNotes != null && !scopeNotes.isEmpty())
-                            job.add("scopeNote", jsonArrayBuilderScopeNotes.build());
                         
                         // traductions
                         List<NodeTermTraduction> traductions = termService.getTraductionsOfConcept(idConcept, idTheso, idLang);

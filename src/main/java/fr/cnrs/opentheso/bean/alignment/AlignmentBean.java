@@ -27,7 +27,6 @@ import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
@@ -89,7 +88,6 @@ public class AlignmentBean implements Serializable {
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final PreferredTermRepository preferredTermRepository;
     private final TermRepository termRepository;
-    private final NoteHelper noteHelper;
     private final GpsService gpsService;
     private final AlignmentService alignmentService;
     private final TermService termService;
@@ -474,9 +472,7 @@ public class AlignmentBean implements Serializable {
             if (CollectionUtils.isNotEmpty(alignment.getSelectedDefinitionsList())) {
                 // ajout de la note avec prefix de la source (wikidata)
                 for (SelectedResource selectedResource : alignment.getSelectedDefinitionsList()) {
-                    if(!noteHelper.isNoteExist(
-                            idConcept, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
-
+                    if(!noteService.isNoteExist(idConcept, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
                         noteService.addNote(idConcept, selectedResource.getIdLang(), idTheso,
                                 selectedResource.getGettedValue(), "definition", alignementSource.getSource(), idUser);
                     }
@@ -1536,9 +1532,7 @@ public class AlignmentBean implements Serializable {
         // ajout de la note avec prefix de la source (wikidata)
         for (SelectedResource selectedResource : descriptionsOfAlignment) {
             if (selectedResource.isSelected()) {
-                if(noteHelper.isNoteExist(
-                        idConcept, idTheso,
-                        selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
+                if(noteService.isNoteExist(idConcept, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
                     continue;
                 }
 

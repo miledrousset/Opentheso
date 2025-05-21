@@ -1,10 +1,10 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.NoteType;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -64,14 +64,11 @@ public class NoteBean implements Serializable {
     private FacetHelper facetHelper;
 
     @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
     private ConceptService conceptService;
     
     private String selectedLang;
     
-    private List<NoteHelper.NoteType> noteTypes;
+    private List<NoteType> noteTypes;
     private List<NodeLangTheso> nodeLangs;
     private String selectedTypeNote;
     private String noteValue;
@@ -115,7 +112,7 @@ public class NoteBean implements Serializable {
     }
 
     private void resetGroup() {
-        noteTypes = noteHelper.getNotesType();
+        noteTypes = noteService.getNotesType();
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
@@ -126,7 +123,7 @@ public class NoteBean implements Serializable {
     }
 
     private void resetNotes(String identifier, String idLang) {
-        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        List<NoteType> noteTypes1 = findNoteTypes();
         nodeNotesByLanguage = new ArrayList<>();
         setNotesByLang(noteTypes1, identifier, selectedTheso.getCurrentIdTheso(), idLang);
         nodeLangs = selectedTheso.getNodeLangs();
@@ -135,15 +132,15 @@ public class NoteBean implements Serializable {
         selectedTypeNote = null;
     }
 
-    private void setNotesByLang( ArrayList<NoteHelper.NoteType> noteType, String identifier, String idTheso, String idLang) {
+    private void setNotesByLang(List<NoteType> noteType, String identifier, String idTheso, String idLang) {
         boolean first = true;
 
-        for(NoteHelper.NoteType type : noteType){
-            NodeNote nodeNote = noteHelper.getNodeNote(identifier, idTheso, idLang, type.getCodeNote());
+        for(NoteType type : noteType){
+            NodeNote nodeNote = noteService.getNodeNote(identifier, idTheso, idLang, type.getCode());
             if(nodeNote == null){
                 nodeNote = new NodeNote();
                 nodeNote.setLang(idLang);
-                nodeNote.setNoteTypeCode(type.getCodeNote());
+                nodeNote.setNoteTypeCode(type.getCode());
                 nodeNote.setIdentifier(identifier);
             }
             if(first){
@@ -168,8 +165,8 @@ public class NoteBean implements Serializable {
         resetNotes(selectedNodeNote.getIdentifier(), idLang);
     }
 
-    private ArrayList<NoteHelper.NoteType> findNoteTypes(){
-        ArrayList<NoteHelper.NoteType> noteTypes1 = noteHelper.getNotesType();
+    private List<NoteType> findNoteTypes(){
+        List<NoteType> noteTypes1 = noteService.getNotesType();
         return noteTypes1;
     }
 
@@ -194,7 +191,7 @@ public class NoteBean implements Serializable {
                 printErreur();
                 return;
             }
-            selectedNodeNote = noteHelper.getNodeNote(selectedNodeNote.getIdentifier(),selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode());
+            selectedNodeNote = noteService.getNodeNote(selectedNodeNote.getIdentifier(),selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode());
         }
         if(isConceptNote) {
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -224,11 +221,8 @@ public class NoteBean implements Serializable {
      * Nouvelle version pour permettre de gérer le multilingue
      */
     private boolean addNoteNewVersion(NodeNote nodeNote, int idUser) {
-        if (noteHelper.isNoteExist(nodeNote.getIdentifier(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeNote.getLang(),
-                nodeNote.getLexicalValue(),
-                nodeNote.getNoteTypeCode())) {
+        if (noteService.isNoteExist(nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), nodeNote.getLang(),
+                nodeNote.getLexicalValue(), nodeNote.getNoteTypeCode())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
@@ -347,7 +341,7 @@ public class NoteBean implements Serializable {
 
 
     public void reset() {
-        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        List<NoteType> noteTypes1 = findNoteTypes();
         filterNotesByUsage(noteTypes1);
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
@@ -363,10 +357,10 @@ public class NoteBean implements Serializable {
 
 
 
-    private void filterNotesByUsage(ArrayList<NoteHelper.NoteType> noteTypes1){
+    private void filterNotesByUsage(List<NoteType> noteTypes1){
         noteTypes = new ArrayList<>();
-        for (NoteHelper.NoteType noteType : noteTypes1) {
-            switch (noteType.getCodeNote()) {
+        for (NoteType noteType : noteTypes1) {
+            switch (noteType.getCode()) {
                 case "note":
                     if(conceptBean.getNote() == null || conceptBean.getNote().getLexicalValue().isEmpty()) {
                         noteTypes.add(noteType);
@@ -427,11 +421,7 @@ public class NoteBean implements Serializable {
             return;
         }
         this.selectedTypeNote = selectedTypeNote1;
-        noteToEdit = noteHelper.getNodeNote(
-                identifier,
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang(),
-                selectedTypeNote);
+        noteToEdit = noteService.getNodeNote(identifier, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), selectedTypeNote);
     }
 
 
@@ -489,7 +479,7 @@ public class NoteBean implements Serializable {
 
     // permet de filtrer les notes manquantes par langue pour ajouter des nouvelles notes
     public void refreshNoteType(){
-        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        List<NoteType> noteTypes1 = findNoteTypes();
         filterNotesByUsage(noteTypes1);
     }
     
@@ -542,7 +532,7 @@ public class NoteBean implements Serializable {
     }
     
     private boolean addNote(String identifier, int idUser) {
-        if (noteHelper.isNoteExist(identifier, selectedTheso.getCurrentIdTheso(), selectedLang, noteValue, selectedTypeNote)) {
+        if (noteService.isNoteExist(identifier, selectedTheso.getCurrentIdTheso(), selectedLang, noteValue, selectedTypeNote)) {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -565,7 +555,7 @@ public class NoteBean implements Serializable {
         noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
 
-        if (noteHelper.isNoteExist(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(),
+        if (noteService.isNoteExist(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(),
                 selectedLang, noteValue, selectedTypeNote)) {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");

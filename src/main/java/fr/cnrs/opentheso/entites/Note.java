@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.entites;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -26,7 +27,8 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String notetypecode;
+    @Column(name = "notetypecode")
+    private String noteTypeCode;
 
     private String idThesaurus;
 
@@ -38,13 +40,15 @@ public class Note {
 
     private String lang;
 
-    private String lexicalvalue;
+    @Column(name = "lexicalvalue")
+    private String lexicalValue;
 
     private Date created;
 
     private Date modified;
 
-    private String notesource;
+    @Column(name = "notesource")
+    private String noteSource;
 
     private String identifier;
 

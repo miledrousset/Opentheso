@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.facet;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -52,9 +51,6 @@ public class EditFacet implements Serializable {
 
     @Autowired
     private ConceptHelper conceptHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private SearchHelper searchHelper;
@@ -170,16 +166,10 @@ public class EditFacet implements Serializable {
 
         conceptParentTerme = concepParent.getTerm().getLexicalValue();
 
-        facetTraductions = facetHelper.getAllTraductionsFacet(facetId,
-                idTheso, idLang);
-
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(facetId, idTheso, idLang);
-        setAllNotes(nodeNotes);
-        
+        facetTraductions = facetHelper.getAllTraductionsFacet(facetId, idTheso, idLang);
+        setAllNotes(noteService.getListNotes(facetId, idTheso, idLang));
         setListConceptsAssocie();
-
         newFacetName = facetSelected.getLexicalValue();
-
     }
     
     /////////////////////////////////
@@ -187,7 +177,7 @@ public class EditFacet implements Serializable {
     // fonctions pour les notes /////    
     /////////////////////////////////
     /////////////////////////////////
-    private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
+    private void setAllNotes(List<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
             switch (nodeNote.getNoteTypeCode()) {

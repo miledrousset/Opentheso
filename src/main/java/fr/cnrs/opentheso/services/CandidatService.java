@@ -515,17 +515,23 @@ public class CandidatService {
                                       int userId, String source, String idConcept) {
 
         noteRepository.save(Note.builder()
-                .notetypecode(type)
+                .noteTypeCode(type)
                 .idThesaurus(thesoId)
                 .idTerm(idTerm)
                 .lang(lang)
-                .lexicalvalue(description)
+                .lexicalValue(description)
                 .created(new Date())
                 .modified(new Date())
                 .idUser(userId)
-                .notesource(source)
+                .noteSource(source)
                 .idConcept(idConcept)
                 .build());
+    }
+
+    public void deleteVoteByNoteId(int idNote, String idThesaurus, String idConcept) {
+
+        log.info("Suppression des votes par note id {}", idNote);
+        candidatVoteRepository.deleteAllByIdThesaurusAndIdConceptAndIdNote(idThesaurus, idConcept, String.valueOf(idNote));
     }
 
     public void deleteAllCandidatsByThesaurus(String idThesaurus) {

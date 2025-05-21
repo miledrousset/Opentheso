@@ -29,6 +29,9 @@ public interface CandidatVoteRepository extends JpaRepository<CandidatVote, Inte
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    void deleteAllByIdThesaurusAndIdConceptAndIdNote(String idThesaurus, String idConcept, String idNote);
+
+    @Modifying
     @Transactional
     @Query("UPDATE CandidatVote t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);

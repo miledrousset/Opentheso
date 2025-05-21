@@ -21,7 +21,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
@@ -138,9 +137,6 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -1762,7 +1758,7 @@ public class ImportFileBean implements Serializable {
                     }
                 }
 
-                if (!noteHelper.isNoteExist(idConcept, idTheso, nodeDeprecated.getNoteLang(), nodeDeprecated.getNote(), "note")) {
+                if (!noteService.isNoteExist(idConcept, idTheso, nodeDeprecated.getNoteLang(), nodeDeprecated.getNote(), "note")) {
                     noteService.addNote(idConcept, nodeDeprecated.getNoteLang(), idTheso, nodeDeprecated.getNote(), "note", "", idUser1);
                 }
 
@@ -2165,8 +2161,7 @@ public class ImportFileBean implements Serializable {
 
                 //definition
                 for (CsvReadHelper.Label definition : conceptObject.getDefinitions()) {
-                    if (!noteHelper.isNoteExist(idConcept,
-                            selectedTheso.getCurrentIdTheso(), definition.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), definition.getLang(),
                             definition.getLabel(), "definition")) {
                         noteService.addNote(idConcept, definition.getLang(),
                                 selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", "", -1);
@@ -2175,8 +2170,7 @@ public class ImportFileBean implements Serializable {
                 }
                 // historyNote
                 for (CsvReadHelper.Label historyNote : conceptObject.getHistoryNotes()) {
-                    if (!noteHelper.isNoteExist(idConcept,
-                            selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
                             historyNote.getLabel(), "historyNote")) {
                         noteService.addNote(idConcept, historyNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote", "", -1);
@@ -2185,8 +2179,7 @@ public class ImportFileBean implements Serializable {
                 }
                 // changeNote
                 for (CsvReadHelper.Label changeNote : conceptObject.getChangeNotes()) {
-                    if (!noteHelper.isNoteExist(idConcept,
-                            selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
                             changeNote.getLabel(), "changeNote")) {
                         noteService.addNote(idConcept, changeNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote", "", -1);
@@ -2195,8 +2188,7 @@ public class ImportFileBean implements Serializable {
                 }
                 // editorialNote
                 for (CsvReadHelper.Label editorialNote : conceptObject.getEditorialNotes()) {
-                    if (!noteHelper.isNoteExist(idConcept,
-                            selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
                             editorialNote.getLabel(), "editorialNote")) {
                         noteService.addNote(idConcept, editorialNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote", "", -1);
@@ -2205,8 +2197,7 @@ public class ImportFileBean implements Serializable {
                 }
                 // example
                 for (CsvReadHelper.Label example : conceptObject.getExamples()) {
-                    if (!noteHelper.isNoteExist(idConcept,
-                            selectedTheso.getCurrentIdTheso(), example.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), example.getLang(),
                             example.getLabel(), "example")) {
                         noteService.addNote(idConcept, example.getLang(),
                                 selectedTheso.getCurrentIdTheso(), example.getLabel(), "example", "", -1);
@@ -2217,14 +2208,14 @@ public class ImportFileBean implements Serializable {
                 //pour Concept
                 // note
                 for (CsvReadHelper.Label note : conceptObject.getNote()) {
-                    if (!noteHelper.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), note.getLang(), note.getLabel(), "note")) {
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), note.getLang(), note.getLabel(), "note")) {
                         noteService.addNote(idConcept, note.getLang(), selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", "", -1);
                         total++;
                     }
                 }
                 // scopeNote
                 for (CsvReadHelper.Label scopeNote : conceptObject.getScopeNotes()) {
-                    if (!noteHelper.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
+                    if (!noteService.isNoteExist(idConcept, selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
                             scopeNote.getLabel(), "scopeNote")) {
                         noteService.addNote(
                                 idConcept, scopeNote.getLang(),

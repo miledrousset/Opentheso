@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.deepl;
 import com.deepl.api.Language;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.services.DeeplService;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -31,7 +30,6 @@ public class DeeplTranslate implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     private CurrentUser currentUser;
     private SelectedTheso selectedTheso;
-    private NoteHelper noteHelper;
     private DeeplService deeplHelper;
     private ConceptView conceptView;
 
@@ -58,7 +56,7 @@ public class DeeplTranslate implements Serializable {
             PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
             return;
         }
-        var nodeNote1= noteHelper.getNodeNote(identifier, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), nodeNoteType);
+        var nodeNote1= noteService.getNodeNote(identifier, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), nodeNoteType);
 
         if(nodeNote1 == null) {
             textToTranslate = null;
@@ -127,11 +125,11 @@ public class DeeplTranslate implements Serializable {
 
     public void retrieveExistingTranslatedText() {
 
-        existingTranslatedText = noteHelper.getLabelOfNote(nodeNote.getIdConcept(), selectedTheso.getCurrentIdTheso(),
-                toLang, nodeNote.getNoteTypeCode());
-
-        sourceTranslatedText = noteHelper.getSourceOfNote(nodeNote.getIdConcept(), selectedTheso.getCurrentIdTheso(),
-                toLang, nodeNote.getNoteTypeCode());
+        var note = noteService.getNodeNote(nodeNote.getIdConcept(), selectedTheso.getCurrentIdTheso(), toLang, nodeNote.getNoteTypeCode());
+        if (note != null) {
+            existingTranslatedText = note.getLexicalValue();
+            sourceTranslatedText = note.getNoteSource();
+        }
     }
 
     public void saveTranslatedText() {

@@ -19,7 +19,15 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
 
     Optional<Note> findByIdAndIdThesaurus(int id, String idThesaurus);
 
-    Optional<Note> findAllByIdentifierAndIdThesaurusAndNotetypecodeAndLang(String identifier, String idThesaurus, String notetypecode, String lang);
+    Optional<Note> findByLexicalValue(String lexicalValue);
+
+    List<Note> findAllByIdentifierAndIdThesaurusAndLang(String identifier, String idThesaurus, String lang);
+
+    List<Note> findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(
+            String identifier, String idThesaurus, String noteTypeCode, String lang);
+
+    Optional<Note> findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLangAndLexicalValue(
+            String identifier, String idThesaurus, String noteTypeCode, String lang, String lexicalValue);
 
     @Modifying
     void deleteAllByIdThesaurus(String idThesaurus);
@@ -31,7 +39,38 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
     void deleteAllByIdentifierAndIdThesaurus(String identifier, String idThesaurus);
 
     @Modifying
+    void deleteAllByIdThesaurusAndIdentifierAndLangAndNoteTypeCode(String idThesaurus, String identifier, String idLang, String noteTypeCode);
+
+    @Modifying
     @Transactional
     @Query("UPDATE Note t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Query(value = """
+        SELECT COUNT(n.id)
+        FROM note n JOIN concept_group_concept cgc ON cgc.idconcept = n.identifier AND cgc.idthesaurus = n.id_thesaurus
+        WHERE n.id_thesaurus = :idThesaurus
+            AND n.lang = :lang
+            AND LOWER(cgc.idgroup) = LOWER(:idGroup)
+    """, nativeQuery = true)
+    int countNotesByGroupAndLangAndThesaurus(@Param("idGroup") String idGroup, @Param("idThesaurus") String idThesaurus, @Param("lang") String lang);
+
+    @Query(value = """
+        SELECT COUNT(n.id)
+        FROM note n JOIN concept c ON c.id_concept = n.id_concept AND c.id_thesaurus = n.id_thesaurus
+        WHERE n.lang = :lang
+        AND n.id_thesaurus = :idThesaurus
+        AND c.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = :idThesaurus)
+    """, nativeQuery = true)
+    int countNotesWithoutGroupByLangAndThesaurus(@Param("idThesaurus") String idThesaurus, @Param("lang") String lang);
+
+    @Query(value = """
+        SELECT COUNT(n.id)
+        FROM note n
+            JOIN preferred_term pt ON pt.id_term = n.id_term AND pt.id_thesaurus = n.id_thesaurus
+        WHERE n.lang = :lang
+        AND n.id_thesaurus = :idThesaurus
+        AND pt.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = :idThesaurus)
+    """, nativeQuery = true)
+    int countNotesOfTermsWithoutGroup(@Param("idThesaurus") String idThesaurus, @Param("lang") String lang);
 }

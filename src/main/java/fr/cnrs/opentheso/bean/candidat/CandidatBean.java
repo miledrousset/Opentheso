@@ -14,7 +14,6 @@ import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
@@ -90,7 +89,6 @@ public class CandidatBean implements Serializable {
     private final ImageBean imageBean;
     private final AlignmentBean alignmentBean;
     private final AlignmentManualBean alignmentManualBean;
-    private final NoteHelper noteHelper;
     private final RelationsHelper relationsHelper;
     private final SearchHelper searchHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;

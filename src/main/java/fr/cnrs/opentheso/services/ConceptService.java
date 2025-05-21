@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.repositories.ConceptReplacedByRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptTypeRepository;
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PermutedRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
@@ -48,7 +47,6 @@ public class ConceptService {
     private final FacetService facetService;
     private final PreferredTermRepository preferredTermRepository;
     private final AlignmentService alignmentService;
-    private final NoteHelper noteHelper;
     private final HandleConceptService handleConceptService;
     private final RelationService relationService;
     private final NoteService noteService;

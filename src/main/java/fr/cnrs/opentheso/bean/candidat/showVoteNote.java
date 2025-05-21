@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.candidats.NodeTabVote;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
@@ -25,7 +24,6 @@ import org.apache.commons.collections4.CollectionUtils;
 @Named(value = "showVoteNote")
 public class showVoteNote implements Serializable {
 
-    private final NoteHelper noteHelper;
     private final SelectedTheso selectedTheso;
     private final UserRepository userRepository;
     private final CandidatVoteRepository candidatVoteRepository;

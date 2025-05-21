@@ -27,7 +27,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
@@ -78,9 +77,6 @@ public class CsvImportHelper {
 
     @Autowired
     private GpsService gpsService;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private RelationsHelper relationsHelper;
@@ -1240,7 +1236,7 @@ public class CsvImportHelper {
                         addMessage("Rename definition error :", nodeReplaceValueByValue);
                     }                      
                 } else {
-                    if (!noteHelper.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
+                    if (!noteService.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                             nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
                         if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                                 nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
@@ -1252,7 +1248,7 @@ public class CsvImportHelper {
         } else {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                 // on ajoute une nouvelle définition
-                if (!noteHelper.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
+                if (!noteService.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                         nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
                     if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                             nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
@@ -1414,10 +1410,7 @@ public class CsvImportHelper {
         // suppression des Notes  par langue
         ArrayList<String> langs = getLangs(conceptObject.getNote());
         for (String lang : langs) {
-            //    oldNotes = noteHelper.getListNotesConcept(conceptObject.getIdConcept(), idTheso, lang);
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "note")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "note");
         }
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             if (!note.getLabel().isEmpty()) {
@@ -1426,9 +1419,7 @@ public class CsvImportHelper {
         }
         langs = getLangs(conceptObject.getScopeNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "scopeNote")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "scopeNote");
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
             if (!note.getLabel().isEmpty()) {
@@ -1439,9 +1430,7 @@ public class CsvImportHelper {
 
         langs = getLangs(conceptObject.getDefinitions());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "definition")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "definition");
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             if (!note.getLabel().isEmpty()) {
@@ -1451,9 +1440,7 @@ public class CsvImportHelper {
 
         langs = getLangs(conceptObject.getChangeNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "changeNote")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "changeNote");
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
             if (!note.getLabel().isEmpty()) {
@@ -1463,9 +1450,7 @@ public class CsvImportHelper {
 
         langs = getLangs(conceptObject.getEditorialNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "editorialNote")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "editorialNote");
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
             if (!note.getLabel().isEmpty()) {
@@ -1475,9 +1460,7 @@ public class CsvImportHelper {
 
         langs = getLangs(conceptObject.getHistoryNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "historyNote")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "historyNote");
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
             if (!note.getLabel().isEmpty()) {
@@ -1487,9 +1470,7 @@ public class CsvImportHelper {
 
         langs = getLangs(conceptObject.getExamples());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "example")) {
-                return false;
-            }
+            noteService.deleteNoteByLang(conceptObject.getIdConcept(), idTheso, lang, "example");
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
             if (!note.getLabel().isEmpty()) {

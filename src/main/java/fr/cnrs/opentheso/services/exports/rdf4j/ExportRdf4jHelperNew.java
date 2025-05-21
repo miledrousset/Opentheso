@@ -30,7 +30,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -68,9 +67,6 @@ public class ExportRdf4jHelperNew {
 
     @Autowired
     private FacetHelper facetHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private ThesaurusService thesaurusService;

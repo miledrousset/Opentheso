@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.NoteService;
@@ -47,9 +46,6 @@ public class AddGroupBean implements Serializable {
 
     @Autowired
     private RelationGroupService relationGroupService;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private GroupService groupService;

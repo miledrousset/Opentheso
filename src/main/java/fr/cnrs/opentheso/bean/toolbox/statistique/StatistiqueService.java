@@ -6,12 +6,12 @@ import fr.cnrs.opentheso.models.ConceptGroupProjection;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.AlignementRepository;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.text.SimpleDateFormat;
@@ -33,14 +33,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StatistiqueService {
 
-    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
-    private final NoteHelper noteHelper;
+    private final NoteService noteService;
     private final GroupService groupService;
     private final ConceptRepository conceptRepository;
     private final ThesaurusRepository thesaurusRepository;
     private final AlignementRepository alignementRepository;
     private final ConceptStatusRepository conceptStatusRepository;
     private final ConceptGroupLabelRepository conceptGroupLabelRepository;
+    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
 
 
     public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idThesaurus, String idLang) {
@@ -51,7 +51,7 @@ public class StatistiqueService {
 
         listGroup.forEach(group -> {
 
-            var noteNbr = noteHelper.getNbrNoteByGroup(group.getConceptGroup().getIdGroup(), idThesaurus, idLang);
+            var noteNbr = noteService.getNbrNoteByGroup(group.getConceptGroup().getIdGroup(), idThesaurus, idLang);
             var conceptNbr = conceptStatusRepository.countConceptsInGroup(idThesaurus, group.getConceptGroup().getIdGroup());
             var traductionOfGroupNbr = conceptStatusRepository.countNonPreferredTermsByLangAndGroup(idThesaurus,
                     group.getConceptGroup().getIdGroup(), idLang);
@@ -76,7 +76,7 @@ public class StatistiqueService {
         result.add(GenericStatistiqueData.builder()
                 .collection("Sans collection")
                 .conceptsNbr(conceptNbr)
-                .notesNbr(noteHelper.getNbrNoteSansGroup(idThesaurus, idLang))
+                .notesNbr(noteService.getNbrNoteSansGroup(idThesaurus, idLang))
                 .synonymesNbr(conceptStatusRepository.countNonPreferredTermsNotInGroup(idThesaurus, idLang))
                 .termesNonTraduitsNbr(conceptNbr - conceptStatusRepository.countConceptsWithoutGroupByLangAndThesaurus(idThesaurus, idLang))
                 .wikidataAlignNbr(getNbAlignWikidata(idThesaurus, null))

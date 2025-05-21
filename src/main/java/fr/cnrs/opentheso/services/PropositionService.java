@@ -30,7 +30,6 @@ import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
 import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
@@ -66,7 +65,6 @@ public class PropositionService {
     private final SelectedTheso selectedTheso;
     private final RoleOnThesoBean roleOnThesoBean;
     private final MailBean mailBean;
-    private final NoteHelper noteHelper;
     private final TermRepository termRepository;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final PropositionModificationRepository propositionModificationRepository;

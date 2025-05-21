@@ -1,11 +1,12 @@
 package fr.cnrs.opentheso.services.alignements;
 
-import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,8 +30,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AlignementAutomatique {
 
+    private final NoteService noteService;
     private DataSource dataSource;
-    private NoteHelper noteHelper;
     private ThesaurusService thesaurusService;
     private AlignmentService alignmentService;
 
@@ -68,7 +69,8 @@ public class AlignementAutomatique {
                     .collect(Collectors.toList());
 
             for (NodeIdValue concept : idsAndValues) {
-                var definitions = noteHelper.getDefinition(concept.getId(), idTheso, idCurrentLang);
+                var definitionNotes = noteService.getNoteByConceptAndThesaurusAndLangAndType(concept.getId(), idTheso, idCurrentLang, "definition");
+                var definitions = definitionNotes.stream().map(NodeNote::getLexicalValue).toList();
                 var definition = "";
                 if (CollectionUtils.isNotEmpty(definitions)) {
                     definition = definitions.get(0);

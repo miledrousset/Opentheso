@@ -54,7 +54,6 @@ import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
@@ -105,9 +104,6 @@ public class ImportRdf4jHelper {
 
     @Autowired
     private ImageService imageService;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -1535,7 +1531,7 @@ public class ImportRdf4jHelper {
             if (!StringUtils.isEmpty(vote.getIdNote())) {
                 String str = formatLinkToHtmlTag(vote.getIdNote());
                 str = str.replaceAll("'", "''");
-                NodeNote nodeNote = noteHelper.getNoteByValue(str);
+                NodeNote nodeNote = noteService.getNoteByValue(str);
                 if (nodeNote != null) {
                     voteDto.setIdNote(nodeNote.getIdNote() + "");
                 }

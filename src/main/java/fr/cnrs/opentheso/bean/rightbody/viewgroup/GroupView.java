@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.ConceptGroupType;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
@@ -50,9 +49,6 @@ public class GroupView implements Serializable {
 
     @Autowired
     private ConceptStatusRepository conceptStatusRepository;
-
-    @Autowired
-    private NoteHelper noteHelper;
 
     private NodeGroup nodeGroup;
     private List<NodeGroupTraductions> nodeGroupTraductions;
@@ -147,7 +143,7 @@ public class GroupView implements Serializable {
         if (toggleSwitchNotesLang) {
             setNotesForAllLang(noteService.getListNotesAllLang(idGroup, idTheso));
         } else {
-            setAllNotes(noteHelper.getListNotes(idGroup, idTheso, idLang));
+            setAllNotes(noteService.getListNotes(idGroup, idTheso, idLang));
         }
     };
     
@@ -156,7 +152,7 @@ public class GroupView implements Serializable {
     // fonctions pour les notes /////    
     /////////////////////////////////
     /////////////////////////////////
-    private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
+    private void setAllNotes(List<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
             switch (nodeNote.getNoteTypeCode()) {

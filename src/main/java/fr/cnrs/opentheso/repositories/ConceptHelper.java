@@ -107,9 +107,6 @@ public class ConceptHelper implements Serializable {
     private HandleHelper handleHelper;
 
     @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
     private DeprecateService deprecateHelper;
 
     @Autowired
@@ -474,7 +471,10 @@ public class ConceptHelper implements Serializable {
             nodeDatas.setName(label);
         }
         nodeDatas.setUrl(getUri(idConcept, idTheso));
-        nodeDatas.setDefinition(noteHelper.getDefinition(idConcept, idTheso, idLang));
+
+        var definitionNotes = noteService.getNoteByConceptAndThesaurusAndLangAndType(idConcept, idTheso, idLang, "definition");
+        nodeDatas.setDefinition(definitionNotes.stream().map(NodeNote::getLexicalValue).toList());
+
         nodeDatas.setSynonym(nonPreferredTermRepository.findAltLabelsByConceptAndThesaurusAndLang(idConcept, idTheso, idLang));
         return nodeDatas;
     }
@@ -2340,7 +2340,7 @@ public class ConceptHelper implements Serializable {
         nodeConcept.setNodeTermTraductions(termService.getTraductionsOfConcept(idConcept, idThesaurus, idLang));
 
         //récupération des notes du term
-        nodeConcept.setNodeNotes(noteHelper.getListNotes(idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeNotes(noteService.getListNotes(idConcept, idThesaurus, idLang));
 
         nodeConcept.setNodeConceptGroup(groupService.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
