@@ -152,4 +152,8 @@
     </changeSet>
     <include file="/changelog/v25.02/25-02_02.xml"/>
     <include file="/changelog/v25.02/25-02_03.xml"/>
+
+    <changeSet id="25.05.1" author="Miled">
+        <sqlFile path="../changelog/v25.05/25-05_01.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>

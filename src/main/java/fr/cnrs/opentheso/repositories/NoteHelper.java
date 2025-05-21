@@ -42,6 +42,7 @@ public class NoteHelper {
         boolean status = false;
          
         note = StringUtils.clearValue(note);
+        note = StringUtils.clearNoteFromP(note);
         note = StringEscapeUtils.unescapeXml(note);
         note = StringUtils.convertString(note);
         noteSource = fr.cnrs.opentheso.utils.StringUtils.convertString(noteSource);
@@ -91,7 +92,7 @@ public class NoteHelper {
                               String note, String noteSource, String noteTypeCode, int idUser) {
         
         idLang = languageHelper.normalizeIdLang(idLang);
-
+        note = fr.cnrs.opentheso.utils.StringUtils.clearNoteFromP(note);
         boolean status = false;
         note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         noteSource = fr.cnrs.opentheso.utils.StringUtils.convertString(noteSource);

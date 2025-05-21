@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.faces.context.FacesContext;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 
-
+@Slf4j
 @Service
 public class ExportHelper {
 
@@ -428,14 +429,17 @@ public class ExportHelper {
     }
 
     private void addDocumentation(String textBrut, SKOSResource sKOSResource, int type) throws SQLException {
-
+        log.info("textBrut = " + textBrut);
+        log.info(sKOSResource.getIdentifier());
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             String htmlTagsRegEx = "<[^>]*>";
 
             for (String tab : tabs) {
+                log.info("tab = "  + tab);
                 String[] element = tab.split(SUB_SEPERATEUR);
+                log.info("element = " + element.toString());
                 String str = fr.cnrs.opentheso.utils.StringUtils.normalizeStringForXml(element[0]);
                 sKOSResource.addDocumentation(str, element[1], type);
             }
