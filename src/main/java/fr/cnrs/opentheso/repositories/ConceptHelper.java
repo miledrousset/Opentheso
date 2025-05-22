@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.cnrs.opentheso.entites.ConceptFacet;
 import fr.cnrs.opentheso.entites.ConceptGroup;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.entites.Preferences;
@@ -54,6 +55,7 @@ import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
@@ -119,9 +121,6 @@ public class ConceptHelper implements Serializable {
     private GpsService gpsService;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private TermRepository termRepository;
 
     @Autowired
@@ -163,6 +162,8 @@ public class ConceptHelper implements Serializable {
     private RelationService relationService;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private FacetService facetService;
 
 
     /**
@@ -2257,10 +2258,8 @@ public class ConceptHelper implements Serializable {
         }
 
         // pour les facettes
-        List<String> idFacettes = facetHelper.getAllIdFacetsOfConcept(idConcept, idThesaurus);
-        if (!idFacettes.isEmpty()) {
-            nodeConceptExport.setListFacetsOfConcept(idFacettes);
-        }
+        var facetList = facetService.getFacetsByConceptAndThesaurus(idConcept, idThesaurus);
+        nodeConceptExport.setListFacetsOfConcept(facetList.stream().map(ConceptFacet::getIdFacet).toList());
 
         /// pour les concepts dépréciés
         nodeConceptExport.setReplacedBy(deprecateHelper.getAllReplacedByWithArk(idThesaurus, idConcept));

@@ -210,8 +210,7 @@ public class ConceptService {
         noteService.deleteNotes(idConcept, idThesaurus);
         alignmentService.deleteAlignmentOfConcept(idConcept, idThesaurus);
         conceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
-        facetService.deleteConceptFromFacets(idThesaurus, idConcept);
-        facetService.deleteFacets(idThesaurus, idConcept);
+        facetService.deleteFacetsByConceptAndThesaurus(idConcept, idThesaurus);
         groupService.deleteAllGroupOfConcept(idConcept, idThesaurus);
         deleteConceptReplacedby(idThesaurus, idConcept);
 

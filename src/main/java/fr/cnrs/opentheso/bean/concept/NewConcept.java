@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
@@ -50,7 +49,6 @@ public class NewConcept implements Serializable {
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
     private final Tree tree;
-    private final FacetHelper facetHelper;
     private final RelationsHelper relationsHelper;
     private final GroupService groupService;
     private final ConceptHelper conceptHelper;

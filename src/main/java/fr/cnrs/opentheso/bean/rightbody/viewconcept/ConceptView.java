@@ -22,10 +22,10 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
 
@@ -89,9 +89,6 @@ public class ConceptView implements Serializable {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -122,11 +119,9 @@ public class ConceptView implements Serializable {
     private String selectedLang;
     private GpsMode gpsModeSelected;
     private List<NodeCorpus> nodeCorpuses;
-    private ArrayList<NodePath> pathLabel;
-    
-    private List<List<NodePath>> pathLabel2;    
-    
-    private ArrayList<NodeIdValue> nodeFacets;
+    private List<NodePath> pathLabel;
+    private List<List<NodePath>> pathLabel2;
+    private List<NodeIdValue> nodeFacets;
 
     /// pagination
     private int offset;
@@ -177,6 +172,8 @@ public class ConceptView implements Serializable {
     private ResourceService resourceService;
     @Autowired
     private ConceptService conceptService;
+    @Autowired
+    private FacetService facetService;
 
     @PreDestroy
     public void destroy() {
@@ -553,17 +550,16 @@ public class ConceptView implements Serializable {
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
 
-        List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(idConcept, idTheso);
-        if (nodeFacets == null)
-            nodeFacets = new ArrayList<>();
-        else
-            nodeFacets.clear();
-        for (String facetId : facetIds) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(facetId);
-            nodeIdValue.setValue(facetHelper.getLabelOfFacet(facetId, idTheso, idLang));
-            nodeFacets.add(nodeIdValue);
-        }
+        var facetList = facetService.getFacetsByConceptAndThesaurus(idConcept, idTheso);
+        nodeFacets = facetList.stream()
+                .map(facet -> {
+                    var facetValue = facetService.getFacet(facet.getIdFacet(), idTheso, idLang);
+                    return NodeIdValue.builder()
+                        .id(facet.getIdFacet())
+                        .value(facetValue != null ? facetValue.getLexicalValue() : "")
+                        .build();
+                })
+                .toList();
     }
 
     public void setOffset() {

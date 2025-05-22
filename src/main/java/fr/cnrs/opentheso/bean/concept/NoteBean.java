@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.NoteType;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -18,6 +17,7 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
 
 import java.io.Serializable;
@@ -61,9 +61,6 @@ public class NoteBean implements Serializable {
     private ConceptDcTermRepository conceptDcTermRepository;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private ConceptService conceptService;
     
     private String selectedLang;
@@ -83,6 +80,8 @@ public class NoteBean implements Serializable {
     private ArrayList<NodeNote> nodeNotesByLanguage;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private FacetService facetService;
 
     /**
      * permet d'initialiser l'édition des notes pour les facettes
@@ -492,9 +491,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        facetHelper.updateDateOfFacet(
-                selectedTheso.getCurrentIdTheso(),
-                nodeFacet.getIdFacet(), idUser);
+        facetService.updateDateOfFacet(selectedTheso.getCurrentIdTheso(), nodeFacet.getIdFacet(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -733,9 +730,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        facetHelper.updateDateOfFacet(
-                selectedTheso.getCurrentIdTheso(),
-                nodeNote.getIdentifier(), idUser);
+        facetService.updateDateOfFacet(selectedTheso.getCurrentIdTheso(), nodeNote.getIdentifier(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)

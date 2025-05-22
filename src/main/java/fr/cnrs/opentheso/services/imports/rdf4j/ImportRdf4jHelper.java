@@ -41,6 +41,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.DeprecateService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
@@ -53,7 +54,6 @@ import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
@@ -121,9 +121,6 @@ public class ImportRdf4jHelper {
     private ThesaurusDcTermRepository thesaurusDcTermRepository;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private RelationService relationService;
 
     @Autowired
@@ -176,6 +173,8 @@ public class ImportRdf4jHelper {
     private ConceptService conceptService;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private FacetService facetService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -370,15 +369,15 @@ public class ImportRdf4jHelper {
 
             for (SKOSLabel sKOSLabel : facetSKOSResource.getLabelsList()) {
                 if (first) {
-                    facetHelper.addNewFacet(idFacet, idTheso, idConceptParent, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
+                    facetService.addNewFacet(idFacet, idTheso, idConceptParent, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
                     first = false;
                 } else {
-                    facetHelper.addFacetTraduction(idFacet, idTheso, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
+                    facetService.addFacetTraduction(idFacet, idTheso, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
                 }
             }
             for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
                 if (member.getProperty() == SKOSProperty.MEMBER) {
-                    facetHelper.addConceptToFacet(idFacet, idTheso, getOriginalId(member.getTargetUri()));
+                    facetService.addConceptToFacet(idFacet, idTheso, getOriginalId(member.getTargetUri()));
                 }
             }
             first = true;

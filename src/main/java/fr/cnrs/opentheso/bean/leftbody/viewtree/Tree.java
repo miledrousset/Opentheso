@@ -2,12 +2,12 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import fr.cnrs.opentheso.bean.concept.DragAndDrop;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
@@ -70,11 +70,11 @@ public class Tree implements Serializable {
     private final PropositionBean propositionBean;
     private final ConceptHelper conceptHelper;
     private final PathService pathService;
-    private final FacetHelper facetHelper;
     private final DragAndDrop dragAndDrop;
     private final ConceptService conceptService;
     private final ResourceService resourceService;
     private final TermService termService;
+    private final FacetService facetService;
 
     private DataService dataService;
     private TreeNode selectedNode;
@@ -166,7 +166,7 @@ public class Tree implements Serializable {
                 continue;
             }
 
-            if (facetHelper.isConceptHaveFacet(nodeConceptTree.getIdConcept(), idTheso)) {
+            if (facetService.isConceptHaveFacet(nodeConceptTree.getIdConcept(), idTheso)) {
                 if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
                     dataService.addNodeWithChild("deprecated", data, root);
                 } else {
@@ -268,10 +268,8 @@ public class Tree implements Serializable {
     }
 
     private void addMembersOfFacet(TreeNode parent) {
-        ArrayList<NodeIdValue> nodeIdValues = facetHelper.getAllMembersOfFacetSorted(
-                ((TreeNodeData) parent.getData()).getNodeId(),
-                selectedTheso.getCurrentLang(),
-                idTheso);
+        var nodeIdValues = facetService.getAllMembersOfFacetSorted(((TreeNodeData) parent.getData()).getNodeId(),
+                selectedTheso.getCurrentLang(), idTheso);
 
         for (NodeIdValue nodeIdValue : nodeIdValues) {
             TreeNodeData data = new TreeNodeData(
@@ -369,7 +367,7 @@ public class Tree implements Serializable {
 
     public List<NodeTree> searchFacettesForTree(String conceptParentId, String idTheso, String idLang) {
         List<NodeTree> facaets = new ArrayList<>();
-        List<NodeIdValue> nodeIdValues = facetHelper.getAllIdValueFacetsOfConcept(conceptParentId, idTheso, idLang);
+        List<NodeIdValue> nodeIdValues = facetService.getAllIdValueFacetsOfConcept(conceptParentId, idTheso, idLang);
         nodeIdValues.stream().forEach(facette -> {
             TreeNodeData data = new TreeNodeData(
                     facette.getId() + "",
@@ -435,9 +433,8 @@ public class Tree implements Serializable {
     }
 
     private void addFacettes(TreeNode parent) {
-        List<NodeIdValue> nodeIdValues = facetHelper.getAllIdValueFacetsOfConcept(
-                ((TreeNodeData) parent.getData()).getNodeId(),
-                idTheso, selectedTheso.getCurrentLang());
+        List<NodeIdValue> nodeIdValues = facetService.getAllIdValueFacetsOfConcept(
+                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, selectedTheso.getCurrentLang());
         nodeIdValues.stream().forEach(facette -> {
             TreeNodeData data = new TreeNodeData(
                     facette.getId() + "",
@@ -450,7 +447,7 @@ public class Tree implements Serializable {
                     "facet"
             );
 
-            if (facetHelper.isFacetHaveMembers(facette.getId(), idTheso)) {
+            if (facetService.isFacetHaveMembers(facette.getId(), idTheso)) {
                 dataService.addNodeWithChild("facet", data, parent);
             } else {
                 dataService.addNodeWithoutChild("facet", data, parent);
@@ -460,7 +457,7 @@ public class Tree implements Serializable {
 
     public void selectThisFacet(String idFacet) {
         /// chargement de l'arbre jusqu'au concept Parent de la Facette
-        String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(idFacet, idTheso);
+        String idConceptParentOfFacet = facetService.getIdConceptParentOfFacet(idFacet, idTheso);
         expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
         onNodeExpand_((DefaultTreeNode) selectedNode);
 
@@ -824,9 +821,7 @@ public class Tree implements Serializable {
             if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
                 try {
                     //String idFacet = ((TreeNodeData) treeNode.getData()).getNodeId();
-                    if (facetHelper.isFacetHaveThisMember(
-                            ((TreeNodeData) treeNode.getData()).getNodeId(),
-                            idConceptChildToFind, idTheso)) {
+                    if (facetService.isFacetHaveThisMember(((TreeNodeData) treeNode.getData()).getNodeId(), idConceptChildToFind, idTheso)) {
                         if (treeNode.getChildCount() == 1 && ((TreeNode) treeNode.getChildren().get(0)).getData().toString().equals("DUMMY")) {
                             treeNode.getChildren().remove(0);
                             addMembersOfFacet(treeNode);

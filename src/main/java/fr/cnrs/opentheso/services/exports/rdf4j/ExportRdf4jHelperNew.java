@@ -29,9 +29,9 @@ import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationGroupService;
@@ -66,9 +66,6 @@ public class ExportRdf4jHelperNew {
     private RelationGroupService relationGroupService;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private ThesaurusService thesaurusService;
 
     @Autowired
@@ -89,6 +86,8 @@ public class ExportRdf4jHelperNew {
     private ConceptService conceptService;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private FacetService facetService;
 
     public ExportRdf4jHelperNew() {
         skosXmlDocument = new SKOSXmlDocument();
@@ -333,16 +332,15 @@ public class ExportRdf4jHelperNew {
 
     public List<SKOSResource> exportFacettesV2(String idTheso){
 
-        ArrayList<NodeFacet> facets = facetHelper.getAllFacetsDetailsOfThesaurus(idTheso);
+        var facets = facetService.getAllFacetsDetailsOfThesaurus(idTheso);
         List<SKOSResource> facetList = new ArrayList<>();
-
         for (NodeFacet facet : facets) {
             SKOSResource sKOSResource =  new SKOSResource(getUriForFacette(facet.getIdFacet(), idTheso), SKOSProperty.FACET);
             sKOSResource.addRelation(facet.getIdFacet(), getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.SUPER_ORDINATE);
             sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.PREF_LABEL);
             sKOSResource.addDate(facet.getCreated(), SKOSProperty.CREATED);
             sKOSResource.addDate(facet.getModified(), SKOSProperty.MODIFIED);
-            addFacetMembers(facetHelper, sKOSResource, facet, idTheso);
+            addFacetMembers(sKOSResource, facet, idTheso);
             facetList.add(sKOSResource);
         }
 
@@ -487,10 +485,9 @@ public class ExportRdf4jHelperNew {
         return skosResourcesList;
     }
     
-    private void addFacetMembers(FacetHelper facetHelper, SKOSResource sKOSResource,
-            NodeFacet nodeFacet, String idTheso){
+    private void addFacetMembers(SKOSResource sKOSResource, NodeFacet nodeFacet, String idTheso){
 
-        List<String> members = facetHelper.getAllMembersOfFacet(nodeFacet.getIdFacet(), idTheso);
+        List<String> members = facetService.getAllMembersOfFacet(nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
             NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);

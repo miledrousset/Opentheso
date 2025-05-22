@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.utils.ToolsHelper;
@@ -42,8 +41,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConceptAddService {
 
-    private final FacetHelper facetHelper;
-
     private final TermService termService;
     private final GroupService groupService;
     private final ConceptService conceptService;
@@ -60,6 +57,7 @@ public class ConceptAddService {
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final ConceptHistoriqueRepository conceptHistoriqueRepository;
     private final HandleConceptService handleConceptService;
+    private final FacetService facetService;
 
 
     public boolean addNewConcept(String idThesaurus, String idNewConcept, String idGroup, String idLang, String prefLabel,
@@ -125,10 +123,7 @@ public class ConceptAddService {
                 .build());
 
         if (isConceptUnderFacet) {
-            if (!facetHelper.addConceptToFacet(idFacet, idThesaurus, idNewConcept)) {
-                MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Le concept n'a pas été ajouté à la facette");
-                return false;
-            }
+            facetService.addConceptToFacet(idFacet, idThesaurus, idNewConcept);
 
             var data = new TreeNodeData(idNewConcept, prefLabel, "", false, false, true, false, "term");
             data.setIdFacetParent(idFacet);

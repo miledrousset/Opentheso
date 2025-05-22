@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -13,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.services.ExportService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
@@ -70,9 +70,6 @@ public class ExportFileBean implements Serializable {
     private WritePdfNewGen writePdfNewGen;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private GroupService groupService;
 
     @Autowired
@@ -102,6 +99,8 @@ public class ExportFileBean implements Serializable {
 
     int posJ = 0;
     int posX = 0;
+    @Autowired
+    private FacetService facetService;
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -824,7 +823,7 @@ public class ExportFileBean implements Serializable {
         groups.add(idGroup);
         
         for (SKOSResource facette : facettes) {
-            if(facetHelper.isFacetInGroups(idTheso, facette.getIdentifier(),  groups)){
+            if(facetService.isFacetInGroups(idTheso, facette.getIdentifier(),  groups)){
                 skosXmlDocument.addFacet(facette);
             }
         }              
@@ -915,7 +914,7 @@ public class ExportFileBean implements Serializable {
             List<SKOSResource> facettes = exportService.getAllFacettes(idTheso, baseUrl,
                     nodePreference.getOriginalUri(), nodePreference);
             for (SKOSResource facette : facettes) {
-                if(facetHelper.isFacetInGroups(idTheso, facette.getIdentifier(),  viewExportBean.getSelectedIdGroups())){
+                if(facetService.isFacetInGroups(idTheso, facette.getIdentifier(),  viewExportBean.getSelectedIdGroups())){
                     skosXmlDocument.addFacet(facette);
                 }
             }              

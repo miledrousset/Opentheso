@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.repositories.ExportRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -23,10 +22,10 @@ public class ExportService {
 
     private final ExportRepository exportRepository;
     private final ConceptHelper conceptHelper;
-    private final FacetHelper facetHelper;
 
     private static final String SEPARATOR = "##";
     private static final String SUB_SEPARATOR = "@@";
+    private final FacetService facetService;
 
 
     public List<SKOSResource> getAllFacettes(String idTheso, String baseUrl, String originalUri, Preferences nodePreference) throws Exception {
@@ -38,7 +37,7 @@ public class ExportService {
             resource.setIdentifier(p.getId_facet());
             resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
 
-            List<String> members = facetHelper.getAllMembersOfFacet(p.getId_facet(), idTheso);
+            List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idTheso);
             for (String idConcept : members) {
                 NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
                 resource.addRelation(nodeUri.getIdConcept(), buildUri(nodeUri, idTheso, idConcept, originalUri, nodePreference), SKOSProperty.MEMBER);

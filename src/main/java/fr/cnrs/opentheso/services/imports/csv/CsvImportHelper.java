@@ -26,13 +26,13 @@ import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
-import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
@@ -85,9 +85,6 @@ public class CsvImportHelper {
     private RelationService relationService;
 
     @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
     private ExternalResourcesRepository externalResourcesRepository;
 
     @Autowired
@@ -120,6 +117,8 @@ public class CsvImportHelper {
     private ConceptAddService conceptAddService;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private FacetService facetService;
 
 
     /**
@@ -1041,7 +1040,7 @@ public class CsvImportHelper {
             return true;
         }
         for(String idFacet : conceptObject.getMemberOfFacets()) {
-            facetHelper.addConceptToFacet(idFacet, idTheso, conceptObject.getIdConcept());
+            facetService.addConceptToFacet(idFacet, idTheso, conceptObject.getIdConcept());
         }
         return true;
     }
