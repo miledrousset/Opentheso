@@ -76,7 +76,7 @@
                                             <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                 <div class="col-12">
                                                     <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
-                                                                     action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"
+                                                                     action="#{restoreThesaurus.reorganizing()}"
                                                                      update="containerIndex messageIndex"/>           
                                                 </div>
                                             </div>
@@ -96,7 +96,7 @@
                                             <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                 <div class="col-12">
                                                     <p:commandButton rendered="#{currentUser.hasRoleAsSuperAdmin}" value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
-                                                                     action="#{restoreTheso.reorganizeConceptsAndCollections(selectedTheso.currentIdTheso)}"
+                                                                     action="#{restoreThesaurus.reorganizeConceptsAndCollections()}"
                                                                      update="containerIndex messageIndex"/>           
                                                 </div>
                                             </div>
@@ -117,7 +117,7 @@
                                                 <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                     <div class="col-12">
                                                         <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
-                                                                         action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"
+                                                                         action="#{restoreThesaurus.switchRolesFromTermToConcept()}"
                                                                          update="containerIndex messageIndex"/>        
                                                     </div>
                                                 </div>
@@ -136,22 +136,22 @@
                                                 <div class="row" style="color: black">
                                                     <div class="col-3" >
                                                         <h:outputText value ="*Naan: "/>
-                                                        <p:inputText  value="#{restoreTheso.naan}"  style="height: 22px;"/>
+                                                        <p:inputText  value="#{restoreThesaurus.naan}"  style="height: 22px;"/>
                                                     </div>   
                                                     <div class="col-3" >
                                                         <h:outputText value ="Prefixe: "/>
-                                                        <p:inputText  value="#{restoreTheso.prefix}" style="height: 22px;"/>
+                                                        <p:inputText  value="#{restoreThesaurus.prefix}" style="height: 22px;"/>
                                                     </div>                 
                                                     <div class="col-5" >
                                                         <h:outputText value ="!!!! Ecraser les Ark Existants? " style=" color: red; font-weight: bold"/>
-                                                        <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;"/>
+                                                        <p:toggleSwitch value="#{restoreThesaurus.overwrite}" style="height: 22px; font-size: 12px;"/>
                                                     </div>  
                                                 </div> 
                                                 <p:spacer/>
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p:commandButton value="#{langueBean.getMsg('service.generate')}" icon="pi pi-check" iconPos="right"
-                                                                         action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"
+                                                                         action="#{restoreThesaurus.generateArkFromConceptId()}"
                                                                          update="containerIndex messageIndex"/>        
                                                     </div>
                                                 </div>             
@@ -189,14 +189,14 @@
 
                                                     <div class="col-6" >
                                                         <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
-                                                        <p:toggleSwitch value="#{restoreTheso.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{restoreThesaurus.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
                                                     </div>  
 
                                                 </div> 
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
-                                                                         action="#{restoreTheso.generateArkLacal(selectedTheso.currentIdTheso, roleOnTheso.nodePreference)}"
+                                                                         action="#{restoreThesaurus.generateArkLacal()}"
                                                                          update="containerIndex messageIndex"/>   
                                                     </div>
                                                 </div>             
@@ -231,8 +231,8 @@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p:commandButton disabled="true" 
-                                                                         value="#{langueBean.getMsg('service.generate')}" icon="pi pi-check" iconPos="right" 
-                                                                         action="#{restoreTheso.generateSitemap(selectedTheso.currentIdTheso, selectedTheso.thesoName)}"
+                                                                         value="#{langueBean.getMsg('service.generate')}" icon="pi pi-check" iconPos="right"
+                                                                         action="#{restoreThesaurus.generateSitemap()}"
                                                                          update="containerIndex messageIndex"/>        
                                                     </div>
                                                 </div>             

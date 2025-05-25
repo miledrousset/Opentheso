@@ -66,7 +66,7 @@ public class GraphD3jsHelper {
         nodeGraphD3js.getRelationships().addAll(getRelationshipOfTheso(nodeTTs, idTheso));        
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        List<String> listIdConcept = conceptService.getAllIdConceptOfThesaurus(idTheso);
         if (listIdConcept.size() > 2000) {
             listIdConcept = listIdConcept.subList(0, 2000);
         }

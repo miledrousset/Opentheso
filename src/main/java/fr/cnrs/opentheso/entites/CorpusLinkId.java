@@ -15,7 +15,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class CorpusLinkId implements Serializable {
 
-    private String idTheso;
+    private String idThesaurus;
     private String corpusName;
 
 }

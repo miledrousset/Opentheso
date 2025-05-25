@@ -122,7 +122,7 @@ public class NoteBean implements Serializable {
     }
 
     private void resetNotes(String identifier, String idLang) {
-        List<NoteType> noteTypes1 = findNoteTypes();
+        List<NoteType> noteTypes1 = noteService.getNotesType();
         nodeNotesByLanguage = new ArrayList<>();
         setNotesByLang(noteTypes1, identifier, selectedTheso.getCurrentIdTheso(), idLang);
         nodeLangs = selectedTheso.getNodeLangs();
@@ -162,11 +162,6 @@ public class NoteBean implements Serializable {
 
     public void  actionChangeLang(String idLang){
         resetNotes(selectedNodeNote.getIdentifier(), idLang);
-    }
-
-    private List<NoteType> findNoteTypes(){
-        List<NoteType> noteTypes1 = noteService.getNotesType();
-        return noteTypes1;
     }
 
     /**
@@ -226,17 +221,8 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-        if(!noteService.addNote(nodeNote.getIdentifier(),
-                nodeNote.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeNote.getLexicalValue(),
-                nodeNote.getNoteTypeCode(),
-                nodeNote.getNoteSource(),
-                idUser)){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de création de note !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return false;
-        }
+        noteService.addNote(nodeNote.getIdentifier(), nodeNote.getLang(), selectedTheso.getCurrentIdTheso(), nodeNote.getLexicalValue(),
+                nodeNote.getNoteTypeCode(), nodeNote.getNoteSource(), idUser);
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         return true;
@@ -256,7 +242,7 @@ public class NoteBean implements Serializable {
         nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
         nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
         nodeNote.setNoteSource(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()));
-        if (noteService.updateNote(nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+        if (!noteService.updateNote(nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdentifier(), nodeNote.getLang(), selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(), nodeNote.getNoteSource(), nodeNote.getNoteTypeCode(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -340,7 +326,7 @@ public class NoteBean implements Serializable {
 
 
     public void reset() {
-        List<NoteType> noteTypes1 = findNoteTypes();
+        List<NoteType> noteTypes1 = noteService.getNotesType();
         filterNotesByUsage(noteTypes1);
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
@@ -451,10 +437,7 @@ public class NoteBean implements Serializable {
             
             
         ///// notes pour les concepts    
-        if (!addNote(conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser)) {
-            printErreur();
-            return;
-        }
+        addNote(conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
@@ -478,18 +461,15 @@ public class NoteBean implements Serializable {
 
     // permet de filtrer les notes manquantes par langue pour ajouter des nouvelles notes
     public void refreshNoteType(){
-        List<NoteType> noteTypes1 = findNoteTypes();
-        filterNotesByUsage(noteTypes1);
+        filterNotesByUsage(noteService.getNotesType());
     }
     
     
     
     //// notes pour les facettes 
     private void addFacetNote(int idUser){
-        if (!addNote(nodeFacet.getIdFacet(), idUser)) {
-            printErreur();
-            return;
-        }
+
+        addNote(nodeFacet.getIdFacet(), idUser);
 
         facetService.updateDateOfFacet(selectedTheso.getCurrentIdTheso(), nodeFacet.getIdFacet(), idUser);
 
@@ -508,10 +488,8 @@ public class NoteBean implements Serializable {
     
     /// notes pour les collections
     private void addGroupNote(int idUser){
-        if (!addNote(nodeGroup.getConceptGroup().getIdGroup(), idUser)) {
-            printErreur();
-            return;
-        }
+
+        addNote(nodeGroup.getConceptGroup().getIdGroup(), idUser);
         groupService.updateModifiedDate(nodeGroup.getConceptGroup().getIdGroup(),
                 selectedTheso.getCurrentIdTheso());
 
@@ -528,15 +506,10 @@ public class NoteBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);           
     }
     
-    private boolean addNote(String identifier, int idUser) {
-        if (noteService.isNoteExist(identifier, selectedTheso.getCurrentIdTheso(), selectedLang, noteValue, selectedTypeNote)) {
+    private void addNote(String identifier, int idUser) {
 
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return false;
-        }
-
-        return noteService.addNote(identifier, selectedLang, selectedTheso.getCurrentIdTheso(), noteValue, selectedTypeNote, "", idUser);
+        noteService.isNoteExist(identifier, selectedTheso.getCurrentIdTheso(), selectedLang, noteValue, selectedTypeNote);
+        noteService.addNote(identifier, selectedLang, selectedTheso.getCurrentIdTheso(), noteValue, selectedTypeNote, "", idUser);
     }
 
 
@@ -681,7 +654,7 @@ public class NoteBean implements Serializable {
             return;
         }            
         
-        if (noteService.updateNote(
+        if (!noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getLang(),
@@ -716,7 +689,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les facettes
     private void updateFacetNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (noteService.updateNote(
+        if (!noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),
@@ -749,7 +722,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les collections
     private void updateGroupNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (noteService.updateNote(
+        if (!noteService.updateNote(
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeNote.getIdentifier(),
                 nodeNote.getLang(),

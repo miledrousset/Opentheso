@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.theso;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-
 import fr.cnrs.opentheso.models.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -21,22 +20,22 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
-import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,74 +51,46 @@ import org.springframework.context.annotation.ScopedProxyMode;
 
 
 @Slf4j
+@Data
 @SessionScoped
 @Named(value = "selectedTheso")
+@RequiredArgsConstructor
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SelectedTheso implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private IndexSetting indexSetting;
-    @Autowired @Lazy private TreeGroups treeGroups;
-    @Autowired @Lazy private TreeConcepts treeConcepts;
-    @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private ListIndex listIndex;
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SearchBean searchBean;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired @Lazy private RightBodySetting rightBodySetting;
-    @Autowired @Lazy private MenuBean menuBean;
-    @Autowired @Lazy private PropositionBean propositionBean;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private ProjectBean projectBean;
+    private final LanguageBean languageBean;
+    private final IndexSetting indexSetting;
+    private final TreeGroups treeGroups;
+    private final TreeConcepts treeConcepts;
+    private final Tree tree;
+    private final ListIndex listIndex;
+    private final ConceptView conceptBean;
+    private final SearchBean searchBean;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final RightBodySetting rightBodySetting;
+    private final MenuBean menuBean;
+    private final PropositionBean propositionBean;
+    private final CurrentUser currentUser;
+    private final ProjectBean projectBean;
+    private final CorpusLinkRepository corpusLinkRepository;
+    private final LanguageRepository languageRepository;
+    private final ThesaurusService thesaurusService;
+    private final UserGroupLabelRepository userGroupLabelRepository;
 
-    @Autowired
-    private CorpusLinkRepository corpusLinkRepository;
 
-    @Autowired
-    private LanguageRepository languageRepository;
+    private boolean fromUrl, isActionFromConcept, sortByNotation, isNetworkAvailable, isUriRequest, haveActiveCorpus;
+    private String selectedIdTheso, currentIdTheso, optionThesoSelected, idConceptFromUri, idThesoFromUri, idGroupFromUri,
+            thesoName, projectIdSelected, localUri, selectedLang, currentLang;
 
-    @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository;
-
-    private List<UserGroupLabel> projects;
-
-    private boolean isFromUrl;
-
-    private String selectedIdTheso;
-    private String currentIdTheso;
-    private String optionThesoSelected;
-
+    private List<UserGroupLabel> projects, projectsList;
+    private List<ResultatAlignement> resultAlignementList;
     private List<NodeLangTheso> nodeLangs;
 
-    private String selectedLang; // la langue qu'on vient de séléctionner
-    private String currentLang; // la langue en cours dans la session
-    private boolean isActionFromConcept;
-
-    private String idConceptFromUri;
-    private String idThesoFromUri;
-    private String idGroupFromUri;
-
-    private boolean isUriRequest = false;
-
-    private String thesoName;
-    private boolean sortByNotation;
-    
-    private boolean isNetworkAvailable;
-
-    private String localUri;
-
-    private String projectIdSelected;
-    private List<UserGroupLabel> projectsList;
-    private List<ResultatAlignement> resultAlignementList;
-
-    private boolean haveActiveCorpus;
-    @Autowired
-    private ThesaurusService thesaurusService;
 
     @PostConstruct
     public void initializing() {
@@ -128,16 +99,6 @@ public class SelectedTheso implements Serializable {
         sortByNotation = false;
 
         loadProject();
-    }
-
-    public void init() {
-        selectedLang = null;
-        currentLang = null;
-        nodeLangs = null;
-        selectedIdTheso = null;
-        currentIdTheso = null;
-        thesoName = null;
-        localUri = null;
     }
 
     /**
@@ -163,15 +124,15 @@ public class SelectedTheso implements Serializable {
     }
 
     public String getUriOfTheso(Preferences nodePreference){
-        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
-        String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
-        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
-        String baseUrl = protocole + "://" + serverAdress + contextPath;
+
+        var contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+        var serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+        var protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+        var baseUrl = protocole + "://" + serverAdress + contextPath;
 
         if(nodePreference == null) {
             return baseUrl + "/?idt=" + currentIdTheso;
-        }
-        else {
+        } else {
             var thesaurus = thesaurusService.getThesaurusById(currentIdTheso);
             return (StringUtils.isEmpty(thesaurus.getIdArk()))
                     ? baseUrl + "/?idt=" + currentIdTheso
@@ -186,7 +147,7 @@ public class SelectedTheso implements Serializable {
      */
     public void setSelectedTheso() throws IOException {
 
-        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
+        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesaurusAndActive(getSelectedIdTheso(), true));
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -194,7 +155,6 @@ public class SelectedTheso implements Serializable {
             isUriRequest = false;
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
-        //    logTheso();
             return;
         }
 
@@ -205,24 +165,26 @@ public class SelectedTheso implements Serializable {
             treeConcepts.reset();
             listIndex.reset();
             conceptBean.init();
-            init();
+
+            selectedLang = null;
+            currentLang = null;
+            nodeLangs = null;
+            selectedIdTheso = null;
+            currentIdTheso = null;
+            thesoName = null;
+            localUri = null;
             
             indexSetting.setIsSelectedTheso(false);
-           
-            if ("-1".equals(projectIdSelected)) {
-                indexSetting.setProjectSelected(false); 
-            } else {
-                indexSetting.setProjectSelected(true);                
-            }
+            indexSetting.setProjectSelected(!"-1".equals(projectIdSelected));
+
             projectBean.init();
 
-            roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
+            roleOnThesoBean.setSelectedThesoForSearch(new ArrayList<>());
             for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
             }
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
-        //    logTheso();
             return;
         }
 
@@ -234,7 +196,6 @@ public class SelectedTheso implements Serializable {
 
             searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
-        //    logTheso();
             return;
         }
 
@@ -259,7 +220,6 @@ public class SelectedTheso implements Serializable {
         searchBean.setNodeConceptSearchs(new ArrayList<>());
         indexSetting.setProjectSelected(false);
         menuBean.redirectToThesaurus();
-    //    logTheso();
     }
 
     public void redirectToTheso() throws IOException{
@@ -339,12 +299,6 @@ public class SelectedTheso implements Serializable {
             projectBean.init();
         }
     }
-/*    private void logTheso(){
-        String ipAddress = ipAddressService.getClientIpAddress();
-        if(StringUtils.isNotEmpty(selectedIdTheso)) {
-            log.info("thesaurus: {} ({}) {}", thesoName, selectedIdTheso, ", IP: " + ipAddress);
-        }
-    }*/
     
     public void setSelectedThesoForSearch() throws IOException {
 
@@ -512,17 +466,17 @@ public class SelectedTheso implements Serializable {
      */
     public void preRenderView() {
         if (StringUtils.isEmpty(idThesoFromUri)) {
-            isFromUrl = false;
+            fromUrl = false;
             return;
         }
 
-        isFromUrl = true;
+        fromUrl = true;
         if (StringUtils.isEmpty(idThesoFromUri)) {
-            isFromUrl = false;
+            fromUrl = false;
             return;
         }
 
-        isFromUrl = true;
+        fromUrl = true;
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (StringUtils.isEmpty(idConceptFromUri)) {
                 //test si c'est une collection
@@ -543,18 +497,17 @@ public class SelectedTheso implements Serializable {
                 currentLang = idLang;
                 selectedLang = idLang;
             }
-            haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
+            haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesaurusAndActive(getSelectedIdTheso(), true));
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang, currentUser);
             isActionFromConcept = true;
             idConceptFromUri = null;
             idThesoFromUri = null;
             thesoName = thesaurusService.getTitleOfThesaurus(selectedIdTheso, selectedLang);
             return;
-        }
-
-        // gestion de l'accès par thésaurus d'un identifiant différent 
-        if (!idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
-            if (isValidTheso(idThesoFromUri)) {
+        } else {
+            // gestion de l'accès par thésaurus d'un identifiant différent
+            var thesaurus = thesaurusService.getThesaurusById(idThesoFromUri);
+            if (!thesaurus.getIsPrivate()) {
                 currentUser.resetUserPermissionsForThisTheso();
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
@@ -563,7 +516,7 @@ public class SelectedTheso implements Serializable {
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");
-                haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
+                haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesaurusAndActive(getSelectedIdTheso(), true));
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang, currentUser);
@@ -581,310 +534,10 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
-        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesoAndActive(getSelectedIdTheso(), true));
+        haveActiveCorpus = CollectionUtils.isNotEmpty(corpusLinkRepository.findAllByIdThesaurusAndActive(getSelectedIdTheso(), true));
         currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         idConceptFromUri = null;
         idThesoFromUri = null;
     }
 
-    private boolean isValidTheso(String idThesaurus) {
-        var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
-        return !thesaurus.getIsPrivate();
-    }
-
-    public String getIdConceptFromUri() {
-        return idConceptFromUri;
-    }
-
-    public void setIdConceptFromUri(String idConceptFromUri) {
-        this.idConceptFromUri = idConceptFromUri;
-    }
-
-    public String getIdGroupFromUri() {
-        return idGroupFromUri;
-    }
-
-    public void setIdGroupFromUri(String idGroupFromUri) {
-        this.idGroupFromUri = idGroupFromUri;
-    }
-
-    public String getIdThesoFromUri() {
-        return idThesoFromUri;
-    }
-
-    public void setIdThesoFromUri(String idThesoFromUri) {
-        this.idThesoFromUri = idThesoFromUri;
-    }
-
-    public List<NodeLangTheso> getNodeLangs() {
-        return nodeLangs;
-    }
-
-    public void setNodeLangs(ArrayList<NodeLangTheso> nodeLangs) {
-        this.nodeLangs = nodeLangs;
-    }
-
-    public String getSelectedLang() {
-        return selectedLang;
-    }
-
-    public void setSelectedLang(String selectedLang) {
-        this.selectedLang = selectedLang;
-    }
-
-    public String getCurrentLang() {
-        return currentLang;
-    }
-
-    public void setCurrentLang(String currentLang) {
-        this.currentLang = currentLang;
-    }
-
-    public String getCurrentIdTheso() {
-        return currentIdTheso;
-    }
-
-    public void setCurrentIdTheso(String currentIdTheso) {
-        this.currentIdTheso = currentIdTheso;
-    }
-
-    public String getThesoName() {
-        return thesoName;
-    }
-
-    public void setThesoName(String thesoName) {
-        this.thesoName = thesoName;
-    }
-
-    public String getSelectedIdTheso() {
-        return selectedIdTheso;
-    }
-
-    public void setSelectedIdTheso(String selectedIdTheso) {
-        this.selectedIdTheso = selectedIdTheso;
-    }
-
-    public boolean isSortByNotation() {
-        return sortByNotation;
-    }
-
-    public void setSortByNotation(boolean sortByNotation) {
-        this.sortByNotation = sortByNotation;
-    }
-
-    public String getLocalUri() {
-        return localUri;
-    }
-
-    public void setLocalUri(String localUri) {
-        this.localUri = localUri;
-    }
-
-    public String getOptionThesoSelected() {
-        return optionThesoSelected;
-    }
-
-    public void setOptionThesoSelected(String optionThesoSelected) {
-        this.optionThesoSelected = optionThesoSelected;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean LanguageBean) {
-        this.languageBean = LanguageBean;
-    }
-
-    public IndexSetting getIndexSetting() {
-        return indexSetting;
-    }
-
-    public void setIndexSetting(IndexSetting indexSetting) {
-        this.indexSetting = indexSetting;
-    }
-
-    public TreeGroups getTreeGroups() {
-        return treeGroups;
-    }
-
-    public void setTreeGroups(TreeGroups treeGroups) {
-        this.treeGroups = treeGroups;
-    }
-
-    public TreeConcepts getTreeConcepts() {
-        return treeConcepts;
-    }
-
-    public void setTreeConcepts(TreeConcepts treeConcepts) {
-        this.treeConcepts = treeConcepts;
-    }
-
-    public Tree getTree() {
-        return tree;
-    }
-
-    public void setTree(Tree tree) {
-        this.tree = tree;
-    }
-
-    public ListIndex getListIndex() {
-        return listIndex;
-    }
-
-    public void setListIndex(ListIndex listIndex) {
-        this.listIndex = listIndex;
-    }
-
-    public ConceptView getConceptBean() {
-        return conceptBean;
-    }
-
-    public void setConceptBean(ConceptView conceptBean) {
-        this.conceptBean = conceptBean;
-    }
-
-    public SearchBean getSearchBean() {
-        return searchBean;
-    }
-
-    public void setSearchBean(SearchBean searchBean) {
-        this.searchBean = searchBean;
-    }
-
-    public RoleOnThesoBean getRoleOnThesoBean() {
-        return roleOnThesoBean;
-    }
-
-    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
-        this.roleOnThesoBean = roleOnThesoBean;
-    }
-
-    public ViewEditorThesoHomeBean getViewEditorThesoHomeBean() {
-        return viewEditorThesoHomeBean;
-    }
-
-    public void setViewEditorThesoHomeBean(ViewEditorThesoHomeBean viewEditorThesoHomeBean) {
-        this.viewEditorThesoHomeBean = viewEditorThesoHomeBean;
-    }
-
-    public ViewEditorHomeBean getViewEditorHomeBean() {
-        return viewEditorHomeBean;
-    }
-
-    public void setViewEditorHomeBean(ViewEditorHomeBean viewEditorHomeBean) {
-        this.viewEditorHomeBean = viewEditorHomeBean;
-    }
-
-    public RightBodySetting getRightBodySetting() {
-        return rightBodySetting;
-    }
-
-    public void setRightBodySetting(RightBodySetting rightBodySetting) {
-        this.rightBodySetting = rightBodySetting;
-    }
-
-    public MenuBean getMenuBean() {
-        return menuBean;
-    }
-
-    public void setMenuBean(MenuBean menuBean) {
-        this.menuBean = menuBean;
-    }
-
-    public PropositionBean getPropositionBean() {
-        return propositionBean;
-    }
-
-    public void setPropositionBean(PropositionBean propositionBean) {
-        this.propositionBean = propositionBean;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public ProjectBean getProjectBean() {
-        return projectBean;
-    }
-
-    public void setProjectBean(ProjectBean projectBean) {
-        this.projectBean = projectBean;
-    }
-
-    public List<UserGroupLabel> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<UserGroupLabel> projects) {
-        this.projects = projects;
-    }
-
-    public boolean isIsFromUrl() {
-        return isFromUrl;
-    }
-
-    public void setIsFromUrl(boolean isFromUrl) {
-        this.isFromUrl = isFromUrl;
-    }
-
-    public boolean isIsActionFromConcept() {
-        return isActionFromConcept;
-    }
-
-    public void setIsActionFromConcept(boolean isActionFromConcept) {
-        this.isActionFromConcept = isActionFromConcept;
-    }
-
-    public boolean isIsUriRequest() {
-        return isUriRequest;
-    }
-
-    public void setIsUriRequest(boolean isUriRequest) {
-        this.isUriRequest = isUriRequest;
-    }
-
-    public boolean isNetworkAvailable() {
-        return isNetworkAvailable;
-    }
-
-    public void setIsNetworkAvailable(boolean isNetworkAvailable) {
-        this.isNetworkAvailable = isNetworkAvailable;
-    }
-
-    public String getProjectIdSelected() {
-        return projectIdSelected;
-    }
-
-    public void setProjectIdSelected(String projectIdSelected) {
-        this.projectIdSelected = projectIdSelected;
-    }
-
-    public List<UserGroupLabel> getProjectsList() {
-        return projectsList;
-    }
-
-    public void setProjectsList(List<UserGroupLabel> projectsList) {
-        this.projectsList = projectsList;
-    }
-
-    public List<ResultatAlignement> getResultAlignementList() {
-        return resultAlignementList;
-    }
-
-    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
-        this.resultAlignementList = resultAlignementList;
-    }
-
-    public boolean isHaveActiveCorpus() {
-        return haveActiveCorpus;
-    }
-
-    public void setHaveActiveCorpus(boolean haveActiveCorpus) {
-        this.haveActiveCorpus = haveActiveCorpus;
-    }
 }

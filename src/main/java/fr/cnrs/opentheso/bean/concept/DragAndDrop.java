@@ -438,7 +438,7 @@ public class DragAndDrop implements Serializable {
         FacesMessage msg;
         isValidPaste = false;
 
-        ArrayList<String> descendingConcepts = conceptHelper.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(),
+        var descendingConcepts = conceptService.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         if((descendingConcepts != null) && (!descendingConcepts.isEmpty())) {
             if(descendingConcepts.contains(nodeConceptDrop.getConcept().getIdConcept())){
@@ -966,7 +966,7 @@ public class DragAndDrop implements Serializable {
     }
 
     private void addAndCutGroupMultiple() {
-        ArrayList<String> allId = conceptHelper.getIdsOfBranch(nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        var allId = conceptService.getIdsOfBranch(nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         if( (allId == null) || (allId.isEmpty())) return;
 
         for (GroupNode nodeGroup : groupNodeToCut) {
@@ -1124,7 +1124,7 @@ public class DragAndDrop implements Serializable {
     }
 
     private void addAndCutGroup() {
-        ArrayList<String> allId = conceptHelper.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        List<String> allId = conceptService.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         if( (allId == null) || (allId.isEmpty())) return;         
         
         for (NodeGroup nodeGroup : nodeGroupsToCut) {

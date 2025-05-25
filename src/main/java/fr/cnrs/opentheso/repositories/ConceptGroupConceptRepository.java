@@ -34,7 +34,7 @@ public interface ConceptGroupConceptRepository extends JpaRepository<ConceptGrou
     @Query(value = """
         SELECT idgroup, idconcept
         FROM concept_group_concept
-        WHERE idthesaurus = :idTheso
+        WHERE idthesaurus = :idThesaurus
         AND idconcept NOT IN (SELECT id_concept FROM concept WHERE id_thesaurus = :idThesaurus)
     """, nativeQuery = true)
     List<Object[]> findGroupConceptLinksWithMissingConcepts(@Param("idThesaurus") String idThesaurus);

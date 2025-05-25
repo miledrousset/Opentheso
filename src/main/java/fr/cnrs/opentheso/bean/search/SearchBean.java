@@ -613,7 +613,7 @@ public class SearchBean implements Serializable {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> allIdConcepts = conceptHelper.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
+        var allIdConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
         ArrayList<String> nodeSearchsId = new ArrayList<>();
         for (String idConcept : allIdConcepts) {

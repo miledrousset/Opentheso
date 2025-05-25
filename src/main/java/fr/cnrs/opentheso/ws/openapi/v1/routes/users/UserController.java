@@ -6,7 +6,7 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.services.UserRoleGroupService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.services.ApiKeyService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final ApiKeyHelper apiKeyHelper;
+    private final ApiKeyService apiKeyHelper;
     private final UserRoleGroupService userRoleGroupService;
     private final UserService userService;
 
@@ -169,6 +169,6 @@ public class UserController {
         if (keyState != ApiKeyState.VALID){
             return null;
         }
-        return userRepository.findByApiKey(apiKey).get();
+        return userService.getUserByApiKey(apiKey);
     }
 }

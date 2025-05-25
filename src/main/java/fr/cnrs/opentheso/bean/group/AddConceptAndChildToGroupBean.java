@@ -90,7 +90,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
             return;
         }
 
-        ArrayList<String> allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
+        var allId  = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         if( (allId == null) || (allId.isEmpty())) return;

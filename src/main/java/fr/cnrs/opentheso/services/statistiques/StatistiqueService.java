@@ -1,9 +1,11 @@
-package fr.cnrs.opentheso.bean.toolbox.statistique;
+package fr.cnrs.opentheso.services.statistiques;
 
 import fr.cnrs.opentheso.entites.Alignement;
 import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.ConceptGroupProjection;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
+import fr.cnrs.opentheso.models.statistiques.ConceptStatisticData;
+import fr.cnrs.opentheso.models.statistiques.GenericStatistiqueData;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;

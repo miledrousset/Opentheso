@@ -82,7 +82,7 @@
                                     </p:toolbar>
                                     
 
-                                    <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true"
+                                    <p:dataTable value="#{corpusBean.corpusList}" var="corpus" scrollable="true"
                                                  resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
                                                  reflow="true" lazy="false">
 
@@ -115,7 +115,7 @@
                                         </p:column>
 
                                         <f:facet name="footer">
-                                            <span class="p-text-bold">#{langueBean.getMsg('setting.totalCorpus')} :  #{corpusBean.nodeCorpuses.size()}</span>
+                                            <span class="p-text-bold">#{langueBean.getMsg('setting.totalCorpus')} :  #{corpusBean.corpusList.size()}</span>
                                         </f:facet>
                                     </p:dataTable>
                                 </div>

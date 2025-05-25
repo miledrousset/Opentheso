@@ -32,6 +32,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import fr.cnrs.opentheso.services.ConceptService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -47,6 +49,8 @@ public class CsvWriteHelper {
 
     @Autowired
     private ConceptHelper conceptHelper;
+    @Autowired
+    private ConceptService conceptService;
 
     /**
      * Export en CSV avec tous les champs
@@ -525,7 +529,6 @@ public class CsvWriteHelper {
     /**
      * Export des données limitées en CSV
      *
-     * @param ds
      * @param idTheso
      * @param idLang
      * @param idGroups
@@ -548,9 +551,9 @@ public class CsvWriteHelper {
                 header.add("alignment");
                 csvFilePrinter.printRecord(header);
 
-                ArrayList<String> idConcepts = null;
+                List<String> idConcepts = null;
                 if (idGroups == null || idGroups.isEmpty()) {
-                    idConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+                    idConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
                 } else {
                     if (idConcepts == null) {
                         idConcepts = new ArrayList<>();

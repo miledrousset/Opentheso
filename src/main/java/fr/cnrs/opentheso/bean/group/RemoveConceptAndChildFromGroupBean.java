@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -35,6 +36,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     private final GroupView groupView;
     private final ConceptHelper conceptHelper;
     private final GroupService groupService;
+    private final ConceptService conceptService;
 
     private List<NodeGroup> nodeGroups;
 
@@ -47,7 +49,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     public void removeConceptAndChildFromGroup(String idGroup) {
 
         log.info("Début de la suppression de tous les concepts rattachés au group id {}", idGroup);
-        var allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        var allId  = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
 
         if(CollectionUtils.isEmpty(allId)) {
             log.error("Aucun concepts n'est trouvé");

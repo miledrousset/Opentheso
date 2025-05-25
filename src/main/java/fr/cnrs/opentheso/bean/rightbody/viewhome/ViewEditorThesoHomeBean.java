@@ -9,13 +9,13 @@ import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusHomePageRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.UserService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.UserService;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -48,6 +48,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     private final ThesaurusHomePageRepository thesaurusHomePageRepository;
     private final ConceptRepository conceptRepository;
     private final ConceptStatusRepository conceptStatusRepository;
+    private final ConceptService conceptService;
 
     private boolean isViewPlainText, isInEditing;
     private String text, colorOfHtmlButton, colorOfTextButton;
@@ -137,7 +138,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getLastModifiedDate(String idThesaurus){
-        var date = conceptHelper.getLastModification(idThesaurus);
+        var date = userService.getLastModification(idThesaurus);
         return ObjectUtils.isEmpty(date) ? "" : date.toString();
     }
 

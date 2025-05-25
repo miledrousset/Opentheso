@@ -20,7 +20,6 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -64,7 +63,7 @@ public class PropositionService {
     private final IndexSetting indexSetting;
     private final SelectedTheso selectedTheso;
     private final RoleOnThesoBean roleOnThesoBean;
-    private final MailBean mailBean;
+    private final MailService mailBean;
     private final TermRepository termRepository;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final PropositionModificationRepository propositionModificationRepository;
@@ -507,12 +506,9 @@ public class PropositionService {
     }
 
     private void addNewNote(NotePropBean notePropBean, String typeNote) {
-        if (!noteService.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
-                selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), typeNote, "", currentUser.getNodeUser().getIdUser())) {
-
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+        noteService.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), typeNote, "",
+                currentUser.getNodeUser().getIdUser());
     }
 
     public boolean updateNomConcept(String newConceptName) {
@@ -528,7 +524,7 @@ public class PropositionService {
             return false;
         }
 
-        if (nonPreferredTermRepository.isAltLabelExist(termFound.get().getIdTerm(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
+        if (termService.isAltLabelExist(termFound.get().getIdTerm(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
             MessageUtils.showWarnMessage("Un synonyme existe déjà !");
             return false;
         }

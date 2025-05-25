@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.entites.Note;
 import fr.cnrs.opentheso.entites.CandidatMessages;
 import fr.cnrs.opentheso.entites.CandidatStatus;
@@ -17,6 +18,7 @@ import fr.cnrs.opentheso.models.candidats.NodeProposition;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.repositories.CandidatMessageRepository;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
 import fr.cnrs.opentheso.repositories.CandidatVoteRepository;
@@ -34,11 +36,13 @@ import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,12 +52,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CandidatService {
 
+    private final MailService mailBean;
     private final ImageService imageService;
     private final StatusRepository statusRepository;
     private final ConceptRepository conceptRepository;
@@ -77,6 +89,7 @@ public class CandidatService {
     private final RelationService relationService;
     private final GroupService groupService;
     private final UserRepository userRepository;
+    private final LanguageBean languageBean;
 
 
     public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int stat) {
@@ -612,12 +625,13 @@ public class CandidatService {
                         .insertionDate(projection.getModified())
                         .statut(String.valueOf(stat))
                         .createdById(projection.getIdUser())
-                        .createdByIdAdmin(projection.getIdUserAdmin())
+                        .createdByIdAdmin(projection.getIdUserAdmin() == null ? -1 : projection.getIdUserAdmin())
                         .idThesaurus(idThesaurus)
                         .adminMessage(projection.getMessage())
                         .nomPref(termService.getLexicalValueOfConcept(projection.getIdConcept(), idThesaurus, lang))
                         .createdBy(userRepository.findById(projection.getIdUser()).map(User::getUsername).orElse("Utilisateur inconnu"))
-                        .createdByAdmin(userRepository.findById(projection.getIdUserAdmin()).map(User::getUsername).orElse("Utilisateur inconnu"))
+                        .createdByAdmin(projection.getIdUserAdmin() != null ?
+                                userRepository.findById(projection.getIdUserAdmin()).map(User::getUsername).orElse("Utilisateur inconnu") : "Utilisateur inconnu")
                         .build())
                 .toList();
     }
@@ -657,5 +671,91 @@ public class CandidatService {
                             .title(proj.getLang())
                             .build())
                 .toList();
+    }
+
+    public void sendMessage(CandidatDto candidatSelected, String message, Integer userId) {
+
+        candidatMessageRepository.save(CandidatMessages.builder()
+                .value(message)
+                .idConcept(candidatSelected.getIdConcepte())
+                .idThesaurus(candidatSelected.getIdThesaurus())
+                .idUser(userId)
+                .date(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()))
+                .build());
+
+        sendNotificationMail(candidatSelected);
+    }
+
+    private void sendNotificationMail(CandidatDto candidatSelected) {
+
+        // Envoi de mail aux participants à la discussion
+        var subject = "Nouveau message module candidat";
+        var message = "Vous avez participé à la discussion pour ce candidat "
+                + candidatSelected.getNomPref() + ", "
+                + " id= " + candidatSelected.getIdConcepte()
+                + ". Sachez qu’un nouveau message a été posté.";
+
+        var nodeUsers = setListUsersForMail(candidatSelected);
+
+        if (CollectionUtils.isNotEmpty(nodeUsers)) {
+            nodeUsers.stream()
+                    .filter(user -> user != null && user.isAlertMail()) // Vérifie si l'alerte est activée
+                    .forEach(user -> mailBean.sendMail(user.getMail(), subject, message));
+        }
+    }
+
+    public List<NodeUser> setListUsersForMail(CandidatDto candidatSelected){
+
+        if (candidatSelected != null) {
+            var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus());
+            if (CollectionUtils.isNotEmpty(candidatMessages)) {
+                return candidatMessages.stream()
+                        .map(element -> NodeUser.builder().idUser(element.getIdUser()).build())
+                        .toList();
+            } else {
+                return new ArrayList<>();
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<MessageDto> getAllMessagesByCandidat(CandidatDto candidatSelected, int idUser) {
+
+        log.info("Recherche des messages pour le candidat id {}", candidatSelected.getIdConcepte());
+        var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus());
+
+        return CollectionUtils.isNotEmpty(candidatMessages)
+            ? candidatMessages.stream()
+                .map(element ->
+                        MessageDto.builder()
+                                .msg(element.getValue())
+                                .nom(element.getUsername())
+                                .idUser(element.getIdUser())
+                                .mine(idUser == element.getIdUser())
+                                .date(element.getDate())
+                                .build())
+                .toList()
+            : List.of();
+    }
+
+    public void sendMailInvitation(String email) {
+
+        try {
+            var properties = System.getProperties();
+            var props = mailBean.getPrefMail();
+            var message = new MimeMessage(Session.getDefaultInstance(properties));
+            message.setFrom(new InternetAddress(props.getProperty("mailFrom")));
+
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            message.setSubject("Invitation à une conversation !");
+            message.setText("C'est le body du message");
+            Transport.send(message);
+            MessageUtils.showInformationMessage(languageBean.getMsg("candidat.send_message.msg5"));
+        } catch (MessagingException mex) {
+            MessageUtils.showWarnMessage(languageBean.getMsg("candidat.send_message.msg6"));
+        }
     }
 }

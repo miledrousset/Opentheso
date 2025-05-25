@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.RelationService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -68,6 +69,8 @@ public class NarrowerBean implements Serializable {
     private List<NodeTypeRelation> typesRelationsNT;
     private String selectedRelationRole;
     private boolean applyToBranch;
+    @Autowired
+    private RelationService relationService;
 
     public void clear() {
         if (nodeNTs != null) {
@@ -148,7 +151,7 @@ public class NarrowerBean implements Serializable {
         }
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
-        if (conceptHelper.isTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+        if (conceptService.isTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             if (!conceptHelper.setNotTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en enlevant le concept du TopConcept, veuillez utiliser les outils de coorection de cohérence !");
@@ -215,7 +218,7 @@ public class NarrowerBean implements Serializable {
         }
 
         // on vérifie si le concept qui a été enlevé n'a plus de BT, on le rend TopTerme
-        if (!relationsHelper.isConceptHaveRelationBT(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+        if (!relationService.isConceptHaveRelationBT(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             if (!conceptHelper.setTopConcept(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en passant le concept et TopConcept, veuillez utiliser les outils de coorection de cohérence !");
@@ -283,7 +286,7 @@ public class NarrowerBean implements Serializable {
         initForChangeRelations();
     }
     private void applyRelationToBranch__(String idConceptParent, String relation, String inverseRelation, int idUser) {
-        List<String> conceptsFils = conceptHelper.getListChildrenOfConcept(idConceptParent, selectedTheso.getCurrentIdTheso());
+        List<String> conceptsFils = conceptService.getListChildrenOfConcept(idConceptParent, selectedTheso.getCurrentIdTheso());
         for (String idConcept : conceptsFils) {
             relationsHelper.updateRelationNT(idConceptParent,
                     idConcept, selectedTheso.getCurrentIdTheso(), relation, inverseRelation, idUser);

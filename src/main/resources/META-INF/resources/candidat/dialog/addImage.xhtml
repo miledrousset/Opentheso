@@ -61,7 +61,7 @@
                                  update="tabViewCandidat messageIndex"
                                  oncomplete="PF('addImage').hide();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{candidatBean.addNewImage(currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{imageCandidatBean.addNewImage(currentUser.nodeUser.idUser)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -653,7 +653,7 @@ public class AlignmentBean implements Serializable {
      * permet d'initialiser le tableau des concepts à aligner
      */
     public void initAlignementByStep(String idTheso, String idConcept, String currentLang) {
-        allIdsOfBranch = conceptHelper.getIdsOfBranchLimited(idConcept, idTheso, 2000);
+        allIdsOfBranch = conceptService.getIdsOfBranchLimited(idConcept, idTheso, 2000);
         idConceptSelectedForAlignment = idConcept;
         idsToGet = new ArrayList<>();
         listAlignValues = null;
@@ -1536,11 +1536,8 @@ public class AlignmentBean implements Serializable {
                     continue;
                 }
 
-                if (!noteService.addNote(idConcept, selectedResource.getIdLang(), idTheso, selectedResource.getGettedValue(),
-                        "definition", selectedAlignement, idUser)) {
-                    error = true;
-                    alignementResult = alignementResult + ": Erreur dans l'ajout des définitions";
-                }
+                noteService.addNote(idConcept, selectedResource.getIdLang(), idTheso, selectedResource.getGettedValue(),
+                        "definition", selectedAlignement, idUser);
             }
         }
         alignementResult = alignementResult + " Définitions ajoutées ##";

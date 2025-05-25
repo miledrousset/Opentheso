@@ -1,86 +1,54 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.UserRepository;
-import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
+import fr.cnrs.opentheso.services.ProjectService;
+import fr.cnrs.opentheso.services.UserService;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "superAdminBean")
 public class SuperAdminBean implements Serializable {
 
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserRepository userRepository;
-    private ThesaurusRepository thesaurusRepository;
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private CurrentUser currentUser;
-    private SelectedTheso selectedTheso;
-
-    private List<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
-    private List<UserGroupLabel> allProjects;
-    private List<NodeUserGroupThesaurus> allThesoProject;
+    @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
+    private final CurrentUser currentUser;
+    private final UserService userService;
+    private final SelectedTheso selectedTheso;
+    private final ProjectService projectService;
 
-    @Inject
-    public SuperAdminBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                          UserRoleGroupRepository userRoleGroupRepository,
-                          UserRepository userRepository,
-                          ThesaurusRepository thesaurusRepository,
-                          UserGroupThesaurusRepository userGroupThesaurusRepository,
-                          UserGroupLabelRepository userGroupLabelRepository,
-                          CurrentUser currentUser,
-                          SelectedTheso selectedTheso) {
+    private List<NodeUserGroupUser> nodeUserGroupUsers;
+    private List<UserGroupLabel> allProjects;
+    private List<NodeUserGroupThesaurus> allThesaurusProject;
 
-        this.workLanguage = workLanguage;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userRepository = userRepository;
-        this.thesaurusRepository = thesaurusRepository;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.currentUser = currentUser;
-        this.selectedTheso = selectedTheso;
-    }
 
     public void init() {
 
-        allProjects = userGroupLabelRepository.findAll();
-        allProjects.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
+        allProjects = projectService.getAllProjects();
 
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserGroupUsers = userRoleGroupRepository.getAllGroupUser();
-            nodeUserGroupUsers.addAll(userRepository.getAllGroupUserWithoutGroup());
-            nodeUserGroupUsers.addAll(userRepository.getAllUsersSuperadmin());
+            nodeUserGroupUsers = userService.getAllUserGroup();
         }
 
         var idLang = StringUtils.isEmpty(selectedTheso.getCurrentLang())
                 ? workLanguage
                 : selectedTheso.getCurrentLang();
 
-        allThesoProject = new ArrayList<>();
-        allThesoProject.addAll(userGroupThesaurusRepository.getAllGroupTheso(idLang));
-        allThesoProject.addAll(thesaurusRepository.getAllThesaurusWithoutGroup(idLang));
+        allThesaurusProject = projectService.getAllThesaurusProjects(idLang);
     }
 }

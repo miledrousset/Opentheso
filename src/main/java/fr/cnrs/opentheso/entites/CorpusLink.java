@@ -23,7 +23,8 @@ import lombok.AllArgsConstructor;
 public class CorpusLink {
 
     @Id
-    private String idTheso;
+    @Column(name = "idTheso")
+    private String idThesaurus;
 
     @Id
     private String corpusName;

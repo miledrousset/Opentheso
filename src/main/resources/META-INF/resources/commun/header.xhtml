@@ -21,7 +21,7 @@
         </button>
 
         <!-- Nom du thésaurus -->
-        <h:panelGroup rendered="#{selectedTheso.isFromUrl}">
+        <h:panelGroup rendered="#{selectedTheso.isFromUrl()}">
             <p:commandButton icon="pi pi-arrow-circle-left" style="margin-right: 15px"
                              actionListener="#{selectedTheso.setIsFromUrl(false)}" process="@this" ajax="true"
                              onclick="changeUrl();" update="wrapper"/>
@@ -29,7 +29,7 @@
             <h:outputLabel value="#{selectedTheso.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{!selectedTheso.isFromUrl}">
+        <h:panelGroup rendered="#{!selectedTheso.isFromUrl()}">
             <!-- liste des projets -->
             <p:selectOneMenu value="#{selectedTheso.projectIdSelected}" filter="true" filterMatchMode="contains"
                              style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px;
@@ -62,7 +62,7 @@
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedTheso.isFromUrl}">
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedTheso.isFromUrl()}">
             <i class="fa fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>

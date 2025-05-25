@@ -36,19 +36,19 @@
                         <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} : " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch  id="limitToThesaurus" value="#{modifyRoleBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
-                            <p:ajax listener="#{modifyRoleBean.toogleLimitTheso()}" update="modifyLimitedRoleForm:userRoleDef"/>
+                        <p:toggleSwitch  id="limitToThesaurus" value="#{modifyRoleBean.limitOnThesaurus}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax listener="#{modifyRoleBean.toggleLimitThesaurus()}" update="modifyLimitedRoleForm:userRoleDef"/>
                         </p:toggleSwitch>
 
                     </div>
                     <p:tooltip value="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}" showDelay="500" for="limitToThesaurus" />
                 </div>               
-                <h:panelGroup rendered="#{modifyRoleBean.limitOnTheso}">
+                <h:panelGroup rendered="#{modifyRoleBean.limitOnThesaurus}">
 
 
                     <div class="row" >
                         <div class="col-12" style="text-align: right">
-                            <p:dataTable value="#{modifyRoleBean.listeLimitedThesoRoleForUser}" var="limitedThesoRole"  size="small"
+                            <p:dataTable value="#{modifyRoleBean.listeLimitedThesaurusRoleForUser}" var="limitedThesoRole"  size="small"
                                          widgetVar="limitedThesoRole" styleClass="products-table"
                                          resizableColumns="true" scrollHeight="450" reflow="true"
                                          rowSelectMode="add"
@@ -78,7 +78,7 @@
                 </h:panelGroup>              
 
 
-                <h:panelGroup rendered="#{!modifyRoleBean.limitOnTheso}">
+                <h:panelGroup rendered="#{!modifyRoleBean.limitOnThesaurus}">
                     <!-- Roles -->
                     <div class="row" style="margin-top: 5px;">
                         <div class="col-5" style="text-align: right">

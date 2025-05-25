@@ -1,0 +1,120 @@
+package fr.cnrs.opentheso.services;
+
+import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.utils.ToolsHelper;
+import java.time.LocalDate;
+
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
+import jakarta.ws.rs.core.Response;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+/**
+ * Helper permettant de vérifier l'existence d'une clé API dans la table useres
+ */
+@Service
+@Slf4j
+@AllArgsConstructor
+public class ApiKeyService {
+
+    private final UserRepository userRepository;
+
+    /**
+     * Génère une clé API d'une longueur choisie avec le header voulu
+     * @param header le header de la clé API
+     * @param keyLength la longueur de la clé API
+     * @return la clé API
+     */
+    public String generateApiKey(String header, int keyLength) {
+
+        final String timestamp = String.valueOf(System.currentTimeMillis());
+        final String randomKey = header.length() + timestamp.length() < keyLength ? ToolsHelper.getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
+        String apiKey= header + timestamp + randomKey;
+        if (apiKey.length() > keyLength) {
+            apiKey = apiKey.substring(0, keyLength);
+        }
+        return apiKey;
+    }
+
+    /**
+     * @param apiKey Clé d'API à sauvegarder
+     * @param idUser id de l'utilisateur propriétaire de la clé
+     * @return True si la clé a bien été sauvegardé, False sinon
+     */
+    public boolean saveApiKey(String apiKey, int idUser) {
+
+        log.info("Mise à jour du l'API Key de l'utilisateur {}", idUser);
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("Aucun utilisateur n'est trouvé avec l'id {}", idUser);
+            return false;
+        }
+
+        user.get().setApiKey(apiKey);
+        user.get().setKeyNeverExpire(true);
+        userRepository.save(user.get());
+        log.info("Mise à jour du APiKey terminé avec sucée");
+        return true;
+    }
+
+    /**
+     * Vérifie si la clé est valide, existe et n'est pas expirée
+     */
+    public ApiKeyState checkApiKey(String apiKey){
+
+        if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
+
+        var user = userRepository.findByApiKey(apiKey);
+        if (user.isEmpty()) {
+            log.error("Aucun utilisateur n'est trouvé avec l'apiKey {}", apiKey);
+            return ApiKeyState.INVALID;
+        }
+
+        if (!user.get().getKeyNeverExpire()) {
+            if (user.get().getKeyExpiresAt() == null)
+                return ApiKeyState.INVALID;
+
+            if (LocalDate.now().isAfter(user.get().getKeyExpiresAt()))
+                return ApiKeyState.EXPIRED;
+        }
+        return ApiKeyState.VALID;
+    }
+
+    /**
+     * Renvoie une réponse adaptée si l'état de la clé n'est pas VALID
+     * @param state Etat de la clé API
+     * @return Response avec le message erreur correspondant
+     */
+    public ResponseEntity<Object> errorResponse(ApiKeyState state) {
+        int code = 0;
+        String msg = switch (state) {
+            case EMPTY -> {
+                code = Response.Status.UNAUTHORIZED.getStatusCode();
+                yield "No API key given";
+            }
+            case DATABASE_UNAVAILABLE -> {
+                code = Response.Status.SERVICE_UNAVAILABLE.getStatusCode();
+                yield "Database unavailable";
+            }
+            case INVALID -> {
+                code = Response.Status.FORBIDDEN.getStatusCode();
+                yield "API key is invalid";
+            }
+            case SQL_ERROR -> {
+                code = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+                yield "Server internal error";
+            }
+            case EXPIRED -> {
+                code = Response.Status.UNAUTHORIZED.getStatusCode();
+                yield "API key is expired";
+            }
+            default -> null;
+        };
+
+        return ResponseEntity.status(code).contentType(MediaType.APPLICATION_JSON).body(msg);
+    }
+    
+}

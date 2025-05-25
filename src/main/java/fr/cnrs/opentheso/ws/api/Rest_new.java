@@ -1,13 +1,18 @@
 package fr.cnrs.opentheso.ws.api;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
+
+import java.util.List;
+import java.util.Map;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,12 +21,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
-
-import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -81,6 +80,8 @@ public class Rest_new {
     );
     @Autowired
     private ThesaurusService thesaurusService;
+    @Autowired
+    private UserService userService;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -846,8 +847,8 @@ public class Rest_new {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getInfoLastUpdate__(idTheso));
     }
 
-    private String getInfoLastUpdate__(String idTheso) {
-        Date date = conceptHelper.getLastModification(idTheso);
+    private String getInfoLastUpdate__(String idThesaurus) {
+        var date = userService.getLastModification(idThesaurus);
         if (date == null) {
             return messageEmptyJson();
         }

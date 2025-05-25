@@ -1,7 +1,14 @@
 package fr.cnrs.opentheso.repositories;
 
+import fr.cnrs.opentheso.models.concept.NodeConceptType;
+import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
+import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
+import fr.cnrs.opentheso.models.terms.NodeNT;
+import fr.cnrs.opentheso.models.terms.NodeRT;
+import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,15 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.entites.HierarchicalRelationship;
-import fr.cnrs.opentheso.models.concept.NodeConceptType;
-import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
-import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
-import fr.cnrs.opentheso.models.terms.NodeNT;
-import fr.cnrs.opentheso.models.terms.NodeRT;
-import fr.cnrs.opentheso.models.relations.NodeRelation;
-import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
-import fr.cnrs.opentheso.models.concept.NodeUri;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -249,51 +247,6 @@ public class RelationsHelper {
     }
 
     /**
-     * récupération des TopTerms qui ont au moins une hiérarchie fonction pour
-     * la correction des cohérences
-     */
-    public ArrayList<String> getListIdOfTopTermForRepair(String idThesaurus) {
-
-        ArrayList<String> listIds = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select DISTINCT hierarchical_relationship.id_concept1 from hierarchical_relationship where"
-                        + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
-                        + " AND"
-                        + " hierarchical_relationship.role like 'NT%'"
-                        + " AND"
-                        + " hierarchical_relationship.id_concept1 not in "
-                        + " (select hierarchical_relationship.id_concept2 from hierarchical_relationship where"
-                        + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' and"
-                        + " (hierarchical_relationship.role not like 'BT%'"
-                        + " AND "
-                        + " hierarchical_relationship.role not like 'RT%'))");
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        listIds.add(resultSet.getString("id_concept1"));
-                    }
-                }
-
-                stmt.executeQuery("select id_concept from concept where concept.id_thesaurus = '" + idThesaurus + "'"
-                        + " and concept.id_concept not in (select DISTINCT hierarchical_relationship.id_concept1 from hierarchical_relationship where"
-                        + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' AND hierarchical_relationship.role not like 'RT%')");
-
-                try (ResultSet resultSet1 = stmt.getResultSet()) {
-                    while (resultSet1.next()) {
-                        listIds.add(resultSet1.getString("id_concept"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting All TopTerm for Repair : " + idThesaurus, sqle);
-            listIds.clear();
-        }
-        return listIds;
-    }
-
-    /**
      * Cette fonction permet de récupérer la liste des Id concepts avec les
      * relations BT, NT, RT les identifiants pérennes (Ark, Handle) sert à
      * l'export des données
@@ -458,57 +411,6 @@ public class RelationsHelper {
             log.error("Error while getting List Ids of BT of Concept : " + idConcept, sqle);
         }
         return listIdOfBt;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la liste des relations qui sont en
-     * boucle pour une relation donnée (NT, BT, RT)
-     *
-     * @param role
-     * @param idThesaurus
-     * @return #MR
-     */
-    public ArrayList<HierarchicalRelationship> getListLoopRelations(String role, String idThesaurus) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        ArrayList<HierarchicalRelationship> listRelations = new ArrayList<>();
-
-        try {
-            // Get connection from pool
-            conn = dataSource.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select * from hierarchical_relationship"
-                            + " where id_concept1 = id_concept2"
-                            + " and id_thesaurus = '" + idThesaurus + "'"
-                            + " and role = '" + role + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    while (resultSet.next()) {
-                        HierarchicalRelationship hierarchicalRelationship = new HierarchicalRelationship();
-                        hierarchicalRelationship.setIdConcept1(resultSet.getString("id_concept1"));
-                        hierarchicalRelationship.setIdConcept2(resultSet.getString("id_concept2"));
-                        hierarchicalRelationship.setIdThesaurus(idThesaurus);
-                        hierarchicalRelationship.setRole(role);
-                        listRelations.add(hierarchicalRelationship);
-                    }
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting List of Loop relations of thesaurus : " + idThesaurus, sqle);
-        }
-        return listRelations;
     }
 
     /**
@@ -778,55 +680,6 @@ public class RelationsHelper {
             }
         }
     }
-    
-    public NodeRelation getLoopRelation(
-             String idTheso, String idConcept){
-        // récupération la relation en Loop
-        NodeRelation nodeRelation = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept1, role, id_concept2 from hierarchical_relationship " +
-                        "where " +
-                        "id_concept1 = '" + idConcept + "' and role = 'BT' " +
-                        "and id_thesaurus = '" + idTheso + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeRelation = new NodeRelation();
-                        nodeRelation.setIdConcept1(resultSet.getString("id_concept1"));
-                        nodeRelation.setRelation(resultSet.getString("role"));
-                        nodeRelation.setIdConcept2(resultSet.getString("id_concept2"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if id exist : " + idConcept, sqle);
-        }        
-        if(nodeRelation == null) return null;
-        
-        NodeRelation nodeRelation2 = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept2, role, id_concept1 from hierarchical_relationship " +
-                        "where " +
-                        "id_concept1 = '" + nodeRelation.getIdConcept1() + "' and role = 'BT' and id_concept2 = '" + nodeRelation.getIdConcept2() + "' and id_thesaurus = '" + idTheso + "'" +
-                        "and id_concept1 IN" +
-                        "(select id_concept2 from hierarchical_relationship where " +
-                        "id_concept1 = '" + nodeRelation.getIdConcept2() +"' and role = 'BT' and id_concept2 = '" + nodeRelation.getIdConcept1() + "' and id_thesaurus = '" + idTheso + "')");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        nodeRelation2 = new NodeRelation();
-                        nodeRelation2.setIdConcept2(resultSet.getString("id_concept2"));
-                        nodeRelation2.setRelation(resultSet.getString("role"));
-                        nodeRelation2.setIdConcept1(resultSet.getString("id_concept1"));
-                    }
-                }
-                return nodeRelation2;
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if id exist : " + idConcept, sqle);
-        }
-        return null;          
-    }
 
     /**
      * Cette fonction permet de supprimer une relation terme gÃ©nÃ©rique Ã  un
@@ -1082,49 +935,6 @@ public class RelationsHelper {
     }
 
     /**
-     * Cette fonction permet de supprimer une relation bien définie c'est à dire
-     * une ligne dans la table Sert pour corriger les incohérences
-     *
-     * @param idConcept1
-     * @param idThesaurus
-     * @param role
-     * @param idConcept2
-     * @return boolean
-     */
-    public boolean deleteThisRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
-
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
-
-        try {
-            // Get connection from pool
-            conn = dataSource.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "delete from hierarchical_relationship"
-                            + " where id_concept1 ='" + idConcept1 + "'"
-                            + " and id_thesaurus = '" + idThesaurus + "'"
-                            + " and role = '" + role + "'"
-                            + " and id_concept2 = '" + idConcept2 + "'";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while deleting one relation of Concept : " + idConcept1, sqle);
-        }
-        return status;
-    }
-
-    /**
      * Cette fonction permet de supprimer toutes les relations d'un concept
      *
      * @param idConcept
@@ -1153,85 +963,6 @@ public class RelationsHelper {
             log.error("Error while deleting All relations of Concept : " + idConcept, sqle);
         }
         return status;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la liste des Id des termes génériques
-     * d'un concept
-     *
-     * @param idConcept
-     * @param idThesaurus
-     * @return Objet class Concept
-     */
-    public ArrayList<String> getListIdBT(String idConcept, String idThesaurus) {
-
-        ArrayList<String> listIdBT = null;
-
-        try (Connection conn = dataSource.getConnection()){
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select id_concept2,role from hierarchical_relationship"
-                            + " where id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept1 = '" + idConcept + "'"
-                            + " and role LIKE 'BT%'");
-
-                try (ResultSet resultSet = stmt.getResultSet()){
-                    if (resultSet != null) {
-                        listIdBT = new ArrayList<>();
-                        while (resultSet.next()) {
-                            listIdBT.add(resultSet.getString("id_concept2"));
-                        }
-                    }
-                  /*  if (listIdBT != null) {
-                        if (listIdBT.contains(idConcept)) {
-                            /// relation en boucle à supprimer
-                            deleteThisRelation(idConcept, idThesaurus, "BT", idConcept);
-                            deleteThisRelation(idConcept, idThesaurus, "NT", idConcept);
-                            getListBT(idConcept, idThesaurus);
-                        }
-                    }*/                    
-                }
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting Liste ID of BT Concept : " + idConcept, sqle);
-        }
-
-        return listIdBT;
-    }
-
-    public ArrayList<String> getListIdWhichHaveNt(String idConcept, String idThesaurus) {
-
-        PreparedStatement stmt;
-        ResultSet rs;
-        ArrayList<String> ret = new ArrayList();
-        try {
-            Connection conn = dataSource.getConnection();
-
-            try {
-                String sql = "SELECT id_concept1 FROM hierarchical_relationship WHERE id_concept2=? AND id_thesaurus=? AND role LIKE ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, idConcept);
-                stmt.setString(2, idThesaurus);
-                stmt.setString(3, "%NT%");
-
-                try {
-                    rs = stmt.executeQuery();
-                    while (rs.next()) {
-                        ret.add(rs.getString(1));
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-
-        } catch (SQLException e) {
-            log.error("Error while getting list id of concept 1 for NT and concept2 : " + idConcept, e);
-        }
-
-        return ret;
     }
 
     /**
@@ -1277,50 +1008,6 @@ public class RelationsHelper {
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while asking if relation RT exist of Concept1 : " + idConcept1 + " for concept2 : " + idConcept2, sqle);
-        }
-        return existe;
-    }
-
-    /**
-     * Cette fonction permet de savoir si le Concept a une relation BT (terme
-     * générique)
-     *
-     * @param idConcept
-     * @param idThesaurus
-     * @return Objet class Concept
-     */
-    public boolean isConceptHaveRelationBT(String idConcept, String idThesaurus) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        boolean existe = false;
-
-        try {
-            // Get connection from pool
-            conn = dataSource.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_concept1 from hierarchical_relationship"
-                            + " where id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept1 = '" + idConcept + "'"
-                            + " and role LIKE 'BT%'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    existe = resultSet.next();
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while asking if relation BT exist of Concept : " + idConcept, sqle);
         }
         return existe;
     }

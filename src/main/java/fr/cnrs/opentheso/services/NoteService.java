@@ -57,7 +57,7 @@ public class NoteService {
         var noteValue = noteRepository.findByIdAndIdThesaurus(idNote, idThesaurus);
         if (noteValue.isEmpty()) {
             log.info("Aucune note n'existe pas l'id {}", idNote);
-            return true;
+            return false;
         }
 
         log.info("Mise à jour de la note id {} ", idNote);
@@ -68,7 +68,7 @@ public class NoteService {
 
         idLang = normalizeIdLang(idLang);
         addConceptNoteHistorique(idConcept, idLang, idThesaurus, note, noteTypeCode, "update", idUser);
-        return false;
+        return true;
     }
 
     public void addConceptNoteHistorique(String idConcept, String idLang, String idThesausus, String note,
@@ -122,9 +122,14 @@ public class NoteService {
                 .toList();
     }
 
-    public boolean addNote(String identifier, String idLang, String idThesaurus, String note, String noteTypeCode, String noteSource, int idUser) {
+    public void addNote(String identifier, String idLang, String idThesaurus, String note, String noteTypeCode, String noteSource, int idUser) {
 
         idLang = normalizeIdLang(idLang);
+
+        note = note.replaceAll("<p>", "");
+        note = note.replaceAll("</p>", "\n");
+        note = StringEscapeUtils.unescapeXml(note);
+
         if(isNoteExistInThatLang(identifier, idThesaurus, idLang, noteTypeCode)) {
             log.info("Mise à jour d'une note existante");
             var noteToUpdate = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(identifier, idThesaurus, noteTypeCode, idLang);
@@ -146,10 +151,10 @@ public class NoteService {
                     .identifier(identifier)
                     .noteSource(StringUtils.convertString(noteSource))
                     .idUser(idUser)
+                    .created(new Date())
+                    .modified(new Date())
                     .build());
         }
-
-        return true;
     }
 
     public boolean isNoteExistInThatLang(String identifier, String idThesaurus, String idLang, String noteTypeCode) {

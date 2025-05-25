@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ExportService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -101,6 +102,8 @@ public class ExportFileBean implements Serializable {
     int posX = 0;
     @Autowired
     private FacetService facetService;
+    @Autowired
+    private ConceptService conceptService;
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -939,9 +942,9 @@ public class ExportFileBean implements Serializable {
         }
 
         /// permet de filtrer par collection
-        ArrayList<String> allConcepts = new ArrayList<>();
+        List<String> allConcepts = new ArrayList<>();
         if (!viewExportBean.isToogleFilterByGroup()) {
-            allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+            allConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
         } else {
             for (String idGroup : selectedGroups) {
                 ArrayList<String> allConceptsTemp;

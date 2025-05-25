@@ -1,22 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package fr.cnrs.opentheso.bean.mail;
+package fr.cnrs.opentheso.services;
 
 import com.sun.mail.smtp.SMTPTransport;
 import java.io.Serializable;
 import java.util.Properties;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -24,15 +16,10 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-/**
- *
- * @author miledrousset
- */
+
 @Data
-@Named(value = "mailBean")
-@RequestScoped
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class MailBean implements Serializable {
+@Service
+public class MailService implements Serializable {
 
     @Value("${smpt.protocol}")
     private String protocolMail;
@@ -84,7 +71,7 @@ public class MailBean implements Serializable {
         return false;
     }
 
-    private Properties getPrefMail() {
+    public Properties getPrefMail() {
         var props = new Properties();
         props.setProperty("mail.transport.protocol", protocolMail);
         props.setProperty("mail.smtp.host", hostname);

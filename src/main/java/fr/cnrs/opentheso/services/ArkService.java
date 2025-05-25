@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -41,7 +42,7 @@ public class ArkService {
      * @param idLang
      * @return
      */
-    public ArrayList<NodeIdValue> generateArkIdFast(String idTheso, ArrayList<String> idConcepts, String idLang) {
+    public ArrayList<NodeIdValue> generateArkIdFast(String idTheso, List<String> idConcepts, String idLang) {
 
         var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference != null && nodePreference.isUseArkLocal()) {
@@ -212,7 +213,7 @@ public class ArkService {
         return true;
     }
 
-    public boolean generateArkIdLocal(String idThesaurus, ArrayList<String> idConcepts) {
+    public boolean generateArkIdLocal(String idThesaurus, List<String> idConcepts) {
 
         log.info("Générer les idArk en local");
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);

@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
 import fr.cnrs.opentheso.services.CandidatService;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.services.ApiKeyService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CandidatController {
 
     private final CandidatService candidatService;
-    private final ApiKeyHelper apiKeyHelper;
+    private final ApiKeyService apiKeyHelper;
+    private final UserService userService;
 
 
     /**
@@ -54,9 +56,9 @@ public class CandidatController {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var userId = apiKeyHelper.getIdUser(apiKey);
+        var user = userService.getUserByApiKey(apiKey);
 
-        if (!candidatService.saveCandidat(candidate, userId)) {
+        if (!candidatService.saveCandidat(candidate, user.getId())) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("");
         }
 

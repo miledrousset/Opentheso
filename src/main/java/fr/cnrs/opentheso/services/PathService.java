@@ -35,6 +35,7 @@ public class PathService {
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptService conceptService;
     private final NoteService noteService;
+    private final RelationService relationService;
 
     private String message;
 
@@ -51,7 +52,7 @@ public class PathService {
 
     private void getGraph(String idConcept, String idThesaurus, List<String> path){
 
-        List<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
+        List<String> idBTs = relationService.getListIdBT(idConcept, idThesaurus);
         if(idBTs == null || idBTs.isEmpty()){
             if(!path.contains(idConcept)) {
                 path.add(idConcept);
@@ -272,7 +273,7 @@ public class PathService {
                                              ArrayList<String> firstPath, ArrayList<String> path, ArrayList<Path> allPaths) {
 
 
-        ArrayList<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
+        var idBTs = relationService.getListIdBT(idConcept, idThesaurus);
         if(idBTs == null) return null;
         if (idBTs.size() > 1) {
           //  Collections.reverse(path);

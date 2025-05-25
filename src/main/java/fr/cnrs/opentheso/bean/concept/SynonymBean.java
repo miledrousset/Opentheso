@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -57,6 +58,7 @@ public class SynonymBean implements Serializable {
     private final TermRepository termRepository;
     private final ThesaurusService thesaurusService;
     private final ConceptService conceptService;
+    private final TermService termService;
 
     private NodeEM nodeEM;
     private List<NodeLangTheso> nodeLangs;
@@ -160,7 +162,7 @@ public class SynonymBean implements Serializable {
                 duplicate = true;
                 return;
             }
-            if (nonPreferredTermRepository.isAltLabelExist(nodeEMLocal.getLexicalValue(), selectedTheso.getCurrentIdTheso(), nodeEMLocal.getLang())) {
+            if (termService.isAltLabelExist(nodeEMLocal.getLexicalValue(), selectedTheso.getCurrentIdTheso(), nodeEMLocal.getLang())) {
                 MessageUtils.showErrorMessage("Un label identique existe déjà !");
                 duplicate = true;
                 return;
@@ -231,7 +233,7 @@ public class SynonymBean implements Serializable {
             return false;
         }
 
-        if (nonPreferredTermRepository.isAltLabelExist(value, selectedTheso.getCurrentIdTheso(), selectedLang)) {
+        if (termService.isAltLabelExist(value, selectedTheso.getCurrentIdTheso(), selectedLang)) {
             MessageUtils.showErrorMessage("Un label identique existe déjà !");
             duplicate = true;
             return false;
@@ -341,7 +343,7 @@ public class SynonymBean implements Serializable {
                 return;
             }
 
-            if (nonPreferredTermRepository.isAltLabelExist(synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), synonymPropBean.getLang())) {
+            if (termService.isAltLabelExist(synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), synonymPropBean.getLang())) {
                 MessageUtils.showErrorMessage("Un label identique existe déjà !");
                 return;
             }

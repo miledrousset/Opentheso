@@ -136,14 +136,8 @@ public class DeeplTranslate implements Serializable {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
         if(this.nodeNote == null) return;
-        if (!noteService.addNote(nodeNote.getIdConcept(), toLang, selectedTheso.getCurrentIdTheso(),
-                translatingText, nodeNote.getNoteTypeCode(), source,//nodeNote.getNoteSource(),
-
-                currentUser.getNodeUser().getIdUser())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        noteService.addNote(nodeNote.getIdConcept(), toLang, selectedTheso.getCurrentIdTheso(), translatingText,
+                nodeNote.getNoteTypeCode(), source, currentUser.getNodeUser().getIdUser());
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         retrieveExistingTranslatedText();
@@ -153,14 +147,12 @@ public class DeeplTranslate implements Serializable {
 
     public void saveExistingTranslatedText() {
         if(this.nodeNote == null) return;
-        if (!noteService.addNote(nodeNote.getIdConcept(), toLang,
+        
+        noteService.addNote(nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),
-                nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+                nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser());
+
         conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(), nodeNote.getIdConcept(), nodeNote.getLang(), currentUser);
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note mis à jour avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

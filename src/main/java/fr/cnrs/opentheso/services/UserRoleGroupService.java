@@ -1,7 +1,11 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.Roles;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
+import fr.cnrs.opentheso.models.users.NodeUserRole;
+import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
@@ -10,11 +14,14 @@ import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserRoleGroupService {
@@ -25,70 +32,258 @@ public class UserRoleGroupService {
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
     private final UserGroupLabelRepository userGroupLabelRepository;
+    private final ThesaurusService thesaurusService;
+    private final UserService userService;
+    private final PreferenceService preferenceService;
 
 
     @Transactional
-    public void addUserRoleOnGroup(Integer userId, Integer roleId, Integer groupId) {
+    public boolean addUserRoleOnGroup(Integer idUSer, Integer idRole, Integer idGroup) {
 
-        var user = userRepository.findById(userId).get();
-        var role = roleRepository.findById(roleId).get();
-        var group = userGroupLabelRepository.findById(groupId).get();
+        var user = userRepository.findById(idUSer);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUSer);
+            return false;
+        }
 
-        var isSuperAdmin = role.getId() == 1;
+        var role = roleRepository.findById(idRole);
+        if (role.isEmpty()) {
+            log.error("Le rôle id {} n'existe pas", idRole);
+            return false;
+        }
+
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        var isSuperAdmin = role.get().getId() == 1;
         if (isSuperAdmin) {
-            userRoleGroupRepository.deleteByUserAndGroup(user, group);
+            userRoleGroupRepository.deleteByUserAndGroup(user.get(), group.get());
         } else {
-            var userRoleGroup = UserRoleGroup.builder().user(user).role(role).group(group).build();
+            var userRoleGroup = UserRoleGroup.builder()
+                    .user(user.get())
+                    .role(role.get())
+                    .group(group.get())
+                    .build();
             userRoleGroupRepository.save(userRoleGroup);
         }
 
-        user.setIsSuperAdmin(isSuperAdmin);
-        userRepository.save(user);
+        user.get().setIsSuperAdmin(isSuperAdmin);
+        userRepository.save(user.get());
+        return true;
     }
 
     @Transactional
-    public void addUserRoleOnTheso(int userId, int roleId, int groupId, List<String> idThesos) {
+    public boolean addUserRoleOnTheso(int idUser, int idRole, int idGroup, List<String> idThesaurusList) {
 
-        var user = userRepository.findById(userId).get();
-        var role = roleRepository.findById(roleId).get();
-        var group = userGroupLabelRepository.findById(groupId).get();
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUser);
+            return false;
+        }
 
-        userRoleGroupRepository.deleteByUserAndGroup(user, group);
+        var role = roleRepository.findById(idRole);
+        if (role.isEmpty()) {
+            log.error("Le rôle id {} n'existe pas", idRole);
+            return false;
+        }
 
-        for (String idTheso : idThesos) {
-            var thesaurus = thesaurusRepository.findById(idTheso);
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        userRoleGroupRepository.deleteByUserAndGroup(user.get(), group.get());
+
+        for (String idThesaurus : idThesaurusList) {
+            var thesaurus = thesaurusRepository.findById(idThesaurus);
+            if (thesaurus.isEmpty()) {
+                log.error("Le thésaurus id {} n'existe pas", idThesaurus);
+                return false;
+            }
+
             var userRoleGroupOn = UserRoleOnlyOn.builder()
-                    .user(user)
-                    .role(role)
-                    .group(group)
+                    .user(user.get())
+                    .role(role.get())
+                    .group(group.get())
                     .thesaurus(thesaurus.get())
                     .build();
             userRoleOnlyOnRepository.save(userRoleGroupOn);
         }
+
+        return true;
     }
 
     @Transactional
-    public void updateUserRoleOnGroup(int userId, int roleId, int groupId) {
+    public boolean updateUserRoleOnGroup(int idUser, int idRole, int idGroup) {
 
-        var user = userRepository.findById(userId).get();
-        var group = userGroupLabelRepository.findById(groupId).get();
-
-        if (roleId == 1) {
-            userRoleGroupRepository.deleteByUserAndGroup(user, group);
-        } else {
-            var role = roleRepository.findById(roleId).get();
-            userRoleGroupRepository.updateUserRole(user, group, role);
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUser);
+            return false;
         }
 
-        var isSuperAdmin = (roleId == 1);
-        user.setIsSuperAdmin(isSuperAdmin);
-        userRepository.save(user);
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        if (idRole == 1) {
+            userRoleGroupRepository.deleteByUserAndGroup(user.get(), group.get());
+        } else {
+            var role = roleRepository.findById(idRole);
+            if (role.isEmpty()) {
+                log.error("Le rôle id {} n'existe pas", idRole);
+                return false;
+            }
+            userRoleGroupRepository.updateUserRole(user.get(), group.get(), role.get());
+        }
+
+        var isSuperAdmin = (idRole == 1);
+        user.get().setIsSuperAdmin(isSuperAdmin);
+        userRepository.save(user.get());
+        return true;
     }
 
-    public void deleteRoleByIdGroup(int groupId) {
-        var group = userGroupLabelRepository.findById(groupId);
-        if (group.isPresent()) {
-            userRoleGroupRepository.deleteByGroup(group.get());
+    @Transactional
+    public boolean updateLimitedRoleOnThesaurusForUser(int idUser, int idGroup, String idRole, String roleOfSelectedUser,
+                                                    boolean limitOnThesaurus, List<NodeUserRole> listeLimitedThesaurusRoleForUser) {
+
+        // suppression de tous les rôles
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUser);
+            return false;
         }
+
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        userRoleOnlyOnRepository.deleteByUserAndGroup(user.get(), group.get());
+
+        // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier
+        if(limitOnThesaurus) {
+            // ajout des rôles pour l'utilisateur sur les thésaurus
+            for (NodeUserRole nodeThesaurusRole : listeLimitedThesaurusRoleForUser) {
+                if(nodeThesaurusRole.getIdRole() != -1) {
+                    var role = roleRepository.findById(nodeThesaurusRole.getIdRole());
+                    if (role.isEmpty()) {
+                        log.error("Le rôle id {} n'existe pas", nodeThesaurusRole.getIdRole());
+                        continue;
+                    }
+                    var thesaurus = thesaurusService.getThesaurusById(nodeThesaurusRole.getIdTheso());
+                    userRoleOnlyOnRepository.save(UserRoleOnlyOn.builder()
+                            .user(user.get())
+                            .role(role.get())
+                            .group(group.get())
+                            .thesaurus(thesaurus)
+                            .build());
+                }
+            }
+        } else {
+            var roleSelected = StringUtils.isEmpty(roleOfSelectedUser) ? idRole : roleOfSelectedUser;
+            addUserRoleOnGroup(user.get().getId(), Integer.parseInt(roleSelected), idGroup);
+        }
+        return true;
+    }
+
+    public boolean deleteByUserAndGroup(int idUser, int idGroup) {
+
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUser);
+            return false;
+        }
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        userRoleGroupRepository.deleteByUserAndGroup(user.get(), group.get());
+        return true;
+    }
+
+    public boolean removeUserRoleOnThesaurus(int idUser, int idRole, int idGroup, String idThesaurus) {
+
+        log.info("Suppression de l'utilisateur {} avec le rôle {} du thésaurus {} et le group {}", idUser, idRole, idThesaurus, idGroup);
+        var user = userRepository.findById(idUser);
+        if (user.isEmpty()) {
+            log.error("L'utilisateur id {} n'existe pas", idUser);
+            return false;
+        }
+
+        var role = roleRepository.findById(idRole);
+        if (role.isEmpty()) {
+            log.error("Le rôle id {} n'existe pas", idRole);
+            return false;
+        }
+
+        var group = userGroupLabelRepository.findById(idGroup);
+        if (group.isEmpty()) {
+            log.error("Le group id {} n'existe pas", idGroup);
+            return false;
+        }
+
+        var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
+        if (thesaurus != null) {
+            log.error("Le thésaurus id {} n'existe pas", idThesaurus);
+            return false;
+        }
+
+        userRoleOnlyOnRepository.deleteByUserAndGroupAndRoleAndThesaurus(user.get(), group.get(), role.get(), thesaurus);
+        return true;
+    }
+
+    @Transactional
+    public boolean updateUserRoleLimitedForSelectedUser(int idUser, int idGroup, int idRole,
+                                                        List<String> idThesaurusList, boolean limitOnThesaurus) {
+        // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier
+        if(limitOnThesaurus) {
+            var user = userService.getById(idUser);
+            var userGroupLabel = userGroupLabelRepository.findById(idGroup);
+            if (userGroupLabel.isEmpty()) {
+                log.error("Aucun user group label existe avec l'id group {}", idGroup);
+                return false;
+            }
+            userRoleOnlyOnRepository.deleteByUserAndGroup(user, userGroupLabel.get());
+            return addUserRoleOnTheso(idUser, idRole, idGroup, idThesaurusList);
+        } else {
+            return updateUserRoleOnGroup(idUser, idRole, idGroup);
+        }
+    }
+
+    public List<NodeUserRoleGroup> getRoleProjectByUser(int idUser) {
+        return userRoleGroupRepository.getUserRoleGroup(idUser);
+    }
+
+
+    public List<NodeUserRole> getListRoleByThesaurusLimited(int idGroup, int idUser) {
+
+        var roles = userRoleOnlyOnRepository.getListRoleByThesaurusLimited(idGroup, idUser);
+        roles.forEach(role -> {
+            var idLang = preferenceService.getWorkLanguageOfThesaurus(role.getIdTheso());
+            var thesaurusTitle = thesaurusService.getTitleOfThesaurus(role.getIdTheso(), idLang);
+            role.setThesoName(thesaurusTitle);
+        });
+        return roles;
+    }
+
+    public List<Roles> getAllRoles() {
+        log.info("Recherche de tous les roles disponible");
+        return roleRepository.findAll();
+    }
+
+    public List<UserGroupLabel> findAllUserRoleGroup() {
+
+        log.info("Recherche de tous les user role group disponible");
+        return userGroupLabelRepository.findAll();
     }
 }

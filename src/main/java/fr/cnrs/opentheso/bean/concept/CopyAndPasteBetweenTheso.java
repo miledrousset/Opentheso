@@ -107,7 +107,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
             return;
         }
 
-        conceptsToCopy = conceptHelper.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        conceptsToCopy = conceptService.getIdsOfBranch(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Copier "
                 + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ") Total = " + conceptsToCopy.size());

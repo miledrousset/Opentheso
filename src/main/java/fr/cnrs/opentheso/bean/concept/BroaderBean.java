@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.RelationService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
@@ -59,6 +60,8 @@ public class BroaderBean implements Serializable {
 
     private NodeSearchMini searchSelected;
     private List<NodeBT> nodeBTs;
+    @Autowired
+    private RelationService relationService;
 
     public void clear() {
         searchSelected = null;
@@ -136,7 +139,7 @@ public class BroaderBean implements Serializable {
         }
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
-        if (conceptHelper.isTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+        if (conceptService.isTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             if (!conceptHelper.setNotTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
@@ -214,7 +217,7 @@ public class BroaderBean implements Serializable {
         }
 
         // on vérifie si le concept en cours n'a plus de BT, on le rend TopTerme
-        if (!relationsHelper.isConceptHaveRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        if (!relationService.isConceptHaveRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
             if (!conceptHelper.setTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",

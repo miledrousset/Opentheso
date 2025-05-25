@@ -1,7 +1,7 @@
-package fr.cnrs.opentheso.services.exports.csv;
+package fr.cnrs.opentheso.services.statistiques;
 
-import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
-import fr.cnrs.opentheso.bean.toolbox.statistique.GenericStatistiqueData;
+import fr.cnrs.opentheso.models.statistiques.ConceptStatisticData;
+import fr.cnrs.opentheso.models.statistiques.GenericStatistiqueData;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +13,13 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.function.Function;
 
+
 @Data
 @Slf4j
 public class StatistiquesRapportCSV {
 
     private final String separator = ";";
+
     private BufferedWriter writer;
     private ByteArrayOutputStream output;
 

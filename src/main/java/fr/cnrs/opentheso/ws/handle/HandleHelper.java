@@ -33,7 +33,7 @@ public class HandleHelper {
         }
 
         String newId = getNewHandleId(nodePreference);
-        newId = nodePreference.getPrefixHandle() + "/" + nodePreference.getPrivatePrefixHandle() + newId;
+        newId = nodePreference.getPrefixIdHandle() + "/" + nodePreference.getPrivatePrefixHandle() + newId;
 
         log.info("avant l'appel à HandleClient");
         String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
@@ -64,12 +64,12 @@ public class HandleHelper {
         while (duplicateId) {
             idHandle = ToolsHelper.getNewId(10, false, false);
             if (!handleClient.isHandleExist(nodePreference.getUrlApiHandle(),
-                    nodePreference.getPrefixHandle() + "/" + idHandle)) {
+                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
                 duplicateId = false;
             }
             if (!handleClient.isHandleExist(
                     " https://hdl.handle.net/",
-                    nodePreference.getPrefixHandle() + "/" + idHandle)) {
+                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
                 duplicateId = false;
             }
         }

@@ -1230,17 +1230,15 @@ public class CsvImportHelper {
                         "definition", nodeReplaceValueByValue.getIdLang(), idTheso); 
                 if(idNote != -1){
                     // on remplace la valeur du altLabel par la nouvelle valeur
-                    if(noteService.updateNote(idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
+                    if(!noteService.updateNote(idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
                             nodeReplaceValueByValue.getNewValue(), "", "definition", idUser1)) {
                         addMessage("Rename definition error :", nodeReplaceValueByValue);
                     }                      
                 } else {
                     if (!noteService.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                             nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
-                        if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
-                                nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
-                            addMessage("add definition error :", nodeReplaceValueByValue);
-                        }
+                        noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
+                                nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1);
                     }                    
                 }
             }
@@ -1249,10 +1247,8 @@ public class CsvImportHelper {
                 // on ajoute une nouvelle définition
                 if (!noteService.isNoteExist(nodeReplaceValueByValue.getIdConcept(), idTheso,
                         nodeReplaceValueByValue.getIdLang(), nodeReplaceValueByValue.getNewValue(), "definition")) {
-                    if(!noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
-                            nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
-                        addMessage("add definition error :", nodeReplaceValueByValue);
-                    }     
+                    noteService.addNote(nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso,
+                            nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1);
                 }
             }
         }

@@ -292,7 +292,7 @@ public class EditConcept implements Serializable {
         }
 
         if(isApplyToBranch()) {
-            ArrayList<String> allId  = conceptHelper.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
+            var allId  = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso());
 
             if( (allId == null) || (allId.isEmpty())) {
@@ -393,7 +393,7 @@ public class EditConcept implements Serializable {
             PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
             return;
         }
-        if (nonPreferredTermRepository.isAltLabelExist(idTerm, idTheso, idLang)) {
+        if (termService.isAltLabelExist(idTerm, idTheso, idLang)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà ! voulez-vous continuer ?");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;
@@ -776,8 +776,7 @@ public class EditConcept implements Serializable {
             return;
         }
         nodeIdValues = new ArrayList<>();
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        var idConcepts = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
@@ -792,8 +791,7 @@ public class EditConcept implements Serializable {
         if(roleOnThesoBean.getNodePreference() == null) return;
         if(conceptView.getNodeConcept() == null) return;
 
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        var idConcepts = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
@@ -806,8 +804,7 @@ public class EditConcept implements Serializable {
     */
     public void generateAllArk() {
 
-        ArrayList<String> idConcepts;
-        idConcepts = conceptHelper.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
+        var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
         if (roleOnThesoBean.getNodePreference() == null) {
             return;
@@ -823,7 +820,7 @@ public class EditConcept implements Serializable {
     */
     public void generateAllArkFast() {
 
-        ArrayList<String> idConcepts = conceptHelper.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
+        var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
         if (roleOnThesoBean.getNodePreference() == null) {
             return;
@@ -845,7 +842,7 @@ public class EditConcept implements Serializable {
         }        
     }    
 
-    private List<NodeIdValue> generateArkIds(ArrayList<String> idConcepts) {
+    private List<NodeIdValue> generateArkIds(List<String> idConcepts) {
         FacesMessage msg;
         nodeIdValues = conceptAddService.generateArkId(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang(), null);
         if(nodeIdValues == null) {
@@ -1004,8 +1001,7 @@ public class EditConcept implements Serializable {
         if (conceptView.getNodeConcept() == null) {
             return;
         }
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+        var idConcepts = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
@@ -1019,7 +1015,8 @@ public class EditConcept implements Serializable {
      * n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void generateAllHandle() {
-        ArrayList<String> idConcepts = conceptHelper.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
+
+        var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
         if (roleOnThesoBean.getNodePreference() == null) {
             return;
@@ -1031,7 +1028,7 @@ public class EditConcept implements Serializable {
         PrimeFaces.current().executeScript("window.location.reload();");
     }
 
-    private void generateHandleIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
+    private void generateHandleIds(ConceptHelper conceptHelper, List<String> idConcepts) {
         FacesMessage msg;
         if (!handleConceptService.generateHandleId(idConcepts, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());

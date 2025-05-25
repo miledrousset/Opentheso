@@ -38,7 +38,9 @@ public class Preferences {
     private String pathKeyHandle;
     private String pathCertHandle;
     private String urlApiHandle;
-    private String prefixHandle;
+
+    @Column(name = "prefixHandle")
+    private String prefixIdHandle;
     private String privatePrefixHandle;
 
     @Column(name = "preferredname")

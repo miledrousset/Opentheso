@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -47,6 +48,7 @@ public class AddConcept implements Serializable {
     private final GroupService groupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptAddService conceptAddService;
+    private final TermService termService;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
     private String prefLabel, notation, idNewConcept, source, relationType, idGroup, idBTfacet, idFacet;
@@ -70,7 +72,7 @@ public class AddConcept implements Serializable {
             return;
         }
 
-        if (nonPreferredTermRepository.isAltLabelExist(prefLabel.trim(), idTheso, idLang)) {
+        if (termService.isAltLabelExist(prefLabel.trim(), idTheso, idLang)) {
             duplicate = true;
             MessageUtils.showWarnMessage("un synonyme existe déjà avec ce nom !");
             updateUIOnError();

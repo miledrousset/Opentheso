@@ -3,8 +3,9 @@ package fr.cnrs.opentheso.models.nodes;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.text.Normalizer;
@@ -14,7 +15,8 @@ import java.util.List;
  *
  * @author miled.rousset
  */
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

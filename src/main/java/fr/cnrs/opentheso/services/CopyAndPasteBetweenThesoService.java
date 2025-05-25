@@ -51,6 +51,8 @@ public class CopyAndPasteBetweenThesoService {
     private ConceptService conceptService;
     @Autowired
     private ArkService arkService;
+    @Autowired
+    private RelationService relationService;
 
     public boolean pasteBranchLikeNT(String currentIdTheso, String currentIdConcept, String fromIdTheso,
                                      String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
@@ -76,7 +78,7 @@ public class CopyAndPasteBetweenThesoService {
         }
 
         // relier le concept copié au concept cible
-        ArrayList<String> nodeBT = relationsHelper.getListIdBT(fromIdConcept, currentIdTheso);
+        var nodeBT = relationService.getListIdBT(fromIdConcept, currentIdTheso);
         for (String idBT : nodeBT) {
             relationsHelper.deleteRelationBT(fromIdConcept, currentIdTheso, idBT, idUser);
         }
@@ -116,7 +118,7 @@ public class CopyAndPasteBetweenThesoService {
         }
 
         // nettoyer le concept copié
-        ArrayList<String> nodeBT = relationsHelper.getListIdBT(fromIdConcept, currentIdTheso);
+        var nodeBT = relationService.getListIdBT(fromIdConcept, currentIdTheso);
         for (String idBT : nodeBT) {
             if (!relationsHelper.deleteRelationBT(fromIdConcept, currentIdTheso, idBT, idUser)) {
                 
@@ -138,7 +140,7 @@ public class CopyAndPasteBetweenThesoService {
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(fromIdTheso, nodePreference));
 
-        ArrayList<String> allConcepts = conceptHelper.getIdsOfBranch(fromIdConcept, fromIdTheso);
+        var allConcepts = conceptService.getIdsOfBranch(fromIdConcept, fromIdTheso);
         for (String idConcept : allConcepts) {
             skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(fromIdTheso, idConcept, false));
         }        

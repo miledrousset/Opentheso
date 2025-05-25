@@ -57,7 +57,7 @@ public class HandleService {
     public void applyNodePreference(Preferences nodePreference){
         serverHandle = nodePreference.getUrlApiHandle();
         pass = nodePreference.getPassHandle();
-        prefix = nodePreference.getPrefixHandle(); // exp : 20.500.11859
+        prefix = nodePreference.getPrefixIdHandle(); // exp : 20.500.11859
         privatePrefix = nodePreference.getPrivatePrefixHandle();
         
         pathKey = admprivPath;//("certificats/admpriv.bin");

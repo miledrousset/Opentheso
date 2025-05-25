@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.Concept;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
@@ -15,6 +17,7 @@ import fr.cnrs.opentheso.repositories.RelationsHelper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +55,43 @@ public class ConceptService {
     private final NoteService noteService;
 
 
-    public fr.cnrs.opentheso.entites.Concept getConcept(String idConcept) {
+    public void updateConcept(Concept concept) {
+
+        log.info("Mise à jour du concept id {}", concept.getId());
+        conceptRepository.save(concept);
+    }
+
+    public List<Concept> getConceptByThesaurusAndTopConceptAndStatusNotLike(String idThesaurus, boolean isTopConcept, String status) {
+
+        log.info("Recherche des concepts par thésaurus {}, topConcept {} et status {}", idThesaurus, isTopConcept, status);
+        return conceptRepository.findAllByIdThesaurusAndTopConceptAndStatusNotLike(idThesaurus, isTopConcept, status);
+    }
+
+    public List<String> getAllIdConceptOfThesaurus(String idThesaurus) {
+
+        log.info("Recherche de tous les concepts présent dans le thésaurus id {}", idThesaurus);
+        var concepts = conceptRepository.findAllByIdThesaurusAndStatusNot(idThesaurus, "CA");
+        if (CollectionUtils.isEmpty(concepts)) {
+            log.info("Aucun concept n'est trouvé dans le thésaurus id {}", idThesaurus);
+            return List.of();
+        }
+        log.info("{} concepts trouvés !", concepts.size());
+        return concepts.stream().map(Concept::getIdConcept).toList();
+    }
+
+    public boolean isTopConcept(String idConcept, String idThesaurus) {
+
+        log.info("Vérifier si le concept id {} est un top concept {}", idConcept, idThesaurus);
+        var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        if (concept.isEmpty()) {
+            log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            return false;
+        }
+
+        return concept.get().getTopConcept();
+    }
+
+    public Concept getConcept(String idConcept) {
 
         log.info("Recherche du concept avec l'id {}", idConcept);
         var concept = conceptRepository.findByIdConcept(idConcept);
@@ -64,7 +103,7 @@ public class ConceptService {
         return concept.get();
     }
 
-    public fr.cnrs.opentheso.entites.Concept getConcept(String idConcept, String idThesaurus) {
+    public Concept getConcept(String idConcept, String idThesaurus) {
 
         log.info("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
@@ -98,12 +137,18 @@ public class ConceptService {
         conceptRepository.cleanConcept();
     }
 
+    public void setTopConceptTag(boolean status, String idConcept, String idThesaurus) {
+
+        log.info("Mise à jour du Flag 'topConcept' du concept id {}", idConcept);
+        conceptRepository.setTopConceptTag(status, idConcept, idThesaurus);
+    }
+
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les concepts présents dans le thésaurus id {}", idThesaurus);
         permutedRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptReplacedByRepository.deleteAllByIdThesaurus(idThesaurus);
-        corpusLinkRepository.deleteAllByIdTheso(idThesaurus);
+        corpusLinkRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptRepository.deleteAllByIdThesaurus(idThesaurus);
@@ -283,7 +328,7 @@ public class ConceptService {
                 ? conceptRepository.findTopConceptsByGroup(idThesaurus, idGroup)
                 : conceptRepository.findConceptsByGroup(idThesaurus, idGroup);
 
-        List<NodeIdValue> result = rawConcepts.stream().map(row -> {
+        List<NodeIdValue> result = new ArrayList<>(rawConcepts.stream().map(row -> {
             String idConcept = (String) row[0];
             String notation = (String) row[1];
             String lexicalValue = termService.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
@@ -293,7 +338,7 @@ public class ConceptService {
             node.setNotation(notation);
             node.setValue(StringUtils.isEmpty(lexicalValue) ? "__" + idConcept : lexicalValue);
             return node;
-        }).toList();
+        }).toList());
 
         if (!isSortByNotation) {
             Collections.sort(result);
@@ -323,5 +368,89 @@ public class ConceptService {
         conceptRepository.save(concept.get());
         log.info("Mise à jour de la date de modification du concept id {}", idConcept);
         return true;
+    }
+
+    public List<String> getIdsOfBranchWithoutLoop(String idConceptDeTete, String idThesaurus) {
+        log.info("Rechercher tous les identifiants d'une branche en partant du concept id {}", idConceptDeTete);
+        List<String> lisIds = new ArrayList<>();
+        return getIdsOfBranchWithoutLoop__(idConceptDeTete, idThesaurus, lisIds);
+    }
+
+    private List<String> getIdsOfBranchWithoutLoop__(String idConceptDeTete, String idThesaurus, List<String> lisIds) {
+
+        if (lisIds.contains(idConceptDeTete)) {
+            return lisIds;
+        }
+        lisIds.add(idConceptDeTete);
+        var listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idThesaurus);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranchWithoutLoop__(listIdsOfConceptChildren1, idThesaurus, lisIds);
+        }
+        return lisIds;
+    }
+
+    /**
+     * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
+     * Concept-Père et le thésaurus sous forme de classe tableau pas de tri
+     *
+     * @param idConcept
+     * @param idThesaurus
+     * @return
+     */
+    public List<String> getListChildrenOfConcept(String idConcept, String idThesaurus) {
+
+        log.info("Recherche des concept id {} de la table concept_children", idConcept);
+        var relations = relationService.getListConceptRelationParRole(idConcept, idThesaurus, "NT");
+
+        if (CollectionUtils.isEmpty(relations)) return List.of();
+        return relations.stream().map(HierarchicalRelationship::getIdConcept2).toList();
+    }
+
+    /**
+     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
+     * partant du concept en paramètre avec limit pour le nombre de résultat
+     */
+    public List<String> getIdsOfBranchLimited(String idConceptDeTete, String idThesaurus, int limit) {
+        List<String> lisIds = new ArrayList<>();
+        lisIds = getIdsOfBranchLimited__(idConceptDeTete, idThesaurus, lisIds, limit);
+        return lisIds;
+    }
+
+    private List<String> getIdsOfBranchLimited__(String idConceptDeTete, String idThesaurus, List<String> lisIds, int limit) {
+
+        if (lisIds.size() > limit) {
+            return lisIds;
+        }
+        lisIds.add(idConceptDeTete);
+
+        var listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idThesaurus);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranchLimited__(listIdsOfConceptChildren1, idThesaurus, lisIds, limit);
+        }
+        return lisIds;
+    }
+
+
+
+    /**
+     * Cette fonction permet de retrouver tous tes identifiants d'une branche en partant du concept en paramètre
+     */
+    public ArrayList<String> getIdsOfBranch(String idConceptDeTete, String idTheso) {
+        ArrayList<String> lisIds = new ArrayList<>();
+        lisIds = getIdsOfBranch__(idConceptDeTete, idTheso, lisIds);
+        return lisIds;
+    }
+
+    private ArrayList<String> getIdsOfBranch__(String idConceptDeTete, String idTheso, ArrayList<String> lisIds) {
+
+        if (lisIds.contains(idConceptDeTete)) {
+            return lisIds;
+        }
+        lisIds.add(idConceptDeTete);
+        var listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idTheso);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranch__(listIdsOfConceptChildren1, idTheso, lisIds);
+        }
+        return lisIds;
     }
 }

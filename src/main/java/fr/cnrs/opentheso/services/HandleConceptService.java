@@ -7,7 +7,7 @@ import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -74,13 +74,10 @@ public class HandleConceptService {
             log.error("Erreur pendant la création du handle : " + handleService.getMessage());
         }
         idHandle = handleService.getPrefix() + "/" + idHandle;
-        if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
-            return false;
-        }
-        return true;
+        return updateHandleIdOfConcept(idConcept, idThesaurus, idHandle);
     }
 
-    public boolean generateHandleId(ArrayList<String> idConcepts, String idThesaurus) {
+    public boolean generateHandleId(List<String> idConcepts, String idThesaurus) {
 
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preference == null || !preference.isUseArkLocal()) {
@@ -180,10 +177,7 @@ public class HandleConceptService {
                 log.error("Erreur pendant la création du handle : {}", handleHelper.getMessage());
             }
             idHandle = handleService.getPrefix() + "/" + idHandle;
-            if (!updateHandleIdOfConcept(idConcept, idThesaurus, idHandle)) {
-                return false;
-            }
-            return true;
+            return updateHandleIdOfConcept(idConcept, idThesaurus, idHandle);
         }
     }
 }

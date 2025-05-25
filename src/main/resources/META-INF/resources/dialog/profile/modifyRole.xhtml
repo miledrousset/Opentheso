@@ -52,23 +52,23 @@
                         <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} : " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch id="limitToThesaurus" value="#{modifyRoleBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
-                            <p:ajax listener="#{modifyRoleBean.toogleLimitTheso()}" update="modifyRoleForm:userRoleDef"/>
+                        <p:toggleSwitch id="limitToThesaurus" value="#{modifyRoleBean.limitOnThesaurus}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax listener="#{modifyRoleBean.toggleLimitThesaurus()}" update="modifyRoleForm:userRoleDef"/>
                         </p:toggleSwitch>
 
                     </div>
                     <p:tooltip value="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}" showDelay="500" for="limitToThesaurus" />
                 </div>               
-                <h:panelGroup rendered="#{modifyRoleBean.limitOnTheso}">
+                <h:panelGroup rendered="#{modifyRoleBean.limitOnThesaurus}">
                     <div class="row" style="margin-top: 5px;">
                         <div class="col-5" style="text-align: right">
                             <h:outputText value="#{langueBean.getMsg('profile.list_of_thesauri')} : "  style="font-size: 12px;"/>
                         </div>
                         <div class="col-7">
-                            <p:selectManyMenu value="#{modifyRoleBean.selectedThesos}"
+                            <p:selectManyMenu value="#{modifyRoleBean.selectedThesaurus}"
                                              styleClass="manymenu-advanced" showCheckbox="true"
                                              style="width: 100%;">
-                                <f:selectItems value="#{modifyRoleBean.listThesoOfProject}" var="allThesoProject" 
+                                <f:selectItems value="#{modifyRoleBean.listThesaurusOfProject}" var="allThesoProject"
                                                itemLabel="#{allThesoProject.value} (#{allThesoProject.id})" itemValue="#{allThesoProject.id}" />
                             </p:selectManyMenu>
                         </div>

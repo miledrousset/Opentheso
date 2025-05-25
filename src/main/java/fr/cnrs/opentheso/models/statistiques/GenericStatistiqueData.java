@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.toolbox.statistique;
+package fr.cnrs.opentheso.models.statistiques;
 
 import lombok.Builder;
 import lombok.Data;

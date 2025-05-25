@@ -260,12 +260,9 @@ public class ConceptAddService {
     public String addConceptInTable(Concept concept, int idUser) {
 
         log.info("Ajouter un nouveau concept dans le thésaurus id {}", concept.getIdThesaurus());
-        String idArk = "";
         int idSequenceConcept = -1;
-
-        if (concept.getNotation() == null) {
-            concept.setNotation("");
-        }
+        concept.setNotation(concept.getNotation() == null ? ""  : concept.getNotation());
+        concept.setIdArk(concept.getIdArk() == null ? ""  : concept.getIdArk());
 
         var preference = preferenceService.getThesaurusPreferences(concept.getIdThesaurus());
         if (concept.getIdConcept() == null) {
@@ -284,15 +281,21 @@ public class ConceptAddService {
         }
 
         conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()
-                .id((idSequenceConcept == -1) ? null : idSequenceConcept)
+                .id(idSequenceConcept)
                 .idConcept(concept.getIdConcept())
                 .idThesaurus(concept.getIdThesaurus())
-                .idArk(idArk)
+                .idArk(concept.getIdArk())
                 .created(new Date())
+                .modified(new Date())
                 .status(concept.getStatus())
                 .notation(concept.getNotation())
                 .topConcept(concept.isTopConcept())
                 .creator(idUser)
+                .conceptType("concept")
+                .contributor(idUser)
+                .gps(false)
+                .idDoi("")
+                .idHandle("")
                 .build());
 
         addConceptHistorique(concept, idUser);
@@ -310,8 +313,9 @@ public class ConceptAddService {
                 .status(concept.getStatus())
                 .notation(concept.getNotation())
                 .topConcept(concept.isTopConcept())
-                .idGroup(concept.getIdGroup())
+                .idGroup(concept.getIdGroup() == null ? "" : concept.getIdGroup())
                 .idUser(idUser)
+                .modified(new Date())
                 .build());
     }
 

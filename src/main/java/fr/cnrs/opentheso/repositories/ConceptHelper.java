@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.repositories;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -981,31 +980,6 @@ public class ConceptHelper implements Serializable {
      * Permet de retourner la date de la dernière modification sur un thésaurus
      *
      * @param idTheso
-     * @return
-     */
-    public Date getLastModification(String idTheso) {
-
-        Date date = null;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select modified from concept where id_thesaurus = '"
-                        + idTheso + "' and status != 'CA' and modified IS NOT NULL order by modified DESC limit 1 ");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        date = resultSet.getDate("modified");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return date;
-    }
-
-    /**
-     * Permet de retourner la date de la dernière modification sur un thésaurus
-     *
-     * @param idTheso
      * @param idLang
      * @return
      */
@@ -1059,93 +1033,6 @@ public class ConceptHelper implements Serializable {
             }
         }
         return idsAndValues;
-    }
-
-    /**
-     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
-     * partant du concept en paramètre
-     *
-     * @param idConceptDeTete
-     * @param idTheso
-     * @return
-     */
-    public ArrayList<String> getIdsOfBranch(String idConceptDeTete, String idTheso) {
-        ArrayList<String> lisIds = new ArrayList<>();
-        lisIds = getIdsOfBranch__(idConceptDeTete, idTheso, lisIds);
-        return lisIds;
-    }
-
-    private ArrayList<String> getIdsOfBranch__(String idConceptDeTete, String idTheso, ArrayList<String> lisIds) {
-
-        if (lisIds.contains(idConceptDeTete)) {
-            return lisIds;
-        }
-
-        lisIds.add(idConceptDeTete);
-
-        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idTheso);
-        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
-            getIdsOfBranch__(listIdsOfConceptChildren1, idTheso, lisIds);
-        }
-        return lisIds;
-    }
-
-    /**
-     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
-     * partant du concept en paramètre, elle évite les boucles à l'infini
-     *
-     * @param idConceptDeTete
-     * @param idTheso
-     * @return
-     */
-    public ArrayList<String> getIdsOfBranchWithoutLoop(String idConceptDeTete, String idTheso) {
-        ArrayList<String> lisIds = new ArrayList<>();
-        lisIds = getIdsOfBranchWithoutLoop__(idConceptDeTete, idTheso, lisIds);
-        return lisIds;
-    }
-
-    private ArrayList<String> getIdsOfBranchWithoutLoop__(String idConceptDeTete, String idTheso, ArrayList<String> lisIds) {
-
-        if (lisIds.contains(idConceptDeTete)) {
-            return lisIds;
-        }
-
-        lisIds.add(idConceptDeTete);
-
-        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idTheso);
-        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
-            getIdsOfBranchWithoutLoop__(listIdsOfConceptChildren1, idTheso, lisIds);
-        }
-        return lisIds;
-    }
-
-    /**
-     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
-     * partant du concept en paramètre avec limit pour le nombre de résultat
-     *
-     * @param idConceptDeTete
-     * @param idTheso
-     * @param limit
-     * @return
-     */
-    public ArrayList<String> getIdsOfBranchLimited(String idConceptDeTete, String idTheso, int limit) {
-        ArrayList<String> lisIds = new ArrayList<>();
-        lisIds = getIdsOfBranchLimited__(idConceptDeTete, idTheso, lisIds, limit);
-        return lisIds;
-    }
-
-    private ArrayList<String> getIdsOfBranchLimited__(String idConceptDeTete, String idTheso, ArrayList<String> lisIds, int limit) {
-
-        if (lisIds.size() > limit) {
-            return lisIds;
-        }
-        lisIds.add(idConceptDeTete);
-
-        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(idConceptDeTete, idTheso);
-        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
-            getIdsOfBranchLimited__(listIdsOfConceptChildren1, idTheso, lisIds, limit);
-        }
-        return lisIds;
     }
 
 
@@ -1223,58 +1110,6 @@ public class ConceptHelper implements Serializable {
     }
 
     /**
-     * @param idTheso
-     * @param idConcept
-     * @return
-     */
-    public boolean isHaveIdArk(String idTheso, String idConcept) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_ark from concept where id_concept = '" + idConcept + "'"
-                        + " and id_thesaurus = '" + idTheso + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        String idArk = resultSet.getString("id_ark");
-                        if (idArk == null || idArk.isEmpty()) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if id exist : " + idConcept, sqle);
-        }
-        return false;
-    }
-
-    /**
-     * @param idTheso
-     * @param idConcept
-     * @return
-     */
-    public boolean isHaveNotation(String idTheso, String idConcept) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select notation from concept where id_concept = '" + idConcept + "'"
-                        + " and id_thesaurus = '" + idTheso + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        String notation = resultSet.getString("notation");
-                        if (notation == null || notation.isEmpty()) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if id exist : " + idConcept, sqle);
-        }
-        return false;
-    }
-
-    /**
      * Cette fonction permet de savoir si l'ID du concept existe ou non
      */
     public boolean isNotationExist(String idThesaurus, String notation) {
@@ -1323,32 +1158,6 @@ public class ConceptHelper implements Serializable {
             }
         } catch (SQLException sqle) {
             log.error("Error while asking if creator exist : " + idConcept, sqle);
-        }
-        return existe;
-    }
-
-    /**
-     * Cette fonction permet de savoir si l'ID du concept a un contributeur
-     *
-     * @param idThesaurus
-     * @param idConcept
-     * @return
-     */
-    public boolean isHaveContributor(String idThesaurus, String idConcept) {
-        boolean existe = false;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select contributor from concept where id_thesaurus = '" + idThesaurus + "' and id_concept = '" + idConcept + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        if ((resultSet.getInt("contributor") != -1) && (resultSet.getInt("contributor") != 0)) {
-                            existe = true;
-                        }
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if contributor exist : " + idConcept, sqle);
         }
         return existe;
     }
@@ -1529,29 +1338,6 @@ public class ConceptHelper implements Serializable {
             log.error("Error while getting Concept : " + idConcept, sqle);
         }
         return concept;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
-     */
-    public ArrayList<String> getAllIdConceptOfThesaurus(String idThesaurus) {
-
-        ArrayList<String> tabIdConcept = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_thesaurus = '"
-                        + idThesaurus + "' and concept.status != 'CA'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        tabIdConcept.add(resultSet.getString("id_concept"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting All IdConcept of Thesaurus : " + idThesaurus, sqle);
-        }
-        return tabIdConcept;
     }
 
     /**
@@ -2000,120 +1786,6 @@ public class ConceptHelper implements Serializable {
     }
 
     /**
-     * Cette fonction permet de mettre à jour le createur
-     *
-     * @param idThesaurus
-     * @param idConcept
-     * @param idCreator
-     * @return
-     */
-    public boolean setCreator(String idThesaurus, String idConcept, int idCreator) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set creator = " + idCreator
-                        + " WHERE id_concept ='"
-                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
-                return true;
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while updating creator of concept : " + idConcept, sqle);
-        }
-        return false;
-    }
-
-    /**
-     * Cette fonction permet de mettre à jour le contributeur
-     *
-     * @param idThesaurus
-     * @param idConcept
-     * @param idContributor
-     * @return
-     */
-    public boolean setContributor(String idThesaurus, String idConcept, int idContributor) {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set contributor = " + idContributor
-                        + " WHERE id_concept ='"
-                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
-                return true;
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while updating contributor of concept : " + idConcept, sqle);
-        }
-        return false;
-    }
-
-    /**
-     * Cette fonction permet de savoir si le Concept est un TopConcept
-     */
-    public boolean isTopConcept(String idConcept, String idThesaurus, String idGroup) {
-        boolean existe = false;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select top_concept from concept where id_concept = '"
-                        + idConcept + "' and id_thesaurus = '" + idThesaurus
-                        + "' and id_group = '" + idGroup + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        existe = resultSet.getBoolean("top_concept");
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while Asking if TopConcept : " + idConcept, sqle);
-        }
-        return existe;
-    }
-
-    /**
-     * Cette fonction permet de savoir si le Concept est un TopConcept sans
-     * définir le group (pour permettre de nettoyer les orphelins)
-     */
-    public boolean isTopConcept(String idConcept, String idThesaurus) {
-        boolean existe = false;
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select top_concept from concept where id_concept = '" + idConcept
-                        + "' and id_thesaurus = '" + idThesaurus + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        existe = resultSet.getBoolean("top_concept");
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while Asking if TopConcept : " + idConcept, sqle);
-        }
-        return existe;
-    }
-
-    /**
-     * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
-     * Concept-Père et le thésaurus sous forme de classe tableau pas de tri
-     *
-     * @param idConcept
-     * @param idThesaurus
-     * @return
-     */
-    public ArrayList<String> getListChildrenOfConcept(String idConcept, String idThesaurus) {
-        ArrayList<String> listIdsOfConcept = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept2 from hierarchical_relationship where id_thesaurus = '"
-                        + idThesaurus + "' and id_concept1 = '" + idConcept + "' and role LIKE 'NT%'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        listIdsOfConcept.add(resultSet.getString("id_concept2"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting List of Id of Concept : " + idConcept, sqle);
-        }
-        return listIdsOfConcept;
-    }
-
-    /**
      * Cette fonction permet de récupérer les IdArk des concepts suivant l'idArk
      * du Concept-Père et le thésaurus
      *
@@ -2473,7 +2145,7 @@ public class ConceptHelper implements Serializable {
                                                                 ArrayList<String> path,
                                                                 ArrayList<ArrayList<String>> tabId) {
 
-        ArrayList<String> resultat = relationsHelper.getListIdBT(idConcept, idThesaurus);
+        var resultat = relationService.getListIdBT(idConcept, idThesaurus);
         if (resultat.size() > 1) {
             for (String path1 : path) {
                 firstPath.add(path1);
@@ -2526,7 +2198,7 @@ public class ConceptHelper implements Serializable {
                                                                             ArrayList<String> path,
                                                                             ArrayList<ArrayList<String>> tabId) {
 
-        ArrayList<String> resultat = relationsHelper.getListIdBT(idConcept, idThesaurus);
+        var resultat = relationService.getListIdBT(idConcept, idThesaurus);
         if (resultat.size() > 1) {
             for (String path1 : path) {
                 firstPath.add(path1);

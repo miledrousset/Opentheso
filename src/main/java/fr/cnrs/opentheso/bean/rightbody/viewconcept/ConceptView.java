@@ -28,10 +28,10 @@ import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
-
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ResourceService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -362,7 +362,7 @@ public class ConceptView implements Serializable {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
 
-        var corpusList = corpusLinkRepository.findAllByIdThesoOrderBySortAsc(selectedTheso.getCurrentIdTheso());
+        var corpusList = corpusLinkRepository.findAllByIdThesaurusOrderBySortAsc(selectedTheso.getCurrentIdTheso());
         if (corpusList.isEmpty()) {
             nodeCorpuses = List.of();
         } else {

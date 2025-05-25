@@ -1,11 +1,14 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.entites.Concept;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,8 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     List<Concept> findAllByIdThesaurusAndStatus(String idThesaurus, String status);
 
+    List<Concept> findAllByIdThesaurusAndStatusNot(String idThesaurus, String status);
+
     @Query(value = "SELECT nextval('concept__id_seq')", nativeQuery = true)
     Long getNextConceptNumericId();
 
@@ -47,7 +52,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Concept c SET c.notation = :status WHERE c.notation ilike 'null'")
+    @Query("UPDATE Concept c SET c.notation = '' WHERE c.notation ilike 'null'")
     void cleanConcept();
 
     @Modifying
@@ -108,5 +113,12 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     """, nativeQuery = true)
     Optional<String> findConceptIdFromLabel(@Param("idTheso") String idTheso, @Param("label") String label, @Param("idLang") String idLang);
 
-
+    @Query("""
+        SELECT c.modified FROM Concept c 
+        WHERE c.idThesaurus = :idThesaurus 
+        AND c.status <> 'CA' 
+        AND c.modified IS NOT NULL 
+        ORDER BY c.modified DESC
+    """)
+    List<Date> findLastModifiedDates(@Param("idThesaurus") String idThesaurus, PageRequest pageable);
 }

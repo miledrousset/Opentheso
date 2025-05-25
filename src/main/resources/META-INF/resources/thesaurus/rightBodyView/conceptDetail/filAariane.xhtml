@@ -174,7 +174,7 @@
 
                 <p:menuitem value="#{langueBean.getMsg('actions.repairLoopedRelationships')}"
                             title="#{langueBean.getMsg('actions.repairLoopedRelationshipsToolTip')}"
-                            action="#{restoreTheso.deleteLoopRelations(selectedTheso.currentIdTheso, conceptView.nodeConcept.concept.idConcept)}" icon="fas fa-toolbox"
+                            action="#{restoreTheso.deleteLoopRelations()}" icon="fas fa-toolbox"
                             update="messageIndex containerIndex:rightTab"/>
 
             </p:menu>

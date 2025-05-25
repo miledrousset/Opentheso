@@ -27,21 +27,19 @@ public class PreferenceService {
                 .build());
     }
 
-    public boolean addPreference(Preferences preference, String idThesaurus) {
+    public void addPreference(Preferences preference, String idThesaurus) {
 
         log.info("Formatage des données de preférence");
         var preferenceToSave = normalizePreferencesDatas(preference);
 
         log.info("Ajout des préférences du thésaurus {} dans la base de données", idThesaurus);
         preferencesRepository.save(preferenceToSave);
-        return true;
     }
 
-    public boolean updateAllPreferenceUser(Preferences preferences) {
+    public void updateAllPreferenceUser(Preferences preference) {
 
-        log.info("Mise à jour des preferences du thésaurus {}", preferences.getIdThesaurus());
-        preferencesRepository.save(preferences);
-        return true;
+        log.info("Mise à jour des preferences du thésaurus {}", preference.getIdThesaurus());
+        preferencesRepository.save(preference);
     }
 
     private Preferences normalizePreferencesDatas(Preferences preference) {
@@ -76,20 +74,19 @@ public class PreferenceService {
         return preference.get();
     }
 
-    public boolean setUseArk(String idThesaurus, boolean useArk) {
+    public void setUseArk(String idThesaurus, boolean useArk) {
 
         log.info("Mise à jour de UseArk pour le thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
 
         if (preference.isEmpty()) {
             log.error("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
-            return false;
+            return;
         }
 
         preference.get().setUseArk(useArk);
         preferencesRepository.save(preference.get());
         log.info("Mise à jour de UseArk pour le thésaurus {} terminée", idThesaurus);
-        return false;
     }
 
     public void setUseArkLocal(String idThesaurus, boolean useArk) {
@@ -138,20 +135,18 @@ public class PreferenceService {
         return true;
     }
 
-    public boolean setUseHandle(String idThesaurus, boolean useHandle) {
+    public void setUseHandle(String idThesaurus, boolean useHandle) {
 
         log.info("Mise à jour de 'use handle' pour le thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
-
         if (preference.isEmpty()) {
             log.error("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
-            return false;
+            return;
         }
 
         preference.get().setUseHandle(useHandle);
         preferencesRepository.save(preference.get());
         log.info("Mise à jour terminé de 'use handle' pour le thésaurus {}", idThesaurus);
-        return true;
     }
 
     public void deletePreferenceThesaurus(String idThesaurus) {

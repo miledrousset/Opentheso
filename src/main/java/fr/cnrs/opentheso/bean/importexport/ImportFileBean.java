@@ -1523,12 +1523,12 @@ public class ImportFileBean implements Serializable {
         initError();
 
         ArrayList<NodeIdValue> listAlignments = new ArrayList<>();
-        ArrayList<String> branchIds;
+        List<String> branchIds;
         List<NodeAlignmentSmall> nodeAlignmentSmalls;
         try {
             if (StringUtils.isEmpty(selectedConcept)) {
                 // on exporte tous les alignements
-                branchIds = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+                branchIds = conceptService.getAllIdConceptOfThesaurus(idTheso);
             } else {
                 // on exporte la branche
                 if (!conceptService.isIdExiste(selectedConcept, idTheso)) {
@@ -1536,7 +1536,7 @@ public class ImportFileBean implements Serializable {
                     showError();
                     return null;
                 }
-                branchIds = conceptHelper.getIdsOfBranch(selectedConcept, idTheso);
+                branchIds = conceptService.getIdsOfBranch(selectedConcept, idTheso);
             }
             if (branchIds != null) {
                 for (String idConcept : branchIds) {
@@ -1983,7 +1983,8 @@ public class ImportFileBean implements Serializable {
                         total++;
                     }
                 } else {
-                    if (!conceptHelper.isHaveIdArk(selectedTheso.getCurrentIdTheso(), nodeIdValue.getId())) {
+                    var concept = conceptService.getConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
+                    if (StringUtils.isEmpty(concept.getIdArk())) {
                         if (arkService.updateArkIdOfConcept(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                             total++;
                         }
@@ -2544,7 +2545,8 @@ public class ImportFileBean implements Serializable {
                         total++;
                     }
                 } else {
-                    if (!conceptHelper.isHaveNotation(selectedTheso.getCurrentIdTheso(), idConcept)) {
+                    var concept = conceptService.getConcept(idConcept, selectedTheso.getCurrentIdTheso());
+                    if (StringUtils.isEmpty(concept.getNotation())) {
                         if (conceptHelper.updateNotation(idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                             total++;
                         }

@@ -6,27 +6,19 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
 
+
 @FacesConverter("searchConverterIdValue")
-public class SearchConverterIdValue implements Converter{
+public class SearchConverterIdValue implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        if(value != null && value.trim().length() > 0) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(value);
-            return nodeIdValue;
-        }
-        else {
-            return null;
-        }
+        return (value != null && value.trim().length() > 0)
+                ? NodeIdValue.builder().id(value).build()
+                : null;
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        if(o == null) {
-            return null;
-        } else {
-            return ((NodeIdValue)o).getId();
-        }
+        return o == null ? null : ((NodeIdValue)o).getId();
     }
 }

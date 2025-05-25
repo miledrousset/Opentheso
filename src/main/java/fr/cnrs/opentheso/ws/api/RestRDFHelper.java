@@ -1205,7 +1205,7 @@ public class RestRDFHelper {
         }
         exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
-        ArrayList<String> path = conceptHelper.getIdsOfBranch(idConcept, idTheso);
+        var path = conceptService.getIdsOfBranch(idConcept, idTheso);
         for (String idC : path) {
             skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idC, false));
         }
@@ -1345,7 +1345,7 @@ public class RestRDFHelper {
      */
     public String getThesoIdValue(String idTheso, String lang) {
 
-        ArrayList<String> idConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        List<String> idConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
 
         String datasJson = null;
         JsonArrayBuilder jsonArrayBuilderLine = Json.createArrayBuilder();
@@ -1442,7 +1442,7 @@ public class RestRDFHelper {
         }
 
         var skosXmlDocument = new SKOSXmlDocument();
-        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        List<String> allConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
         allConcepts.forEach(idConcept -> {
             skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
         });

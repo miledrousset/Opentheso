@@ -1,17 +1,16 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.entites.User;
-import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.time.LocalDate;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,8 +26,8 @@ public class ModifyUserBean implements Serializable {
 
     private final MyProjectBean myProjectBean;
     private final SuperAdminBean superAdminBean;
-    private final UserRepository userRepository;
-    
+    private final UserService userService;
+
     private User nodeUser;
     private String passWord1, passWord2;
     private boolean hasKey;
@@ -38,58 +37,54 @@ public class ModifyUserBean implements Serializable {
      * Permet de selectionner l'utilisateur dans la liste avec toutes les informations nécessaires pour sa modification
      */
     public void selectUser(int idUser) {
-        nodeUser = userRepository.findById(idUser).get();
+        nodeUser = userService.getUserById(idUser);
         setUserStringId(""+idUser);
         passWord1 = null;
         passWord2 = null;
     }
 
     public boolean hasKey(){
+
         if (nodeUser == null) return false;
 
         if (nodeUser.getKeyNeverExpire()){
             return true;
         }
 
-        if (nodeUser.getKeyExpiresAt() != null){
-            return true;
-        }
-
-        return false;
+        return nodeUser.getKeyExpiresAt() != null;
     }
 
     public void setUserStringId(String idUser){
         try {
-            nodeUser = userRepository.findById(Integer.parseInt(idUser)).get();
+            nodeUser = userService.getUserById(Integer.parseInt(idUser));
             hasKey = hasKey();
             apiKeyExpireDate = nodeUser.getKeyExpiresAt();
         } catch (NumberFormatException e) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
         }
-
     }
 
     public void deleteUser() {
 
         if(nodeUser.getId() == -1) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
             return;
         }
 
-        userRepository.delete(nodeUser);
-        showMessage(FacesMessage.SEVERITY_INFO, "L'utilisateur a bien été supprimé !!!");
+        userService.deleteUserById(nodeUser.getId());
+        MessageUtils.showInformationMessage("L'utilisateur a bien été supprimé !!!");
         superAdminBean.init();
     }
 
     public void updateUser(){
         
         if(ObjectUtils.isEmpty(nodeUser)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
             return;              
         }
 
-        userRepository.save(nodeUser);
-        showMessage(FacesMessage.SEVERITY_INFO, "Utilisateur changé avec succès !!!");
+        userService.saveUser(nodeUser);
+        MessageUtils.showInformationMessage("Utilisateur changé avec succès !!!");
 
         selectUser(nodeUser.getId());
         myProjectBean.setLists();
@@ -100,37 +95,37 @@ public class ModifyUserBean implements Serializable {
     public void updateUser2(){
         
         if(ObjectUtils.isEmpty(nodeUser)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
             return;              
         }
 
         nodeUser.setUsername(nodeUser.getUsername().trim());
 
-        userRepository.save(nodeUser);
-        showMessage(FacesMessage.SEVERITY_INFO,  "Utilisateur changé avec succès !!!");
+        userService.saveUser(nodeUser);
+        MessageUtils.showInformationMessage("Utilisateur changé avec succès !!!");
         superAdminBean.init();
     }     
     
     public void updatePassword(){
 
         if(StringUtils.isEmpty(passWord1)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Un mot de passe est obligatoire !!!");
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
             return;              
         }
 
         if(StringUtils.isEmpty(passWord2)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Un mot de passe est obligatoire !!!");
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
             return;              
         }
 
         if(!passWord1.equals(passWord2)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Mot de passe non identique !!!");
+            MessageUtils.showErrorMessage("Mot de passe non identique !!!");
             return;              
         }
 
         nodeUser.setPassword(MD5Password.getEncodedPassword(passWord2));
-        userRepository.save(nodeUser);
-        showMessage(FacesMessage.SEVERITY_INFO, "Mot de passe changé avec succès !!!");
+        userService.saveUser(nodeUser);
+        MessageUtils.showInformationMessage("Mot de passe changé avec succès !!!");
         selectUser(nodeUser.getId());
     }
 
@@ -154,13 +149,7 @@ public class ModifyUserBean implements Serializable {
 
         nodeUser.setKeyNeverExpire(keyNeverExpireValue);
         nodeUser.setKeyExpiresAt(apiKeyExpireDateValue);
-        userRepository.save(nodeUser);
-        showMessage(FacesMessage.SEVERITY_INFO, "Clé mise à jour avec succès !!!");
-    }
-
-    private void showMessage(FacesMessage.Severity type, String message) {
-        var msg = new FacesMessage(type, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
+        userService.saveUser(nodeUser);
+        MessageUtils.showInformationMessage("Clé mise à jour avec succès !!!");
     }
 }

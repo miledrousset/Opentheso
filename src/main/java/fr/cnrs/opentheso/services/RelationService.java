@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.entites.HierarchicalRelationshipHistorique;
 import fr.cnrs.opentheso.models.BroaderRelationProjection;
 import fr.cnrs.opentheso.models.RelatedRelationProjection;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.repositories.HierarchicalRelationshipHistoriqueRepository;
@@ -16,9 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -28,8 +32,8 @@ import java.util.stream.Collectors;
 public class RelationService {
 
     private final TermRepository termRepository;
-    private HierarchicalRelationshipRepository hierarchicalRelationshipRepository;
-    private HierarchicalRelationshipHistoriqueRepository hierarchicalRelationshipHistoriqueRepository;
+    private final HierarchicalRelationshipRepository hierarchicalRelationshipRepository;
+    private final HierarchicalRelationshipHistoriqueRepository hierarchicalRelationshipHistoriqueRepository;
 
 
     public HierarchicalRelationship addHierarchicalRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
@@ -177,4 +181,92 @@ public class RelationService {
         log.info("{} relations RT trouvées pour le concept '{}'", result.size(), idConcept);
         return result;
     }
+
+    public List<HierarchicalRelationship> getListConceptRelationParRole(String idConcept, String idThesaurus, String role) {
+
+        log.info("Recherche des concepts en relation avec le concept {} et avec le rôle {}", idConcept, role);
+        return hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, role);
+    }
+
+    public boolean isConceptHaveRelationBT(String idConcept, String idThesaurus) {
+
+        log.info("Vérifier si un concept a une relation BT (term générique");
+        var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, "BT");
+        return CollectionUtils.isNotEmpty(result);
+    }
+
+    public List<String> getListIdBT(String idConcept, String idThesaurus) {
+
+        log.info("Recherche des id des terms génériques du concept id {}", idConcept);
+        var listIdBT = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, "BT");
+        return listIdBT.stream().map(HierarchicalRelationship::getIdConcept2).toList();
+    }
+
+    public List<HierarchicalRelationship> getListLoopRelations(String role, String idThesaurus) {
+
+        log.info("Recherche de relation dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
+        var result = hierarchicalRelationshipRepository.getListLoopRelations(idThesaurus, role);
+        if (CollectionUtils.isEmpty(result)) {
+            log.info("Aucune relation trouvée dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
+            return List.of();
+        }
+        return result;
+    }
+
+    public void deleteThisRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
+
+        log.info("Suppression de la relation entre le concept {} et le concept {}", idConcept1, idThesaurus);
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus, idConcept1, idConcept2, role);
+    }
+
+
+    public List<String> getListIdWhichHaveNt(String idConcept, String idThesaurus) {
+
+        var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept2AndRoleLike(idThesaurus, idConcept, "NT");
+        if (CollectionUtils.isEmpty(result)) {
+            log.info("Aucune relation trouvée avec le concept le concept {} et avec le role NR", idConcept);
+            return List.of();
+        }
+        return result.stream().map(HierarchicalRelationship::getIdConcept1).toList();
+    }
+
+    public NodeRelation getLoopRelation(String idTheso, String idConcept) {
+
+        log.info("Recherche d'une relation en boucle pour le concept '{}' dans le thésaurus '{}'", idConcept, idTheso);
+        return hierarchicalRelationshipRepository.findBtRelation(idTheso, idConcept)
+                .flatMap(rel1 -> {
+                    log.debug("Relation BT trouvée : {} → {}", rel1.getIdConcept1(), rel1.getIdConcept2());
+                    return hierarchicalRelationshipRepository.findLoopBtRelation(idTheso, rel1.getIdConcept1(), rel1.getIdConcept2());
+                })
+                .map(rel -> {
+                    log.info("Relation en boucle détectée : {} → {}", rel.getIdConcept1(), rel.getIdConcept2());
+                    NodeRelation nodeRelation = new NodeRelation();
+                    nodeRelation.setIdConcept1(rel.getIdConcept1());
+                    nodeRelation.setIdConcept2(rel.getIdConcept2());
+                    nodeRelation.setRelation(rel.getRole());
+                    return nodeRelation;
+                })
+                .orElseGet(() -> {
+                    log.info("Aucune relation en boucle trouvée pour le concept '{}'", idConcept);
+                    return null;
+                });
+    }
+
+    public List<String> getListIdOfTopTermForRepair(String idThesaurus) {
+        try {
+            List<String> topConcepts = hierarchicalRelationshipRepository.findTopConceptsWithNTOnly(idThesaurus);
+            List<String> isolatedConcepts = hierarchicalRelationshipRepository.findIsolatedConcepts(idThesaurus);
+
+            Set<String> merged = new LinkedHashSet<>();
+            merged.addAll(topConcepts);
+            merged.addAll(isolatedConcepts);
+
+            log.info("Top terms à réparer pour le thésaurus '{}': {} concepts", idThesaurus, merged.size());
+            return new ArrayList<>(merged);
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération des TopTerms pour réparation du thésaurus '{}'", idThesaurus, e);
+            return new ArrayList<>();
+        }
+    }
+
 }

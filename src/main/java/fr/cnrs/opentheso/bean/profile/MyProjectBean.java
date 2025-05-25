@@ -19,15 +19,18 @@ import java.util.stream.Collectors;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 
 @Data
+@Slf4j
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "myProjectBean")
 public class MyProjectBean implements Serializable {
 
+    private final UserService userService;
     private final CurrentUser currentUser;
     private final RoleRepository roleRepository;
     private final UserRoleGroupRepository userRoleGroupRepository;
@@ -38,7 +41,6 @@ public class MyProjectBean implements Serializable {
     private List<NodeUserRole> listeUserLimitedRole, listeUser;
     private NodeUserRoleGroup nodeUserRoleOnThisGroup, nodeUserRoleSuperAdmin, myRoleOnThisProject;
     private String selectedProject, selectedProjectName, selectedIndex, workLanguage;
-    private UserService userService;
 
 
     public void init() {
@@ -50,7 +52,11 @@ public class MyProjectBean implements Serializable {
         myAuthorizedRoles = null;
         selectedIndex = "0";
       
-        getGroupsOfUser();
+        log.info("Recherche de la liste des groupes/projets d'un utilisateur");
+        listeGroupsOfUser = currentUser.getNodeUser().isSuperAdmin()
+                ? userGroupLabelRepository.findAll().stream().collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel))
+                : userService.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
+
         getListThesoByGroup();
     }
     
@@ -85,19 +91,7 @@ public class MyProjectBean implements Serializable {
         myAuthorizedRoles = roleRepository.findAllByIdGreaterThanEqual(idRoleFrom).stream()
                 .map(element -> NodeIdValue.builder().id(element.getId() + "").value(element.getName()).build())
                 .toList();
-    }     
-
-    /**
-     * permet de récupérer la liste des groupes/projets d'un utilisateur #MR
-     */
-    private void getGroupsOfUser() {
-        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeGroupsOfUser = userGroupLabelRepository.findAll().stream()
-                    .collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel));
-            return;
-        }
-        listeGroupsOfUser = userService.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
-    }    
+    }
     
     public void setLists() {
         listeUser = null;
@@ -137,7 +131,7 @@ public class MyProjectBean implements Serializable {
      */
    
     private void getListThesoByGroup(){
-        if (selectedProject == null || selectedProject.isEmpty()) {
+        if (StringUtils.isEmpty(selectedProject)) {
             return;
         }
         

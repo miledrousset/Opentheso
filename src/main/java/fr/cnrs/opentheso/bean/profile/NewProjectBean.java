@@ -1,19 +1,17 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.ProjectService;
 import fr.cnrs.opentheso.services.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
-
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,10 +32,10 @@ public class NewProjectBean implements Serializable {
 
     private final MyProjectBean myProjectBean;
     private final CurrentUser currentUser;
-    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private final UserGroupLabelRepository userGroupLabelRepository;
     private final UserRoleGroupService userRoleGroupService;
- 
+    private final UserService userService;
+    private final ProjectService projectService;
+
     private String projectName;
     private List<UserGroupLabel> listeProjectOfUser;
 
@@ -45,11 +43,11 @@ public class NewProjectBean implements Serializable {
     public void init() {
         projectName = null;
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            listeProjectOfUser = userGroupLabelRepository.findAll();
+            listeProjectOfUser = userRoleGroupService.findAllUserRoleGroup();
             listeProjectOfUser.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             return;
         }
-        listeProjectOfUser = userGroupLabelRepository.findProjectsByRole(currentUser.getNodeUser().getIdUser(), 2);
+        listeProjectOfUser = projectService.getProjectByUser(currentUser.getNodeUser().getIdUser(), 2);
     }   
     
     /**
@@ -60,18 +58,17 @@ public class NewProjectBean implements Serializable {
     public void addNewProject(){
         
         if(StringUtils.isEmpty(projectName)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le label est obligatoire !!!");
+            MessageUtils.showErrorMessage("Le label est obligatoire");
             return;              
         }
 
-        var userGroup = userGroupLabelRepository.findByLabelLike(projectName);
-        if(userGroup.isPresent()){
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le label existe déjà !!!");
+        var userGroup = projectService.getUserGroupLabelByLabel(projectName);
+        if(userGroup != null){
+            MessageUtils.showErrorMessage("Le label existe déjà !!!");
             return;             
         }
 
-        var userGroupCreated = userGroupLabelRepository.save(UserGroupLabel.builder().label(projectName).build());
-
+        var userGroupCreated = projectService.saveNewProject(projectName);
         currentUser.initUserPermissions();
         // on vérifie si l'utilisateur en cours est un Admin 
         if(!currentUser.getNodeUser().isSuperAdmin() && CollectionUtils.isNotEmpty(currentUser.getAllAuthorizedProjectAsAdmin())){
@@ -79,31 +76,31 @@ public class NewProjectBean implements Serializable {
             userRoleGroupService.addUserRoleOnGroup(currentUser.getNodeUser().getIdUser(), 2, userGroupCreated.getId());
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Projet créé avec succès !!!");
+        MessageUtils.showInformationMessage("Projet créé avec succès !!!");
         myProjectBean.init();
     }      
 
     public void updateProject(UserGroupLabel userGroupLabel){
         
         if(ObjectUtils.isEmpty(userGroupLabel)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucun projet sélectioné !!!");
+            MessageUtils.showErrorMessage("Aucun projet sélectioné !!!");
             return;              
         }
 
         if(StringUtils.isEmpty(userGroupLabel.getLabel())) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le label est obligatoire !!!");
+            MessageUtils.showErrorMessage("Le label est obligatoire !!!");
             return;              
         }
 
-        var groupLabel = userGroupLabelRepository.findByLabelLike(userGroupLabel.getLabel());
-        if(groupLabel.isPresent()){
-            showMessage(FacesMessage.SEVERITY_ERROR, "Ce nom de projet existe déjà !!!");
+        var userGroup = projectService.getUserGroupLabelByLabel(projectName);
+        if(userGroup != null){
+            MessageUtils.showErrorMessage("Ce nom de projet existe déjà !!!");
             init();
             return;             
         }
 
-        userGroupLabelRepository.save(userGroupLabel);
-        showMessage(FacesMessage.SEVERITY_INFO, "Projet modifié avec succès !!!");
+        projectService.saveNewProject(userGroupLabel);
+        MessageUtils.showInformationMessage("Projet modifié avec succès !!!");
         myProjectBean.init();
         PrimeFaces.current().ajax().update("containerIndex");
     }      
@@ -111,22 +108,12 @@ public class NewProjectBean implements Serializable {
 
     public void deleteProject(UserGroupLabel userGroupLabel) {
 
-        userRoleGroupService.deleteRoleByIdGroup(userGroupLabel.getId());
-        userGroupThesaurusRepository.deleteByIdGroup(userGroupLabel.getId());
-        userGroupLabelRepository.deleteById(userGroupLabel.getId());
-
-        showMessage(FacesMessage.SEVERITY_INFO, "Suppression OK :" + userGroupLabel.getLabel());
+        projectService.deleteProject(userGroupLabel.getId());
+        MessageUtils.showInformationMessage("Suppression OK :" + userGroupLabel.getLabel());
 
         currentUser.initUserPermissions();
         myProjectBean.init();
         init();
-
         PrimeFaces.current().ajax().update("containerIndex");
-    }
-
-    private void showMessage(FacesMessage.Severity type, String message) {
-        var msg = new FacesMessage(type, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
     }
 }

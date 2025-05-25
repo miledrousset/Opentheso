@@ -1,20 +1,19 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "profileBean")
 public class ProfileBean implements Serializable {
 
-    private MyAccountBean myAccountBean;
+    private final MyAccountBean myAccountBean;
  
     private boolean isMyAccountActive;
     private boolean isMyProjectActive;
@@ -28,11 +27,6 @@ public class ProfileBean implements Serializable {
     private String projectsColor;
     private String thesaurusColor;
 
-
-    @Inject
-    public ProfileBean(MyAccountBean myAccountBean) {
-        this.myAccountBean = myAccountBean;
-    }
 
     public void reset() {
         isMyAccountActive = true;

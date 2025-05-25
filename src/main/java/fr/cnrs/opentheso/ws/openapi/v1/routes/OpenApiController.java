@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import fr.cnrs.opentheso.services.UserService;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.services.ApiKeyService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public class OpenApiController {
 
     @Autowired
-    private ApiKeyHelper apiKeyHelper;
+    private ApiKeyService apiKeyHelper;
 
     @Autowired
     private UserService userService;
@@ -78,9 +78,9 @@ public class OpenApiController {
         builder.add("valid", true);
         builder.add("key", apiKey);
 
-        var userId = apiKeyHelper.getIdUser(apiKey);
-        var userGroupId = userService.getUserGroupId(userId, apiKey);
-        var roleId = userService.getRoleOnThisThesaurus(userId, userGroupId.orElse(0), "th2");
+        var user = userService.getUserByApiKey(apiKey);
+        var userGroupId = userService.getUserGroupId(user.getId(), apiKey);
+        var roleId = userService.getRoleOnThisThesaurus(user.getId(), userGroupId.orElse(0), "th2");
         builder.add("Roles", roleId);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(builder.build().toString());

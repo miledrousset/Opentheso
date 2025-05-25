@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 
 import java.io.IOException;
@@ -85,6 +86,8 @@ public class MoveConcept implements Serializable {
     private List<String> idConceptsToMove;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RelationService relationService;
 
 
     public void initForCandidate(List idConcepts1, String idThesoFrom) {
@@ -96,8 +99,7 @@ public class MoveConcept implements Serializable {
     public void initForConcept(String idConcept, String idThesoFrom) {
         idConceptsToMove = new ArrayList<>();        
         this.idConceptFrom = idConcept;
-        idConceptsToMove = conceptHelper.getIdsOfBranch(
-                idConcept, selectedTheso.getCurrentIdTheso());
+        idConceptsToMove = conceptService.getIdsOfBranch(idConcept, selectedTheso.getCurrentIdTheso());
         this.idThesoFrom = idThesoFrom;
         idThesoTo = null;
     }
@@ -181,7 +183,7 @@ public class MoveConcept implements Serializable {
         }
 
         // suppression des BT du concept de tête à déplacer
-        ArrayList<String> listBt = relationsHelper.getListIdBT(idConceptFrom, idThesoTo);
+        var listBt = relationService.getListIdBT(idConceptFrom, idThesoTo);
         for (String idBt : listBt) {
             relationsHelper.deleteRelationBT(idConceptFrom, idThesoTo, idBt, currentUser.getNodeUser().getIdUser());
         }

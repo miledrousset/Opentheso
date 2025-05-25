@@ -62,6 +62,8 @@ public class TermService {
                 .status(term.getStatus())
                 .contributor(idUser)
                 .creator(idUser)
+                .created(new Date())
+                .modified(new Date())
                 .build());
 
         log.info("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
@@ -74,6 +76,7 @@ public class TermService {
                 .status(termSaved.getStatus())
                 .idUser(idUser)
                 .action("ADD")
+                .modified(LocalDateTime.now())
                 .build());
 
         addLinkTerm(idConcept, term.getIdThesaurus(), termSaved.getIdTerm());
@@ -313,6 +316,12 @@ public class TermService {
         }
     }
 
+    public boolean existsPrefLabel(String termValue, String idLang, String idThesaurus) {
+
+        log.info("Vérifier l'existence d'un term {}  (langue {}) dans le thésaurus id {}", termValue, idLang, idThesaurus);
+        return termRepository.existsPrefLabel(termValue, idLang, idThesaurus);
+    }
+
     public Term getThisTerm(String idConcept, String idThesaurus, String idLang) {
 
         if (isTraductionExistOfConcept(idConcept, idThesaurus, idLang)) {
@@ -402,6 +411,7 @@ public class TermService {
         return label.get();
     }
 
+    @Transactional
     public void deleteEMByIdTermAndLang(String idTerm, String idThesaurus, String idLang) {
 
         log.info("Suppression du terme id {} (langue : {} et thésaurus id {})", idTerm, idLang, idThesaurus);
@@ -435,6 +445,7 @@ public class TermService {
         return synonymes.stream().map(NodeEMProjection::getLexicalValue).toList();
     }
 
+    @Transactional
     public void addSynonyme(String intitule, String idThesaurus, String lang, String idTerm) {
 
         log.info("Ajout d'un nouveau synonymes");
@@ -444,6 +455,8 @@ public class TermService {
                 .idThesaurus(idThesaurus)
                 .hiden(false)
                 .idTerm(idTerm)
+                .created(new Date())
+                .modified(new Date())
                 .build());
     }
 
@@ -460,5 +473,32 @@ public class TermService {
                 .contributor(term.getContributor())
                 .creator(term.getCreator())
                 .build());
+    }
+
+    public boolean isAltLabelExist(String title, String idThesaurus, String idLang) {
+
+        log.info("Vérifier si le synonyme {} existe dans le thésaurus {}", title, idThesaurus);
+        return nonPreferredTermRepository.isAltLabelExist(title, idThesaurus, idLang);
+    }
+
+    public PreferredTerm getPreferenceTermByThesaurusAndConcept(String idThesaurus, String idConcept) {
+
+        var preference = preferredTermRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
+        if(preference.isEmpty()) {
+            log.error("Aucune term de préférence trouvée pour le concept id {}", idConcept);
+            return null;
+        }
+        return preference.get();
+    }
+
+    public fr.cnrs.opentheso.entites.Term getTermByIdAndThesaurusAndLang(String idTerm, String idThesaurus, String idLang) {
+
+        log.info("Recherche de term par son id {}", idTerm);
+        var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, idLang);
+        if (term.isEmpty()) {
+            log.error("Aucun term n'est trouvé");
+            return null;
+        }
+        return term.get();
     }
 }

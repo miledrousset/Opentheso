@@ -62,7 +62,7 @@
                     
                     
                     <p:commandButton id="validateBtn" rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
-                                     disabled="#{!candidatBean.isModifiedLabel}"
+                                     disabled="#{!candidatBean.isModifiedLabel()}"
                                      update="vote"
                                      action="#{candidatBean.updateCandidateLabel()}"
                                      value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="fa-solid fa-save"
@@ -590,7 +590,7 @@
                                                 <div class="col-2" style="text-align: right">
                                                     <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" process="@this" ajax="true"
                                                                      update="tabViewCandidat"
-                                                                     action="#{candidatBean.deleteImage(photo.uri)}"
+                                                                     action="#{imageCandidatBean.deleteImage(photo.uri)}"
                                                                      styleClass="rounded-button ui-button-outlined"
                                                                      style="color: #f47b2a;">
                                                         <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
