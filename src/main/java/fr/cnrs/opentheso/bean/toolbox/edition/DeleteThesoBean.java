@@ -37,12 +37,12 @@ public class DeleteThesoBean implements Serializable {
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
     private final ThesaurusService thesaurusService;
     
-    private String idThesoToDelete, valueOfThesoToDelelete, currentIdTheso;
+    private String idThesaurusToDelete, valueOfThesoToDelelete, currentIdTheso;
     private boolean isDeleteOn, deletePerennialIdentifiers;
 
     
     public void init() {
-        idThesoToDelete = null;
+        idThesaurusToDelete = null;
         valueOfThesoToDelelete = null;
         isDeleteOn = false;     
         currentIdTheso = null;
@@ -50,7 +50,7 @@ public class DeleteThesoBean implements Serializable {
     }
     
     public void confirmDelete(NodeIdValue nodeTheso, String cucurrentIdTheso) throws IOException {
-        this.idThesoToDelete = nodeTheso.getId();
+        this.idThesaurusToDelete = nodeTheso.getId();
         this.valueOfThesoToDelelete = nodeTheso.getValue();
         isDeleteOn = true;
         deletePerennialIdentifiers = false;
@@ -62,29 +62,29 @@ public class DeleteThesoBean implements Serializable {
      * Permet de supprimer un thésaurus 
      */
     public void deleteTheso(CurrentUser currentUser) throws IOException {
-        if(idThesoToDelete == null) return;
+        if(idThesaurusToDelete == null) return;
 
-        var nodePreference = preferenceService.getThesaurusPreferences(idThesoToDelete);
+        var nodePreference = preferenceService.getThesaurusPreferences(idThesaurusToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);
             if(deletePerennialIdentifiers) {
-                conceptHelper.deleteAllIdHandle(idThesoToDelete);
+                conceptHelper.deleteAllIdHandle(idThesaurusToDelete);
             }
         }
         
         // supression des droits
-        userGroupThesaurusRepository.deleteByIdThesaurus(idThesoToDelete);
+        userGroupThesaurusRepository.deleteByIdThesaurus(idThesaurusToDelete);
         
         // suppression complète du thésaurus
-        if(!thesaurusService.deleteThesaurus(idThesoToDelete)){
+        if(!thesaurusService.deleteThesaurus(idThesaurusToDelete)){
             var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
-        if(idThesoToDelete.equalsIgnoreCase(currentIdTheso)) {
+        if(idThesaurusToDelete.equalsIgnoreCase(currentIdTheso)) {
             selectedTheso.setSelectedIdTheso("");
             selectedTheso.setSelectedLang(null);
             selectedTheso.setSelectedTheso();
@@ -101,8 +101,8 @@ public class DeleteThesoBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
     
-    public void setThesaurusBeforRemove(String idThesoToDelete, String valueOfThesoToDelelete) {
-        this.idThesoToDelete = idThesoToDelete;
+    public void setThesaurusBeforRemove(String idThesaurusToDelete, String valueOfThesoToDelelete) {
+        this.idThesaurusToDelete = idThesaurusToDelete;
         this.valueOfThesoToDelelete = valueOfThesoToDelelete;
     }
 }

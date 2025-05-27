@@ -6,7 +6,7 @@
 
     <p:dialog id="idModifyUser" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        <h:form>
+        <h:form id="modifyUserForm">
             <div class="row">
                 <!-- Nom Pseudo -->
                 <div class="col-5" >
@@ -103,7 +103,7 @@
                             <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:toggleSwitch value="#{modifyUserBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" ajax="true">
                                 <p:ajax update="userKey"/>
                             </p:toggleSwitch>
                         </div>

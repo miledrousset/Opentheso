@@ -370,18 +370,13 @@ public class UserService {
     }
 
     public String getRoleName(int idRole) {
-        switch (idRole) {
-            case 1:
-                return "superAdmin";
-            case 2:
-                return "admin";
-            case 3:
-                return "manager";
-            case 4:
-                return "contributor";
-            default:
-                return "";
-        }
+        return switch (idRole) {
+            case 1 -> "superAdmin";
+            case 2 -> "admin";
+            case 3 -> "manager";
+            case 4 -> "contributor";
+            default -> "";
+        };
     }
 
     public List<String> getThesaurusOfUserAsAdmin(int idUser) {
@@ -518,7 +513,7 @@ public class UserService {
         log.info("Recherche de l'utilisateur par mail {}", mail);
         var user = userRepository.findByMail(mail);
         if (user.isEmpty()) {
-            log.error("Aucun utilisateur n'existe avec le mail {}}", mail);
+            log.error("Aucun utilisateur n'existe avec le mail {}", mail);
             return null;
         }
         return user.get();

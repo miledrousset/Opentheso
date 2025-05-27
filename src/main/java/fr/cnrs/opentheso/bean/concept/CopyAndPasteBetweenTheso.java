@@ -12,6 +12,8 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -49,7 +51,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private NodeConcept nodeConceptDrag;
     private NodeConcept nodeConceptDrop;
     
-    private ArrayList<String> conceptsToCopy;
+    private List<String> conceptsToCopy;
     
     private String idThesoOrigin;
     

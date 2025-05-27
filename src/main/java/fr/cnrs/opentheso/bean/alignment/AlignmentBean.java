@@ -26,8 +26,6 @@ import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.AlignmentSourceService;
@@ -77,16 +75,16 @@ import org.primefaces.PrimeFaces;
 public class AlignmentBean implements Serializable {
 
     private final ConceptView conceptView;
-    private final ImageService imageService;
     private final SelectedTheso selectedTheso;
     private final ConceptView conceptBean;
     private final LanguageBean languageBean;
     private final CurrentUser currentUser;
-    private final ThesaurusService thesaurusService;
-    private final ConceptHelper conceptHelper;
     private final AlignementAutomatique alignementAutomatique;
+
     private final ConceptDcTermRepository conceptDcTermRepository;
-    private final PreferredTermRepository preferredTermRepository;
+
+    private final ImageService imageService;
+    private final ThesaurusService thesaurusService;
     private final TermRepository termRepository;
     private final GpsService gpsService;
     private final AlignmentService alignmentService;
@@ -96,8 +94,11 @@ public class AlignmentBean implements Serializable {
     private final NoteService noteService;
 
     private boolean isViewResult = true;
+    private boolean isSelectedAllLang = true;
+    private boolean isSelectedAllDef = true;
+    private boolean isSelectedAllImages = true;
     private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible,
-            viewSetting, isNameAlignment, viewAddNewSource, withLang, withNote, withImage, isViewSelection;
+            viewSetting, isNameAlignment, viewAddNewSource, withLang, withNote, withImage, isViewSelection, alignmentInProgress, error;
     private int selectedAlignementType, alignementResultSize = 3;
     private String selectedAlignement, nom, prenom, idConceptSelectedForAlignment, conceptValueForAlignment,
             alignementResult, alertWikidata, mode, manualAlignmentUri;
@@ -112,20 +113,13 @@ public class AlignmentBean implements Serializable {
     private List<NodeNote> nodeNotes;
     private List<NodeImage> nodeImages;
     private List<NodeIdValue> idsAndValues;
-    private List<String> allIdsOfBranch, idsToGet;
-    private List<String> thesaurusUsedLanguageWithoutCurrentLang, thesaurusUsedLanguage;
-    private List<NodeAlignment> existingAlignments;
+    private List<String> allIdsOfBranch, idsToGet, thesaurusUsedLanguageWithoutCurrentLang, thesaurusUsedLanguage;
     private List<SelectedResource> traductionsOfAlignment, descriptionsOfAlignment, imagesOfAlignment;
     private List<NodeAlignmentSmall> nodeAlignmentSmall;
-    private List<NodeAlignment> allAlignementFound, selectAlignementForAdd, listAlignValues;
+    private List<NodeAlignment> existingAlignments, allAlignementFound, selectAlignementForAdd, listAlignValues;
     private List<AlignementElement> allignementsList, filteredAlignement;
     private List<AlignementSource> alignementSources;
     private List<Map.Entry<String, String>> alignmentTypes;
-
-    private boolean isSelectedAllLang = true;
-    private boolean isSelectedAllDef = true;
-    private boolean isSelectedAllImages = true;
-    private boolean alignmentInProgress, error;
 
 
 
@@ -178,7 +172,7 @@ public class AlignmentBean implements Serializable {
             return;
         }
 
-        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(idsToGet, idLang, idThesaurus);
+        idsAndValues = getIdsAndValuesOfConcepts2(idsToGet, idLang, idThesaurus);
         selectConceptForAlignment(idConceptSelectedForAlignment);
 
         allignementsList = new ArrayList<>();
@@ -219,7 +213,7 @@ public class AlignmentBean implements Serializable {
      */
     public void getIdsAndValues2(String idLang, String idTheso) {
 
-        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(allIdsOfBranch, idLang, idTheso);
+        idsAndValues = getIdsAndValuesOfConcepts2(allIdsOfBranch, idLang, idTheso);
         selectConceptForAlignment(idConceptSelectedForAlignment);
 
         allignementsList = new ArrayList<>();
@@ -439,15 +433,15 @@ public class AlignmentBean implements Serializable {
                 alignment.getThesaurus_target(), alignment.getUri_target(), alignment.getAlignement_id_type(),
                 alignment.getInternal_id_concept(), idTheso, alignment.getId_source());
 
-        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
-        if (preferredTerm.isPresent()) {
+        var preferredTerm = termService.getPreferenceTermByThesaurusAndConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+        if (preferredTerm != null) {
             if (CollectionUtils.isNotEmpty(alignment.getSelectedTraductionsList())) {
                 for (SelectedResource selectedResource : alignment.getSelectedTraductionsList()) {
                     Term term = new Term();
                     term.setIdThesaurus(idTheso);
                     term.setLang(selectedResource.getIdLang());
                     term.setLexicalValue(selectedResource.getGettedValue());
-                    term.setIdTerm(preferredTerm.get().getIdTerm());
+                    term.setIdTerm(preferredTerm.getIdTerm());
                     term.setContributor(idUser);
                     term.setCreator(idUser);
                     term.setSource("");
@@ -457,7 +451,7 @@ public class AlignmentBean implements Serializable {
                     } else {
                         var termToSave = fr.cnrs.opentheso.models.terms.Term.builder()
                                 .lexicalValue(selectedResource.getGettedValue())
-                                .idTerm(preferredTerm.get().getIdTerm())
+                                .idTerm(preferredTerm.getIdTerm())
                                 .lang(selectedResource.getIdLang())
                                 .idThesaurus(idTheso)
                                 .source("")
@@ -1285,21 +1279,16 @@ public class AlignmentBean implements Serializable {
             toIgnore = false;
             // on compare le texte si équivalent, on l'ignore
             for (NodeNote nodeNote : nodeNotes) {
-                switch (nodeNote.getNoteTypeCode()) {
-                    case "definition":
-                        if(selectedResource.getIdLang().equalsIgnoreCase(nodeNote.getLang())){
-                            // la def existe dans cette langue
-                            
-                            if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
-                                // la def est diférente, il faut le signaler pour l'accepter ou non 
-                                selectedResource.setLocalValue(nodeNote.getLexicalValue());
-                            } else 
-                                // la def est identique, il faut l'ignorer
-                                toIgnore = true;
-                        }
-                        break;
-                    default:
-                        break;
+                if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
+                    if(selectedResource.getIdLang().equalsIgnoreCase(nodeNote.getLang())){
+                        // la def existe dans cette langue
+                        if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
+                            // la def est diférente, il faut le signaler pour l'accepter ou non
+                            selectedResource.setLocalValue(nodeNote.getLexicalValue());
+                        } else
+                            // la def est identique, il faut l'ignorer
+                            toIgnore = true;
+                    }
                 }
             }
             if(!toIgnore){
@@ -1492,8 +1481,8 @@ public class AlignmentBean implements Serializable {
     private boolean addTraductions__(String idTheso, String idConcept, int idUser) {
 
         Term term = new Term();
-        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(), idConcept);
-        if (preferredTerm.isEmpty()) {
+        var preferredTerm = termService.getPreferenceTermByThesaurusAndConcept(selectedTheso.getCurrentIdTheso(), idConcept);
+        if (preferredTerm == null) {
             return false;
         }
 
@@ -1502,7 +1491,7 @@ public class AlignmentBean implements Serializable {
                 term.setIdThesaurus(idTheso);
                 term.setLang(selectedResource.getIdLang());
                 term.setLexicalValue(selectedResource.getGettedValue());
-                term.setIdTerm(preferredTerm.get().getIdTerm());
+                term.setIdTerm(preferredTerm.getIdTerm());
                 term.setContributor(idUser);
                 term.setCreator(idUser);
                 term.setSource("");
@@ -1513,7 +1502,7 @@ public class AlignmentBean implements Serializable {
                 } else {
                     var termToSave = fr.cnrs.opentheso.models.terms.Term.builder()
                             .lexicalValue(selectedResource.getGettedValue())
-                            .idTerm(preferredTerm.get().getIdTerm())
+                            .idTerm(preferredTerm.getIdTerm())
                             .lang(selectedResource.getIdLang())
                             .idThesaurus(selectedTheso.getCurrentIdTheso())
                             .source("")
@@ -1633,6 +1622,18 @@ public class AlignmentBean implements Serializable {
         } catch (MalformedURLException e) {
             return "";
         }
+    }
+
+    private List<NodeIdValue> getIdsAndValuesOfConcepts2(List<String> idsToGet, String idLang, String idTheso) {
+
+        List<NodeIdValue> idsAndValues = new ArrayList<>();
+        for (String idConcept : idsToGet) {
+            var label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+            if (StringUtils.isNotEmpty(label)) {
+                idsAndValues.add(NodeIdValue.builder().id(idConcept).value(label).build());
+            }
+        }
+        return idsAndValues;
     }
     
 }

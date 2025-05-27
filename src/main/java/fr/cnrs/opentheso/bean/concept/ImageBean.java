@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -33,7 +32,6 @@ public class ImageBean implements Serializable {
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
-    private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final ImageService imageService;
     private final ConceptService conceptService;

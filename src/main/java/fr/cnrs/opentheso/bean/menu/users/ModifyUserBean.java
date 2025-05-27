@@ -43,48 +43,37 @@ public class ModifyUserBean implements Serializable {
         passWord2 = null;
     }
 
-    public boolean hasKey(){
-
-        if (nodeUser == null) return false;
-
-        if (nodeUser.getKeyNeverExpire()){
-            return true;
-        }
-
-        return nodeUser.getKeyExpiresAt() != null;
-    }
-
     public void setUserStringId(String idUser){
         try {
             nodeUser = userService.getUserById(Integer.parseInt(idUser));
-            hasKey = hasKey();
+            hasKey = nodeUser.getKeyExpiresAt() != null;
             apiKeyExpireDate = nodeUser.getKeyExpiresAt();
         } catch (NumberFormatException e) {
-            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné");
         }
     }
 
     public void deleteUser() {
 
         if(nodeUser.getId() == -1) {
-            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné");
             return;
         }
 
         userService.deleteUserById(nodeUser.getId());
-        MessageUtils.showInformationMessage("L'utilisateur a bien été supprimé !!!");
+        MessageUtils.showInformationMessage("L'utilisateur a bien été supprimé");
         superAdminBean.init();
     }
 
     public void updateUser(){
         
         if(ObjectUtils.isEmpty(nodeUser)) {
-            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné");
             return;              
         }
 
         userService.saveUser(nodeUser);
-        MessageUtils.showInformationMessage("Utilisateur changé avec succès !!!");
+        MessageUtils.showInformationMessage("Utilisateur changé avec succès");
 
         selectUser(nodeUser.getId());
         myProjectBean.setLists();
@@ -95,37 +84,37 @@ public class ModifyUserBean implements Serializable {
     public void updateUser2(){
         
         if(ObjectUtils.isEmpty(nodeUser)) {
-            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné !!!");
+            MessageUtils.showErrorMessage("Aucun utilisateur sélectionné");
             return;              
         }
 
         nodeUser.setUsername(nodeUser.getUsername().trim());
 
         userService.saveUser(nodeUser);
-        MessageUtils.showInformationMessage("Utilisateur changé avec succès !!!");
+        MessageUtils.showInformationMessage("Utilisateur changé avec succès");
         superAdminBean.init();
     }     
     
     public void updatePassword(){
 
         if(StringUtils.isEmpty(passWord1)) {
-            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire");
             return;              
         }
 
         if(StringUtils.isEmpty(passWord2)) {
-            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire");
             return;              
         }
 
         if(!passWord1.equals(passWord2)) {
-            MessageUtils.showErrorMessage("Mot de passe non identique !!!");
+            MessageUtils.showErrorMessage("Mot de passe non identique");
             return;              
         }
 
         nodeUser.setPassword(MD5Password.getEncodedPassword(passWord2));
         userService.saveUser(nodeUser);
-        MessageUtils.showInformationMessage("Mot de passe changé avec succès !!!");
+        MessageUtils.showInformationMessage("Mot de passe changé avec succès");
         selectUser(nodeUser.getId());
     }
 
@@ -150,6 +139,7 @@ public class ModifyUserBean implements Serializable {
         nodeUser.setKeyNeverExpire(keyNeverExpireValue);
         nodeUser.setKeyExpiresAt(apiKeyExpireDateValue);
         userService.saveUser(nodeUser);
-        MessageUtils.showInformationMessage("Clé mise à jour avec succès !!!");
+        MessageUtils.showInformationMessage("Clé mise à jour avec succès");
+
     }
 }

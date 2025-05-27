@@ -77,7 +77,6 @@ public class CorpusBean implements Serializable {
         }
 
         corpusService.deleteCorpusLinkByThesaurusAndName(selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName());
-        PrimeFaces.current().executeScript("PF('confirmDeleteCorpus').hide();");
         updateScreen();
         MessageUtils.showInformationMessage("Corpus supprimé avec succès");
     }

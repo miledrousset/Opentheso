@@ -82,7 +82,6 @@ public class SelectedTheso implements Serializable {
     private final ThesaurusService thesaurusService;
     private final UserGroupLabelRepository userGroupLabelRepository;
 
-
     private boolean fromUrl, isActionFromConcept, sortByNotation, isNetworkAvailable, isUriRequest, haveActiveCorpus;
     private String selectedIdTheso, currentIdTheso, optionThesoSelected, idConceptFromUri, idThesoFromUri, idGroupFromUri,
             thesoName, projectIdSelected, localUri, selectedLang, currentLang;

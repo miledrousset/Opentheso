@@ -303,17 +303,12 @@ public class RestoreThesaurusService {
         }
 
         var allConcepts = conceptService.getAllIdConceptOfThesaurus(idThesaurus);
-        for (String conceptId : allConcepts) {
-            var concept = conceptService.getConcept(conceptId, idThesaurus);
+        for (String idConcept : allConcepts) {
+            var concept = conceptService.getConcept(idConcept, idThesaurus);
             if(overwriteLocalArk || StringUtils.isEmpty(concept.getIdArk())) {
                 var idArk = ToolsHelper.getNewId(preference.getSizeIdArkLocal(), preference.isUppercaseForArk(), true);
-                concept.setIdArk(preference.getNaanArkLocal() + "/" + preference.getPrefixArkLocal() + idArk);
-                concept.setModified(new Date());
-                concept.setNotation(concept.getNotation() == null ? "" : concept.getNotation());
-                concept.setIdArk(concept.getIdArk() == null ? "" : concept.getIdArk());
-                concept.setIdHandle(concept.getIdHandle() == null ? "" : concept.getIdHandle());
-                concept.setGps(concept.getGps() != null && concept.getGps());
-                conceptRepository.save(concept);
+                var urlArk = preference.getNaanArkLocal() + "/" + preference.getPrefixArkLocal() + idArk;
+                conceptRepository.setIdArk(urlArk, new Date(), idConcept, idThesaurus);
                 count++;
             }
         }

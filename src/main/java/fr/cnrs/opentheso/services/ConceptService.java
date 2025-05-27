@@ -392,10 +392,6 @@ public class ConceptService {
     /**
      * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
      * Concept-Père et le thésaurus sous forme de classe tableau pas de tri
-     *
-     * @param idConcept
-     * @param idThesaurus
-     * @return
      */
     public List<String> getListChildrenOfConcept(String idConcept, String idThesaurus) {
 
@@ -435,13 +431,13 @@ public class ConceptService {
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en partant du concept en paramètre
      */
-    public ArrayList<String> getIdsOfBranch(String idConceptDeTete, String idTheso) {
-        ArrayList<String> lisIds = new ArrayList<>();
+    public List<String> getIdsOfBranch(String idConceptDeTete, String idTheso) {
+        List<String> lisIds = new ArrayList<>();
         lisIds = getIdsOfBranch__(idConceptDeTete, idTheso, lisIds);
         return lisIds;
     }
 
-    private ArrayList<String> getIdsOfBranch__(String idConceptDeTete, String idTheso, ArrayList<String> lisIds) {
+    private List<String> getIdsOfBranch__(String idConceptDeTete, String idTheso, List<String> lisIds) {
 
         if (lisIds.contains(idConceptDeTete)) {
             return lisIds;

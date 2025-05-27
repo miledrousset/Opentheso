@@ -15,13 +15,11 @@
 
         <div class="row" style="margin-top: 5px; font-size: 12px;">
             <div class="col-12" >
-                <h:outputText value="#{corpusBean.nodeCorpusForEdit.corpusName}"
-                              style="font-size: 13px; color: #C63632;"/>
+                <h:outputText value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="font-size: 13px; color: #C63632;"/>
             </div>            
         </div>
 
         <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
             <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
                              styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                              style="margin-right: 10px"
@@ -29,6 +27,7 @@
 
             <p:commandButton value="Supprimer" styleClass="ui-button-success" icon="pi pi-check"
                              update="containerIndex messageIndex" ajax="true" process="@this"
+                             oncomplete="PF('confirmDeleteCorpus').hide();"
                              actionListener="#{corpusBean.deleteCorpus()}" />
         </div>
     </p:dialog>     

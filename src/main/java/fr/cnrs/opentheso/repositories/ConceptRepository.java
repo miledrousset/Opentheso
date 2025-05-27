@@ -28,6 +28,12 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     @Modifying
     @Transactional
+    @Query("UPDATE Concept c SET c.idArk = :idArk, c.modified = :now WHERE c.idConcept = :idConcept AND c.idThesaurus = :idThesaurus")
+    void setIdArk(@Param("idArk") String idArk, @Param("now") Date now, @Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
+
+
+    @Modifying
+    @Transactional
     @Query("UPDATE Concept c SET c.gps = :status WHERE c.idConcept = :idConcept AND c.idThesaurus = :idThesaurus")
     int setGpsTag(@Param("status") boolean status, @Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 

@@ -105,11 +105,11 @@
                                         <p:column exportable="false">
                                             <p:commandButton icon="pi pi-pencil" update="containerIndex:idEditCorpus containerIndex:editCorpusForm"
                                                              oncomplete="PF('editCorpus').show()" style="margin-right: 10px"
-                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this" ajax="true"
                                                              styleClass="rounded-button" >
                                             </p:commandButton>
 
-                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
+                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" ajax="true"
                                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
                                                              oncomplete="PF('confirmDeleteCorpus').show()"/>
                                         </p:column>

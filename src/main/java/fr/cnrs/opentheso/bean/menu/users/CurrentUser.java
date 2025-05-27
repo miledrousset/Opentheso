@@ -39,13 +39,11 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
@@ -59,60 +57,33 @@ public class CurrentUser implements Serializable {
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
-    private UserRoleGroupRepository userRoleGroupRepository;
-    @Autowired @Lazy
-    private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-    @Autowired @Lazy
-    private MenuBean menuBean;
-    @Autowired @Lazy
-    private RightBodySetting rightBodySetting;
-    @Autowired @Lazy
-    private PropositionBean propositionBean;
-    @Autowired @Lazy
-    private SearchBean searchBean;
-    @Autowired @Lazy
-    private LanguageBean languageBean;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private ProjectBean projectBean;
+    private final Tree tree;
+    private final MenuBean menuBean;
+    private final SearchBean searchBean;
+    private final TreeGroups treeGroups;
+    private final ProjectBean projectBean;
+    private final LanguageBean languageBean;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final PropositionBean propositionBean;
+    private final RoleOnThesoBean roleOnThesoBean;
+    private final RightBodySetting rightBodySetting;
+    private final ViewEditorHomeBean viewEditorHomeBean;
 
-    @Autowired
-    private LdapService ldapService;
+    private final UserService userService;
+    private final LdapService ldapService;
+    private final ThesaurusService thesaurusService;
+    private final PreferenceService preferenceService;
 
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository;
-
-    @Autowired
-    private TreeGroups treeGroups;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private Tree tree;
+    private final UserRepository userRepository;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
 
     private NodeUser nodeUser;
-    private String username;
-    private String password;
-    private boolean ldapEnable = false;
-
-    private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
-    
-    // nouvel objet pour gérer les permissions
+    private String username, password;
+    private boolean ldapEnable;
     private UserPermissions userPermissions;
-    @Autowired
-    private ThesaurusService thesaurusService;
-    @Autowired
-    private UserService userService;
+    private List<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
 
     public void clear() {
@@ -431,28 +402,13 @@ public class CurrentUser implements Serializable {
             } else {
                 idRole = userService.getRoleOnThisThesaurus(nodeUser.getIdUser(), idProject, idTheso);
                 userPermissions.setRole(idRole);
-                userPermissions.setRoleName(getRoleName(idRole));
+                userPermissions.setRoleName(userService.getRoleName(idRole));
             }
         }
 
         userPermissions.setProjectOfselectedTheso(idProject);
         if (idProject != -1) {
             userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository.findById(idProject).get().getLabel());
-        }
-    }
-
-    private String getRoleName(int idRole) {
-        switch (idRole) {
-            case 1:
-                return "superAdmin";
-            case 2:
-                return "admin";
-            case 3:
-                return "manager";
-            case 4:
-                return "contributor";
-            default:
-                return "";
         }
     }
     

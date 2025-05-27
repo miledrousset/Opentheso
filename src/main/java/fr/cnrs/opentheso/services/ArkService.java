@@ -42,7 +42,7 @@ public class ArkService {
      * @param idLang
      * @return
      */
-    public ArrayList<NodeIdValue> generateArkIdFast(String idTheso, List<String> idConcepts, String idLang) {
+    public List<NodeIdValue> generateArkIdFast(String idTheso, List<String> idConcepts, String idLang) {
 
         var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference != null && nodePreference.isUseArkLocal()) {
@@ -50,7 +50,7 @@ public class ArkService {
             return null;
         }
 
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        List<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
@@ -180,7 +180,7 @@ public class ArkService {
         return false;
     }
 
-    public boolean updateUriArk(String idThesaurus, ArrayList<String> idConcepts) {
+    public boolean updateUriArk(String idThesaurus, List<String> idConcepts) {
 
         log.info("Regénération des ids Ark des concepts");
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);

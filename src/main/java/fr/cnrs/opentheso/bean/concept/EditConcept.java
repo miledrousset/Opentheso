@@ -858,7 +858,7 @@ public class EditConcept implements Serializable {
     }
 
 
-    private void updateUriArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
+    private void updateUriArkIds(ConceptHelper conceptHelper, List<String> idConcepts){
         FacesMessage msg;
         if(!arkService.updateUriArk(selectedTheso.getCurrentIdTheso(), idConcepts)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La mise à jour des URIs Ark a échoué !!");

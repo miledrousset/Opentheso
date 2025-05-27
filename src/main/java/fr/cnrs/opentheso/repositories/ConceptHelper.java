@@ -1017,24 +1017,6 @@ public class ConceptHelper implements Serializable {
         return nodeIdValues;
     }
 
-    public ArrayList<NodeIdValue> getIdsAndValuesOfConcepts2(List<String> idsToGet, String idLang, String idTheso) {
-
-        ArrayList<NodeIdValue> idsAndValues = new ArrayList<>();
-        String label;
-        for (String idConcept : idsToGet) {
-            label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
-            if (label != null) {
-                if (!label.isEmpty()) {
-                    NodeIdValue nodeIdValue = new NodeIdValue();
-                    nodeIdValue.setId(idConcept);
-                    nodeIdValue.setValue(label);
-                    idsAndValues.add(nodeIdValue);
-                }
-            }
-        }
-        return idsAndValues;
-    }
-
 
     /**
      * Cette fonction regenère un identifiant Ark pour un concept donné

@@ -60,7 +60,7 @@ public class AddConcept implements Serializable {
         isCreated = false;
         duplicate = false;
 
-        if (!isLabelValid(idLang, idTheso) || !isNotationValid(idTheso)) {
+        if (!isLabelValid() || !isNotationValid(idTheso)) {
             updateUIOnError();
             return;
         }
@@ -126,7 +126,7 @@ public class AddConcept implements Serializable {
         MessageUtils.showInformationMessage("Rédiger une aide ici pour Add Concept !");
     }
 
-    private boolean isLabelValid(String idLang, String idTheso) {
+    private boolean isLabelValid() {
         if (StringUtils.isBlank(prefLabel)) {
             MessageUtils.showWarnMessage("le label est obligatoire !");
             return false;

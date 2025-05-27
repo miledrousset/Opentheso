@@ -1,21 +1,17 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Data;
 import java.io.Serializable;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "viewEditionBean")
 @SessionScoped
 public class ViewEditionBean implements Serializable {
 
-    private String alternateColor;
-
-    private String login, password, urlServer, nomGraphe;
+    private String alternateColor, login, password, urlServer, nomGraphe;
 
     // les vues
     private boolean isViewListTheso;
@@ -337,50 +333,6 @@ public class ViewEditionBean implements Serializable {
         isViewExportCSV_id = false;
         isViewImportVirtuoso = false;
         isViewExportCSVStructure = false;
-    }    
-
-    public boolean isIsViewExportCSV() {
-        return isViewImportCsv;
-    }
-
-    public boolean isViewImportVirtuoso() {
-        return isViewImportVirtuoso;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUrlServer() {
-        return urlServer;
-    }
-
-    public void setUrlServer(String urlServer) {
-        this.urlServer = urlServer;
-    }
-
-    public String getNomGraphe() {
-        return nomGraphe;
-    }
-
-    public void setNomGraphe(String nomGraphe) {
-        this.nomGraphe = nomGraphe;
-    }
-
-    public boolean getIsIsViewExportCSVStructure() {
-        return isViewExportCSVStructure;
     }
     
 }

@@ -3,10 +3,9 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 import java.io.Serializable;
 import java.util.List;
@@ -15,17 +14,13 @@ import java.util.List;
 @Data
 @Named(value = "flagBean")
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class FlagBean implements Serializable {
 
-    private LanguageRepository languageRepository;
+    private final LanguageRepository languageRepository;
+
     private List<LanguageIso639> allLanguages;
 
-
-    @Inject
-    public FlagBean(LanguageRepository languageRepository) {
-        this.languageRepository = languageRepository;
-    }
 
     public void init() {
         allLanguages = languageRepository.findAll();
