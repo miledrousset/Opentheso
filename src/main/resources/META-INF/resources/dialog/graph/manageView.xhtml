@@ -52,7 +52,7 @@
                         <p:selectOneMenu id="option" value="#{dataGraphView.selectedIdTheso}">
                             <p:ajax event="valueChange" update="manageViewForm" />
                             <f:selectItem itemValue="" itemLabel="..." />
-                            <f:selectItems value="#{currentUser.userPermissions.listThesos}" var="idTheso" itemValue="#{idTheso.id}"
+                            <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="idTheso" itemValue="#{idTheso.id}"
                                             itemLabel="#{idTheso.value} (#{idTheso.id})" />
                         </p:selectOneMenu>                         
                     </div>

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 
@@ -68,6 +70,7 @@ public class GpsService {
         gpsRepository.deleteById(gps.getId());
     }
 
+    @Transactional
     public void deleteGpsByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les GPS présents dans le thésaurus id {}", idThesaurus);

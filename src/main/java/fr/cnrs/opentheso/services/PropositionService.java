@@ -20,7 +20,7 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.NotePropBean;
@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Data
@@ -62,7 +63,7 @@ public class PropositionService {
     private final CurrentUser currentUser;
     private final IndexSetting indexSetting;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final MailService mailBean;
     private final TermRepository termRepository;
     private final ConceptDcTermRepository conceptDcTermRepository;
@@ -320,7 +321,7 @@ public class PropositionService {
             roleOnThesoBean.initNodePref(propositionSelected.getIdTheso());
             selectedTheso.setSelectedIdTheso(propositionSelected.getIdTheso());
             selectedTheso.setSelectedLang(propositionSelected.getLang());
-            selectedTheso.setSelectedThesoForSearch();
+            selectedTheso.setSelectedThesaurusForSearch();
             indexSetting.setIsSelectedTheso(true);
         }
 
@@ -964,6 +965,7 @@ public class PropositionService {
         propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
+    @Transactional
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);

@@ -10,7 +10,7 @@ import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -30,8 +30,7 @@ import fr.cnrs.opentheso.services.HandleConceptService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.utils.MessageUtils;
-import fr.cnrs.opentheso.ws.handle.HandleHelper;
-import fr.cnrs.opentheso.ws.handlestandard.HandleService;
+import fr.cnrs.opentheso.services.HandleService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -61,7 +60,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 public class EditConcept implements Serializable {
 
     
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
     @Autowired @Lazy private LanguageBean languageBean;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -89,7 +88,7 @@ public class EditConcept implements Serializable {
     private RelationsHelper relationsHelper;
 
     @Autowired
-    private HandleHelper handleHelper;
+    private HandleService handleHelper;
 
     @Autowired
     private SearchHelper searchHelper;

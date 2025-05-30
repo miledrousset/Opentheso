@@ -20,15 +20,19 @@ public interface HierarchicalRelationshipRepository extends JpaRepository<Hierar
     List<HierarchicalRelationship> findAllByIdThesaurusAndIdConcept2AndRoleLike(String idThesaurus, String idConcept2, String roleLike);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConcept1(String idThesaurus, String idConcept);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConcept2(String idThesaurus, String idConcept);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(String idThesaurus, String idConcept1, String idConcept2, String role);
 
     @Modifying

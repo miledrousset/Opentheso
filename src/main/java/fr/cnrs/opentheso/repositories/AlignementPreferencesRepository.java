@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlignementPreferencesRepository extends JpaRepository<AlignementPreferences, Integer> {
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurus(String idThesaurus);
 
     @Modifying

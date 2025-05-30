@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.ThesaurusLabel;
+import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
@@ -32,7 +33,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 
 @Slf4j
@@ -227,12 +228,19 @@ public class ThesaurusService {
         var thesaurus = thesaurusRepository.save(Thesaurus.builder()
                 .idThesaurus(idThesaurus)
                 .idArk("")
+                .isPrivate(false)
                 .created(new Date())
                 .modified(new Date())
                 .build());
 
         log.info("Enregistrement terminé du nouveau thésaurus {}", thesaurus.getIdThesaurus());
         return thesaurus.getIdThesaurus();
+    }
+
+    public void setThesaurusVisibility(String idThesaurus, boolean isPrivateTheso) {
+
+        log.info("Changement de la visibilité du thésaurus id {} en {}", idThesaurus, isPrivateTheso);
+        thesaurusRepository.updateVisibility(idThesaurus, isPrivateTheso);
     }
 
     public List<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(String idThesaurus, String idLang) {
@@ -295,11 +303,21 @@ public class ThesaurusService {
             return Collections.emptyList();
         } else {
             return listLangThesaurus.stream()
-                    .map(element -> thesaurusRepository.getThesaurusByIdAndLang(idThesaurus, StringUtils.trimToEmpty(element.getIso6391())))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .map(element -> getByIdAndLang(idThesaurus, element.getIso6391()))
+                    .filter(Objects::nonNull)
                     .toList();
         }
+    }
+
+    public fr.cnrs.opentheso.models.thesaurus.Thesaurus getByIdAndLang(String idThesaurus, String idLang) {
+
+        log.info("Recherche du thésaurus id {} avec la langue {}", idThesaurus, idLang);
+        var thesaurus = thesaurusRepository.getThesaurusByIdAndLang(idThesaurus, StringUtils.trimToEmpty(idLang));
+        if (thesaurus.isEmpty()) {
+            log.error("Aucun thésaurus n'existe avec l'id {} et la langue {}", idThesaurus, idLang);
+            return null;
+        }
+        return thesaurus.get();
     }
 
     public List<LanguageIso639> getLanguagesOfThesaurus(String idThesaurus) {
@@ -325,37 +343,28 @@ public class ThesaurusService {
                 .toList();
     }
 
-    public boolean addThesaurusTraductionRollBack(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
-        try {
-            var thesaurusToSave = addQuotes(thesaurus);
-            log.info("Création d'une nouvelle traduction pour le thésaurus {}", thesaurusToSave.getId_thesaurus());
-            thesaurusLabelRepository.save(ThesaurusLabel.builder()
-                    .idThesaurus(thesaurusToSave.getId_thesaurus())
-                    .lang(thesaurusToSave.getLanguage().trim())
-                    .title(thesaurusToSave.getTitle())
-                    .contributor(thesaurusToSave.getContributor())
-                    .coverage(thesaurusToSave.getCoverage())
-                    .creator(thesaurusToSave.getCreator())
-                    .description(thesaurusToSave.getDescription())
-                    .format(thesaurusToSave.getFormat())
-                    .publisher(thesaurusToSave.getPublisher())
-                    .relation(thesaurusToSave.getRelation())
-                    .rights(thesaurusToSave.getRights())
-                    .source(thesaurusToSave.getSource())
-                    .subject(thesaurusToSave.getSubject())
-                    .type(thesaurusToSave.getType())
-                    .build());
+    public void addThesaurusTraductionRollBack(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
 
-            log.info("Traduction ajoutée pour le thésaurus '{}' en langue '{}'", thesaurus.getId_thesaurus(), thesaurus.getLanguage());
-            return false;
-        } catch (DataIntegrityViolationException e) {
-            log.warn("Traduction déjà existante pour le thésaurus '{}' et la langue '{}'", thesaurus.getId_thesaurus(), thesaurus.getLanguage());
-            return false;
-        } catch (Exception e) {
-            log.error("Erreur lors de l'ajout de la traduction pour le thésaurus '{}' et la langue '{}'",
-                    thesaurus.getId_thesaurus(), thesaurus.getLanguage(), e);
-            return true;
-        }
+        var thesaurusToSave = addQuotes(thesaurus);
+        log.info("Création d'une nouvelle traduction pour le thésaurus {}", thesaurusToSave.getId_thesaurus());
+        thesaurusLabelRepository.save(ThesaurusLabel.builder()
+                .idThesaurus(thesaurusToSave.getId_thesaurus())
+                .lang(thesaurusToSave.getLanguage().trim())
+                .title(thesaurusToSave.getTitle())
+                .contributor(thesaurusToSave.getContributor())
+                .coverage(thesaurusToSave.getCoverage())
+                .creator(thesaurusToSave.getCreator())
+                .description(thesaurusToSave.getDescription())
+                .format(thesaurusToSave.getFormat())
+                .publisher(thesaurusToSave.getPublisher())
+                .relation(thesaurusToSave.getRelation())
+                .rights(thesaurusToSave.getRights())
+                .source(thesaurusToSave.getSource())
+                .subject(thesaurusToSave.getSubject())
+                .type(thesaurusToSave.getType())
+                .created(LocalDateTime.now())
+                .modified(LocalDateTime.now())
+                .build());
     }
 
     public void addThesaurusTraduction(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurusToSave) {
@@ -382,7 +391,7 @@ public class ThesaurusService {
                 .build());
     }
 
-    public boolean UpdateThesaurus(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
+    public boolean updateThesaurus(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
 
         var thesaurusToSave = addQuotes(thesaurus);
 
@@ -439,6 +448,7 @@ public class ThesaurusService {
         return true;
     }
 
+    @Transactional
     public boolean deleteThesaurus(String idThesaurus) {
 
         log.info("Suppression du thésaurus id {}", idThesaurus);
@@ -536,5 +546,10 @@ public class ThesaurusService {
         conceptService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
 
         return true;
+    }
+
+    public void deleteDroitByThesaurus(String idThesaurusToDelete) {
+
+        userGroupThesaurusRepository.deleteByIdThesaurus(idThesaurusToDelete);
     }
 }

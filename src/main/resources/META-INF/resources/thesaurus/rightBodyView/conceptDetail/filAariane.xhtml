@@ -14,13 +14,13 @@
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
                 <!-- gestion de type de concept -->
-                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and
+                <p:menuitem rendered="#{roleOnThesaurus.nodePreference.useCustomRelation and
                                             (conceptView.nodeConcept.nodeCustomRelations == null or conceptView.nodeConcept.nodeCustomRelations.size() == 0)}"
                             value="#{langueBean.getMsg('concept.editConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idEditConceptType" icon="fas fa-edit"
                             oncomplete="PF('editConceptType').show();"  />
 
-                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation}"
+                <p:menuitem rendered="#{roleOnThesaurus.nodePreference.useCustomRelation}"
                             value="#{langueBean.getMsg('concept.manageConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idManageConceptType containerIndex:manageConceptTypeForm" icon="fas fa-cog"
                             oncomplete="PF('manageConceptType').show();"  />
@@ -86,9 +86,9 @@
                              action="#{copyAndPasteBetweenTheso.reset()}" icon="fas fa-ban"
                              update="containerIndex:rightTab messageIndex" />
 
-                <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                <p:separator rendered="#{(roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
-                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
                              value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
                              action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
                              icon="fas fa-truck-moving"
@@ -98,7 +98,7 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <!-- Gestion Ark -->
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
                             disabled="false"
                             actionListener="#{editConcept.infosArk()}"
@@ -107,21 +107,21 @@
                             oncomplete="PF('generateArk').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_ark')}"
                             disabled="false"
                             action="#{editConcept.generateArkForConceptWithoutArk()}"
                             update="messageIndex"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}"
                             disabled="false"
                             oncomplete="PF('generateArkForThisBranch').show();"
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateArkForThisBranch generateArkForThisBranchForm" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_ark')}"
                             oncomplete="PF('generateAllArk').show();"
                             disabled="false"
@@ -130,7 +130,7 @@
 
                 <!-- gestion de Handle -->
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle')}"
                             disabled="false"
                             actionListener="#{editConcept.infosHandle()}"
@@ -139,7 +139,7 @@
                             oncomplete="PF('generateHandle').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.delete_handle')}"
                             disabled="false"
                             actionListener="#{editConcept.infosDeleteHandle()}"
@@ -148,17 +148,17 @@
                             oncomplete="PF('deleteHandle').show();"
                             style="font-size: 12px;"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}"
                             disabled="false" action="#{editConcept.generateHandleForConceptWithoutHandle()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle_for_branch')}"
                             disabled="false" action="#{editConcept.generateHandleForThisBranch()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}"
                             disabled="false" action="#{editConcept.generateAllHandle()}"
                             update="messageIndex" />
@@ -183,7 +183,7 @@
             <p:tooltip for="newFacet" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')} #{conceptView.nodeConcept.term.lexicalValue}" showDelay="1000" />
         </h:panelGroup>
 
-        <h:form rendered="#{roleOnTheso.nodePreference.breadcrumb}" style="padding-left: 5px;">
+        <h:form rendered="#{roleOnThesaurus.nodePreference.breadcrumb}" style="padding-left: 5px;">
             <ui:repeat var="path" value="#{conceptView.pathLabel2}" varStatus="status">
                 <ui:repeat var="subPath" value="#{path}" varStatus="substatus">
                     <h:panelGroup rendered="#{subPath.startOfPath}">

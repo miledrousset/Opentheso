@@ -4,7 +4,7 @@ import com.deepl.api.Language;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.services.DeeplService;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
@@ -27,7 +27,7 @@ import jakarta.inject.Named;
 public class DeeplTranslate implements Serializable {
 
     private final NoteService noteService;
-    private RoleOnThesoBean roleOnThesoBean;
+    private RoleOnThesaurusBean roleOnThesoBean;
     private CurrentUser currentUser;
     private SelectedTheso selectedTheso;
     private DeeplService deeplHelper;

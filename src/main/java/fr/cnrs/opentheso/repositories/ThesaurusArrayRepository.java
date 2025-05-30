@@ -15,9 +15,11 @@ import java.util.Optional;
 public interface ThesaurusArrayRepository extends JpaRepository<ThesaurusArray, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdFacet(String idThesaurus, String idFacet);
 
     @Modifying

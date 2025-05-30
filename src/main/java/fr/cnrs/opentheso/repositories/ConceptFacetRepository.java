@@ -14,15 +14,19 @@ import java.util.Optional;
 public interface ConceptFacetRepository extends JpaRepository<ConceptFacet, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdFacet(String idThesaurus, String idFacet);
 
     @Modifying
+    @Transactional
     void deleteAllByIdConceptAndIdThesaurus(String idConcept, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdConceptAndIdThesaurusAndIdFacet(String idConcept, String idThesaurus, String idFacet);
 
     @Modifying

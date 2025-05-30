@@ -19,7 +19,7 @@
                                      update="containerIndex:formRightTab"
                                      icon="pi pi-pencil"
                                      styleClass="ui-button-success" ajax="true" 
-                                     actionListener="#{viewEditorThesoHomeBean.initText(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}"/>
+                                     actionListener="#{viewEditorThesaurusHomeBean.initText(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}"/>
                 </div>
             </div>    
             <p:separator />            
@@ -35,20 +35,20 @@
                     <div class="row">
                         <div class="col-6" style="margin-top: 3px">
                             <h:outputText value="#{selectedTheso.thesoName}: " style="font-size: 13px; font-weight: bold"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.getTotalConceptOfTheso(selectedTheso.getCurrentIdTheso())}"
+                            <h:outputText value=" #{viewEditorThesaurusHomeBean.getTotalConceptOfThesaurus(selectedTheso.getCurrentIdTheso())}"
                                           title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
                             <h:outputText value=" Concepts" style="font-size: 13px; color: #858796"/>
                             
                             <h:outputText value="; #{langueBean.getMsg('profile.project')}:" style="font-size: 13px;"/>
-                            <h:outputText value="  #{viewEditorThesoHomeBean.getProjectName(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #F47B2A;font-weight: bold"/>
+                            <h:outputText value="  #{viewEditorThesaurusHomeBean.getProjectName(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #F47B2A;font-weight: bold"/>
                             <p:commandButton icon="fa-solid fa-circle-question" styleClass="rounded-button ui-button-flat" style="margin-left: 5px; color: #f47b2a"
-                                             action="#{roleOnTheso.showInfosOfTheso(selectedTheso.currentIdTheso)}"/>                              
+                                             action="#{roleOnThesaurus.showInfosOfThesaurus(selectedTheso.currentIdTheso)}"/>
                         </div>
                         
                         <div class="col-6" style="text-align: right">
                             <h:outputText value="#{langueBean.getMsg('thesohome.modified')}: " style="font-size: 13px; color: #858796"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #601e18;"/>
+                            <h:outputText value=" #{viewEditorThesaurusHomeBean.getLastModifiedDate(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #601e18;"/>
                         </div>
                     </div>
                     
@@ -58,7 +58,7 @@
                         <div class="col-10" style="margin-top: 3px">
                             <h:outputText value="#{langueBean.getMsg('home.permalink')}: " style="font-size: 13px; color: #858796"/>
 
-                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                            <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                 <p:link
                                         href="#{not empty selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) ? selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) : '#'}"
@@ -79,7 +79,7 @@
                         <div class="col-12">
                             <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')}: " style="font-size: 13px;color: #858796"/>
 
-                            <ui:repeat var="value1" varStatus="status1" value="#{viewEditorThesoHomeBean.getLastModifiedConcepts(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())}">
+                            <ui:repeat var="value1" varStatus="status1" value="#{viewEditorThesaurusHomeBean.getLastModifiedConcepts(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())}">
 
                                 <p:commandLink rendered="#{value1.value != ''}" value="#{value1.value}"
                                                style="font-size: 13px; color: #601e18;"
@@ -100,7 +100,7 @@
                         <div class="col-10" style="margin-top: -2px;">
                             <p:accordionPanel id="meta" widgetVar="basic" activeIndex="-2" style="font-size: 12px;" >
                                 <p:tab title="#{langueBean.getMsg('thesohome.metadata')}" titleStyle="color: #858796; background-color: #F5F2F2; font-size: 12px; border: none">
-                                    <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta(selectedTheso.getCurrentIdTheso())}"
+                                    <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesaurusHomeBean.meta(selectedTheso.getCurrentIdTheso())}"
                                                  editable="false" scrollHeight="250" scrollable="true" showGridlines="true" lazy="false">
 
                                         <p:column width="20%" headerText="#{langueBean.getMsg('toolbox.metadata_property')}">
@@ -129,7 +129,7 @@
 
             <div class="row">
                 <div class="col-12">
-                    <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesoHomeBean.getThesoHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
+                    <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesaurusHomeBean.getThesaurusHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
                 </div>                
             </div>
         </h:panelGroup>
@@ -143,14 +143,14 @@
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6" >
                     <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
                                      update="containerIndex" styleClass="ui-button-success"
-                                     action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"/>
+                                     action="#{viewEditorThesaurusHomeBean.setViewPlainTextTo(false)}"/>
                 </div>
                 
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 offset-xl-4 offset-lg-4 offset-md-0 offset-sm-0"
                      style="font-size: 12px; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
                                      styleClass="ui-button-success" update="containerIndex"
-                                     action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
+                                     action="#{viewEditorThesaurusHomeBean.setViewPlainTextTo(true)}"
                                      style="font-size: 12px;"/>
                 </div>
             </div>
@@ -158,14 +158,14 @@
             <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText()}">
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12">
-                        <p:textEditor widgetVar="editor1" value="#{viewEditorThesoHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
+                        <p:textEditor widgetVar="editor1" value="#{viewEditorThesaurusHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
                     </div>
                 </div>
             </h:panelGroup>                    
-            <h:panelGroup rendered="#{viewEditorThesoHomeBean.isViewPlainText()}">                    
+            <h:panelGroup rendered="#{viewEditorThesaurusHomeBean.isViewPlainText()}">
                 <div class="row">
                     <div class="col-12">
-                        <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="width: 100%; margin-bottom:5px; margin-right: 5px"/>
+                        <p:inputTextarea value="#{viewEditorThesaurusHomeBean.text}" style="width: 100%; margin-bottom:5px; margin-right: 5px"/>
                     </div>
                 </div>
             </h:panelGroup>
@@ -174,12 +174,12 @@
                     <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" 
                                      style=" margin-right: 20px" update="containerIndex"
                                      styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
-                                     actionListener="#{viewEditorThesoHomeBean.reset()}"/>
+                                     actionListener="#{viewEditorThesaurusHomeBean.reset()}"/>
 
                     <p:commandButton value="#{langueBean.getMsg('candidat.save')}" 
                                      update="containerIndex messageIndex"
                                      styleClass="ui-button-success" icon="pi pi-check"
-                                     action="#{viewEditorThesoHomeBean.updateThesoHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
+                                     action="#{viewEditorThesaurusHomeBean.updateThesaurusHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
                 </div>
             </div>
         </h:panelGroup>

@@ -1,11 +1,17 @@
-package fr.cnrs.opentheso.ws.handlestandard;
+package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.entites.Preferences;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.PrivateKey;
+import java.util.List;
 
+import fr.cnrs.opentheso.utils.ToolsHelper;
+import fr.cnrs.opentheso.ws.handle.HandleClient;
+import fr.cnrs.opentheso.entites.Preferences;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.handle.hdllib.AbstractMessage;
 import net.handle.hdllib.AbstractResponse;
@@ -20,9 +26,12 @@ import net.handle.hdllib.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Data
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HandleService {
+
     @Value("${certificats.admpriv}")
     private String admprivPath;
 
@@ -32,27 +41,15 @@ public class HandleService {
     @Value("${certificats.key}")
     private String keyPath;
 
-    private int responseMsg;
-    private String pathKey;
-    private String pass;
-    private String adminHandle;
-    private String prefix;
-    private String privatePrefix;
-    
-    private String serverHandle;
-    private int index;    
+    private final HandleClient handleClient;
+
+    private int responseMsg, index;
+    private String pathKey, pass, adminHandle, prefix, privatePrefix, serverHandle, message;
     private AdminRecord admin;
-    
     private PublicKeyAuthenticationInfo auth;
     private static HandleService hs;
     private HandleResolver resolver;
 
-    private String message;
-
-
-    // Utilisez le constructeur par défaut (géré automatiquement par Spring)
-    public HandleService() {
-    }
 
     public void applyNodePreference(Preferences nodePreference){
         serverHandle = nodePreference.getUrlApiHandle();
@@ -170,11 +167,100 @@ public class HandleService {
     }
 
     /**
+     * Permet d'ajouter un identifiant Handle
+     */
+    public String addIdHandle(String privateUri, Preferences nodePreference) {
+
+        if (nodePreference == null || !nodePreference.isUseHandle()) {
+            return null;
+        }
+
+        var newId = nodePreference.getPrefixIdHandle() + "/" + nodePreference.getPrivatePrefixHandle() + getNewHandleId(nodePreference);
+
+        log.info("avant l'appel à HandleClient");
+        var jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
+        log.info("avant le put ");
+        var idHandle = handleClient.putHandle(nodePreference.getPassHandle(), nodePreference.getPathKeyHandle(),
+                nodePreference.getPathCertHandle(), nodePreference.getUrlApiHandle(), newId, jsonData);
+        if (idHandle == null) {
+            message = handleClient.getMessage();
+            return null;
+        }
+        return idHandle;
+    }
+
+    /**
+     * permet de genérer un identifiant unique pour Handle on controle la
+     * présence de l'identifiant sur handle.net si oui, on regénère un autre.
+     */
+    private String getNewHandleId(Preferences nodePreference) {
+
+        boolean duplicateId = true;
+        String idHandle = null;
+
+        while (duplicateId) {
+            idHandle = ToolsHelper.getNewId(10, false, false);
+            if (!handleClient.isHandleExist(nodePreference.getUrlApiHandle(),
+                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
+                duplicateId = false;
+            }
+            if (!handleClient.isHandleExist(
+                    " https://hdl.handle.net/",
+                    nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
+                duplicateId = false;
+            }
+        }
+        return idHandle;
+    }
+
+    /**
+     * Permet de supprimer un identifiant Handle de la
+     * plateforme (handle.net) via l'API REST
+     */
+    public boolean deleteIdHandle(String idHandle, Preferences nodePreference) {
+
+        if (nodePreference == null || !nodePreference.isUseHandle()) {
+            return false;
+        }
+
+        var status = handleClient.deleteHandle(nodePreference.getPassHandle(), nodePreference.getPathKeyHandle(),
+                nodePreference.getPathCertHandle(), nodePreference.getUrlApiHandle(), idHandle);
+        if (!status) {
+            message = handleClient.getMessage();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Permet de supprimer tous les identifiants Handle
+     * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
+     * suite à une suppression d'un thésaurus
+     */
+    public boolean deleteAllIdHandle(List<String> tabIdHandle, Preferences nodePreference) {
+
+        if (nodePreference == null || !nodePreference.isUseHandle()) {
+            return false;
+        }
+
+        boolean first = true;
+        for (String idHandle : tabIdHandle) {
+            var status = handleClient.deleteHandle(nodePreference.getPassHandle(), nodePreference.getPathKeyHandle(),
+                    nodePreference.getPathCertHandle(), nodePreference.getUrlApiHandle(), idHandle);
+            if (!status) {
+                if (first) {
+                    message = "Id handle non supprimé :\n ";
+                    first = false;
+                }
+                message = message + idHandle + " ## ";
+            }
+        }
+        return true;
+    }
+
+    /**
      * peut supprimer un Handle
-     * 
-     * @param handleId
-     * @return
-     * @throws HandleException 
      */
     public boolean deleteHandle(String handleId) throws HandleException {
         DeleteHandleRequest req = new DeleteHandleRequest(Util.encodeString(handleId), auth);
@@ -188,53 +274,4 @@ public class HandleService {
         }
         return false;
     }
-
-    /**
-     * @return the responseMsg
-     */
-    public int getResponseMsg() {
-        return responseMsg;
-    }
-
-    /**
-     * @param responseMsg the responseMsg to set
-     */
-    public void setResponseMsg(int responseMsg) {
-        this.responseMsg = responseMsg;
-    }
-
-    /**
-     * @return the prefix
-     */
-    public String getPrefix() {
-        return prefix;
-    }
-
-    /**
-     * @return if isSuccess
-     */
-    public boolean isSuccess() {
-        return responseMsg == AbstractMessage.RC_SUCCESS;
-    }
-
-    public void cleanResponseMsg() {
-
-        responseMsg = 0;
-    }
-
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    public String getPrivatePrefix() {
-        return privatePrefix;
-    }
-
-    public void setPrivatePrefix(String privatePrefix) {
-        this.privatePrefix = privatePrefix;
-    }
-   
 }

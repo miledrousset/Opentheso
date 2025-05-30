@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -301,6 +302,7 @@ public class AlignmentService {
         return formatAlignements(alignements, idThesaurus);
     }
 
+    @Transactional
     public void deleteAllAlignmentsByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les alignements présents dans le thésaurus {}", idThesaurus);
@@ -333,6 +335,16 @@ public class AlignmentService {
                         .value(element.getUri_target())
                         .build())
                 .toList();
+    }
+
+    public List<Alignement> findAlignementsNotInConceptGroup(String idThesaurus) {
+
+        return alignementRepository.findAlignementsNotInConceptGroup(idThesaurus);
+    }
+
+    public List<Alignement> findAlignementsByGroupAndThesaurus(String idGroup, String idThesaurus){
+
+        return alignementRepository.findAlignementsByGroupAndThesaurus(idGroup, idThesaurus);
     }
 
 }

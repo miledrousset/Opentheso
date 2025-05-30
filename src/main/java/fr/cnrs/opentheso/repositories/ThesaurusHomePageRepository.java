@@ -14,6 +14,8 @@ public interface ThesaurusHomePageRepository extends JpaRepository<ThesaurusHome
 
     Optional<ThesaurusHomePage> findByIdThesoAndLang(String idTheso, String lang);
 
+    @Modifying
+    @Transactional
     void deleteAllByIdTheso(String idTheso);
 
     @Modifying

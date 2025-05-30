@@ -14,7 +14,7 @@ public class UserPermissions implements Serializable{
     // chargenement de tous les projets (non connecté) ou après connection
     private List<UserGroupLabel> listProjects;
     // chargenement de tous les thésaurus (non connecté)ou après sélection d'un projet
-    private List <NodeIdValue> listThesos;
+    private List <NodeIdValue> listThesaurus;
     
     // infos à initialiser après la sélection d'un projet ou thésaurus
     private String selectedTheso;

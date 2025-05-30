@@ -95,7 +95,7 @@
                     </f:facet>
 
                     <p:column rendered="#{(currentUser.nodeUser != null) and 
-                                          (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                          (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
                               selectionMode="multiple" style="width:16px;text-align:center;"/>
 
                     <p:column width="20" headerText="id" sortBy="#{candidat.idConcepte}">
@@ -143,7 +143,7 @@
                 </p:dataTable>  
             </div> 
 
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())
                                       and (candidatBean.isListSelected())}">
                 <div class="row" style="margin-top: 10px; margin-bottom: 30px">
                     <div class="col-sm-3 col-xl-2  " style="text-align: left;">

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -23,6 +24,12 @@ public class PreferenceService {
         preferencesRepository.save(Preferences.builder()
                 .idThesaurus(idThesaurus)
                 .sourceLang(workLanguage)
+                .idNaan("66666")
+                .prefixIdHandle("66.666.66666")
+                .privatePrefixHandle("crt")
+                .prefixArk("crt")
+                .urlApiHandle("https://handle.mom.fr:8000/api/handles/")
+                .uriArk("https://ark.mom.fr/ark:/")
                 .preferredName(idThesaurus)
                 .build());
     }
@@ -149,6 +156,7 @@ public class PreferenceService {
         log.info("Mise à jour terminé de 'use handle' pour le thésaurus {}", idThesaurus);
     }
 
+    @Transactional
     public void deletePreferenceThesaurus(String idThesaurus) {
 
         log.info("Suppression des préférences du thésaurus id {}", idThesaurus);

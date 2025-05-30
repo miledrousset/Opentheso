@@ -15,6 +15,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,7 @@ import org.primefaces.event.RowEditEvent;
 
 @Data
 @SessionScoped
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "thesaurusMetadataAdd")
 public class ThesaurusMetadataAdd implements Serializable{
 
@@ -33,11 +34,6 @@ public class ThesaurusMetadataAdd implements Serializable{
     private List<String> dcmiResource, dcmiTypes;
     private String idTheso;
 
-
-    @Inject
-    public ThesaurusMetadataAdd(ThesaurusDcTermRepository thesaurusDcTermRepository) {
-        this.thesaurusDcTermRepository = thesaurusDcTermRepository;
-    }
 
     public void init(String idTheso1) {
 
@@ -49,11 +45,9 @@ public class ThesaurusMetadataAdd implements Serializable{
     
     /**
      * retour des méta-données à la demande
-     * @param idTheso
-     * @return 
      */
-    public List<DcElement> getThesaurusMetadata(String idTheso){
-        var tmp = thesaurusDcTermRepository.findAllByIdThesaurus(idTheso);
+    public List<DcElement> getThesaurusMetadata(String idThesaurus){
+        var tmp = thesaurusDcTermRepository.findAllByIdThesaurus(idThesaurus);
         if (CollectionUtils.isNotEmpty(tmp)) {
             return tmp.stream().map(element -> DcElement.builder()
                     .id(element.getId().intValue())
@@ -77,10 +71,10 @@ public class ThesaurusMetadataAdd implements Serializable{
             dcElement.setType("");
     }
 
-    public void deleteThesoMetadata(DcElement dcElement){
+    public void deleteThesaurusMetadata(DcElement dcElement){
         thesaurusDcTermRepository.deleteDcElementThesaurus(dcElement.getId(), idTheso);
         init(idTheso);
-        FacesMessage msg = new FacesMessage("Dcterms deleted", "");
+        FacesMessage msg = new FacesMessage("Dcterms Supprimé", "");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
     }
     

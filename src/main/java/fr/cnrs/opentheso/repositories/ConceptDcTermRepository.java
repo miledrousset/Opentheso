@@ -15,6 +15,7 @@ public interface ConceptDcTermRepository extends JpaRepository<ConceptDcTerm, In
     List<ConceptDcTerm> findAllByIdThesaurusAndIdConcept(String idThesaurus, String idConcept);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

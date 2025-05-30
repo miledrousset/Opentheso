@@ -44,13 +44,13 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     int deleteByUriAndConceptAndThesaurus(@Param("uri") String uri, @Param("idConcept") String idConcept,
                                           @Param("idThesaurus") String idThesaurus);
 
-    @Transactional
     @Modifying
+    @Transactional
     @Query("DELETE FROM Alignement a WHERE a.internalIdThesaurus = :idThesaurus")
     int deleteByThesaurus(@Param("idThesaurus") String idThesaurus);
 
-    @Transactional
     @Modifying
+    @Transactional
     @Query("DELETE FROM Alignement a WHERE a.internalIdConcept = :idConcept AND a.internalIdThesaurus = :idThesaurus AND a.alignementType.id = :typeId")
     void deleteByConceptThesaurusAndType(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
                                          @Param("typeId") int typeId);

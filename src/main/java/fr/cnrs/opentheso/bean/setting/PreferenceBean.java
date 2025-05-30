@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Named(value = "preferenceBean")
 public class PreferenceBean implements Serializable {
 
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final SelectedTheso selectedTheso;
     private final PreferenceService preferenceService;
     private final HomePageService homePageService;

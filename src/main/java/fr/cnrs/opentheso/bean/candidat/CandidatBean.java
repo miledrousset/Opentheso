@@ -19,7 +19,7 @@ import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.AlignmentService;
@@ -76,7 +76,7 @@ public class CandidatBean implements Serializable {
     private final LanguageBean languageBean;
     private final AlignmentBean alignmentBean;
     private final AlignmentManualBean alignmentManualBean;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
 
     private final NoteService noteService;
     private final RelationService relationService;
@@ -87,7 +87,7 @@ public class CandidatBean implements Serializable {
     private final ThesaurusService thesaurusService;
     private final ConceptService conceptService;
     private final UserService userService;
-    
+
     private final RelationsHelper relationsHelper;
     private final SearchHelper searchHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;

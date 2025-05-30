@@ -6,14 +6,12 @@ import fr.cnrs.opentheso.models.ConceptGroupProjection;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.models.statistiques.ConceptStatisticData;
 import fr.cnrs.opentheso.models.statistiques.GenericStatistiqueData;
-import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
-import fr.cnrs.opentheso.repositories.ConceptRepository;
-import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.AlignementRepository;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
-import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
+import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.NoteService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.text.SimpleDateFormat;
@@ -37,12 +35,10 @@ public class StatistiqueService {
 
     private final NoteService noteService;
     private final GroupService groupService;
-    private final ConceptRepository conceptRepository;
-    private final ThesaurusRepository thesaurusRepository;
-    private final AlignementRepository alignementRepository;
+    private final ConceptService conceptService;
+    private final ThesaurusService thesaurusService;
     private final ConceptStatusRepository conceptStatusRepository;
-    private final ConceptGroupLabelRepository conceptGroupLabelRepository;
-    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final AlignmentService alignmentService;
 
 
     public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idThesaurus, String idLang) {
@@ -95,11 +91,11 @@ public class StatistiqueService {
                 .size();
     }
 
-    private List<Alignement> getAlignementsSize(String thesaurusId, String groupId) {
+    private List<Alignement> getAlignementsSize(String idThesaurus, String idGroup) {
 
-        var alignements = StringUtils.isEmpty(groupId)
-                ? alignementRepository.findAlignementsNotInConceptGroup(thesaurusId)
-                : alignementRepository.findAlignementsByGroupAndThesaurus(groupId, thesaurusId);
+        var alignements = StringUtils.isEmpty(idGroup)
+                ? alignmentService.findAlignementsNotInConceptGroup(idThesaurus)
+                : alignmentService.findAlignementsByGroupAndThesaurus(idGroup, idThesaurus);
 
         return CollectionUtils.isNotEmpty(alignements) ? alignements : List.of();
     }
@@ -147,7 +143,7 @@ public class StatistiqueService {
     }
 
     public List<Concept> findAllByIdThesaurusAndStatus(String idThesaurus, String status) {
-        return conceptRepository.findAllByIdThesaurusAndStatus(idThesaurus, status);
+        return conceptService.getConceptByThesaurusAndStatus(idThesaurus, status);
     }
 
     private List<ConceptStatisticData> conceptStatisticDataMapper(List<ConceptGroupProjection> conceptGroupProjectionsList) {
@@ -168,20 +164,15 @@ public class StatistiqueService {
     }
 
     public List<DomaineDto> getListGroupes(String idThesaurus, String idLangue) {
-        var thesaurus = thesaurusRepository.findById(idThesaurus);
-        if (thesaurus.isPresent()) {
-            var conceptGroupList = conceptGroupLabelRepository.findAllByIdThesaurusAndLang(thesaurus.get().getIdThesaurus(), idLangue);
-            if (CollectionUtils.isNotEmpty(conceptGroupList)) {
-                return conceptGroupList.stream()
-                        .map(element ->
-                                DomaineDto.builder()
-                                        .id(element.getIdGroup())
-                                        .name(element.getLexicalValue())
-                                        .build())
-                        .toList();
-            } else {
-                return List.of();
-            }
+        var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
+        if (thesaurus != null) {
+            return groupService.findAllByIdThesaurusAndLang(thesaurus.getIdThesaurus(), idLangue).stream()
+                    .map(element ->
+                            DomaineDto.builder()
+                                    .id(element.getIdGroup())
+                                    .name(element.getLexicalValue())
+                                    .build())
+                    .toList();
         }
         return List.of();
     }

@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
+import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.users.NodeUser;
@@ -10,24 +11,21 @@ import fr.cnrs.opentheso.models.users.NodeUserComplet;
 import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
-import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.RoleRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
+import fr.cnrs.opentheso.utils.MD5Password;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,15 +38,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
     private final ThesaurusService thesaurusService;
-    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
-    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
-    private final RoleRepository roleRepository;
-    private final UserGroupLabelRepository userGroupLabelRepository;
     private final PreferenceService preferenceService;
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserRoleGroupRepository userRoleGroupRepository;
-    private final ConceptRepository conceptRepository;
+    private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
 
 
     public NodeUser getUserById(Integer userId) {
@@ -392,19 +390,6 @@ public class UserService {
         return thesaurusIds;
     }
 
-    public Date getLastModification(String idThesaurus) {
-        try {
-            var dates = conceptRepository.findLastModifiedDates(idThesaurus, PageRequest.of(0, 1));
-            if (!dates.isEmpty()) {
-                log.info("Dernière modification du thésaurus {} : {}", idThesaurus, dates.get(0));
-                return dates.get(0);
-            }
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération de la dernière date de modification pour le thésaurus : " + idThesaurus, e);
-        }
-        return null;
-    }
-
     public boolean updateUserInformation(Integer idUSer, String userName, String password, String email, Boolean alertMail) {
 
         log.info("Mise à jour des données utilisateur avec id {}", idUSer);
@@ -443,6 +428,26 @@ public class UserService {
             return null;
         }
         return user.get();
+    }
+
+    public User getUserByUserName(String userName) {
+
+        var user = userRepository.findAllByUsername(userName);
+        if (user.isEmpty()) {
+            log.error("Aucun utilisateur n'est trouvé avec l'userName {}", userName);
+            return null;
+        }
+        return user.get();
+    }
+
+    public User findByUsernameAndPassword(String userName, String password) {
+
+       var user = userRepository.findByUsernameAndPassword(userName, MD5Password.getEncodedPassword(password));
+       if (user.isEmpty()) {
+           log.error("Aucun utilisateur n'existe avec l'username {} et le password {}", userName, password);
+           return null;
+       }
+       return user.get();
     }
 
     public List<User> getUserByUserNameLike(String userName) {
@@ -522,5 +527,11 @@ public class UserService {
     public User saveUser(User user) {
         log.info("Ajout du nouveau utilisateur");
         return userRepository.save(user);
+    }
+
+    public List<UserRoleOnlyOn> getAllThesaurusByUsers(int idUser) {
+
+        var user = getById(idUser);
+        return userRoleOnlyOnRepository.findAllByUserOrderByThesaurus(user);
     }
 }

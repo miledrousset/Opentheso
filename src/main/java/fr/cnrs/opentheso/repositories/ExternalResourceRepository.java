@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ExternalResourceRepository extends JpaRepository<ExternalResource, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

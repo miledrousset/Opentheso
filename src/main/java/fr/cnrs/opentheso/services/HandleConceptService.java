@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.utils.ToolsHelper;
-import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 public class HandleConceptService {
 
-    private final HandleHelper handleHelper;
+    private final HandleService handleHelper;
     private final ConceptRepository conceptRepository;
 
     private final PreferenceService preferenceService;
-    private final fr.cnrs.opentheso.ws.handlestandard.HandleService handleService;
+    private final HandleService handleService;
 
 
     public boolean updateHandleIdOfConcept(String idConcept, String idThesaurus, String idHandle) {

@@ -6,12 +6,11 @@ import fr.cnrs.opentheso.services.CopyAndPasteBetweenThesoService;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.annotation.PreDestroy;
@@ -37,7 +36,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
 
     @Autowired
     private CopyAndPasteBetweenThesoService copyAndPasteBetweenThesoHelper;

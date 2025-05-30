@@ -17,7 +17,7 @@ import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -62,7 +62,7 @@ public class Tree implements Serializable {
     private final LeftBodySetting leftBodySetting;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final IndexSetting indexSetting;
     private final EditFacet editFacet;
     private final CurrentUser currentUser;
@@ -128,7 +128,7 @@ public class Tree implements Serializable {
         if (roleOnThesoBean == null) {
             return false;
         }
-        if (roleOnThesoBean.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isManagerOnThisTheso()) {
+        if (roleOnThesoBean.isSuperAdmin() || roleOnThesoBean.isAdminOnThisThesaurus() || roleOnThesoBean.isManagerOnThisThesaurus()) {
             return true;
         } else {
             return false;

@@ -20,12 +20,15 @@ public interface NodeLabelRepository extends JpaRepository<NodeLabel, Integer> {
     Optional<NodeLabel> findByIdThesaurusAndLexicalValueAndLang(String idThesaurus, String lexicalValue, String lang);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String thesaurusId);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdFacet(String thesaurusId, String idFacet);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdFacetAndLang(String thesaurusId, String idFacet, String lang);
 
     @Modifying

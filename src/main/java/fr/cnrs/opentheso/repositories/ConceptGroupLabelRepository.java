@@ -24,12 +24,15 @@ public interface ConceptGroupLabelRepository extends JpaRepository<ConceptGroupL
     Optional<ConceptGroupLabel> findByLexicalValueLikeAndLangAndIdThesaurus(String lexicalValue, String lang, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdGroupAndIdThesaurusAndLang(String idGroup, String idThesaurus, String idLang);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurus(String idThesaurus);
 
     @Query(value = """

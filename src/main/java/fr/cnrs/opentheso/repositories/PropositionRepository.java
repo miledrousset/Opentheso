@@ -15,6 +15,7 @@ public interface PropositionRepository extends JpaRepository<Proposition, Intege
     List<Proposition> findAllByIdConceptAndIdThesaurusOrderByCreated(String idConcept, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

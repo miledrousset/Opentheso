@@ -16,9 +16,11 @@ public interface ThesaurusLabelRepository extends JpaRepository<ThesaurusLabel, 
     Optional<ThesaurusLabel> findByIdThesaurusAndLang(String idThesaurus, String lang);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurusAndLang(String idThesaurus, String lang);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurus(String idThesaurus);
 
     @Query("SELECT DISTINCT tl.lang FROM ThesaurusLabel tl WHERE tl.idThesaurus = :idThesaurus")

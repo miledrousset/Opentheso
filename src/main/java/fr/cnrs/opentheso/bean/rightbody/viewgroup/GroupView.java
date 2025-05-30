@@ -9,7 +9,7 @@ import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.IpAddressService;
@@ -36,7 +36,7 @@ public class GroupView implements Serializable {
 
     
     @Autowired @Lazy private IndexSetting indexSetting;     
-    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired @Lazy private ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
     @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
     @Autowired private IpAddressService ipAddressService;
     @Autowired

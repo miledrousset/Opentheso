@@ -17,18 +17,23 @@ public interface ConceptGroupConceptRepository extends JpaRepository<ConceptGrou
     List<ConceptGroupConcept> findByIdGroupAndIdThesaurus(String idGroup, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteByIdGroupAndIdConceptAndIdThesaurus(String idGroup, String idConcept, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdGroupAndIdThesaurus(String idGroup, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConcept(String idThesaurus, String idConcept);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Query(value = """

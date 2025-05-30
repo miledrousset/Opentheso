@@ -150,11 +150,7 @@ public class CsvImportHelper {
             }
             thesaurus.setTitle(thesoName);
 
-            if (thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
-                conn.rollback();
-                conn.close();
-                return null;
-            }
+            thesaurusService.addThesaurusTraductionRollBack(thesaurus);
 
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser

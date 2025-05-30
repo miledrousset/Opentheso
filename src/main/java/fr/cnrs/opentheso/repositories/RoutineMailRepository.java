@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface RoutineMailRepository extends JpaRepository<RoutineMail, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

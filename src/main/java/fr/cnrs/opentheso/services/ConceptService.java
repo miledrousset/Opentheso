@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +55,8 @@ public class ConceptService {
     private final HandleConceptService handleConceptService;
     private final RelationService relationService;
     private final NoteService noteService;
+    private final HandleService handleHelper;
+    private final HandleService handleService;
 
 
     public void updateConcept(Concept concept) {
@@ -65,6 +69,11 @@ public class ConceptService {
 
         log.info("Recherche des concepts par thésaurus {}, topConcept {} et status {}", idThesaurus, isTopConcept, status);
         return conceptRepository.findAllByIdThesaurusAndTopConceptAndStatusNotLike(idThesaurus, isTopConcept, status);
+    }
+
+    public List<Concept> getConceptByThesaurusAndStatus(String idThesaurus, String status) {
+
+        return conceptRepository.findAllByIdThesaurusAndStatus(idThesaurus, status);
     }
 
     public List<String> getAllIdConceptOfThesaurus(String idThesaurus) {
@@ -143,6 +152,7 @@ public class ConceptService {
         conceptRepository.setTopConceptTag(status, idConcept, idThesaurus);
     }
 
+    @Transactional
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les concepts présents dans le thésaurus id {}", idThesaurus);
@@ -426,8 +436,6 @@ public class ConceptService {
         return lisIds;
     }
 
-
-
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en partant du concept en paramètre
      */
@@ -448,5 +456,65 @@ public class ConceptService {
             getIdsOfBranch__(listIdsOfConceptChildren1, idTheso, lisIds);
         }
         return lisIds;
+    }
+
+    public Date getLastModification(String idThesaurus) {
+        try {
+            var dates = conceptRepository.findLastModifiedDates(idThesaurus, PageRequest.of(0, 1));
+            if (!dates.isEmpty()) {
+                log.info("Dernière modification du thésaurus {} : {}", idThesaurus, dates.get(0));
+                return dates.get(0);
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération de la dernière date de modification pour le thésaurus : " + idThesaurus, e);
+        }
+        return null;
+    }
+
+    public List<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLang) {
+
+        List<Object[]> results = conceptRepository.findLastModifiedConcepts(idThesaurus, idLang);
+        List<NodeIdValue> nodeIdValues = new ArrayList<>();
+        for (Object[] row : results) {
+            nodeIdValues.add(NodeIdValue.builder()
+                    .id((String) row[0])
+                    .value((String) row[1])
+                    .build());
+        }
+
+        return nodeIdValues;
+    }
+
+
+
+    /**
+     * Permet de supprimer tous les identifiants Handle de la table Concept et
+     * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
+     * suite à une suppression d'un thésaurus
+     */
+    public void deleteAllIdHandle(String idThesaurus) {
+
+        var preferences = preferenceService.getThesaurusPreferences(idThesaurus);
+        if (preferences == null || !preferences.isUseHandle()) {
+            return;
+        }
+
+        var tabIdHandle = conceptRepository.findAllNonEmptyIdHandleByThesaurus(idThesaurus);
+        if (preferences.isUseHandleWithCertificat()) {
+            if (!handleHelper.deleteAllIdHandle(tabIdHandle, preferences)) {
+                log.error("Erreur pendant la suppression du handle : " + handleHelper.getMessage());
+            }
+        } else {
+            // HandleService hs = HandleService.getInstance();
+            handleService.applyNodePreference(preferences);
+            handleService.connectHandle();
+            for (String idHandle : tabIdHandle) {
+                try {
+                    handleService.deleteHandle(idHandle);
+                } catch (Exception ex) {
+                    log.error("Erreur pendant la suppression du handle : " + ex.toString());
+                }
+            }
+        }
     }
 }

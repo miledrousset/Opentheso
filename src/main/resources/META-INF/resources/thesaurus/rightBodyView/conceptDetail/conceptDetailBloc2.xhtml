@@ -194,7 +194,7 @@
     
     
     <!-- Bloc de gestion de type de concepts et des relations personnalisées -->
-    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and
+    <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.useCustomRelation and
                               (conceptView.nodeFullConcept.conceptType == 'concept' or conceptView.nodeFullConcept.conceptType == '') }" >
 
         <!-- Custom relation  -->
@@ -259,7 +259,7 @@
     
     
     <!-- Pour afficher les relations réciproques pour les relations personnalisées -->
-    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeFullConcept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
+    <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.useCustomRelation and conceptView.nodeFullConcept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
 
         <!-- Custom relation  -->
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeCustomRelationReciprocals.size() != 0)}">   

@@ -7,7 +7,7 @@ import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
@@ -58,7 +58,7 @@ import org.primefaces.model.StreamedContent;
 public class ExportFileBean implements Serializable {
 
     @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
+    private RoleOnThesaurusBean roleOnThesoBean;
     
     @Autowired @Lazy
     private ViewExportBean viewExportBean;

@@ -145,7 +145,7 @@ public class AtelierThesService implements Serializable {
         return values;
     }
     
-    public ArrayList<NodeIdValue> searchAllThesaurus() {
+    public List<NodeIdValue> searchAllThesaurus() {
 
         if(currentUser.getNodeUser() == null)
             return new ArrayList<>();
@@ -161,7 +161,7 @@ public class AtelierThesService implements Serializable {
             return new ArrayList<>();
         }
         
-        ArrayList<NodeIdValue> nodeListTheso = new ArrayList<>();
+        List<NodeIdValue> nodeListThesaurus = new ArrayList<>();
 
         String preferredIdLangOfTheso;
         for (String idTheso1 : authorizedTheso) {
@@ -176,11 +176,11 @@ public class AtelierThesService implements Serializable {
             nodeIdValue.setId(idTheso1);
             nodeIdValue.setValue(thesaurusService.getTitleOfThesaurus(idTheso1, preferredIdLangOfTheso));
             nodeIdValue.setStatus(thesaurus.getIsPrivate());
-            nodeListTheso.add(nodeIdValue);
+            nodeListThesaurus.add(nodeIdValue);
             
         }
         
-        return nodeListTheso;
+        return nodeListThesaurus;
     }
     
 }

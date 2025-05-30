@@ -31,7 +31,6 @@ import fr.cnrs.opentheso.models.concept.NodeConceptExport;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.models.concept.NodeMetaData;
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.nodes.DcElement;
@@ -49,7 +48,6 @@ import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.services.AlignmentService;
@@ -68,9 +66,7 @@ import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
-import fr.cnrs.opentheso.ws.ark.ArkHelper2;
-import fr.cnrs.opentheso.ws.handle.HandleHelper;
-import fr.cnrs.opentheso.ws.handlestandard.HandleService;
+import fr.cnrs.opentheso.services.HandleService;
 
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
@@ -82,7 +78,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,7 +100,7 @@ public class ConceptHelper implements Serializable {
     private UserRepository userRepository;
 
     @Autowired
-    private HandleHelper handleHelper;
+    private HandleService handleHelper;
 
     @Autowired
     private DeprecateService deprecateHelper;
@@ -977,121 +972,6 @@ public class ConceptHelper implements Serializable {
     }
 
     /**
-     * Permet de retourner la date de la dernière modification sur un thésaurus
-     *
-     * @param idTheso
-     * @param idLang
-     * @return
-     */
-    public ArrayList<NodeIdValue> getLastModifiedConcept(String idTheso, String idLang) {
-
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select concept.id_concept, term.lexical_value from concept, preferred_term, term"
-                        + " where"
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and"
-                        + " concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and"
-                        + " preferred_term.id_term = term.id_term"
-                        + " and"
-                        + " preferred_term.id_thesaurus = term.id_thesaurus"
-                        + " and"
-                        + " concept.id_thesaurus = '" + idTheso + "'"
-                        + " and"
-                        + " term.lang = '" + idLang + "'"
-                        + " and concept.status != 'CA' and concept.modified IS not null  order by concept.modified DESC, term.lexical_value limit 10");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        NodeIdValue nodeIdValue = new NodeIdValue();
-                        nodeIdValue.setId(resultSet.getString("id_concept"));
-                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
-                        nodeIdValues.add(nodeIdValue);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeIdValues;
-    }
-
-
-    /**
-     * Cette fonction regenère un identifiant Ark pour un concept donné
-     *
-     * @param idTheso
-     * @return
-     */
-    public String generateArkIdForTheso(String idTheso) {
-        if(nodePreference == null)
-            nodePreference = preferenceService.getThesaurusPreferences(idTheso);
-
-        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
-        if (nodePreference.isUseArk()) {
-            ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
-            if (!arkHelper2.login()) {
-                message = "Erreur de connexion !!";
-                return null;
-            }
-            NodeMetaData nodeMetaData;
-            String privateUri;
-            if (nodePreference == null) {
-                message = ("Erreur: Veuillez paramétrer les préférences pour ce thésaurus !!");
-                return null;
-            }
-            if (!nodePreference.isUseArk()) {
-                message = "Erreur: Veuillez activer Ark dans les préférences !!";
-                return null;
-            }
-            nodeMetaData = initNodeMetaData();
-            if (nodeMetaData == null) {
-                message = "Erreur: pas de méta-données";
-                return null;
-            }
-            nodeMetaData.setTitle(nodeThesaurus.getIdThesaurus());
-            nodeMetaData.setSource(nodePreference.getPreferredName());
-            nodeMetaData.setCreator("");
-            privateUri = "?idt=" + idTheso;
-            if (StringUtils.isEmpty(nodeThesaurus.getIdArk())) {
-                if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
-                    message = arkHelper2.getMessage();
-                    message = arkHelper2.getMessage() + "  idTheso = " + nodeThesaurus.getIdThesaurus();
-                    log.info("La création Ark a échoué ici : " + nodeThesaurus.getIdThesaurus());
-                    return null;
-                }
-                if (thesaurusService.updateIdArkOfThesaurus(idTheso, arkHelper2.getIdArk())) {
-                    return null;
-                }
-                return nodeThesaurus.getIdArk();
-            }
-            return arkHelper2.getIdArk();
-        }
-        if (nodePreference.isUseArkLocal()) {
-            String idArk = nodeThesaurus.getIdArk();
-            if (StringUtils.isEmpty(idArk)) {
-                idArk = getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercaseForArk(), true);
-                idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
-                if (thesaurusService.updateIdArkOfThesaurus(idTheso, idArk)) {
-                    return null;
-                }
-            }
-            return idArk;
-        }
-        return null;
-    }
-
-    /**
-     * Pour préparer les données pour la création d'un idArk
-     */
-    private NodeMetaData initNodeMetaData() {
-        NodeMetaData nodeMetaData = new NodeMetaData();
-        nodeMetaData.setDcElementsList(new ArrayList<>());
-        return nodeMetaData;
-    }
-
-    /**
      * Cette fonction permet de savoir si l'ID du concept existe ou non
      */
     public boolean isNotationExist(String idThesaurus, String notation) {
@@ -1142,45 +1022,6 @@ public class ConceptHelper implements Serializable {
             log.error("Error while asking if creator exist : " + idConcept, sqle);
         }
         return existe;
-    }
-
-    /**
-     * Permet de supprimer tous les identifiants Handle de la table Concept et
-     * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
-     * suite à une suppression d'un thésaurus
-     *
-     * @param idThesaurus
-     * @return
-     */
-    public boolean deleteAllIdHandle(String idThesaurus) {
-        if (nodePreference == null) {
-            return false;
-        }
-        if (!nodePreference.isUseHandle()) {
-            return false;
-        }
-        ArrayList<String> tabIdHandle = getAllIdHandleOfThesaurus(idThesaurus);
-
-        if (nodePreference.isUseHandleWithCertificat()) {
-            if (!handleHelper.deleteAllIdHandle(tabIdHandle, nodePreference)) {
-                message = handleHelper.getMessage();
-                return false;
-            }
-            message = handleHelper.getMessage();
-            return true;
-        } else {
-           // HandleService hs = HandleService.getInstance();
-            handleService.applyNodePreference(nodePreference);
-            handleService.connectHandle();
-            for (String idHandle : tabIdHandle) {
-                try {
-                    handleService.deleteHandle(idHandle);
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
-            }
-            return true;
-        }
     }
 
     /**
@@ -1320,33 +1161,6 @@ public class ConceptHelper implements Serializable {
             log.error("Error while getting Concept : " + idConcept, sqle);
         }
         return concept;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la liste des Id Handle d'un thésaurus
-     */
-    public ArrayList<String> getAllIdHandleOfThesaurus(String idThesaurus) {
-
-        ArrayList<String> tabId = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_handle from concept where id_thesaurus = '" + idThesaurus + "'"
-                        + " and (id_handle != null or id_handle != '')");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        if (resultSet.getString("id_handle") != null) {
-                            if (!resultSet.getString("id_handle").isEmpty()) {
-                                tabId.add(resultSet.getString("id_handle"));
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting All IdHandle of Thesaurus : " + idThesaurus, sqle);
-        }
-        return tabId;
     }
 
     /**

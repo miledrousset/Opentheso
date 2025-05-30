@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface HierarchicalRelationshipHistoriqueRepository extends JpaRepository<HierarchicalRelationshipHistorique, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

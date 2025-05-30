@@ -6,10 +6,10 @@ import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import org.primefaces.PrimeFaces;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -38,9 +38,9 @@ public class SessionControl implements Serializable {
     @Autowired @Lazy private TreeConcepts treeConcepts;
     @Autowired @Lazy private Tree tree;
     @Autowired @Lazy private ListIndex listIndex;
-    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired @Lazy private ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
     @Autowired @Lazy private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
     @Autowired @Lazy private IndexSetting indexSetting;
 
     @Autowired
@@ -59,7 +59,7 @@ public class SessionControl implements Serializable {
             treeGroups.reset();
             treeConcepts.reset();
             viewEditorThesoHomeBean.reset();
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             copyAndPasteBetweenTheso.reset();
             indexSetting.setIsThesoActive(true);
             roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);

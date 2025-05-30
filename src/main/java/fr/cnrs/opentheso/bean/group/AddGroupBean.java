@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.services.GroupService;
@@ -39,7 +39,7 @@ public class AddGroupBean implements Serializable {
     private LeftBodySetting leftBodySetting;
 
     @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
+    private RoleOnThesaurusBean roleOnThesoBean;
 
     @Autowired @Lazy
     private TreeGroups treeGroups;

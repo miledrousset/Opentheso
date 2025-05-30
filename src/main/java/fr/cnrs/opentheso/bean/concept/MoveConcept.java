@@ -207,15 +207,15 @@ public class MoveConcept implements Serializable {
 
     public List<NodeIdValue> getListThesoAsAdmin(){
         if(currentUser.getNodeUser() == null) return null;
-        List<String> authorizedThesoAsAdmin;
+        List<String> authorizedThesaurusAsAdmin;
         if(currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedThesoAsAdmin = thesaurusService.getAllIdOfThesaurus(true);
+            authorizedThesaurusAsAdmin = thesaurusService.getAllIdOfThesaurus(true);
         } else {
-            authorizedThesoAsAdmin = userService.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
+            authorizedThesaurusAsAdmin = userService.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
         }
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        return authorizedThesoAsAdmin.stream()
+        return authorizedThesaurusAsAdmin.stream()
                 .filter(idThesaurus -> selectedTheso.getCurrentIdTheso().equalsIgnoreCase(idThesaurus))
                 .map(idThesaurus -> NodeIdValue.builder()
                         .id(idThesaurus)

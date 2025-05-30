@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ConceptGroupHistoriqueRepository extends JpaRepository<ConceptGroupHistorique, Integer> {
 
+    @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

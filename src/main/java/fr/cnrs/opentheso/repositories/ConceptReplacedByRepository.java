@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ConceptReplacedByRepository extends JpaRepository<ConceptReplacedBy, Integer> {
 
+    @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
@@ -18,9 +20,11 @@ public interface ConceptReplacedByRepository extends JpaRepository<ConceptReplac
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdConcept1AndIdThesaurus(String idConcept1, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdConcept2AndIdThesaurus(String idConcept2, String idThesaurus);
 
 }

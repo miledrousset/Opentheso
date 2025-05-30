@@ -300,10 +300,10 @@ public class ExportRdf4jHelperNew {
             }
 
             //dates
-            if (thesaurus.getCreated().toString() != null) {
+            if (thesaurus.getCreated() != null) {
                 conceptScheme.addDate(thesaurus.getCreated().toString(), SKOSProperty.CREATED);
             }
-            if (thesaurus.getModified().toString() != null) {
+            if (thesaurus.getModified() != null) {
                 conceptScheme.addDate(thesaurus.getModified().toString(), SKOSProperty.MODIFIED);
             }
             conceptScheme.setThesaurus(thesaurus);

@@ -24,6 +24,7 @@ public interface CorpusLinkRepository extends JpaRepository<CorpusLink, Integer>
     void deleteCorpusLinkByIdThesaurusAndCorpusName(String idThesaurus, String corpusName);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

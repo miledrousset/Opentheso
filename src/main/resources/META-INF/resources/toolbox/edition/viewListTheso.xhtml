@@ -13,8 +13,8 @@
                     <p:commandButton value="#{langueBean.getMsg('toolbox.newTheso')}" icon="fas fa-plus-circle"
                                      title="#{langueBean.getMsg('toolbox.newThesoTooltip')}"
                                      styleClass="ui-button-success"
-                                     actionListener="#{newThesoBean.init()}"
-                                     action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                     actionListener="#{newThesaurusBean.init()}"
+                                     action="#{viewEditionBean.setIsViewNewThesaurus(true)}"
                                      update="containerIndex" />
                 </p:toolbarGroup>                    
                 <p:toolbarGroup align="right">
@@ -36,8 +36,8 @@
             </p:toolbar>
 
             <div class="card mb-4 py-3 border-left-success" style="margin: 30px; border-color: #43B572">
-                <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso"
-                             filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}" size="small"
+                <p:dataTable value="#{roleOnThesaurus.nodeListThesaurusAsAdmin}" var="thesaurus"
+                             filteredValue="#{roleOnThesaurus.nodeListThesaurusAsAdminFiltered}" size="small"
                              widgetVar="listThesoTable" styleClass="products-table"
                              resizableColumns="true" scrollHeight="450" reflow="true"
                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
@@ -52,45 +52,45 @@
                         </div>
                     </f:facet>
 
-                    <p:column width="10" headerText="Id" filterBy="#{listTheso.id}" sortBy="#{listTheso.id}" filterMatchMode="contains">
-                        <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
+                    <p:column width="10" headerText="Id" filterBy="#{thesaurus.id}" sortBy="#{thesaurus.id}" filterMatchMode="contains">
+                        <h:outputText value="#{thesaurus.id}" style="font-size: 14px"/>
                     </p:column>   
                     
-                    <p:column width="60" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}" filterBy="#{listTheso.value}" sortBy="#{listTheso.value}" filterMatchMode="contains">
-                        <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
+                    <p:column width="60" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}" filterBy="#{thesaurus.value}" sortBy="#{thesaurus.value}" filterMatchMode="contains">
+                        <h:outputText value="#{thesaurus.value}" style="font-size: 14px"/>
                         <p:commandButton icon="fa-solid fa-circle-info" styleClass="rounded-button ui-button-flat " style="margin-left: 5px; color: #f47b2a"
-                                         action="#{roleOnTheso.showInfosOfTheso(listTheso.id)}"/>
+                                         action="#{roleOnThesaurus.showInfosOfThesaurus(thesaurus.id)}"/>
                     </p:column>
                     
 
                     <p:column width="10" headerText="#{langueBean.getMsg('toolbox.publicPrivate')}">
-                        <p:toggleSwitch value="#{listTheso.status}" disabled="true" style="margin-top: 5px" />
+                        <p:toggleSwitch value="#{thesaurus.status}" disabled="true" style="margin-top: 5px" />
                     </p:column>
 
                     <p:column width="10" headerText="#{langueBean.getMsg('candidat.export')}">
                         <p:menuButton icon="fas fa-upload" value="Export" style="margin-left: -10px" >
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.skosFormat')}" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                            <p:menuitem value="#{langueBean.getMsg('toolbox.skosFormat')}" actionListener="#{viewExportBean.init(thesaurus, 'RDF')}"
                                         action="#{viewEditionBean.setIsViewExportSkos(true)}" icon="fas fa-upload"
                                         title="#{langueBean.getMsg('toolbox.skosFormatTooltip')}" update="containerIndex" />
 
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.pdfFormat')}" actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
+                            <p:menuitem value="#{langueBean.getMsg('toolbox.pdfFormat')}" actionListener="#{viewExportBean.init(thesaurus, 'PDF')}"
                                         action="#{viewEditionBean.setIsViewExportPDF(true)}" update="containerIndex"
                                         title="#{langueBean.getMsg('toolbox.pdfFormatTooltip')}" icon="fas fa-upload" />
 
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.csvFormat')}" actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
+                            <p:menuitem value="#{langueBean.getMsg('toolbox.csvFormat')}" actionListener="#{viewExportBean.init(thesaurus, 'CSV')}"
                                         action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex"
                                         title="#{langueBean.getMsg('toolbox.csvFormatTooltip')}" icon="fas fa-upload" />
 
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.structuredCsvFormat')}" actionListener="#{viewExportBean.init(listTheso, 'CSV_STRUC')}"
+                            <p:menuitem value="#{langueBean.getMsg('toolbox.structuredCsvFormat')}" actionListener="#{viewExportBean.init(thesaurus, 'CSV_STRUC')}"
                                         action="#{viewEditionBean.setIsViewExportCSVStructure(true)}" update="containerIndex" icon="fas fa-upload"
                                         title="#{langueBean.getMsg('toolbox.structuredCsvFormatTooltip')}"/>
 
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.smallCsv')}" actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
+                            <p:menuitem value="#{langueBean.getMsg('toolbox.smallCsv')}" actionListener="#{viewExportBean.init(thesaurus, 'CSV_id')}"
                                         action="#{viewEditionBean.setIsViewExportCSV_id(true)}" update="containerIndex" icon="fas fa-upload"
                                         title="#{langueBean.getMsg('toolbox.smallCsvTooltip')}"/>
 
                             <p:menuitem value="#{langueBean.getMsg('toolbox.deprecated')}" update="containerIndex" icon="fas fa-upload"
-                                        actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
+                                        actionListener="#{viewExportBean.init(thesaurus, 'deprecated')}"
                                         action="#{viewEditionBean.setIsViewExportCSV(true)}" />
 
                         </p:menuButton>
@@ -99,21 +99,21 @@
                     <p:column width="5" headerText="#{langueBean.getMsg('candidat.edit')}" style="margin-top: 5px" >
                         <p:commandButton icon="fa-solid fa-pencil" styleClass="rounded-button ui-button-outlined"
                                          update="containerIndex" ajax="true" process="@this" style="color: #f47b2a"
-                                         actionListener="#{editThesoBean.init(listTheso)}"
-                                         action="#{viewEditionBean.setIsViewModifyTheso(true)}"/>
+                                         actionListener="#{editThesaurusBean.init(thesaurus)}"
+                                         action="#{viewEditionBean.setIsViewModifyThesaurus(true)}"/>
                     </p:column>
 
                     <p:column width="5" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">
                         <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
                                          update="idConfirmDelete" process="@this" ajax="true" 
-                                         actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
+                                         actionListener="#{deleteThesaurusBean.confirmDelete(thesaurus, selectedTheso.currentIdTheso)}"
                                          oncomplete="PF('confirmDelete').show();" />
                     </p:column>
 
                     <f:facet name="footer">
                         <span class="p-text-bold">
                             <h:outputText value="#{langueBean.getMsg('toolbox.totalOfTheso')} : " style="font-size: 14px;"/>
-                            <h:outputText value="#{roleOnTheso.nodeListThesoAsAdmin.size()}" style="font-size: 16px; color: #f47b2a"/>
+                            <h:outputText value="#{roleOnThesaurus.nodeListThesaurusAsAdmin.size()}" style="font-size: 16px; color: #f47b2a"/>
                         </span>
                     </f:facet>
                 </p:dataTable>

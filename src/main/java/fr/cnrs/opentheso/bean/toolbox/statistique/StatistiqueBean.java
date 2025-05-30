@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.models.statistiques.GenericStatistiqueData;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
@@ -45,6 +46,7 @@ public class StatistiqueBean implements Serializable {
     private final StatistiqueService statistiqueService;
     private final ThesaurusService thesaurusService;
     private final UserService userService;
+    private final ConceptService conceptService;
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, norResult, selectedLanguage;
@@ -201,7 +203,7 @@ public class StatistiqueBean implements Serializable {
             var deprecatedConceptsList = statistiqueService.findAllByIdThesaurusAndStatus(selectedTheso.getCurrentIdTheso(), "DEP");
             nbrDeprecatedByThesaurus = CollectionUtils.isNotEmpty(deprecatedConceptsList) ? deprecatedConceptsList.size() : 0;
 
-            dernierModification = userService.getLastModification(selectedTheso.getCurrentIdTheso());
+            dernierModification = conceptService.getLastModification(selectedTheso.getCurrentIdTheso());
 
             genericTypeVisible = true;
             conceptTypeVisible = false;

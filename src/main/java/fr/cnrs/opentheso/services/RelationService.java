@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,6 +49,7 @@ public class RelationService {
         return hierarchicalRelationshipRepository.save(hierarchicalRelationship);
     }
 
+    @Transactional
     public void deleteAllByThesaurus(String idThesaurus) {
 
         log.info("Suppression des relation des concepts présents dans le thésaurus id {}", idThesaurus);

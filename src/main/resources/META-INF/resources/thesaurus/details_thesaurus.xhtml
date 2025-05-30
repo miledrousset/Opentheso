@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                        <p:tab rendered="#{roleOnTheso.nodePreference.useConceptTree}" id="viewTabConceptTree">
+                        <p:tab rendered="#{roleOnThesaurus.nodePreference.useConceptTree}" id="viewTabConceptTree">
                             <f:facet name="title">
                                 <i class="pi pi-sitemap" />
                                 <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
@@ -85,7 +85,7 @@
                             <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
                         </p:tab>
 
-                        <p:tab rendered="#{roleOnTheso.alignementVisible(currentUser)}"
+                        <p:tab rendered="#{roleOnThesaurus.alignementVisible(currentUser)}"
                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
@@ -93,7 +93,7 @@
                             <ui:include src="rightBodyView/alignement/alignement.xhtml" />
                         </p:tab>
 
-                        <p:tab rendered="#{roleOnTheso.getNodePreference().isSuggestion()}" disabled="#{!propositionBean.isRubriqueVisible()}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
+                        <p:tab rendered="#{roleOnThesaurus.getNodePreference().isSuggestion()}" disabled="#{!propositionBean.isRubriqueVisible()}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>

@@ -15,10 +15,10 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
@@ -39,12 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -61,149 +59,50 @@ import org.springframework.context.annotation.ScopedProxyMode;
  * @author miledrousset
  */
 @Data
-@SessionScoped
 @Slf4j
+@SessionScoped
+@RequiredArgsConstructor
 @Named(value = "conceptView")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ConceptView implements Serializable {
 
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
+    private final Tree tree;
+    private final IndexSetting indexSetting;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final LanguageRepository languageRepository;
+    private final RelationsHelper relationsHelper;
+    private final ConceptHelper conceptHelper;
+    private final PathService pathService;
+    private final GpsService gpsService;
+    private final LanguageBean languageBean;
+    private final SelectedTheso selectedTheso;
+    private final RelationService relationsService;
+    private final CorpusLinkRepository corpusLinkRepository;
+    private final IpAddressService ipAddressService;
+    private final CurrentUser currentUser;
+    private final ResourceService resourceService;
+    private final ConceptService conceptService;
+    private final FacetService facetService;
 
-    @Autowired @Lazy
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-
-    @Autowired @Lazy
-    private ViewEditorHomeBean viewEditorHomeBean;
-
-    @Autowired @Lazy
-    private Tree tree;
-
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private PathService pathService;
-
-    @Autowired
-    private GpsService gpsService;
-
-    @Autowired
-    private LanguageBean languageBean;
-
-    @Autowired
-    private SelectedTheso selectedTheso;
-
-    @Autowired
-    private RelationService relationsService;
-
-    @Autowired
-    private CorpusLinkRepository corpusLinkRepository;
-
-    @Autowired private IpAddressService ipAddressService;
-
+    private int step, countOfBranch, offset;
+    private String mapScripte = "";
+    private boolean haveNext, haveCorpus, searchedForCorpus, toggleSwitchAltLabelLang, toggleSwitchNotesLang;
     private NodeConcept nodeConcept;
-    
-    /// nouvelle méthode de récupération du concept 
-    private NodeFullConcept nodeFullConcept;    
-    
-    private String selectedLang;
+    private NodeFullConcept nodeFullConcept;
+    private String selectedLang, creator, contributors;
     private GpsMode gpsModeSelected;
     private List<NodeCorpus> nodeCorpuses;
     private List<NodePath> pathLabel;
     private List<List<NodePath>> pathLabel2;
     private List<NodeIdValue> nodeFacets;
-
-    /// pagination
-    private int offset;
-    private int step;
-    private boolean haveNext;
-
-    // total de la branche
-    private int countOfBranch;
-
-    // pour savoir si le concept a des relations vers des corpus
-    private boolean haveCorpus;
-    private boolean searchedForCorpus;
-
-    /// Notes du concept, un type de note par concept et par langue
-    private NodeNote note;
-    private NodeNote scopeNote;
-    private NodeNote changeNote;
-    private NodeNote definition;
-    private NodeNote editorialNote;
-    private NodeNote example;
-    private NodeNote historyNote;
-
-    /// Notes du concept pour l'affichage du multilingue
-    private ArrayList<NodeNote> noteAllLang;
-    private ArrayList<NodeNote> scopeNoteAllLang;
-    private ArrayList<NodeNote> changeNoteAllLang;
-    private ArrayList<NodeNote> definitionAllLang;
-    private ArrayList<NodeNote> editorialNoteAllLang;
-    private ArrayList<NodeNote> exampleAllLang;
-    private ArrayList<NodeNote> historyNoteAllLang;
-
-    private String mapScripte = "";
-    
-    private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
-    private ArrayList <NodeCustomRelation> nodeCustomRelations;
-    
-    
+    private List<NodeCustomRelation> nodeCustomRelationReciprocals, nodeCustomRelations;
     private List<ResponsiveOption> responsiveOptions;
+    private NodeNote note, scopeNote, changeNote, definition, editorialNote, example, historyNote;
+    private List<NodeNote> noteAllLang, scopeNoteAllLang, changeNoteAllLang, definitionAllLang, editorialNoteAllLang,
+            exampleAllLang, historyNoteAllLang;
 
-    private boolean toggleSwitchAltLabelLang;
-    private boolean toggleSwitchNotesLang;
-
-    private String creator;
-    private String contributors;
-    @Autowired
-    private CurrentUser currentUser;
-    @Autowired
-    private ResourceService resourceService;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private FacetService facetService;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        nodeCorpuses = new ArrayList<>();
-        pathLabel = new ArrayList<>();
-        pathLabel2 = new ArrayList<>();
-        note = null;
-        scopeNote = null;
-        changeNote = null;
-        definition = null;
-        editorialNote = null;
-        example = null;
-        historyNote = null;
-        nodeConcept = new NodeConcept();
-        nodeFullConcept = new NodeFullConcept();
-        nodeFacets = new ArrayList<>();
-
-        selectedLang = null;
-        nodeCustomRelationReciprocals = null;
-    }
-
-    /**
-     * Creates a new instance of ConceptBean
-     */
-    public ConceptView() {
-    }
 
     public void init() {
         toggleSwitchAltLabelLang = true;
@@ -427,7 +326,7 @@ public class ConceptView implements Serializable {
 
     public boolean isGpsDisable(CurrentUser currentUser) {
         return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
-                !(roleOnThesoBean.isManagerOnThisTheso() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isSuperAdmin()));
+                !(roleOnThesoBean.isManagerOnThisThesaurus() || roleOnThesoBean.isAdminOnThisThesaurus() || roleOnThesoBean.isSuperAdmin()));
     }
 
     private String formatCoordonnees(List<Gps> listeCoordonnees) {
@@ -580,7 +479,7 @@ public class ConceptView implements Serializable {
         this.countOfBranch = listIdsOfBranch.size();
     }
 
-    public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
+    public void setNodeCustomRelationWithReciprocal(List<NodeCustomRelation> nodeCustomRelations) {
         nodeCustomRelationReciprocals = new ArrayList<>();
         for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
             if (nodeCustomRelation.isReciprocal())

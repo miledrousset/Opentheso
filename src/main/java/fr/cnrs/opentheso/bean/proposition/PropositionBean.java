@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.models.propositions.Proposition;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
@@ -38,7 +38,7 @@ import java.util.List;
 public class PropositionBean implements Serializable {
 
     private final IndexSetting indexSetting;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final SelectedTheso selectedTheso;
     private final RightBodySetting rightBodySetting;
     private final PropositionService propositionService;
@@ -81,7 +81,7 @@ public class PropositionBean implements Serializable {
         roleOnThesoBean.initNodePref(propositionDao.getIdTheso());
         selectedTheso.setSelectedIdTheso(propositionDao.getIdTheso());
         selectedTheso.setSelectedLang(propositionDao.getLang());
-        selectedTheso.setSelectedThesoForSearch();
+        selectedTheso.setSelectedThesaurusForSearch();
         rightBodySetting.setIndex("3");
         indexSetting.setIsSelectedTheso(true);
         isRubriqueVisible = true;
@@ -465,7 +465,7 @@ public class PropositionBean implements Serializable {
 
     public Boolean isCanMakeAction(CurrentUser currentUser) {
         return (currentUser.getNodeUser() != null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
-                && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
+                && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisThesaurus());
     }
 
     public boolean isSameUser(CurrentUser currentUser) {

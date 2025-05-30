@@ -32,7 +32,6 @@ public class ThesaurusLabel {
     @Column(name = "lang", nullable = false)
     private String lang;
 
-    @Id
     @Column(name = "title", nullable = false)
     private String title;
 

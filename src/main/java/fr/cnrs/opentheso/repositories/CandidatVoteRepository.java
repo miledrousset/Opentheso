@@ -26,9 +26,11 @@ public interface CandidatVoteRepository extends JpaRepository<CandidatVote, Inte
                                                                          String typeVote, String idNote);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConceptAndIdNote(String idThesaurus, String idConcept, String idNote);
 
     @Modifying

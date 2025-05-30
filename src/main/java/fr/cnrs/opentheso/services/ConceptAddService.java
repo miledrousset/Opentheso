@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -50,7 +50,7 @@ public class ConceptAddService {
     private final ArkService arkService;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final ConceptRepository conceptRepository;
     private final RelationService relationService;
     private final UserRepository userRepository;

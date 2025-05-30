@@ -34,8 +34,8 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Thesaurus t SET t.isPrivate = :isPrivate WHERE t.idThesaurus = :idTheso")
-    int updateVisibility(@Param("idTheso") String idTheso, @Param("isPrivate") boolean isPrivate);
+    @Query("UPDATE Thesaurus t SET t.isPrivate = :isPrivate WHERE t.idThesaurus = :idThesaurus")
+    void updateVisibility(@Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate);
 
     @Modifying
     @Transactional

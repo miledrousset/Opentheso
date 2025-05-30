@@ -3,23 +3,21 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.entites.User;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
-import fr.cnrs.opentheso.repositories.UserRepository;
-import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ProjectService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
 import fr.cnrs.opentheso.services.UserService;
-import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -28,11 +26,11 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.services.LdapService;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -54,6 +52,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentUser implements Serializable {
 
+    private final ProjectService projectService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -66,7 +65,7 @@ public class CurrentUser implements Serializable {
     private final IndexSetting indexSetting;
     private final SelectedTheso selectedTheso;
     private final PropositionBean propositionBean;
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final RightBodySetting rightBodySetting;
     private final ViewEditorHomeBean viewEditorHomeBean;
 
@@ -74,10 +73,7 @@ public class CurrentUser implements Serializable {
     private final LdapService ldapService;
     private final ThesaurusService thesaurusService;
     private final PreferenceService preferenceService;
-
-    private final UserRepository userRepository;
-    private final UserRoleGroupRepository userRoleGroupRepository;
-    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final UserRoleGroupService userRoleGroupService;
 
     private NodeUser nodeUser;
     private String username, password;
@@ -120,7 +116,7 @@ public class CurrentUser implements Serializable {
         selectedTheso.setSelectedProject();
 
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
-            roleOnThesoBean.setPublicThesos(this, selectedTheso);
+            roleOnThesoBean.setPublicThesaurus(this, selectedTheso.getCurrentIdTheso());
             if(StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())){
                 var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
                 if (thesaurus.getIsPrivate()) {
@@ -140,14 +136,14 @@ public class CurrentUser implements Serializable {
             indexSetting.setSelectedTheso(false);
         } else {
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
-                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                roleOnThesoBean.setAuthorizedThesaurus(projectBean.getListeThesoOfProject().stream()
                         .map(NodeIdValue::getId)
                         .collect(Collectors.toList()));
             } else {
-                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+                roleOnThesoBean.setAuthorizedThesaurus(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
+            roleOnThesoBean.setUserRoleOnThisThesaurus(this, selectedTheso.getCurrentIdTheso());
 
             var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
             if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso()) && thesaurus.getIsPrivate()) {
@@ -167,21 +163,17 @@ public class CurrentUser implements Serializable {
             PrimeFaces.current().ajax().update("containerIndex:header");
             PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
             PrimeFaces.current().ajax().update("menuBar");
-            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 
     /**
      * Connect l'utilisateur si son compte en récupérant toutes les informations
      * lui concernant
-     *
      * le lien de l'index si le compte existe, un message d'erreur sinon init
      * c'est une parametre que viens du "isUserExist" ou return une 1 si on fait
      * le login normal (usuaire, pass), une 2 si on fait le login avec le
      * motpasstemp (et nous sommes dirigées a la page web de changer le
      * motpasstemp) #MR
-     *
-     * @throws java.io.IOException
      */
     public void login() throws Exception {
 
@@ -190,27 +182,27 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        Optional<User> user;
+        User user;
         if (ldapEnable) {
             if (!ldapService.authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }
-            user = userRepository.findAllByUsername(username);
+            user = userService.getUserByUserName(username);
         } else {
-            user = userRepository.findByUsernameAndPassword(username, MD5Password.getEncodedPassword(password));
+            user = userService.findByUsernameAndPassword(username, password);
         }
 
-        if (user.isEmpty()) {
+        if (user == null) {
             showErrorMessage("User or password wrong, please try again");
             return;
         }
 
-        // on récupère le compte de l'utilisatreur
-        nodeUser = new NodeUser(user.get().getId(), user.get().getUsername(), user.get().getMail(), user.get().getActive(),
-                user.get().getAlertMail(), user.get().getIsSuperAdmin(), user.get().getPassToModify(),
-                user.get().getApiKey(), user.get().getKeyNeverExpire(), user.get().getKeyExpiresAt(),
-                user.get().getIsServiceAccount(), user.get().getKeyDescription());
+        // on récupère le compte de l'utilisateur
+        nodeUser = new NodeUser(user.getId(), user.getUsername(), user.getMail(), user.getActive(),
+                user.getAlertMail(), user.getIsSuperAdmin(), user.getPassToModify(),
+                user.getApiKey(), user.getKeyNeverExpire(), user.getKeyExpiresAt(),
+                user.getIsServiceAccount(), user.getKeyDescription());
 
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -246,14 +238,14 @@ public class CurrentUser implements Serializable {
             projectBean.initProject(selectedTheso.getProjectIdSelected(), this);
 
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
-                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                roleOnThesoBean.setAuthorizedThesaurus(projectBean.getListeThesoOfProject().stream()
                         .map(NodeIdValue::getId)
                         .collect(Collectors.toList()));
             } else {
-                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+                roleOnThesoBean.setAuthorizedThesaurus(Collections.emptyList());
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
+            roleOnThesoBean.setUserRoleOnThisThesaurus(this, selectedTheso.getCurrentIdTheso());
             projectBean.init();
         }
 
@@ -278,7 +270,7 @@ public class CurrentUser implements Serializable {
 
         // liste des projets de l'utilisateur
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListProjects(userGroupLabelRepository.findAll());
+            userPermissions.setListProjects(userRoleGroupService.findAllUserRoleGroup());
         } else {  
             userPermissions.setListProjects(userService.getProjectOfUser(nodeUser.getIdUser()));
             setListProjectForUser();
@@ -289,7 +281,7 @@ public class CurrentUser implements Serializable {
     private void setAllListThesoOfAllProject(){
         // liste des thésaurus de l'utilisateur (tous les droits en partant du contributeur)
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListThesos(thesaurusService.getAllThesaurus(true));
+            userPermissions.setListThesaurus(thesaurusService.getAllThesaurus(true));
             userPermissions.setRole(1);
             userPermissions.setRoleName("superAdmin");   
             if(userPermissions.getSelectedProject() != -1) {
@@ -366,7 +358,7 @@ public class CurrentUser implements Serializable {
             }
         }
 
-        userPermissions.setListThesos(thesos);
+        userPermissions.setListThesaurus(thesos);
         if(resetTheso) {
             resetUserPermissionsForThisTheso();
             resetUserPermissionsForThisProject();
@@ -408,7 +400,7 @@ public class CurrentUser implements Serializable {
 
         userPermissions.setProjectOfselectedTheso(idProject);
         if (idProject != -1) {
-            userPermissions.setProjectOfselectedThesoName(userGroupLabelRepository.findById(idProject).get().getLabel());
+            userPermissions.setProjectOfselectedThesoName(userRoleGroupService.getUserGroupLabelRepository(idProject).getLabel());
         }
     }
     
@@ -418,10 +410,10 @@ public class CurrentUser implements Serializable {
         }
 
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userGroupLabelRepository.findById(idProject).get().getLabel());
-        userPermissions.setListThesos(userService.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
+        userPermissions.setSelectedProjectName(userRoleGroupService.getUserGroupLabelRepository(idProject).getLabel());
+        userPermissions.setListThesaurus(userService.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
-            for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
+            for (NodeIdValue nodeIdValue : userPermissions.getListThesaurus()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
                     return;
             }
@@ -468,7 +460,7 @@ public class CurrentUser implements Serializable {
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
-        userPermissions.setListProjects(userGroupLabelRepository.findProjectsByThesaurusStatus(false));
+        userPermissions.setListProjects(projectService.findProjectByThesaurusStatus(false));
         
         // contrôle si le projet actuel est dans la liste, sinon, on initialise le projet sélectionné à -1
         if(userPermissions.getSelectedProject() != -1){
@@ -503,11 +495,11 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
 
-        userPermissions.setListThesos(thesaurusService.getAllThesaurus(nodeUser != null));
+        userPermissions.setListThesaurus(thesaurusService.getAllThesaurus(nodeUser != null));
 
         // contrôle si le thésaurus actuel est dans la liste, sinon, on initialise le thésaurus à null
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
-            for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
+            for (NodeIdValue nodeIdValue : userPermissions.getListThesaurus()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso())){
                     return;
                 } 
@@ -515,7 +507,7 @@ public class CurrentUser implements Serializable {
             userPermissions.setSelectedTheso(null);
             userPermissions.setSelectedProjectName("");
         }         
-        if(userPermissions.getListThesos() == null || userPermissions.getListThesos().isEmpty()) {
+        if(userPermissions.getListThesaurus() == null || userPermissions.getListThesaurus().isEmpty()) {
             resetUserPermissionsForThisTheso();
         }   
     }
@@ -544,7 +536,7 @@ public class CurrentUser implements Serializable {
 
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisThesaurus()) && nodeUser.isActive();
     }
     
     private void showErrorMessage(String msg) {
@@ -556,18 +548,18 @@ public class CurrentUser implements Serializable {
     /**
      * Permet de mettre à jour toutes les informations concernant un user #MR
      */
-    private void setInfos() {
+    private void setInfos() throws IOException {
         username = "";
         password = "";
         if (nodeUser == null) {
             return;
         }
-        roleOnThesoBean.showListTheso(this, selectedTheso);
+        roleOnThesoBean.showListThesaurus(this, selectedTheso.getCurrentIdTheso());
         initAllAuthorizedProjectAsAdmin();
 
         /// Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
         // sinon, on nettoie l'interface et le thésaurus. 
-        roleOnThesoBean.redirectAndCleanTheso(selectedTheso);
+        roleOnThesoBean.redirectAndCleanThesaurus(selectedTheso);
     }
 
     /**
@@ -588,13 +580,10 @@ public class CurrentUser implements Serializable {
     }
 
     /**
-     * permet de savoir si l'utilisateur est admin au moins sur un projet pour
-     * contôler la partie import et export
-     *
-     * @return
+     * Permet de savoir si l'utilisateur est admin au moins sur un projet
      */
     private void initAllAuthorizedProjectAsAdmin() {
-        var allAuthorizedProjectAsAdminTemp = userRoleGroupRepository.getUserRoleGroup(nodeUser.getIdUser());
+        var allAuthorizedProjectAsAdminTemp = userRoleGroupService.getRoleProjectByUser(nodeUser.getIdUser());
         if (allAuthorizedProjectAsAdmin == null) {
             allAuthorizedProjectAsAdmin = new ArrayList<>();
         } else {

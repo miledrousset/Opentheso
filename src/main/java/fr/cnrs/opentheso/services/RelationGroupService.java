@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -96,6 +98,7 @@ public class RelationGroupService {
         relationGroupRepository.deleteByIdThesaurusAndIdGroup2(idThesaurus, idGroupFils);
     }
 
+    @Transactional
     public void deleteRelationGroupByThesaurus(String idThesaurus) {
 
         log.info("Suppression de toutes les relations entre les groups présents dans le thésaurus id {}", idThesaurus);

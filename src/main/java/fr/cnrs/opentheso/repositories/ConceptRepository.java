@@ -62,9 +62,11 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     void cleanConcept();
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String thesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdConcept(String thesaurus, String idConcept);
 
     @Modifying
@@ -127,4 +129,26 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
         ORDER BY c.modified DESC
     """)
     List<Date> findLastModifiedDates(@Param("idThesaurus") String idThesaurus, PageRequest pageable);
+
+    @Query(value = """
+        SELECT c.id_concept, t.lexical_value
+        FROM concept c
+            JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+            JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+        WHERE c.id_thesaurus = :idThesaurus
+            AND t.lang = :lang
+            AND c.status != 'CA'
+            AND c.modified IS NOT NULL
+        ORDER BY c.modified DESC, t.lexical_value
+        LIMIT 10
+    """, nativeQuery = true)
+    List<Object[]> findLastModifiedConcepts(@Param("idThesaurus") String idThesaurus, @Param("lang") String lang);
+
+    @Query("""
+        SELECT c.idHandle FROM Concept c
+        WHERE c.idThesaurus = :idThesaurus AND c.idHandle IS NOT NULL AND c.idHandle <> ''
+    """)
+    List<String> findAllNonEmptyIdHandleByThesaurus(@Param("idThesaurus") String idThesaurus);
+
+
 }

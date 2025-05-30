@@ -23,6 +23,7 @@ public interface GpsRepository extends JpaRepository<Gps, Integer> {
     @Query("DELETE FROM Gps g WHERE g.id = :id")
     void deleteById(@Param("id") Integer id);
 
+    @Modifying
     @Transactional
     void deleteByIdTheso(String idThesaurus);
 

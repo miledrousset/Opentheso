@@ -35,9 +35,11 @@ public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Inte
     int countByIdGroupIgnoreCase(@Param("idGroup") String idGroup);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurusAndIdGroup(String idThesaurus, String idGroup);
 
     @Modifying
+    @Transactional
     void deleteByIdThesaurus(String idThesaurus);
 
     @Query(value = """

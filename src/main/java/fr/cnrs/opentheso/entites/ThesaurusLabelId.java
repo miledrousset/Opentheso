@@ -13,7 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class ThesaurusLabelId implements Serializable {
+
     private String idThesaurus;
     private String lang;
-    private String title;
+
 }

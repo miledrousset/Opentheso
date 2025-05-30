@@ -10,7 +10,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -69,7 +69,7 @@ public class SearchBean implements Serializable {
     private ThesaurusService thesaurusService;
 
     @Autowired
-    private RoleOnThesoBean roleOnThesoBean;
+    private RoleOnThesaurusBean roleOnThesoBean;
 
     @Autowired
     private PropositionBean propositionBean;
@@ -250,7 +250,7 @@ public class SearchBean implements Serializable {
             nodeConceptSearchs.clear();
         }
 
-        if (roleOnThesoBean.getSelectedThesoForSearch() == null || roleOnThesoBean.getSelectedThesoForSearch().isEmpty()) {
+        if (roleOnThesoBean.getSelectedThesaurusForSearch() == null || roleOnThesoBean.getSelectedThesaurusForSearch().isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut choisir au moins un thésaurus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
@@ -258,14 +258,14 @@ public class SearchBean implements Serializable {
         }
 
         isSearchInSpecificTheso = true;
-        if ((selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) && roleOnThesoBean.getSelectedThesoForSearch().size() > 1) {
+        if ((selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) && roleOnThesoBean.getSelectedThesaurusForSearch().size() > 1) {
             isSearchInSpecificTheso = false;
         }
 
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
-            for (String idTheso : roleOnThesoBean.getSelectedThesoForSearch()) {
-                nodeConceptSearchs.addAll(searchInThesaurus(idTheso, searchLangOfTheso(roleOnThesoBean.getListTheso(), idTheso))); // languageBean.getIdLangue());
+            for (String idTheso : roleOnThesoBean.getSelectedThesaurusForSearch()) {
+                nodeConceptSearchs.addAll(searchInThesaurus(idTheso, searchLangOfTheso(roleOnThesoBean.getListThesaurus(), idTheso))); // languageBean.getIdLangue());
             }
         } else {
             String idLang = null;
@@ -300,8 +300,8 @@ public class SearchBean implements Serializable {
         PrimeFaces.current().ajax().update("resultSearchBar");
     }
 
-    private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
-        for (RoleOnThesoBean.ThesoModel theso : listTheso) {
+    private String searchLangOfTheso(List<RoleOnThesaurusBean.ThesaurusModel> listTheso, String idTheso) {
+        for (RoleOnThesaurusBean.ThesaurusModel theso : listTheso) {
             if (theso.getId().equals(idTheso)) {
                 return theso.getDefaultLang();
             }
@@ -665,13 +665,13 @@ public class SearchBean implements Serializable {
         selectedTheso.setSelectedIdTheso(idTheso);
         selectedTheso.setSelectedLang(idLang);
         try {
-            selectedTheso.setSelectedThesoForSearch();
+            selectedTheso.setSelectedThesaurusForSearch();
        //      selectedTheso.setSelectedTheso();
         } catch (IOException ex) {
             Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        roleOnThesoBean.setSelectedThesoForSearch(roleOnThesoBean.getSelectedThesoForSearch().stream()
+        roleOnThesoBean.setSelectedThesaurusForSearch(roleOnThesoBean.getSelectedThesaurusForSearch().stream()
                 .filter(theso -> theso.contains(idTheso))
                 .collect(Collectors.toList()));
         conceptBean.getConcept(idTheso, idConcept, idLang, currentUser);

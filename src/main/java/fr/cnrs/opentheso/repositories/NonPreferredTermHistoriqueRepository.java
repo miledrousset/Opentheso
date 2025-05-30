@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface NonPreferredTermHistoriqueRepository extends JpaRepository<NonPreferredTermHistorique, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String thesaurus);
 
     @Modifying

@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ConceptTypeRepository extends JpaRepository<ConceptType, Integer> {
 
+    @Modifying
+    @Transactional
     void deleteAllByIdTheso(String idTheso);
 
     @Modifying

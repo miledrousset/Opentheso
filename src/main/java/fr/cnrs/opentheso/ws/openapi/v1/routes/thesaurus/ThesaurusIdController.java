@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
@@ -56,7 +57,7 @@ public class ThesaurusIdController {
     @Autowired
     private ThesaurusService thesaurusService;
     @Autowired
-    private UserService userService;
+    private ConceptService conceptService;
 
 
     @GetMapping(produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
@@ -131,7 +132,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer.", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var date = userService.getLastModification(thesaurusId);
+        var date = conceptService.getLastModification(thesaurusId);
         var datas = "{\"lastUpdate\":\"" + date.toString() + "\"}";
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }

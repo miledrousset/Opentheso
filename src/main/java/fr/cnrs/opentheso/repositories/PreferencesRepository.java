@@ -14,6 +14,8 @@ public interface PreferencesRepository extends JpaRepository<Preferences, Intege
 
     Optional<Preferences> findByIdThesaurus(String idThesaurus);
 
+    @Transactional
+    @Modifying
     void deleteByIdThesaurus(String idThesaurus);
 
     @Modifying

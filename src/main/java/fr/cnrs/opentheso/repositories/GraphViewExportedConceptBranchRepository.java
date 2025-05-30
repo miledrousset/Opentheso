@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface GraphViewExportedConceptBranchRepository extends JpaRepository<GraphViewExportedConceptBranch, Integer> {
 
+    @Modifying
+    @Transactional
     void deleteAllByTopConceptThesaurusId(String idThesaurus);
 
     @Modifying

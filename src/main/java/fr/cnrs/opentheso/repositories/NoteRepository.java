@@ -30,15 +30,19 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
             String identifier, String idThesaurus, String noteTypeCode, String lang, String lexicalValue);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteByIdAndIdThesaurus(int idNote, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdentifierAndIdThesaurus(String identifier, String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurusAndIdentifierAndLangAndNoteTypeCode(String idThesaurus, String identifier, String idLang, String noteTypeCode);
 
     @Modifying

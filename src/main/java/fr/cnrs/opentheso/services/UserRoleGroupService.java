@@ -1,9 +1,12 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.Roles;
+import fr.cnrs.opentheso.entites.Thesaurus;
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.repositories.RoleRepository;
@@ -284,6 +287,50 @@ public class UserRoleGroupService {
     public List<UserGroupLabel> findAllUserRoleGroup() {
 
         log.info("Recherche de tous les user role group disponible");
-        return userGroupLabelRepository.findAll();
+        var users = userGroupLabelRepository.findAll();
+        if (users.isEmpty()) {
+            log.error("Aucun group n'est trouvé");
+            return List.of();
+        }
+        return users;
+    }
+
+    public UserGroupLabel getUserGroupLabelRepository(int idGroup) {
+
+        log.info("Recherche du group utilisateur id {}", idGroup);
+        var userGroup = userGroupLabelRepository.findById(idGroup);
+        if (userGroup.isEmpty()) {
+            log.error("Aucun group utilisateur trouvé avec id {}", idGroup);
+            return null;
+        }
+        return userGroup.get();
+    }
+
+    public UserRoleOnlyOn getRole(User user, UserGroupLabel group, Thesaurus thesaurus) {
+
+        return userRoleOnlyOnRepository.findByUserAndGroupAndThesaurus(user, group, thesaurus);
+    }
+
+    public Roles getRoleById(int idRole) {
+
+        var role = roleRepository.findById(idRole);
+        if (role.isEmpty()) {
+            log.error("Aucun rôle n'est trouvé avec l'id {}", idRole);
+            return null;
+        }
+        return role.get();
+    }
+
+    public List<NodeIdValue> getRolesByIdGreaterThanEqual(int idRoleFrom) {
+
+        log.info("Recherche des rôles avec un id supérieur à {}", idRoleFrom);
+        var roles = roleRepository.findAllByIdGreaterThanEqual(idRoleFrom);
+        if (roles.isEmpty()) {
+            log.error("Aucun rôle n'est trouvé avec un id supérieur à {}", idRoleFrom);
+            return List.of();
+        }
+        return roles.stream()
+                .map(element -> NodeIdValue.builder().id(element.getId() + "").value(element.getName()).build())
+                .toList();
     }
 }

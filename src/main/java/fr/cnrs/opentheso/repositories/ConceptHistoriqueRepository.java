@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ConceptHistoriqueRepository extends JpaRepository<ConceptHistorique, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

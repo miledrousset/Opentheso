@@ -271,12 +271,7 @@ public class ImportRdf4jHelper {
                 if (thesaurus.getLanguage() == null) {
                     thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
                 }
-                if (thesaurusService.addThesaurusTraductionRollBack(thesaurus)) {
-                    conn.rollback();
-                    conn.close();
-                    message.append("Erreur lors de la création des traductions du thésaurus");
-                    return null;
-                }
+                thesaurusService.addThesaurusTraductionRollBack(thesaurus);
                 conn.commit();
             }
 

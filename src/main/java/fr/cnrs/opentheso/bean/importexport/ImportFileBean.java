@@ -40,7 +40,7 @@ import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -105,7 +105,7 @@ public class ImportFileBean implements Serializable {
     @Autowired
     private RelationGroupService relationGroupService;
     @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
+    private RoleOnThesaurusBean roleOnThesoBean;
     @Autowired @Lazy
     private ViewEditionBean viewEditionBean;
     @Autowired @Lazy
@@ -1203,7 +1203,7 @@ public class ImportFileBean implements Serializable {
                 + thesaurusName + " (" + idNewTheso + ") est correctement importé !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+        roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         viewEditionBean.init();
     }
 
@@ -1317,7 +1317,7 @@ public class ImportFileBean implements Serializable {
 
             info = "Thesaurus correctly insert into data base";
             info = info + "\n" + csvImportHelper.getMessage();
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1413,7 +1413,7 @@ public class ImportFileBean implements Serializable {
             }
         }
 
-        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+        roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         viewEditionBean.init();
 
         if (!StringUtils.isEmpty(csvImportHelper.getMessage())) {
@@ -1474,7 +1474,7 @@ public class ImportFileBean implements Serializable {
             uri = null;
             //total = 0;
             info = info + "\n" + "total = " + total + "\n" + csvImportHelper.getMessage();
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1783,7 +1783,7 @@ public class ImportFileBean implements Serializable {
             //total = 0;
             info = info + "\n" + "total = " + total;
             error.append(csvImportHelper.getMessage());
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -1889,7 +1889,7 @@ public class ImportFileBean implements Serializable {
             //total = 0;
             info = info + "\n" + "total = " + total;
             error.append(csvImportHelper.getMessage());
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             viewEditionBean.init();
 
             PrimeFaces pf = PrimeFaces.current();
@@ -3100,7 +3100,7 @@ public class ImportFileBean implements Serializable {
 
             info = "Thesaurus correctly insert into data base";
             info = info + "\n" + importRdf4jHelper.getMessage().toString();
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
             viewEditionBean.init();
         } catch (SQLException e) {
             error.append(System.getProperty("line.separator"));
@@ -3161,7 +3161,7 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addLangsToThesaurus(idTheso);
         importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);
 
-        roleOnThesoBean.showListTheso(currentUser, selectedTheso);
+        roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         viewEditionBean.init();
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,

@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.UserService;
@@ -82,6 +83,8 @@ public class Rest_new {
     private ThesaurusService thesaurusService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ConceptService conceptService;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -848,7 +851,7 @@ public class Rest_new {
     }
 
     private String getInfoLastUpdate__(String idThesaurus) {
-        var date = userService.getLastModification(idThesaurus);
+        var date = conceptService.getLastModification(idThesaurus);
         if (date == null) {
             return messageEmptyJson();
         }

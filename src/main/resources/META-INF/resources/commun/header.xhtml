@@ -45,7 +45,7 @@
                              filter="true" filterMatchMode="contains">
                 <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
                 <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
-                <f:selectItems value="#{currentUser.userPermissions.listThesos}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
+                <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
             </p:selectOneMenu>
 
             <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
@@ -54,9 +54,9 @@
         </h:panelGroup>
 
         <p:commandLink rendered="#{selectedTheso.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
-                                   and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                   and (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
-                       actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
+                       actionListener="#{editThesaurusBean.init(selectedTheso.currentIdTheso)}"
                        action="#{viewEditionBean.setViewModifyTheso(true)}">
             <i class="fa fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
@@ -83,7 +83,7 @@
             </h:panelGroup>
 
 
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
                 style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
                 <p:commandLink rendered="#{newVersionBean.newVersionFound()}" onclick="PF('newVersionNotificationPanel').show()"
                                update="containerIndex:notificationNewVersion">

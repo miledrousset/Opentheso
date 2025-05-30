@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProjectService {
 
+    private final UserRoleGroupService userRoleGroupService;
     private final UserRoleGroupRepository userRoleGroupRepository;
     private final UserGroupLabelRepository userGroupLabelRepository;
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
@@ -36,15 +37,15 @@ public class ProjectService {
 
     public void deleteProject(int idGroup) {
 
-        var userGroupLabel = userGroupLabelRepository.findById(idGroup);
-        if (userGroupLabel.isEmpty()) {
+        var userGroupLabel = userRoleGroupService.getUserGroupLabelRepository(idGroup);
+        if (userGroupLabel == null) {
             log.error("Aucun userGroupLabel n'existe pas avec id {}", idGroup);
             return;
         }
 
-        userRoleGroupRepository.deleteByGroup(userGroupLabel.get());
-        userGroupThesaurusRepository.deleteByIdGroup(userGroupLabel.get().getId());
-        userGroupLabelRepository.deleteById(userGroupLabel.get().getId());
+        userRoleGroupRepository.deleteByGroup(userGroupLabel);
+        userGroupThesaurusRepository.deleteByIdGroup(userGroupLabel.getId());
+        userGroupLabelRepository.deleteById(userGroupLabel.getId());
     }
 
     public List<NodeUserGroupThesaurus> getAllThesaurusProjects(String idLang) {
@@ -73,15 +74,14 @@ public class ProjectService {
         return userGroupLabelRepository.findProjectsByRole(idUser, idRole);
     }
 
-    public UserGroupLabel saveNewProject(String projectName) {
-
-        log.info("Enregistrement d'un nouveau projet avec le nom {}", projectName);
-        return userGroupLabelRepository.save(UserGroupLabel.builder().label(projectName).build());
-    }
-
     public UserGroupLabel saveNewProject(UserGroupLabel userGroupLabel) {
 
         log.info("Enregistrement d'un nouveau projet avec le nom {}", userGroupLabel.getLabel());
         return userGroupLabelRepository.save(userGroupLabel);
+    }
+
+    public List<UserGroupLabel> findProjectByThesaurusStatus(boolean isVisible) {
+
+        return userGroupLabelRepository.findProjectsByThesaurusStatus(isVisible);
     }
 }

@@ -11,8 +11,9 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.entites.ProjectDescription;
 import fr.cnrs.opentheso.repositories.ProjectDescriptionRepository;
 
-import jakarta.inject.Inject;
+import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,6 @@ import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -29,36 +29,23 @@ import java.util.List;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "projectBean")
 public class ProjectBean implements Serializable {
 
-    private SelectedTheso selectedTheso;
-    private LanguageBean languageBean;
-    private LanguageRepository languageRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptStatusRepository conceptStatusRepository;
-    private ProjectDescriptionRepository projectDescriptionRepository;
+    private final SelectedTheso selectedTheso;
+    private final LanguageBean languageBean;
+    private final LanguageRepository languageRepository;
+    private final ConceptRepository conceptRepository;
+    private final StatistiqueService statistiqueService;
+    private final ConceptStatusRepository conceptStatusRepository;
+    private final ProjectDescriptionRepository projectDescriptionRepository;
 
     private String workLanguage, description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
     private ProjectDescription projectDescriptionSelected;
     private List<NodeIdValue> listeThesoOfProject;
     private List<LanguageIso639> allLangs, selectedLangs;
-
-
-    @Inject
-    public ProjectBean(@Value("${settings.workLanguage:fr}") String workLanguage,
-                       SelectedTheso selectedTheso,
-                       LanguageBean languageBean,
-                       LanguageRepository languageRepository,
-                       ProjectDescriptionRepository projectDescriptionRepository) {
-
-        this.workLanguage = workLanguage;
-        this.languageBean = languageBean;
-        this.selectedTheso = selectedTheso;
-        this.languageRepository = languageRepository;
-        this.projectDescriptionRepository = projectDescriptionRepository;
-    }
 
 
     public void initProject(String projectIdSelected, CurrentUser currentUser) {
@@ -93,11 +80,11 @@ public class ProjectBean implements Serializable {
             description = projectDescriptionSelected.getDescription();
             langCodeSelected = projectDescriptionSelected.getLang();
         }
-        listeThesoOfProject = currentUser.getUserPermissions().getListThesos();
+        listeThesoOfProject = currentUser.getUserPermissions().getListThesaurus();
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {
-                element.setNbrConcepts(conceptStatusRepository.countValidConceptsByThesaurus(element.getId()));
+                element.setNbrConcepts(statistiqueService.countValidConceptsByThesaurus(element.getId()));
             } catch(Exception ex) {
                 element.setNbrConcepts(0);
             }

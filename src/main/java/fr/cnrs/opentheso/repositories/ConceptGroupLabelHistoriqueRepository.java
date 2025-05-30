@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ConceptGroupLabelHistoriqueRepository extends JpaRepository<ConceptGroupLabelHistorique, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

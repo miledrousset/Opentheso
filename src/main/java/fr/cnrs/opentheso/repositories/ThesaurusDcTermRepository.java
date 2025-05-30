@@ -15,6 +15,7 @@ public interface ThesaurusDcTermRepository extends JpaRepository<ThesaurusDcTerm
     List<ThesaurusDcTerm> findAllByIdThesaurus(String idThesaurus);
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
 

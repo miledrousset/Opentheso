@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface PermutedRepository extends JpaRepository<Permuted, Integer> {
 
     @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String thesaurusId);
 
     @Modifying

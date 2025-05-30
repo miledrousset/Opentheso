@@ -68,7 +68,7 @@ public class NewProjectBean implements Serializable {
             return;             
         }
 
-        var userGroupCreated = projectService.saveNewProject(projectName);
+        var userGroupCreated = projectService.saveNewProject(UserGroupLabel.builder().label(projectName).build());
         currentUser.initUserPermissions();
         // on vérifie si l'utilisateur en cours est un Admin 
         if(!currentUser.getNodeUser().isSuperAdmin() && CollectionUtils.isNotEmpty(currentUser.getAllAuthorizedProjectAsAdmin())){

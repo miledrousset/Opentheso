@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ThesaurusAlignementSourceRepository extends JpaRepository<ThesaurusAlignementSource, Integer> {
 
+    @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
 
     @Modifying

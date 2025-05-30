@@ -159,11 +159,11 @@
                             </div>
                         </div>
                         <!-- identifiants pérennes -->
-                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
+                        <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                       || roleOnTheso.nodePreference.originalUriIsDoi || conceptView.nodeFullConcept.uri != ''}">
                             <div class="list-group-item list-group-item-action">
                                 <div class="row" style="margin-left: 0px;">
-                                    <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
+                                    <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                                   || roleOnTheso.nodePreference.originalUriIsDoi}">
                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
@@ -217,7 +217,7 @@
                     <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2" style="text-align: left;">
                         <!-- QrCode-->
                         <div class="list-group-item list-group-item-action">
-                            <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
+                            <p:barcode value="#{roleOnThesaurus.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
                                        rendered="#{conceptView.nodeFullConcept.permanentId != ''}"
                                        type="qr" height="75px;"/>
                         </div>

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 
@@ -83,6 +85,7 @@ public class ImageService {
         return imagesRepository.save(image);
     }
 
+    @Transactional
     public void deleteImagesByThesaurus(String idThesaurus) {
 
         log.info("Suppression de toutes les images présentes dans le thésaurus id {}", idThesaurus);

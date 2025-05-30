@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.entites.ConceptGroupConcept;
 import fr.cnrs.opentheso.entites.ConceptGroupLabel;
 import fr.cnrs.opentheso.entites.ConceptGroupLabelHistorique;
 import fr.cnrs.opentheso.entites.Preferences;
+import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.models.concept.NodeMetaData;
 import fr.cnrs.opentheso.models.concept.NodeUri;
@@ -17,9 +18,9 @@ import fr.cnrs.opentheso.repositories.ConceptGroupHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupLabelRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupRepository;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.utils.ToolsHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
-import fr.cnrs.opentheso.ws.handle.HandleHelper;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GroupService {
 
-    private final HandleHelper handleHelper;
+    private final HandleService handleHelper;
     private final PreferenceService preferenceService;
     private final ConceptGroupRepository conceptGroupRepository;
     private final ConceptGroupLabelRepository conceptGroupLabelRepository;
@@ -48,7 +49,7 @@ public class GroupService {
     private final ConceptGroupHistoriqueRepository conceptGroupHistoriqueRepository;
 
     private final RelationGroupService relationGroupService;
-
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
 
 
     public void insertGroup(String idGroup, String idThesaurus, String idArk, String typeCode, String notation, Date created, Date modified) {
@@ -100,6 +101,12 @@ public class GroupService {
                 .build();
     }
 
+    public void saveUserGroupThesaurus(UserGroupThesaurus userGroupThesaurus) {
+
+        log.info("Enregistrement du nouveau user group Thesaurus");
+        userGroupThesaurusRepository.save(userGroupThesaurus);
+    }
+
     public void deleteRelationConceptGroupConcept(String idGroup, String idConcept, String idThesaurus) {
 
         log.info("Suppression de la relation entre le concept id {} et le group id {}", idConcept, idGroup);
@@ -144,6 +151,12 @@ public class GroupService {
             log.error("Error while deleting invalid group-concept relations for thesaurus: " + idThesaurus, e);
             return false;
         }
+    }
+
+    public void setGroupVisibility(String idGroup, String idThesaurus, boolean isPrivate) {
+
+        log.info("Changement de la visibilité du group {} en {}", idGroup, isPrivate);
+        conceptGroupRepository.updateVisibility(idGroup, idThesaurus, isPrivate);
     }
 
     public List<NodeIdValue> searchGroup(String idThesaurus, String idLang, String text) {
@@ -937,6 +950,16 @@ public class GroupService {
                 .idConcept(idConcept)
                 .idThesaurus(idThesaurus)
                 .build());
+    }
+
+    public List<ConceptGroupLabel> findAllByIdThesaurusAndLang(String idThesaurus, String idLang) {
+
+        var groups = conceptGroupLabelRepository.findAllByIdThesaurusAndLang(idThesaurus, idLang);
+        if (groups.isEmpty()) {
+            log.error("Aucun group trouvé dans le thésaurus id {} avec la langue {}", idThesaurus, idLang);
+            return List.of();
+        }
+        return groups;
     }
 
 }

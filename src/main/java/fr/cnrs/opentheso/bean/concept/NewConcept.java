@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -45,7 +45,7 @@ import java.util.List;
 @Named("newConcept")
 public class NewConcept implements Serializable {
 
-    private final RoleOnThesoBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesoBean;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
