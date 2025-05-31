@@ -128,15 +128,8 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.addRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
+        relationService.addRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser);
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
         if (conceptService.isTopConcept(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
@@ -203,18 +196,8 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.deleteRelationBT(
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeBT.getIdConcept(),
-                idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
+        relationService.deleteRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), nodeBT.getIdConcept(), idUser);
 
         // on vérifie si le concept en cours n'a plus de BT, on le rend TopTerme
         if (!relationService.isConceptHaveRelationBT(conceptBean.getNodeConcept().getConcept().getIdConcept(),

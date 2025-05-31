@@ -13,6 +13,13 @@
             border: solid #e9ecef;
             border-width: 0 0 0 0;
         }
+
+        .ui-widget-header .ui-inputfield, .ui-widget-content .ui-inputfield {
+            font-weight: normal;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-size: 1rem;
+        }
     </style>
 
     <div style="padding-left: 20px; padding-right: 20px">
@@ -128,7 +135,7 @@
                             <div class="card mb-4 py-3 border-left-success" style="background: #ECF8F1; padding: 20px;">
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.domaine')}" style="font-size: 14px;"/></b>
 
-                                <p:autoComplete value="#{candidatBean.collectionTemps}" multiple="true" style="width: 100%; margin-bottom: 3px"
+                                <p:autoComplete value="#{candidatBean.collectionSelected}" style="width: 100%; margin-bottom: 3px"
                                                 var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
                                                 minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
                                                 converter="searchConverterIdValue" scrollHeight="300">
@@ -209,8 +216,8 @@
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" style="font-size: 14px;" /></b>
 
                                 <!-- pour les relations BT -->
-                                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
-                                                multiple="true" var="values" forceSelection="true" style="width: 100%; margin-bottom: 3px"
+                                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.traductionSelected}"
+                                                var="values" forceSelection="true" style="width: 100%; margin-bottom: 3px"
                                                 completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
 
@@ -251,8 +258,8 @@
                                 <!-- pour les relations RT -->
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="font-size: 14px;" /></b>
 
-                                <p:autoComplete value="#{candidatBean.termesAssociesTmp}"
-                                                multiple="true" var="values" forceSelection="true" style="width: 100%"
+                                <p:autoComplete value="#{candidatBean.termesAssociesSelected}"
+                                                var="values" forceSelection="true" style="width: 100%"
                                                 completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
 

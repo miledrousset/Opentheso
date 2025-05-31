@@ -142,16 +142,16 @@ public class CandidatService {
 
     public String saveNewCondidat(Concept concept) throws SQLException {
 
-        var idNewCondidat = conceptAddService.addConceptInTable(concept, concept.getIdUser());
+        var idNewCandidat = conceptAddService.addConceptInTable(concept, concept.getIdUser());
         var status = statusRepository.findById(1);
         candidatStatusRepository.save(CandidatStatus.builder()
-                        .idConcept(idNewCondidat)
+                        .idConcept(idNewCandidat)
                         .idThesaurus(concept.getIdThesaurus())
                         .idUser(concept.getIdUser())
                         .date(new Date())
                         .status(status.orElse(null))
                 .build());
-        return idNewCondidat;
+        return idNewCandidat;
     }
 
     public boolean updateCandidatStatus(String idConcept, String idThesaurus, int statusId) {
@@ -757,5 +757,52 @@ public class CandidatService {
         } catch (MessagingException mex) {
             MessageUtils.showWarnMessage(languageBean.getMsg("candidat.send_message.msg6"));
         }
+    }
+
+    public void saveNewCandidat(CandidatDto candidatSelected, String idThesaurus, String idLang, Integer idUser,
+                                String userName, String currentLang, String definition) throws SQLException {
+
+        log.info("Vérification de l'existance du term (recherche dans prefLabels)");
+        if (termService.existsPrefLabel(candidatSelected.getNomPref().trim(), idLang, idThesaurus)) {
+            MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg3"));
+            return;
+        }
+
+        log.info("Vérification de l'existance du term (recherche dans altLabels)");
+        if (termService.isAltLabelExist(candidatSelected.getNomPref().trim(), idThesaurus, idLang)) {
+            MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg4"));
+            return;
+        }
+
+        var idNewConcept = saveNewCondidat(Concept.builder()
+                .idConcept(candidatSelected.getIdConcepte())
+                .idThesaurus(idThesaurus)
+                .topConcept(false)
+                .lang(idLang)
+                .idUser(idUser)
+                .userName(userName)
+                .status("CA")
+                .build());
+
+        if (idNewConcept == null) {
+            MessageUtils.showErrorMessage(languageBean.getMsg("candidat.save.msg5"));
+            return;
+        }
+        candidatSelected.setIdConcepte(idNewConcept);
+
+        var terme = Term.builder()
+                .lang(idLang)
+                .idThesaurus(idThesaurus)
+                .contributor(idUser)
+                .lexicalValue(candidatSelected.getNomPref().trim())
+                .source("candidat")
+                .status("D")
+                .created(new Date())
+                .modified(new Date())
+                .build();
+        candidatSelected.setIdTerm(saveNewTerm(terme, candidatSelected.getIdConcepte(), candidatSelected.getUserId()));
+
+        noteService.addNote(candidatSelected.getIdConcepte(), currentLang, idThesaurus,
+                definition, "definition", "", idUser);
     }
 }

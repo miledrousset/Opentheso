@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
@@ -69,6 +70,8 @@ public class RelatedBean implements Serializable {
     private NodeSearchMini searchSelected;
     private List<NodeRT> nodeRTs;
     private boolean tagPrefLabel = false;
+    @Autowired
+    private RelationService relationService;
 
     @PreDestroy
     public void destroy() {
@@ -153,16 +156,10 @@ public class RelatedBean implements Serializable {
         }
         
         NodeConceptType nodeConceptType = relationsHelper.getNodeTypeConcept(conceptType, selectedTheso.getCurrentIdTheso());
-        
-        if (!relationsHelper.addCustomRelationship(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+
+        relationService.addCustomRelationship(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser, conceptType,
-                nodeConceptType.isReciprocal()
-            )) {
-            
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+                nodeConceptType.isReciprocal());
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
@@ -201,16 +198,10 @@ public class RelatedBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
-        if (!relationsHelper.deleteCustomRelationship(
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeCustomRelation.getTargetConcept(),
-                idUser, nodeCustomRelation.getRelation(), nodeCustomRelation.isReciprocal())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+
+        relationService.deleteCustomRelationship(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), nodeCustomRelation.getTargetConcept(), idUser,
+                nodeCustomRelation.getRelation(), nodeCustomRelation.isReciprocal());
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
@@ -259,12 +250,8 @@ public class RelatedBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.addRelationRT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        relationService.addRelationRT(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(),
+                searchSelected.getIdConcept(), idUser);
 
         // mettre à jour le label du concept si l'option TAG est activée
         if (tagPrefLabel) {
@@ -333,15 +320,8 @@ public class RelatedBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.deleteRelationRT(
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeRT.getIdConcept(),
-                idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        relationService.deleteRelationRT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), nodeRT.getIdConcept(), idUser);
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);

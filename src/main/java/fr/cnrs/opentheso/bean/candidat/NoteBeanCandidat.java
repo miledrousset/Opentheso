@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.entites.NoteType;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
@@ -29,6 +30,7 @@ public class NoteBeanCandidat implements Serializable {
     private final CandidatBean candidatBean;
     private final NoteService noteService;
     private final CandidatService candidatService;
+    private final CurrentUser currentUser;
 
     private List<NoteType> noteTypes;
     private List<NodeLangTheso> nodeLangs;
@@ -63,13 +65,11 @@ public class NoteBeanCandidat implements Serializable {
      * permet d'ajouter un nouveau concept si le groupe = null, on ajoute un
      * concept sans groupe si l'id du concept est fourni, il faut controler s'il
      * est unique
-     *
-     * @param idUser
      */
-    public void addNewNote(int idUser) {
+    public void addNewNote() {
 
         if(isEditMode) {
-            updateNote(idUser);
+            updateNote();
             return;
         }
 
@@ -79,18 +79,18 @@ public class NoteBeanCandidat implements Serializable {
         }
 
         noteService.addNote(candidatBean.getCandidatSelected().getIdConcepte(), selectedLang, selectedTheso.getCurrentIdTheso(),
-                noteValue, selectedTypeNote, "", idUser);
+                noteValue, selectedTypeNote, "", currentUser.getNodeUser().getIdUser());
 
         refreshInterface();
         MessageUtils.showInformationMessage("Note ajoutée avec succès");
         PrimeFaces.current().ajax().update("candidatForm:listTraductionForm");
     }
     
-    public void updateNote(int idUser) {
+    public void updateNote() {
 
         if (!noteService.updateNote(selectedNodeNote.getIdNote(), selectedNodeNote.getIdConcept(), selectedNodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLexicalValue(), selectedNodeNote.getNoteSource(),
-                selectedNodeNote.getNoteTypeCode(), idUser)) {
+                selectedNodeNote.getNoteTypeCode(), currentUser.getNodeUser().getIdUser())) {
 
             MessageUtils.showErrorMessage("Erreur pendant la modification de la note !");
             return;
@@ -100,10 +100,11 @@ public class NoteBeanCandidat implements Serializable {
         MessageUtils.showInformationMessage("Note modifiée avec succès");
     }
     
-    public void deleteNote(int idUser) {
+    public void deleteNote() {
 
         noteService.deleteThisNote(selectedNodeNote.getIdNote(), selectedNodeNote.getIdConcept(), selectedNodeNote.getLang(),
-                selectedTheso.getCurrentIdTheso(), selectedNodeNote.getNoteTypeCode(), noteValueToChange, idUser);
+                selectedTheso.getCurrentIdTheso(), selectedNodeNote.getNoteTypeCode(),
+                selectedNodeNote.getLexicalValue(), currentUser.getNodeUser().getIdUser());
 
         candidatService.deleteVoteByNoteId(selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getIdConcept());
@@ -116,6 +117,9 @@ public class NoteBeanCandidat implements Serializable {
     private void refreshInterface() {
         reset();
         visible = false;
-        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+
+        var notes = noteService.getNotesCandidat(candidatBean.getCandidatSelected().getIdConcepte(), selectedTheso.getCurrentIdTheso());
+        candidatBean.getCandidatSelected().setNodeNotes(notes);
+        PrimeFaces.current().ajax().update("candidatForm:listNotes");
     }
 }

@@ -42,8 +42,9 @@ public class ProcessCandidateBean implements Serializable {
 
     private final CandidatBean candidatBean;
     private final SelectedTheso selectedTheso;
-    private final MailService mailBean;
     private final CurrentUser currentUser;
+
+    private final MailService mailBean;
     private final ConceptService conceptService;
     private final CandidatService candidatService;
     private final ConceptDcTermRepository conceptDcTermRepository;

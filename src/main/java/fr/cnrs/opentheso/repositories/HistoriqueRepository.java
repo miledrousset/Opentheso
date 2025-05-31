@@ -44,8 +44,7 @@ public interface HistoriqueRepository extends JpaRepository<TermHistorique, Inte
         AND id_thesaurus = :idThesaurus 
         ORDER BY modified DESC
     """, nativeQuery = true)
-    List<TermHistoriqueProjection> getNotesHistories(@Param("idConcept") String idConcept,
-                                                     @Param("idTerm") String idTerm,
+    List<TermHistoriqueProjection> getNotesHistories(@Param("idConcept") String idConcept, @Param("idTerm") String idTerm,
                                                      @Param("idThesaurus") String idThesaurus);
 
 }

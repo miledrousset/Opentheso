@@ -1,58 +1,33 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.Preferences;
-
-import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
-/**
- *
- * @author miled.rousset
- */
+
 @Service
+@AllArgsConstructor
 public class CopyAndPasteBetweenThesoService {
 
-    @Autowired
-    private DataSource dataSource;
+    private final ImportRdf4jHelper importRdf4jHelper;
+    private final ExportRdf4jHelperNew exportRdf4jHelperNew;
+    private final ConceptHelper conceptHelper;
+    private final PreferenceService preferenceService;
+    private final ConceptAddService conceptAddService;
+    private final ConceptService conceptService;
+    private final ArkService arkService;
+    private final RelationService relationService;
 
-    @Autowired
-    private ImportRdf4jHelper importRdf4jHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private ExportRdf4jHelperNew exportRdf4jHelperNew;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private PreferenceService preferenceService;
-    @Autowired
-    private ConceptAddService conceptAddService;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private ArkService arkService;
-    @Autowired
-    private RelationService relationService;
 
     public boolean pasteBranchLikeNT(String currentIdTheso, String currentIdConcept, String fromIdTheso,
                                      String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
@@ -65,9 +40,8 @@ public class CopyAndPasteBetweenThesoService {
         }
 
         // import des concepts dans le thésaurus actuel
-        if (!addBranch(sKOSXmlDocument, nodePreference, currentIdTheso, idUser, identifierType)) {
-            return false;
-        }
+        addBranch(sKOSXmlDocument, nodePreference, currentIdTheso, idUser, identifierType);
+
         // suppression des anciens idArk si l'option est cochée
         if("ark".equalsIgnoreCase(identifierType)){
             for(SKOSResource skosResource : sKOSXmlDocument.getConceptList()){
@@ -80,53 +54,33 @@ public class CopyAndPasteBetweenThesoService {
         // relier le concept copié au concept cible
         var nodeBT = relationService.getListIdBT(fromIdConcept, currentIdTheso);
         for (String idBT : nodeBT) {
-            relationsHelper.deleteRelationBT(fromIdConcept, currentIdTheso, idBT, idUser);
+            relationService.deleteRelationBT(fromIdConcept, currentIdTheso, idBT, idUser);
         }
-        try (Connection conn = dataSource.getConnection()){
-            conn.setAutoCommit(false);
-            if (!relationsHelper.addRelationBT(
-                    conn,
-                    fromIdConcept,
-                    currentIdTheso,
-                    currentIdConcept, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            conn.commit();
-            conn.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(SynonymBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        relationService.addRelationBT(fromIdConcept, currentIdTheso, currentIdConcept, idUser);
         return true;
     }
 
     
-    public boolean pasteBranchToRoot(String currentIdTheso, String fromIdTheso,
-            String fromIdConcept, String identifierType, int idUser, Preferences nodePreference) {
+    public boolean pasteBranchToRoot(String currentIdThesaurus, String fromIdTheauruso, String fromIdConcept, String identifierType,
+                                  int idUser, Preferences nodePreference) {
 
         // récupération des concepts du thésaurus de départ
-        SKOSXmlDocument sKOSXmlDocument = getBranch(fromIdTheso, fromIdConcept);
-
+        var sKOSXmlDocument = getBranch(fromIdTheauruso, fromIdConcept);
         if (sKOSXmlDocument == null) {
             return false;
         }
 
         // import des concepts dans le thésaurus actuel
-        if (!addBranch(sKOSXmlDocument, nodePreference, currentIdTheso, idUser, identifierType)) {
-            return false;
-        }
+        addBranch(sKOSXmlDocument, nodePreference, currentIdThesaurus, idUser, identifierType);
 
         // nettoyer le concept copié
-        var nodeBT = relationService.getListIdBT(fromIdConcept, currentIdTheso);
+        var nodeBT = relationService.getListIdBT(fromIdConcept, currentIdThesaurus);
         for (String idBT : nodeBT) {
-            if (!relationsHelper.deleteRelationBT(fromIdConcept, currentIdTheso, idBT, idUser)) {
-                
-            }
+            relationService.deleteRelationBT(fromIdConcept, currentIdThesaurus, idBT, idUser);
         }
-        
+
         // Passer la branche en TopTerm
-        conceptHelper.setTopConcept(fromIdConcept, currentIdTheso);
+        conceptHelper.setTopConcept(fromIdConcept, currentIdThesaurus);
         return true;
     }
 
@@ -147,39 +101,34 @@ public class CopyAndPasteBetweenThesoService {
         return skosXmlDocument;
     }
 
-    private boolean addBranch(SKOSXmlDocument sKOSXmlDocument, Preferences nodePreference,
-            String idTheso, int idUser, String identifierType) {
+    private void addBranch(SKOSXmlDocument sKOSXmlDocument, Preferences nodePreference, String idThesaurus,
+                           int idUser, String identifierType) {
 
         int idGroup = -1;
         String formatDate = "yyyy-MM-dd";
 
         importRdf4jHelper.setInfos(formatDate, idUser, idGroup, "");
         importRdf4jHelper.setSelectedIdentifier(identifierType);
-
         importRdf4jHelper.setPrefixHandle("");
         importRdf4jHelper.setNodePreference(nodePreference);
-        ArrayList<String> idConcepts = new ArrayList<>();
-
         importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
-        try {
-            for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
-                importRdf4jHelper.addConceptV2(sKOSResource, idTheso);
-                if("ark".equalsIgnoreCase(identifierType)){
-                    if(!StringUtils.isEmpty(sKOSResource.getArkId())) {
-                        idConcepts.add(sKOSResource.getIdentifier());
-                    }
-                }
-            }
-            // mise à jour des IdArk après une copie entre thésaurus
+
+        List<String> idConcepts = new ArrayList<>();
+        for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
+            importRdf4jHelper.addConceptV2(sKOSResource, idThesaurus);
             if("ark".equalsIgnoreCase(identifierType)){
-                if(CollectionUtils.isNotEmpty(idConcepts)) {
-                    conceptAddService.generateArkId(idTheso, idConcepts, nodePreference.getSourceLang(), null);
+                if(!StringUtils.isEmpty(sKOSResource.getArkId())) {
+                    idConcepts.add(sKOSResource.getIdentifier());
                 }
             }
-            return true;
-        } catch (Exception e) {
         }
-        return false;
+
+        // mise à jour des IdArk après une copie entre thésaurus
+        if("ark".equalsIgnoreCase(identifierType)){
+            if(CollectionUtils.isNotEmpty(idConcepts)) {
+                conceptAddService.generateArkId(idThesaurus, idConcepts, nodePreference.getSourceLang(), null);
+            }
+        }
     }
 
 }

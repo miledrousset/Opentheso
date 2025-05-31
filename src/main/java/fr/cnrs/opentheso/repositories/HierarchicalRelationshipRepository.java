@@ -95,6 +95,8 @@ public interface HierarchicalRelationshipRepository extends JpaRepository<Hierar
     Optional<HierarchicalRelationship> findLoopBtRelation(@Param("idThesaurus") String idThesaurus, @Param("idConcept1") String idConcept1,
                                                           @Param("idConcept2") String idConcept2);
 
+    Optional<HierarchicalRelationship> findByIdThesaurusAndIdConcept1AndIdConcept2(String idThesaurus, String idConcept1, String idConcept2);
+
     @Query(value = """
         SELECT DISTINCT hr.id_concept1
         FROM hierarchical_relationship hr

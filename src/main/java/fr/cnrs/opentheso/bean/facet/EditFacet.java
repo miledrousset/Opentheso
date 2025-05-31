@@ -21,6 +21,7 @@ import java.util.List;
 
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.NoteService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
@@ -84,6 +85,8 @@ public class EditFacet implements Serializable {
     private TermService termService;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private SearchService searchService;
 
 
     @PreDestroy
@@ -561,10 +564,11 @@ public class EditFacet implements Serializable {
         return true;
     }
 
-    public ArrayList<NodeIdValue> searchConcept(String value) {
-        ArrayList<NodeIdValue> liste = new ArrayList<>();
+    public List<NodeIdValue> searchConcept(String value) {
+
+        List<NodeIdValue> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelationIdValue(value,
+            liste = searchService.searchAutoCompletionForRelationIdValue(value,
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
         }
         return liste;

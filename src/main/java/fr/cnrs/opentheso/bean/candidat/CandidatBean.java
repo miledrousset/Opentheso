@@ -28,6 +28,7 @@ import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.CandidatService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.UserService;
@@ -45,7 +46,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.inject.Named;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ExternalContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,6 +58,7 @@ import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import jakarta.enterprise.context.SessionScoped;
 
 
 @Data
@@ -72,32 +73,27 @@ public class CandidatBean implements Serializable {
 
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
-    
     private final LanguageBean languageBean;
     private final AlignmentBean alignmentBean;
     private final AlignmentManualBean alignmentManualBean;
     private final RoleOnThesaurusBean roleOnThesoBean;
 
+    private final UserService userService;
     private final NoteService noteService;
+    private final TermService termService;
+    private final GroupService groupService;
+    private final SearchService searchService;
+    private final ConceptService conceptService;
     private final RelationService relationService;
     private final CandidatService candidatService;
-    private final TermService termService;
     private final AlignmentService alignmentService;
-    private final GroupService groupService;
     private final ThesaurusService thesaurusService;
-    private final ConceptService conceptService;
-    private final UserService userService;
-
-    private final RelationsHelper relationsHelper;
-    private final SearchHelper searchHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
-    private final ConceptHelper conceptHelper;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate, isRejectCandidatsActivate,
             isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate, myCandidatsSelected1, myCandidatsSelected2,
             myCandidatsSelected3, listSelected, traductionVisible, modifiedLabel;
     private int tabViewIndexSelected, progressBarStep, progressBarValue;
-
     private NodeAlignment alignementSelected;
     private String employePour, message, definition, selectedExportFormat, searchValue1, searchValue2, searchValue3;
     private CandidatDto candidatSelected, initialCandidat;
@@ -105,7 +101,8 @@ public class CandidatBean implements Serializable {
     private List<CandidatDto> selectedCandidates, candidatList, rejetCadidat, acceptedCadidat, allTermes;
     private List<DomaineDto> domaines;
     private List<NodeLangTheso> selectedLanguages, languagesOfTheso;
-    private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies, collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
+    private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies;
+    private NodeIdValue collectionSelected, traductionSelected, termesAssociesSelected;
 
 
     public void setStateForSelectedCandidate() {
@@ -125,10 +122,6 @@ public class CandidatBean implements Serializable {
         listSelected = false;
         modifiedLabel = false;
 
-        collectionTemps = new ArrayList<>();
-        termesGeneriqueTmp = new ArrayList<>();
-        termesAssociesTmp = new ArrayList<>();
-
         candidatList = new ArrayList<>();
         allTermes = new ArrayList<>();
         domaines = new ArrayList<>();
@@ -137,9 +130,8 @@ public class CandidatBean implements Serializable {
         acceptedCadidat = new ArrayList<>();
         selectedCandidates = new ArrayList<>();
 
-        getAllCandidatsByThesoAndLangue();
+        loadCandidatsList();
         tabViewIndexSelected = 0;
-
         alignementSelected = new NodeAlignment();
 
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
@@ -151,19 +143,6 @@ public class CandidatBean implements Serializable {
                 selectedLanguages.add(nodeLang);
             });
         } catch (Exception e) {
-        }
-    }
-
-    public void onTabChange(TabChangeEvent event) {
-        switch(event.getTab().getTitle()) {
-            case "Concepts insérés":
-                getAcceptedCandidatByThesoAndLangue();
-                break;
-            case "Concepts rejetés":
-                getRejectCandidatByThesoAndLangue();
-                break;
-            default:
-                getAllCandidatsByThesoAndLangue();
         }
     }
 
@@ -213,7 +192,7 @@ public class CandidatBean implements Serializable {
             }
         }
         initCandidatModule();
-        getAllCandidatsByThesoAndLangue();
+        loadCandidatsList();
         MessageUtils.showInformationMessage("Candidats supprimés");
     }
 
@@ -230,7 +209,7 @@ public class CandidatBean implements Serializable {
         }
 
         initCandidatModule();
-        getAllCandidatsByThesoAndLangue();
+        loadCandidatsList();
         MessageUtils.showInformationMessage("Candidat supprimé");
     }
 
@@ -258,10 +237,16 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .toList();
         } else {
-            getAllCandidatsByThesoAndLangue();
+            loadCandidatsList();
         }
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
+    private void loadCandidatsList() {
+        getAllCandidatsByThesoAndLangue();
+        getAcceptedCandidatByThesoAndLangue();
+        getRejectCandidatByThesoAndLangue();
     }
 
     public String getCountOfCandidats() {
@@ -340,7 +325,7 @@ public class CandidatBean implements Serializable {
             candidatList = candidatService.searchCandidats(searchValue1, selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), 1, "CA");
         } else {
-            getAllCandidatsByThesoAndLangue();
+            loadCandidatsList();
         }
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
@@ -373,7 +358,6 @@ public class CandidatBean implements Serializable {
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
-
     }
 
     public void showAcceptedCandidatSelected(CandidatDto candidatDto) throws IOException {
@@ -504,53 +488,8 @@ public class CandidatBean implements Serializable {
         }
 
         if (initialCandidat == null) {
-
-            log.info("Vérification de l'existance du term (recherche dans prefLabels)");
-            if (termService.existsPrefLabel(candidatSelected.getNomPref().trim(), getIdLang(), selectedTheso.getCurrentIdTheso())) {
-                MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg3"));
-                return;
-            }
-
-            log.info("Vérification de l'existance du term (recherche dans altLabels)");
-            if (termService.isAltLabelExist(candidatSelected.getNomPref().trim(), selectedTheso.getCurrentIdTheso(), getIdLang())) {
-                MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg4"));
-                return;
-            }
-
-            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-            var idNewConcept = candidatService.saveNewCondidat(Concept.builder()
-                    .idConcept(candidatSelected.getIdConcepte())
-                    .idThesaurus(selectedTheso.getCurrentIdTheso())
-                    .topConcept(false)
-                    .lang(getIdLang())
-                    .idUser(currentUser.getNodeUser().getIdUser())
-                    .userName(currentUser.getUsername())
-                    .status("CA")
-                    .build());
-
-            if (idNewConcept == null) {
-                MessageUtils.showErrorMessage(languageBean.getMsg("candidat.save.msg5"));
-                return;
-            }
-            candidatSelected.setIdConcepte(idNewConcept);
-
-            var terme = Term.builder()
-                    .lang(getIdLang())
-                    .idThesaurus(selectedTheso.getCurrentIdTheso())
-                    .contributor(currentUser.getNodeUser().getIdUser())
-                    .lexicalValue(candidatSelected.getNomPref().trim())
-                    .source("candidat")
-                    .status("D")
-                    .created(new Date())
-                    .modified(new Date())
-                    .build();
-            candidatSelected.setIdTerm(candidatService.saveNewTerm(terme, candidatSelected.getIdConcepte(),
-                    candidatSelected.getUserId()));
-
-            noteService.addNote(candidatSelected.getIdConcepte(), selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
-                    definition, "definition", "", currentUser.getNodeUser().getIdUser());
-
+            candidatService.saveNewCandidat(candidatSelected, selectedTheso.getCurrentIdTheso(), getIdLang(),
+                    currentUser.getNodeUser().getIdUser(), currentUser.getUsername(), selectedTheso.getCurrentLang(), definition);
             setIsListCandidatsActivate(true);
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
@@ -617,11 +556,6 @@ public class CandidatBean implements Serializable {
                 .isPresent();
     }
 
-    //// ajouté par Miled
-    /**
-     * permet d'ajouter un vote pour ce candidat, c'est 1 seul vote par
-     * utilisateur
-     */
     public void addVote() {
         try {
             // cas où il y a un vote, on le supprime
@@ -649,12 +583,6 @@ public class CandidatBean implements Serializable {
         PrimeFaces.current().ajax().update("tabViewCandidat");
     }
 
-    /**
-     * permet d'ajouter un vote pour un note de candidat, c'est 1 seul vote par
-     * utilisateur
-     *
-     * @param nodeNote
-     */
     public void addNoteVote(NodeNote nodeNote) {
         try {
             // cas où il y a un vote, on le supprime
@@ -693,7 +621,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchTermeGenerique(String value) {
 
         if (StringUtils.isNotEmpty(value)) {
-            allTermesGenerique = searchHelper.searchAutoCompletionForRelationIdValue(value,
+            allTermesGenerique = searchService.searchAutoCompletionForRelationIdValue(value,
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
             return createCollectionsFiltred(allTermesGenerique, candidatSelected.getTermesGenerique());
         } else {
@@ -704,7 +632,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchTermeAssocie(String value) {
 
         if (StringUtils.isNotEmpty(value)) {
-            AllTermesAssocies = searchHelper.searchAutoCompletionForRelationIdValue(value,
+            AllTermesAssocies = searchService.searchAutoCompletionForRelationIdValue(value,
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
             return createCollectionsFiltred(AllTermesAssocies, candidatSelected.getTermesAssocies());
         } else {
@@ -758,18 +686,19 @@ public class CandidatBean implements Serializable {
             MessageUtils.showInformationMessage("l'action a réussi");
             initCandidatModule();
             getAllCandidatsByThesoAndLangue();
+            getAcceptedCandidatByThesoAndLangue();
+            getRejectCandidatByThesoAndLangue();
             setIsListCandidatsActivate(true);
         }
     }
 
-    public void addCollection(SelectEvent<NodeIdValue> event) {
+    public void addCollection() {
         var elementAdded = allCollections.stream()
-                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
+                .filter(element -> collectionSelected.getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
         if (elementAdded.isPresent()) {
             groupService.addNewDomaine(elementAdded.get().getId(), candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
             candidatSelected.getCollections().add(elementAdded.get());
-            collectionTemps = Collections.emptyList();
             PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
             MessageUtils.showInformationMessage("Collection ajoutée avec succès !");
         }
@@ -818,29 +747,28 @@ public class CandidatBean implements Serializable {
         }
     }
 
-    public void addTraduction(SelectEvent<NodeIdValue> event) throws SQLException {
+    public void addTraduction() throws SQLException {
 
-        var elementAdded = event.getObject();
         if (candidatSelected.getTermesGenerique().stream()
-                .filter(element -> element.getId().equalsIgnoreCase(elementAdded.getId()))
+                .filter(element -> element.getId().equalsIgnoreCase(traductionSelected.getId()))
                 .findFirst()
                 .isPresent()) {
             MessageUtils.showWarnMessage("Le terme existe déjà !");
         } else {
             relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
-                    "BT",elementAdded.getId());
+                    "BT",traductionSelected.getId());
             candidatSelected.setTermesGenerique(relationService.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
             MessageUtils.showInformationMessage("Term générique ajoutée avec succès !");
             PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
         }
-        termesGeneriqueTmp = Collections.emptyList();
+        traductionSelected = null;
     }
 
     public void removeGenericTerm(NodeIdValue genericTerm) throws SQLException {
 
         if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
-            relationsHelper.deleteRelationBT(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
+            relationService.deleteRelationBT(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
                     genericTerm.getId(), currentUser.getNodeUser().getIdUser());
             candidatSelected.setTermesGenerique(relationService.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
@@ -849,25 +777,25 @@ public class CandidatBean implements Serializable {
         }
     }
 
-    public void addTraductionAssocieSelect(SelectEvent<NodeIdValue> event) throws SQLException {
+    public void addTraductionAssocieSelect() throws SQLException {
 
         if (candidatSelected.getTermesAssocies().stream()
-                .filter(element -> element.getId().equalsIgnoreCase(event.getObject().getId()))
+                .filter(element -> element.getId().equalsIgnoreCase(termesAssociesSelected.getId()))
                 .findFirst().isPresent()) {
             MessageUtils.showWarnMessage("Le terme existe déjà !");
         } else {
-            relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(), "RT", event.getObject().getId());
+            relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(), "RT", termesAssociesSelected.getId());
             candidatSelected.setTermesAssocies(relationService.getCandidatRelationsRT(
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
             MessageUtils.showInformationMessage("Term associé ajouté avec succès !");
             PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
         }
-        termesAssociesTmp = Collections.emptyList();
+        termesAssociesSelected = null;
     }
 
     public void removeAssociesTerm(NodeIdValue associeTerm) throws SQLException {
 
-        relationsHelper.deleteRelationRT(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
+        relationService.deleteRelationRT(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
                 associeTerm.getId(), currentUser.getNodeUser().getIdUser());
         candidatSelected.setTermesAssocies(relationService.getCandidatRelationsRT(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
@@ -880,7 +808,6 @@ public class CandidatBean implements Serializable {
         var elementAdded = allCollections.stream().filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId())).findFirst();
         if (elementAdded.isPresent()) {
             candidatSelected.getCollections().add(elementAdded.get());
-            collectionTemps = new ArrayList<>();
             PrimeFaces.current().ajax().update("tabViewCandidat");
         }
     }
@@ -893,11 +820,11 @@ public class CandidatBean implements Serializable {
 
         var messageInfo = candidatService.getOldCandidates(selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
         MessageUtils.showInformationMessage(messageInfo);
-        getAllCandidatsByThesoAndLangue();
+        loadCandidatsList();
     }
 
     public void setListCandidatsActivate(boolean isListCandidatsActivate) {
-        getAllCandidatsByThesoAndLangue();
+        loadCandidatsList();
         this.isListCandidatsActivate = isListCandidatsActivate;
         isImportViewActivate = false;
         isExportViewActivate = false;
@@ -981,8 +908,8 @@ public class CandidatBean implements Serializable {
     public void searchAlignementAuto() {
 
         alignmentBean.addAlignment(selectedTheso.getSelectedIdTheso(), alignmentBean.getIdConceptSelectedForAlignment(),
-                currentUser.getNodeUser().getIdUser(),
-                false);
+                currentUser.getNodeUser().getIdUser(), false);
+
         MessageUtils.showInformationMessage("Alignement ajouté avec sucée !");
         candidatService.getCandidatDetails(candidatSelected, selectedTheso.getCurrentIdTheso());
         PrimeFaces.current().ajax().update("tabViewCandidat");

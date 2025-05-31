@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.repositories.HierarchicalRelationshipHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.HierarchicalRelationshipRepository;
+import fr.cnrs.opentheso.repositories.HistoriqueRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 
 import lombok.AllArgsConstructor;
@@ -18,9 +19,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class RelationService {
     private final TermRepository termRepository;
     private final HierarchicalRelationshipRepository hierarchicalRelationshipRepository;
     private final HierarchicalRelationshipHistoriqueRepository hierarchicalRelationshipHistoriqueRepository;
+    private final HistoriqueRepository historiqueRepository;
 
 
     public HierarchicalRelationship addHierarchicalRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
@@ -83,15 +85,8 @@ public class RelationService {
                 .idThesaurus(hierarchicalRelationship.getIdThesaurus())
                 .build());
 
-        log.info("Enregistrement du trace de la relation entre concepts");
-        hierarchicalRelationshipHistoriqueRepository.save(HierarchicalRelationshipHistorique.builder()
-                .idConcept1(hierarchicalRelationship.getIdConcept1())
-                .idConcept2(hierarchicalRelationship.getIdConcept2())
-                .idThesaurus(hierarchicalRelationship.getIdThesaurus())
-                .idUser(idUser)
-                .action("ADD")
-                .role(hierarchicalRelationship.getRole())
-                .build());
+        addRelationHistorique(hierarchicalRelationship.getIdConcept1(), hierarchicalRelationship.getIdThesaurus(),
+                hierarchicalRelationship.getIdConcept2(), hierarchicalRelationship.getRole(), idUser, "ADD");
     }
 
     public List<NodeIdValue> getCandidatRelationsBT(String idConceptSelected, String idThesaurus, String lang) {
@@ -271,4 +266,188 @@ public class RelationService {
         }
     }
 
+    @Transactional
+    public void deleteRelationBT(String idConceptNT, String idThesaurus, String idConceptBT, int idUser) {
+
+        log.info("Suppression la relatio, entre le terme générique {} au concept {}", idConceptNT, idConceptBT);
+        addRelationHistorique(idConceptNT, idThesaurus, idConceptBT, "BT", idUser, "DEL");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConceptNT, idConceptBT, "BT");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConceptBT, idConceptNT, "NT");
+    }
+
+    @Transactional
+    public void deleteRelationRT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
+
+        log.info("Suppression la relation entre le terme associé {} au concept {}", idConcept1, idConcept2);
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "DEL");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConcept1, idConcept2, "RT");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConcept2, idConcept1, "RT");
+    }
+
+    private void addRelationHistorique(String idConcept1, String idThesaurus, String idConcept2, String role, int idUser, String action) {
+
+        log.info("Enregistrement un nouveau historique des relations");
+        hierarchicalRelationshipHistoriqueRepository.save(HierarchicalRelationshipHistorique.builder()
+                .idConcept1(idConcept1)
+                .idConcept2(idConcept2)
+                .idThesaurus(idThesaurus)
+                .modified(new Date())
+                .idUser(idUser)
+                .action(action)
+                .role(role)
+                .build());
+    }
+
+    @Transactional
+    public void addRelationBT(String idConceptNT, String idThesaurus, String idConceptBT, int idUser) {
+
+        log.info("Ajouter une relation de type terme générique au concept {}", idConceptNT);
+        addRelationHistorique(idConceptNT, idThesaurus, idConceptBT, "BT", idUser, "ADD");
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConceptNT)
+                .idConcept2(idConceptBT)
+                .idThesaurus(idThesaurus)
+                .role("BT")
+                .build());
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConceptBT)
+                .idConcept2(idConceptNT)
+                .idThesaurus(idThesaurus)
+                .role("NT")
+                .build());
+    }
+
+    @Transactional
+    public void addRelationNT(String idConcept, String idThesaurus, String idConceptNT, int idUser) {
+
+        log.info("Ajouter une relation entre le terme spécifique {} et le concept {}", idConcept, idConceptNT);
+        addRelationHistorique(idConcept, idThesaurus, idConceptNT, "NT", idUser, "ADD");
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConcept)
+                .idConcept2(idConceptNT)
+                .idThesaurus(idThesaurus)
+                .role("NT")
+                .build());
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConceptNT)
+                .idConcept2(idConcept)
+                .idThesaurus(idThesaurus)
+                .role("BT")
+                .build());
+    }
+
+    /**
+     * permet de changer la relation entre deux concepts concept1 = concept de
+     * départ concept2 = concept d'arriver directRelation = la relation à mettre
+     * en place exp NT, NTI ...inverseRelation = la relation reciproque qu'il
+     * faut ajouter exp : BT, BTI ...
+     */
+    @Transactional
+    public boolean updateRelationNT(String idConcept1, String idConcept2, String idThesaurus, String directRelation, String inverseRelation, int idUser) {
+
+        var relation1 = hierarchicalRelationshipRepository.findByIdThesaurusAndIdConcept1AndIdConcept2(idThesaurus, idConcept1, idConcept2);
+        if (relation1.isEmpty()) {
+            log.error("Aucune relation n'est trouvée !");
+            return false;
+        }
+        relation1.get().setRole(directRelation);
+        hierarchicalRelationshipRepository.save(relation1.get());
+
+        var relation2 = hierarchicalRelationshipRepository.findByIdThesaurusAndIdConcept1AndIdConcept2(idThesaurus, idConcept2, idConcept1);
+        if (relation2.isEmpty()) {
+            log.error("Aucune relation n'est trouvée !");
+            return false;
+        }
+        relation2.get().setRole(directRelation);
+        hierarchicalRelationshipRepository.save(relation2.get());
+
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, directRelation, idUser, "UPDATE");
+        return true;
+    }
+
+    @Transactional
+    public void addRelationRT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
+
+        log.info("Ajouter une relation associative entre les deux concepts {} et {}", idConcept1, idConcept2);
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "ADD");
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConcept1)
+                .idConcept2(idConcept2)
+                .idThesaurus(idThesaurus)
+                .role("RT")
+                .build());
+
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConcept2)
+                .idConcept2(idConcept1)
+                .idThesaurus(idThesaurus)
+                .role("RT")
+                .build());
+    }
+
+    @Transactional
+    public void deleteCustomRelationship(String idConcept1, String idThesaurus, String idConcept2, int idUser,
+                                         String conceptType, boolean isReciprocal) {
+
+        log.info("Supprimer une relation qualificatif au concept {}", idConcept1);
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConcept1, idConcept2, conceptType);
+
+        if(isReciprocal){
+            hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                    idConcept2, idConcept1, conceptType);
+        }
+
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, "QUALIFIER", idUser, "DEL");;
+    }
+
+    @Transactional
+    public void deleteRelationNT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
+
+        log.info("Supprimer une relation entre un terme spécifique au concept {}", idConcept1);
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "DELETE");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConcept1, idConcept2, "NT");
+
+        hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
+                idConcept2, idConcept1, "BT");
+    }
+
+    @Transactional
+    public void addCustomRelationship(String idConcept1, String idThesaurus, String idConcept2, int idUser,
+                                         String relationType, boolean isReciprocal) {
+
+        log.info("Ajouter une relation personnalisée entre le concept {} et le concept {}", idConcept1, idConcept2);
+        hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                .idConcept1(idConcept1)
+                .idConcept2(idConcept2)
+                .idThesaurus(idThesaurus)
+                .role(relationType)
+                .build());
+
+        if(isReciprocal) {
+            hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
+                    .idConcept1(idConcept2)
+                    .idConcept2(idConcept1)
+                    .idThesaurus(idThesaurus)
+                    .role(relationType)
+                    .build());
+        }
+
+        addRelationHistorique(idConcept1, idThesaurus, idConcept2, relationType, idUser, "ADD");
+    }
 }

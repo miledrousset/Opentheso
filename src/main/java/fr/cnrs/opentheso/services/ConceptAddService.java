@@ -266,7 +266,7 @@ public class ConceptAddService {
 
         var preference = preferenceService.getThesaurusPreferences(concept.getIdThesaurus());
         if (concept.getIdConcept() == null) {
-            if (preference != null && preference.getIdentifierType() == 1) {
+            if (preference != null && preference.getIdentifierType() != null && preference.getIdentifierType() == 1) {
                 concept.setIdConcept(getAlphaNumericId());
             } else {
                 concept.setIdConcept(getNumericConceptId());

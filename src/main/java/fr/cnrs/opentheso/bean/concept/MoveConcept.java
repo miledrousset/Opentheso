@@ -185,12 +185,12 @@ public class MoveConcept implements Serializable {
         // suppression des BT du concept de tête à déplacer
         var listBt = relationService.getListIdBT(idConceptFrom, idThesoTo);
         for (String idBt : listBt) {
-            relationsHelper.deleteRelationBT(idConceptFrom, idThesoTo, idBt, currentUser.getNodeUser().getIdUser());
+            relationService.deleteRelationBT(idConceptFrom, idThesoTo, idBt, currentUser.getNodeUser().getIdUser());
         }
 
         if(nodeSearchSelected != null && !StringUtils.isEmpty(nodeSearchSelected.getIdConcept())) {
             //cas où le déplacement est vers un concept, on attache ce nouveau concept au concept cible
-            relationsHelper.addRelationBT(idConceptFrom, idThesoTo, nodeSearchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
+            relationService.addRelationBT(idConceptFrom, idThesoTo, nodeSearchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
             conceptHelper.setNotTopConcept(idConceptFrom, idThesoTo);
         } else {
             conceptHelper.setTopConcept(idConceptFrom, idThesoTo);

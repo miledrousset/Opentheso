@@ -1257,13 +1257,10 @@ public class CsvImportHelper {
         }
 
         if(!StringUtils.isEmpty( nodeReplaceValueByValue.getOldValue())){
-            if(!relationsHelper.deleteRelationBT(nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
-                addMessage("Rename error :", nodeReplaceValueByValue);
-            }      
+            relationService.deleteRelationBT(nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1);
         }
-        if(!relationsHelper.addRelationBT(nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
-            addMessage("Rename error :", nodeReplaceValueByValue);
-        }
+
+        relationService.addRelationBT(nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1);
         conceptHelper.setNotTopConcept(nodeReplaceValueByValue.getIdConcept(), idTheso);
         return true;
     }      

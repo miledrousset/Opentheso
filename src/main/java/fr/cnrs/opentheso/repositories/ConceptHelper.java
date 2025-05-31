@@ -735,18 +735,10 @@ public class ConceptHelper implements Serializable {
             }
 
             for (String idOldBT : idOldBTsToDelete) {
-                if (!relationsHelper.deleteRelationBT(conn, idConcept, idThesaurus, idOldBT, idUser)) {
-                    conn.rollback();
-                    conn.close();
-                    return false;
-                }
+                relationService.deleteRelationBT(idConcept, idThesaurus, idOldBT, idUser);
             }
 
-            if (!relationsHelper.addRelationBT(conn, idConcept, idThesaurus, idNewConceptBT, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
+            relationService.addRelationBT(idConcept, idThesaurus, idNewConceptBT, idUser);
             conn.commit();
             conn.close();
             return true;
@@ -767,11 +759,7 @@ public class ConceptHelper implements Serializable {
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            if (!relationsHelper.addRelationBT(conn, idConcept, idThesaurus, idNewConceptBT, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
+            relationService.addRelationBT(idConcept, idThesaurus, idNewConceptBT, idUser);
 
             conn.commit();
             conn.close();
@@ -787,23 +775,8 @@ public class ConceptHelper implements Serializable {
     public boolean moveBranchFromConceptToRoot(String idConcept, String idOldConceptBT,
                                                String idThesaurus, int idUser) {
 
-        try (Connection conn = dataSource.getConnection()) {
-
-            conn.setAutoCommit(false);
-
-            if (!relationsHelper.deleteRelationBT(conn, idConcept, idThesaurus, idOldConceptBT, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            conn.commit();
-            conn.close();
-            return setTopConcept(idConcept, idThesaurus);
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
+        relationService.deleteRelationBT(idConcept, idThesaurus, idOldConceptBT, idUser);
+        return setTopConcept(idConcept, idThesaurus);
     }
 
     // Cette fonction permet de mettre à jour la notation pour un concept

@@ -568,7 +568,7 @@ public class ImportRdf4jHelper {
         addConceptToBdd(acs, idTheso, isCandidatImport);
     }
 
-    public void addConceptV2(SKOSResource conceptResource, String idTheso) throws SQLException {
+    public void addConceptV2(SKOSResource conceptResource, String idTheso) {
         String idConcept;
         if (StringUtils.isEmpty(conceptResource.getIdentifier())) {
             idConcept = getOriginalId(conceptResource.getUri());

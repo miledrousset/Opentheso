@@ -203,14 +203,10 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private boolean copyToRoot(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
         
-            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(
-                    selectedTheso.getCurrentIdTheso(),
-
-                    idThesoOrigin,
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    identifierType, 
-                    currentUser.getNodeUser().getIdUser(),
+        if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(selectedTheso.getCurrentIdTheso(), idThesoOrigin,
+                    nodeConceptDrag.getConcept().getIdConcept(), identifierType, currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
+
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Erreur de copie"));
             } 

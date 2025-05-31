@@ -85,6 +85,7 @@ public class NoteService {
                 .actionPerformed(actionPerformed)
                 .idUser(idUser)
                 .notetypecode(noteTypeCode)
+                .modified(new Date())
                 .build());
     }
 
@@ -104,15 +105,15 @@ public class NoteService {
         noteHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
-    public List<NodeNote> getNotesCandidat(String idConcept, String idThesaurus) {
+    public List<NodeNote> getNotesCandidat(String identifier, String idThesaurus) {
 
-        log.info("Recherche des notes du candidat {} (id thésaurus {})", idConcept, idThesaurus);
-        var notes = noteRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        log.info("Recherche des notes du candidat {} (id thésaurus {})", identifier, idThesaurus);
+        var notes = noteRepository.findAllByIdentifierAndIdThesaurus(identifier, idThesaurus);
         if (notes.isEmpty()) {
-            log.info("Aucune note trouvée pour le candidat {} (id thésaurus {})", idConcept, idThesaurus);
+            log.info("Aucune note trouvée pour le candidat {} (id thésaurus {})", identifier, idThesaurus);
         }
 
-        log.info("{} notes trouvées pour le candidat {} (id thésaurus {})", notes.size(), idConcept, idThesaurus);
+        log.info("{} notes trouvées pour le candidat {} (id thésaurus {})", notes.size(), identifier, idThesaurus);
         return notes.stream()
                 .map(note -> NodeNote.builder()
                         .idNote(note.getId())
@@ -162,7 +163,7 @@ public class NoteService {
 
     public boolean isNoteExistInThatLang(String identifier, String idThesaurus, String idLang, String noteTypeCode) {
 
-        log.info("Vérification l'existance du note {} dans le thésaurus id {}", identifier, idThesaurus);
+        log.info("Vérification l'existence du note {} dans le thésaurus id {}", identifier, idThesaurus);
         idLang = normalizeIdLang(idLang);
         var note = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(identifier, idThesaurus, noteTypeCode, idLang);
         return !note.isEmpty();
@@ -170,7 +171,7 @@ public class NoteService {
 
     public boolean isNoteExist(String identifier, String idThesaurus, String idLang, String note, String noteTypeCode) {
 
-        log.info("Vérification de l'existance da la note id {} avec la valeur {} ({})", identifier, note, idLang);
+        log.info("Vérification de l'existence da la note id {} avec la valeur {} ({})", identifier, note, idLang);
         idLang = normalizeIdLang(idLang);
         var noteFound = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLangAndLexicalValue(
                 identifier, idThesaurus, noteTypeCode, idLang, fr.cnrs.opentheso.utils.StringUtils.convertString(note));

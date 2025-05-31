@@ -53,8 +53,6 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 card shadow mb-1">
                             <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}" style="background-color: #FAFAFA;">
 
-                                <p:ajax event="tabChange" listener="#{candidatBean.onTabChange}" update="messageIndex tabViewCandidat"/>
-
                                 <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
                                     <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() ||
                                                               candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">

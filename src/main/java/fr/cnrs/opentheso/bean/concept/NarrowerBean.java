@@ -143,12 +143,8 @@ public class NarrowerBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.addRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        relationService.addRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser);
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
         if (conceptService.isTopConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
@@ -207,15 +203,8 @@ public class NarrowerBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.deleteRelationNT(
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeNT.getIdConcept(),
-                idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        relationService.deleteRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(), nodeNT.getIdConcept(), idUser);
 
         // on vérifie si le concept qui a été enlevé n'a plus de BT, on le rend TopTerme
         if (!relationService.isConceptHaveRelationBT(nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
@@ -288,8 +277,8 @@ public class NarrowerBean implements Serializable {
     private void applyRelationToBranch__(String idConceptParent, String relation, String inverseRelation, int idUser) {
         List<String> conceptsFils = conceptService.getListChildrenOfConcept(idConceptParent, selectedTheso.getCurrentIdTheso());
         for (String idConcept : conceptsFils) {
-            relationsHelper.updateRelationNT(idConceptParent,
-                    idConcept, selectedTheso.getCurrentIdTheso(), relation, inverseRelation, idUser);
+            relationService.updateRelationNT(idConceptParent, idConcept, selectedTheso.getCurrentIdTheso(),
+                    relation, inverseRelation, idUser);
             applyRelationToBranch__(idConcept, relation, inverseRelation, idUser);
         }
     }
@@ -314,7 +303,7 @@ public class NarrowerBean implements Serializable {
                 break;
         }
 
-        if (!relationsHelper.updateRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        if (!relationService.updateRelationNT(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso(), nodeNT.getRole(), inverseRelation, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                     " erreur modifiant la relation pour le concept !");

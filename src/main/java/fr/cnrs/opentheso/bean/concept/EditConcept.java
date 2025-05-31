@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ArkService;
@@ -27,6 +26,7 @@ import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.HandleConceptService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.utils.MessageUtils;
@@ -85,7 +85,7 @@ public class EditConcept implements Serializable {
     private CsvWriteHelper csvWriteHelper;
 
     @Autowired
-    private RelationsHelper relationsHelper;
+    private RelationService relationService;
 
     @Autowired
     private HandleService handleHelper;
@@ -610,7 +610,7 @@ public class EditConcept implements Serializable {
         if (isReplacedByRTrelation) {
             if (conceptView.getNodeConcept().getReplacedBy() != null && !conceptView.getNodeConcept().getReplacedBy().isEmpty()) {
                 for (NodeIdValue nodeIdValue : nodeReplaceBy) {
-                    relationsHelper.addRelationRT(idConcept, idTheso, nodeIdValue.getId(), idUser);
+                    relationService.addRelationRT(idConcept, idTheso, nodeIdValue.getId(), idUser);
                 }
             }
         }

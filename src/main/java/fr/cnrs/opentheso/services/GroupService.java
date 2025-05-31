@@ -491,8 +491,8 @@ public class GroupService {
         }
 
         log.info("Rechercher du label du group id {} avec la langue {}", idGroup, idLang);
-        var conceptGroupDetail = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(
-                conceptGroup.get().getIdGroup(), idThesaurus, idLang);
+        var conceptGroupDetail = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idThesaurus,
+                conceptGroup.get().getIdGroup(), idLang);
 
         return NodeGroup.builder()
                 .groupPrivate(conceptGroup.get().isPrivate())
