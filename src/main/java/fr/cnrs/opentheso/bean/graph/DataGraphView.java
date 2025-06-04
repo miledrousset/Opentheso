@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.graph;
 
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
@@ -15,6 +14,7 @@ import java.util.Properties;
 
 import fr.cnrs.opentheso.models.graphs.GraphObject;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.graphs.GraphService;
@@ -95,14 +95,14 @@ public class DataGraphView implements Serializable {
     private String selectedIdTheso;
     private NodeSearchMini searchSelected;
     @Autowired
-    private ConceptHelper conceptHelper;
-    @Autowired
     private LanguageBean langueBean;
 
     @Autowired
     private PreferenceService preferenceService;
     @Autowired
     private TermService termService;
+    @Autowired
+    private SearchService searchService;
 
     @jakarta.inject.Inject
     public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
@@ -131,7 +131,7 @@ public class DataGraphView implements Serializable {
         String idLang = preferenceService.getWorkLanguageOfThesaurus(selectedIdTheso);
         
         if (selectedIdTheso != null && idLang != null) {
-            liste = searchHelper.searchAutoCompletionForRelation(value, idLang, selectedIdTheso, true);
+            liste = searchService.searchAutoCompletionForRelation(value, idLang, selectedIdTheso, true);
         }
         return liste;
     }

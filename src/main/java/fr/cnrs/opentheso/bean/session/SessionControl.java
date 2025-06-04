@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.session;
 
-import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
+import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenThesaurus;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
@@ -39,7 +39,7 @@ public class SessionControl implements Serializable {
     @Autowired @Lazy private Tree tree;
     @Autowired @Lazy private ListIndex listIndex;
     @Autowired @Lazy private ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+    @Autowired @Lazy private CopyAndPasteBetweenThesaurus copyAndPasteBetweenTheso;
     @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
     @Autowired @Lazy private IndexSetting indexSetting;
 

@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -10,6 +9,10 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,9 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.cnrs.opentheso.services.PreferenceService;
-import fr.cnrs.opentheso.services.ThesaurusService;
-import fr.cnrs.opentheso.services.UserService;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +44,6 @@ public class AtelierThesService implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private PreferenceService preferenceService;
 
     @Autowired
@@ -55,6 +52,8 @@ public class AtelierThesService implements Serializable {
     private ThesaurusService thesaurusService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ConceptService conceptService;
 
 
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
@@ -70,7 +69,7 @@ public class AtelierThesService implements Serializable {
             
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
-                    NodeConcept concept = conceptHelper.getConcept(nodeSearchMini.getIdConcept(), 
+                    NodeConcept concept = conceptService.getConceptOldVersion(nodeSearchMini.getIdConcept(),
                             thesoSelected.getId(), languageBean.getIdLangue(), -1, -1);
 
                     ConceptResultNode conceptResultNode = new ConceptResultNode();

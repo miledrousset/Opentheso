@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
-import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -12,9 +11,6 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
@@ -26,6 +22,7 @@ import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.CandidatService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.SearchService;
@@ -39,7 +36,6 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -54,7 +50,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -88,6 +83,7 @@ public class CandidatBean implements Serializable {
     private final CandidatService candidatService;
     private final AlignmentService alignmentService;
     private final ThesaurusService thesaurusService;
+    private final NonPreferredTermService nonPreferredTermService;
     private final ConceptDcTermRepository conceptDcTermRepository;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate, isRejectCandidatsActivate,
@@ -559,7 +555,7 @@ public class CandidatBean implements Serializable {
     public void addVote() {
         try {
             // cas où il y a un vote, on le supprime
-            if (candidatService.getVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+            if (candidatService.isHaveVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                     currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT)) {
                 candidatService.removeVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
@@ -586,7 +582,7 @@ public class CandidatBean implements Serializable {
     public void addNoteVote(NodeNote nodeNote) {
         try {
             // cas où il y a un vote, on le supprime
-            if (candidatService.getVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+            if (candidatService.isHaveVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                     currentUser.getNodeUser().getIdUser(), nodeNote.getIdNote() + "", VoteType.NOTE)) {
 
                 candidatService.removeVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
@@ -737,7 +733,7 @@ public class CandidatBean implements Serializable {
 
         if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
             try {
-                termService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
+                nonPreferredTermService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
                 candidatSelected.getEmployePourList().remove(synonyme);
                 PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
                 MessageUtils.showInformationMessage("Synonyme supprimé avec succès !");

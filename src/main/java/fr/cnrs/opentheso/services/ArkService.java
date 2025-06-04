@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.UserRepository;
@@ -28,7 +29,6 @@ public class ArkService {
 
     private final PreferenceService preferenceService;
     private final ConceptRepository conceptRepository;
-    private final ConceptService conceptService;
     private final TermService termService;
     private final UserRepository userRepository;
 
@@ -89,7 +89,7 @@ public class ArkService {
         joDatas.add("token", arkHelper2.getToken());
 
         for (String idConcept : idConcepts) {
-            var concept = conceptService.getConcept(idConcept, idTheso);
+            var concept = getConcept(idConcept, idTheso);
             if (concept == null) {
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(idConcept);
@@ -222,7 +222,7 @@ public class ArkService {
         }
 
         for (String idConcept : idConcepts) {
-            var concept = conceptService.getConcept(idConcept, idThesaurus);
+            var concept = getConcept(idConcept, idThesaurus);
             var idArk = concept.getIdArk();
             if (StringUtils.isEmpty(idArk)) {
                 idArk = ToolsHelper.getNewId(preference.getSizeIdArkLocal(), preference.isUppercaseForArk(), true);
@@ -234,4 +234,17 @@ public class ArkService {
         }
         return false;
     }
+
+    private Concept getConcept(String idConcept, String idThesaurus) {
+
+        log.info("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
+        var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        if (concept.isEmpty()) {
+            log.info("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            return null;
+        }
+
+        return concept.get();
+    }
+
 }

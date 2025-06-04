@@ -38,6 +38,10 @@ public interface ConceptCandidatRepository extends JpaRepository<ConceptCandidat
         ORDER BY t.lexical_value ASC
         """, nativeQuery = true)
     List<CandidateSearchProjection> searchCandidatesByValue(@Param("value") String value, @Param("idThesaurus") String idThesaurus,
-            @Param("lang") String lang, @Param("status") int status, @Param("statut") String statut
-    );
+            @Param("lang") String lang, @Param("status") int status, @Param("statut") String statut);
+
+    @Modifying
+    @Query(value = "UPDATE concept_candidat SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
 }

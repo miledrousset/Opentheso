@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.ConceptGroupType;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
@@ -43,9 +42,6 @@ public class GroupView implements Serializable {
     private SelectedTheso selectedTheso;
     @Autowired
     private GroupService groupService;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private ConceptStatusRepository conceptStatusRepository;

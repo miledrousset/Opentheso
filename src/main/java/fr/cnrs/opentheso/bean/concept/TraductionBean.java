@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -42,7 +41,6 @@ public class TraductionBean implements Serializable {
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
     private final LanguageBean languageBean;
-    private final ConceptHelper conceptHelper;
     private final TermService termService;
     private final ConceptService conceptService;
     private final ConceptDcTermRepository conceptDcTermRepository;

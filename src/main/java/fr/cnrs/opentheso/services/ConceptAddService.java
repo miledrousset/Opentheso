@@ -43,14 +43,13 @@ public class ConceptAddService {
 
     private final TermService termService;
     private final GroupService groupService;
-    private final ConceptService conceptService;
     private final PreferenceService preferenceService;
 
     private final Tree tree;
     private final ArkService arkService;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
     private final ConceptRepository conceptRepository;
     private final RelationService relationService;
     private final UserRepository userRepository;
@@ -66,13 +65,13 @@ public class ConceptAddService {
                                  CurrentUser currentUser) {
 
         log.info("Début de l'ajout du nouveau concept");
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Le thésaurus n'a pas de préférences !");
             return false;
         }
 
         if (StringUtils.isNotEmpty(idNewConcept)) {
-            if (conceptService.isIdExiste(idNewConcept, idThesaurus)) {
+            if (isIdExiste(idNewConcept, idThesaurus)) {
                 MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Attention !", "Identifiant déjà attribué, veuillez choisir un autre ou laisser vide !!");
                 return false;
             }
@@ -462,7 +461,7 @@ public class ConceptAddService {
 
     private String getAlphaNumericId() {
         String id = ToolsHelper.getNewId(15, false, false);
-        while (conceptService.isIdExiste(id)) {
+        while (isIdExiste(id)) {
             id = ToolsHelper.getNewId(15, false, false);
         }
         return id;
@@ -476,11 +475,27 @@ public class ConceptAddService {
         }
 
         String idConcept = String.valueOf(idNumerique);
-        while (conceptRepository.findByIdConcept(idConcept).isPresent()) {
+        while (conceptRepository.findByIdConcept(idConcept) != null) {
             idConcept = String.valueOf(++idNumerique);
         }
 
         return idConcept;
+    }
+
+    public boolean isIdExiste(String idNewConcept, String idThesaurus) {
+
+        log.info("Vérifier l'existence de l'id concept {} dans le thésaurus id {}", idNewConcept, idThesaurus);
+        var concept = conceptRepository.findByIdConceptAndIdThesaurus(idNewConcept, idThesaurus);
+        log.info("Le concept id {} existe ? {}", idNewConcept, concept.isPresent());
+        return concept.isPresent();
+    }
+
+    public boolean isIdExiste(String idConcept) {
+
+        log.info("Vérifier l'existence de l'id concept {}", idConcept);
+        var concepts = conceptRepository.findByIdConcept(idConcept);
+        log.info("Le concept id {} existe ? {}", idConcept, CollectionUtils.isNotEmpty(concepts));
+        return CollectionUtils.isNotEmpty(concepts);
     }
 
 }

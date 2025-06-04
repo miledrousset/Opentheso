@@ -2,9 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -16,21 +13,19 @@ import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.cnrs.opentheso.services.UserService;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
@@ -39,55 +34,27 @@ import org.springframework.context.annotation.ScopedProxyMode;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "moveConcept")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MoveConcept implements Serializable {
 
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-    @Autowired @Lazy
-    private CandidatBean candidatBean;
+    private final SearchService searchService;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final CandidatBean candidatBean;
+    private final ThesaurusService thesaurusService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final GroupService groupService;
+    private final PreferenceService preferenceService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final UserService userService;
+    private final RelationService relationService;
 
-    @Autowired
-    private ThesaurusService thesaurusService;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private ConceptService conceptService;
-
-    @Autowired
-    private ConceptAddService conceptAddService;
-
-    private String idThesoFrom, idThesoTo;
-    
-    private String idConceptFrom;
-    
+    private String idThesoFrom, idThesoTo, idConceptFrom;
     private NodeSearchMini nodeSearchSelected;
-    
     private List<String> idConceptsToMove;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RelationService relationService;
 
 
     public void initForCandidate(List idConcepts1, String idThesoFrom) {
@@ -97,28 +64,26 @@ public class MoveConcept implements Serializable {
     }
     
     public void initForConcept(String idConcept, String idThesoFrom) {
-        idConceptsToMove = new ArrayList<>();        
+        this.idConceptsToMove = new ArrayList<>();
         this.idConceptFrom = idConcept;
-        idConceptsToMove = conceptService.getIdsOfBranch(idConcept, selectedTheso.getCurrentIdTheso());
+        this.idConceptsToMove = conceptService.getIdsOfBranch(idConcept, selectedTheso.getCurrentIdTheso());
         this.idThesoFrom = idThesoFrom;
-        idThesoTo = null;
+        this.idThesoTo = null;
     }
 
     /**
      * permet de déplacer des candidats d'un thésaurus vers un autre
      */
     public void moveConceptCA() {
-        FacesMessage msg;
+
         if (StringUtils.isEmpty(idThesoTo) || StringUtils.isEmpty(idThesoFrom) || idConceptsToMove == null || idConceptsToMove.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Aucune sélection !");
             return;
         }
 
         for (String idConcept : idConceptsToMove) {
-            if(!conceptHelper.moveConceptToAnotherTheso(idConcept, idThesoFrom, idThesoTo)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(conceptService.moveConceptToAnotherThesaurus(idConcept, idThesoFrom, idThesoTo)) {
+                MessageUtils.showErrorMessage(" Le déplacement a échoué !");
                 return;
             }
 
@@ -131,32 +96,24 @@ public class MoveConcept implements Serializable {
                     .idThesaurus(idThesoTo)
                     .build());
         }
-        PrimeFaces pf = PrimeFaces.current();
+
         candidatBean.initCandidatModule();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("tabViewCandidat:panelCandidateList");
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le déplacement a réussi");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("tabViewCandidat:panelCandidateList");
+        MessageUtils.showInformationMessage("Le déplacement a réussi");
     }
 
-    /**
-     * permet de déplacer des concepts d'un thésaurus vers un autre
-     */
-    public void moveConcept() {
-        FacesMessage msg;
+    public void moveConcept() throws IOException {
+
         if (StringUtils.isEmpty(idThesoTo) || StringUtils.isEmpty(idConceptFrom) || StringUtils.isEmpty(idThesoFrom) || idConceptsToMove == null || idConceptsToMove.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Aucune sélection !");
             return;
         }
 
         List<String> lisIdGroup;
         var nodePreference = preferenceService.getThesaurusPreferences(idThesoTo);
         for (String idConcept : idConceptsToMove) {
-            if(!conceptHelper.moveConceptToAnotherTheso(idConcept, idThesoFrom, idThesoTo)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(conceptService.moveConceptToAnotherThesaurus(idConcept, idThesoFrom, idThesoTo)) {
+                MessageUtils.showErrorMessage("Le déplacement a échoué !");
                 return;
             }
             conceptService.updateDateOfConcept(idThesoTo, idConcept, currentUser.getNodeUser().getIdUser());
@@ -191,29 +148,25 @@ public class MoveConcept implements Serializable {
         if(nodeSearchSelected != null && !StringUtils.isEmpty(nodeSearchSelected.getIdConcept())) {
             //cas où le déplacement est vers un concept, on attache ce nouveau concept au concept cible
             relationService.addRelationBT(idConceptFrom, idThesoTo, nodeSearchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
-            conceptHelper.setNotTopConcept(idConceptFrom, idThesoTo);
+            conceptService.setTopConcept(idConceptFrom, idThesoTo, false);
         } else {
-            conceptHelper.setTopConcept(idConceptFrom, idThesoTo);
+            conceptService.setTopConcept(idConceptFrom, idThesoTo, true);
         }
 
-        try {
-            selectedTheso.reloadSelectedTheso();
-        } catch (IOException e) {
-        }
+        selectedTheso.reloadSelectedTheso();
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le déplacement a réussi");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Le déplacement a réussi");
     }
 
     public List<NodeIdValue> getListThesoAsAdmin(){
         if(currentUser.getNodeUser() == null) return null;
+
         List<String> authorizedThesaurusAsAdmin;
         if(currentUser.getNodeUser().isSuperAdmin()) {
             authorizedThesaurusAsAdmin = thesaurusService.getAllIdOfThesaurus(true);
         } else {
             authorizedThesaurusAsAdmin = userService.getThesaurusOfUserAsAdmin(currentUser.getNodeUser().getIdUser());
         }
-        List<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         return authorizedThesaurusAsAdmin.stream()
                 .filter(idThesaurus -> selectedTheso.getCurrentIdTheso().equalsIgnoreCase(idThesaurus))
@@ -228,11 +181,11 @@ public class MoveConcept implements Serializable {
     public void action(){}
 
     public List<NodeSearchMini> searchConceptsAutoComplet(String value) {
-        List<NodeSearchMini> liste = new ArrayList<>();
+
         if (!StringUtils.isEmpty(idThesoTo)) {
-            liste = searchHelper.searchAutoCompletionForRelation(value, selectedTheso.getCurrentLang(), idThesoTo, true);
+            return searchService.searchAutoCompletionForRelation(value, selectedTheso.getCurrentLang(), idThesoTo, true);
         }
-        return liste;
+        return List.of();
     }
     
 }

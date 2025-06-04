@@ -14,6 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ThesaurusAlignementSourceId {
 
-    private Integer idThesaurus;
-    private String idAlignementSource;
+    private String idThesaurus;
+    private Integer idAlignementSource;
 }

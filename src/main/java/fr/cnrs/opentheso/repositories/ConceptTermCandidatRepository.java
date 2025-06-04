@@ -30,4 +30,8 @@ public interface ConceptTermCandidatRepository extends JpaRepository<ConceptTerm
         """, nativeQuery = true)
     List<NodeTraductionCandidatProjection> getCandidateTranslations(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
+    @Modifying
+    @Query(value = "UPDATE concept_term_candidat SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
 }

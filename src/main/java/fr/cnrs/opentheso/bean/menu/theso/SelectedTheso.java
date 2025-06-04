@@ -159,7 +159,7 @@ public class SelectedTheso implements Serializable {
         }
 
         if (StringUtils.isEmpty(selectedIdTheso)) {
-            currentUser.resetUserPermissionsForThisTheso();
+            currentUser.resetUserPermissionsForThisThesaurus();
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -504,7 +504,7 @@ public class SelectedTheso implements Serializable {
             // gestion de l'accès par thésaurus d'un identifiant différent
             var thesaurus = thesaurusService.getThesaurusById(idThesoFromUri);
             if (!thesaurus.getIsPrivate()) {
-                currentUser.resetUserPermissionsForThisTheso();
+                currentUser.resetUserPermissionsForThisThesaurus();
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
                 roleOnThesoBean.initNodePref(selectedIdTheso);

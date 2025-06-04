@@ -3,8 +3,6 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -20,10 +18,13 @@ import fr.cnrs.opentheso.services.GroupService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.RelationService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.TreeDragDropEvent;
@@ -33,6 +34,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
 
+@Data
 @Slf4j
 @Named(value = "dragAndDrop")
 @SessionScoped
@@ -54,13 +56,7 @@ public class DragAndDrop implements Serializable {
     private GroupService groupService;
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
 
     @Autowired
     private ConceptService conceptService;
@@ -89,6 +85,8 @@ public class DragAndDrop implements Serializable {
     private TreeNode dropNode;
     @Autowired
     private FacetService facetService;
+    @Autowired
+    private RelationService relationService;
 
     public void clear(){
         if(nodeBTsToCut != null){
@@ -229,9 +227,7 @@ public class DragAndDrop implements Serializable {
     }
 
     /**
-     * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #MR
-     *
-     * @param nodeConcept
+     * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #M
      */
     public void onStartCut(NodeConcept nodeConcept) {
 
@@ -250,10 +246,6 @@ public class DragAndDrop implements Serializable {
                     + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
-    }
-
-    public void test() {
-        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**
@@ -448,9 +440,7 @@ public class DragAndDrop implements Serializable {
             }
         }
 
-        ArrayList<String> listBT = relationsHelper.getListIdOfBT(
-                nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+        var listBT = relationService.getListIdOfBT(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         if((listBT != null) && (!listBT.isEmpty())) {
             if(listBT.contains(nodeConceptDrop.getConcept().getIdConcept())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Opération non autorisée, elle peut provoquer des boucles infinies !!! ");
@@ -471,8 +461,6 @@ public class DragAndDrop implements Serializable {
 
     /**
      * Fonction pour récupérer l'évènement drag drop de l'arbre
-     *
-     * @param event
      */
     public void onDragDrop(TreeDragDropEvent event) {
         reset();
@@ -509,7 +497,7 @@ public class DragAndDrop implements Serializable {
             return;
         }
 
-        nodeConceptDrag = conceptHelper.getConcept(((TreeNodeData) dragNode.getData()).getNodeId(),
+        nodeConceptDrag = conceptService.getConceptOldVersion(((TreeNodeData) dragNode.getData()).getNodeId(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(), -1, -1);
 
@@ -522,10 +510,8 @@ public class DragAndDrop implements Serializable {
             // déplacement à la racine
             isDropToRoot = true;
         } else {
-            nodeConceptDrop = conceptHelper.getConcept(
-                    ((TreeNodeData) dropNode.getData()).getNodeId(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang(), -1, -1);
+            nodeConceptDrop = conceptService.getConceptOldVersion(((TreeNodeData) dropNode.getData()).getNodeId(),
+                    selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), -1, -1);
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             if(nodeConceptDrop != null) {
                 if(isMoveConceptToConceptValid(selectedTheso.getCurrentIdTheso(),
@@ -641,8 +627,7 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
-            nodeConceptDrag = conceptHelper.getConcept(
-                    ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+            nodeConceptDrag = conceptService.getConceptOldVersion(((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
 
             isdragAndDrop = true;
@@ -660,8 +645,7 @@ public class DragAndDrop implements Serializable {
                 // déplacement à la racine
                 isDropToRoot = true;
             } else {
-                nodeConceptDrop = conceptHelper.getConcept(
-                        ((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                nodeConceptDrop = conceptService.getConceptOldVersion(((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                         selectedTheso.getCurrentLang(), -1, -1);
                 /// Vérifier si le dépalcement est valide (controle des relations interdites)
                 if (nodeConceptDrop != null) {
@@ -807,7 +791,7 @@ public class DragAndDrop implements Serializable {
 
         for (TreeNode node : nodesToConfirme) {
 
-            nodeConceptDrag = nodeConceptDrop = conceptHelper.getConcept(
+            nodeConceptDrag = nodeConceptDrop = conceptService.getConceptOldVersion(
                     ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
 
@@ -881,8 +865,7 @@ public class DragAndDrop implements Serializable {
     }
 
     /**
-     * permet de retourner les noms des collections/groupes 
-     * @return 
+     * permet de retourner les noms des collections/groupes
      */
     public String getLabelOfGroupes() {
         if (nodeConceptDrag == null) {
@@ -916,12 +899,8 @@ public class DragAndDrop implements Serializable {
                     + " - Aucun parent n'est sélectionné pour déplacement");
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(
-                nodeConceptDrag.getConcept().getIdConcept(),
-                oldBtToDelete,
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
+        if (!conceptService.moveBranchFromConceptToConcept(nodeConceptDrag.getConcept().getIdConcept(), oldBtToDelete,
+                nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
 
             showMessage(FacesMessage.SEVERITY_ERROR, nodeConceptDrag.getTerm().getLexicalValue()
                     + " - Erreur pendant la suppression des branches !!");
@@ -941,9 +920,7 @@ public class DragAndDrop implements Serializable {
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso())) {
+            if (!conceptService.setTopConcept(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), true)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return false;
@@ -952,11 +929,8 @@ public class DragAndDrop implements Serializable {
         }
 
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    oldIdBT,
-                    selectedTheso.getCurrentIdTheso(),
-                    currentUser.getNodeUser().getIdUser())) {
+            if (!conceptService.moveBranchFromConceptToRoot(nodeConceptDrag.getConcept().getIdConcept(), oldIdBT,
+                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return false;
@@ -1029,7 +1003,7 @@ public class DragAndDrop implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(nodeConceptDrag.getConcept().getIdConcept(),
+        if (!conceptService.moveBranchFromConceptToConcept(nodeConceptDrag.getConcept().getIdConcept(),
                 oldBtToDelete, nodeConceptDrop.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant la suppression des branches !!");
@@ -1041,11 +1015,8 @@ public class DragAndDrop implements Serializable {
     
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
-        if (!conceptHelper.moveBranchFromRootToConcept(
-                nodeConceptDrag.getConcept().getIdConcept(),
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
+        if (!conceptService.moveBranchFromRootToConcept(nodeConceptDrag.getConcept().getIdConcept(),
+                nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
@@ -1062,9 +1033,7 @@ public class DragAndDrop implements Serializable {
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso())) {
+            if (!conceptService.setTopConcept(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), true)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return false;
@@ -1073,11 +1042,8 @@ public class DragAndDrop implements Serializable {
         } 
         
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    oldIdBT,
-                    selectedTheso.getCurrentIdTheso(),
-                    currentUser.getNodeUser().getIdUser())) {
+            if (!conceptService.moveBranchFromConceptToRoot(nodeConceptDrag.getConcept().getIdConcept(), oldIdBT,
+                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return false;
@@ -1164,143 +1130,6 @@ public class DragAndDrop implements Serializable {
         PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
     }
 
-    public boolean isIsCopyOn() {
-        return isCopyOn;
-    }
-
-    public void setIsCopyOn(boolean isCopyOn) {
-        this.isCopyOn = isCopyOn;
-    }
-
-    public NodeConcept getCuttedConcept() {
-        return nodeConceptDrag;
-    }
-
-    public void setCuttedConcept(NodeConcept cuttedConcept) {
-        this.nodeConceptDrag = cuttedConcept;
-    }
-
-    public ArrayList<NodeBT> getNodeBTsToCut() {
-        return nodeBTsToCut;
-    }
-
-    public void setNodeBTsToCut(ArrayList<NodeBT> nodeBTsToCut) {
-        this.nodeBTsToCut = nodeBTsToCut;
-    }
-
-
-    public NodeConcept getDropppedConcept() {
-        return nodeConceptDrop;
-    }
-
-    public void setDropppedConcept(NodeConcept dropppedConcept) {
-        this.nodeConceptDrop = dropppedConcept;
-    }
-
-    public boolean isIsdragAndDrop() {
-        return isdragAndDrop;
-    }
-
-    public void setIsdragAndDrop(boolean isdragAndDrop) {
-        this.isdragAndDrop = isdragAndDrop;
-    }
-
-    public NodeConcept getNodeConceptDrag() {
-        return nodeConceptDrag;
-    }
-
-    public void setNodeConceptDrag(NodeConcept nodeConceptDrag) {
-        this.nodeConceptDrag = nodeConceptDrag;
-    }
-
-    public NodeConcept getNodeConceptDrop() {
-        return nodeConceptDrop;
-    }
-
-    public void setNodeConceptDrop(NodeConcept nodeConceptDrop) {
-        this.nodeConceptDrop = nodeConceptDrop;
-    }
-
-    public boolean isIsDropToRoot() {
-        return isDropToRoot;
-    }
-
-    public void setIsDropToRoot(boolean isDropToRoot) {
-        this.isDropToRoot = isDropToRoot;
-    }
-
-    public boolean isIsValidPaste() {
-        return isValidPaste;
-    }
-
-    public void setIsValidPaste(boolean isValidPaste) {
-        this.isValidPaste = isValidPaste;
-    }
-
-    public ArrayList<NodeGroup> getNodeGroupsToCut() {
-        return nodeGroupsToCut;
-    }
-
-    public void setNodeGroupsToCut(ArrayList<NodeGroup> nodeGroupsToCut) {
-        this.nodeGroupsToCut = nodeGroupsToCut;
-    }
-
-    public ArrayList<NodeGroup> getNodeGroupsToAdd() {
-        return nodeGroupsToAdd;
-    }
-
-    public void setNodeGroupsToAdd(ArrayList<NodeGroup> nodeGroupsToAdd) {
-        this.nodeGroupsToAdd = nodeGroupsToAdd;
-    }
-
-    public TreeNode getDragNode() {
-        return dragNode;
-    }
-
-    public void setDragNode(TreeNode dragNode) {
-        this.dragNode = dragNode;
-    }
-
-    public TreeNode getDropNode() {
-        return dropNode;
-    }
-
-    public void setDropNode(TreeNode dropNode) {
-        this.dropNode = dropNode;
-    }
-
-    public List<TreeNode> getNodesToConfirme() {
-        return nodesToConfirme;
-    }
-
-    public void setNodesToConfirme(List<TreeNode> nodesToConfirme) {
-        this.nodesToConfirme = nodesToConfirme;
-    }
-
-    public List<GroupNode> getGroupNodeToAdd() {
-        return groupNodeToAdd;
-    }
-
-    public void setGroupNodeToAdd(List<GroupNode> groupNodeToAdd) {
-        this.groupNodeToAdd = groupNodeToAdd;
-    }
-
-    public List<GroupNode> getGroupNodeToCut() {
-        return groupNodeToCut;
-    }
-
-    public void setGroupNodeToCut(List<GroupNode> groupNodeToCut) {
-        this.groupNodeToCut = groupNodeToCut;
-    }
-
-    public List<BTNode> getGroupNodeBtToCut() {
-        return groupNodeBtToCut;
-    }
-
-    public void setGroupNodeBtToCut(List<BTNode> groupNodeBtToCut) {
-        this.groupNodeBtToCut = groupNodeBtToCut;
-    }
-
     public class GroupNode {
 
         private TreeNode node;
@@ -1358,7 +1187,7 @@ public class DragAndDrop implements Serializable {
     public boolean isMoveConceptToConceptValid(String idTheso, String idConcept, String idConceptToAdd) {
 
         return idConcept.equalsIgnoreCase(idConceptToAdd)
-                || relationsHelper.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)
-                || relationsHelper.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso);
+                || relationService.isConceptHaveRelationRT(idConcept, idConceptToAdd, idTheso)
+                || relationService.isConceptHaveRelationNTorBT(idConcept, idConceptToAdd, idTheso);
     }
 }

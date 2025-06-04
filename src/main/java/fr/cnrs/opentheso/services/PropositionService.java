@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
@@ -530,6 +531,17 @@ public class PropositionService {
             return false;
         }
         return true;
+    }
+
+    public List<fr.cnrs.opentheso.entites.Proposition> getPropositionByConceptAndThesaurus(String idThesaurus, String idConcept) {
+
+        log.info("Recherche des propositions pour le concept id {} ({})", idConcept, idThesaurus);
+        var propositions = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(idThesaurus, idConcept);
+        if (CollectionUtils.isEmpty(propositions)) {
+            log.info("Aucune proposition n'est trouvée pour le concept id {}", idConcept);
+            return List.of();
+        }
+        return propositions;
     }
 
     public Proposition selectProposition(NodeConcept nodeConcept) {

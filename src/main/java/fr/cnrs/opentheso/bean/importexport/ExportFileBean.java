@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.importexport;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
@@ -38,72 +37,46 @@ import java.util.zip.ZipOutputStream;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
-
 import org.primefaces.model.StreamedContent;
 
 
-@Named(value = "exportFileBean")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "exportFileBean")
 public class ExportFileBean implements Serializable {
 
-    @Autowired @Lazy
-    private RoleOnThesaurusBean roleOnThesoBean;
-    
-    @Autowired @Lazy
-    private ViewExportBean viewExportBean;
-    @Autowired @Lazy
-    private CandidatBean candidatBean;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
-    private WritePdfNewGen writePdfNewGen;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private ExportRdf4jHelperNew exportRdf4jHelperNew;
-
-    @Autowired
-    private UriHelper uriHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private CsvWriteHelper csvWriteHelper;
-
-    @Autowired
-    private ExportService exportService;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private Tree tree;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final ViewExportBean viewExportBean;
+    private final CandidatBean candidatBean;
+    private final SelectedTheso selectedTheso;
+    private final WritePdfNewGen writePdfNewGen;
+    private final GroupService groupService;
+    private final ExportRdf4jHelperNew exportRdf4jHelperNew;
+    private final UriHelper uriHelper;
+    private final CsvWriteHelper csvWriteHelper;
+    private final ExportService exportService;
+    private final PreferenceService preferenceService;
+    private final FacetService facetService;
+    private final Tree tree;
+    private final ConceptService conceptService;
 
     // progressBar
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
-    int posJ = 0;
-    int posX = 0;
-    @Autowired
-    private FacetService facetService;
-    @Autowired
-    private ConceptService conceptService;
+    private int posJ = 0;
+    private int posX = 0;
+
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -184,7 +157,7 @@ public class ExportFileBean implements Serializable {
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
 
-        List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(parentId, langId, thesoId);
+        List<NodeTree> concepts = conceptService.getListChildrenOfConceptWithTerm(parentId, langId, thesoId);
         for (NodeTree concept : concepts) {
             sizeOfTheso++;
             concept.setIdParent(parentId);
@@ -249,7 +222,7 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             sizeOfTheso = 0;
-            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(
+            List<NodeTree> topConcepts = conceptService.getTopConceptsWithTermByTheso(
                     viewExportBean.getNodeIdValueOfTheso().getId(), 
                     viewExportBean.getSelectedIdLangTheso());
 
@@ -461,7 +434,7 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             sizeOfTheso = 0;
-            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(
+            var topConcepts = conceptService.getTopConceptsWithTermByTheso(
                     viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
 
             for (NodeTree topConcept : topConcepts) {
@@ -947,8 +920,7 @@ public class ExportFileBean implements Serializable {
             allConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
         } else {
             for (String idGroup : selectedGroups) {
-                ArrayList<String> allConceptsTemp;
-                allConceptsTemp = conceptHelper.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
+                List<String> allConceptsTemp = conceptService.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
                 allConcepts.addAll(allConceptsTemp);
             }
         }

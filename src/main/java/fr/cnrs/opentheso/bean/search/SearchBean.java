@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.search;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -76,9 +75,6 @@ public class SearchBean implements Serializable {
     
     @Autowired
     private LanguageBean languageBean;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private SearchHelper searchHelper;

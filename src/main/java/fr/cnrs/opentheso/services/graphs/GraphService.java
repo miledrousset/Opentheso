@@ -51,9 +51,7 @@ public class GraphService implements Serializable {
         Map<Integer, GraphObject> graphviews = new HashMap<>();
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from graph_view"
-                        + " where "
-                        + " graph_view.id_user = " + currentUser.getNodeUser().getIdUser());
+                stmt.executeQuery("select * from graph_view where graph_view.id_user = " + currentUser.getNodeUser().getIdUser());
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         String name = resultSet.getString("name");
@@ -73,9 +71,7 @@ public class GraphService implements Serializable {
     private void setObject(GraphObject graphObject) {
         try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from graph_view_exported_concept_branch"
-                        + " where "
-                        + " graph_view_id = " + graphObject.getId());
+                stmt.executeQuery("select * from graph_view_exported_concept_branch where graph_view_id = " + graphObject.getId());
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         String thesaurusId = resultSet.getString("top_concept_thesaurus_id");

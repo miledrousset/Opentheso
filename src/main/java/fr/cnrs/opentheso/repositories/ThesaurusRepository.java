@@ -60,4 +60,6 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
         """, nativeQuery = true)
     List<NodeLangThesaurusProjection> findAllUsedLanguagesOfThesaurus(@Param("idThesaurus") String idThesaurus);
 
+    @Query("SELECT c.idThesaurus FROM Concept c WHERE c.idHandle = :handleId")
+    Optional<String> findThesaurusIdByHandle(@Param("handleId") String handleId);
 }

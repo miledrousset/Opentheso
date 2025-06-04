@@ -4,57 +4,45 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.Serializable;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import lombok.NoArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "gpsBean")
 public class GpsBean implements Serializable {
 
-    private ConceptView conceptView;
-    private SelectedTheso selectedTheso;
-    private GpsService gpsService;
+    private final ConceptView conceptView;
+    private final SelectedTheso selectedTheso;
+    private final GpsService gpsService;
 
     private Gps gpsSelected;
 
 
-    public GpsBean(ConceptView conceptView, SelectedTheso selectedTheso, GpsService gpsService) {
-
-        this.gpsService = gpsService;
-        this.conceptView = conceptView;
-        this.selectedTheso = selectedTheso;
-    }
-
     public void addNewCoordinateGps() {
 
         gpsService.saveNewGps(gpsSelected);
+
         conceptView.getNodeConcept().setNodeGps(gpsService.findByIdConceptAndIdThesoOrderByPosition(
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS ajoutée avec succèe");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Coordonnée GPS ajoutée avec sucès");
 
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
-    /**
-     * permet de mettre à jour les coordonnées GPS
-     */
     public void updateCoordinateGps(Gps gps) {
 
         gpsService.saveNewGps(Gps.builder()
@@ -69,18 +57,11 @@ public class GpsBean implements Serializable {
                 selectedTheso.getCurrentIdTheso());
         conceptView.getNodeConcept().setNodeGps(gpsList);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS supprimé avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        PrimeFaces.current().ajax().update("messageIndex");
+        MessageUtils.showInformationMessage("Coordonnée GPS supprimé avec succès");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
-
-    /**
-     * permet de supprimer les coordonnées GPS d'un concept
-     */
     public void deleteCoordinateGps(Gps gps) {
 
         if(gps == null) return;
@@ -89,10 +70,7 @@ public class GpsBean implements Serializable {
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression des coordonnées GPS réussie");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-        PrimeFaces.current().ajax().update("messageIndex");
+        MessageUtils.showInformationMessage("Suppression des coordonnées GPS réussie");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
@@ -102,5 +80,4 @@ public class GpsBean implements Serializable {
         gpsSelected.setIdConcept(conceptView.getNodeConcept().getConcept().getIdConcept());
         gpsSelected.setIdTheso(selectedTheso.getCurrentIdTheso());
     }
-
 }

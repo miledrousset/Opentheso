@@ -41,11 +41,7 @@
                     <div class="col-1">
                         <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
                                          ajax="true" process="@form"
-                                         actionListener="#{alignmentBean.searchAlignments(
-                                                           selectedTheso.selectedIdTheso,
-                                                           alignmentBean.idConceptSelectedForAlignment,
-                                                           alignmentBean.conceptValueForAlignment,
-                                                           selectedTheso.currentLang)}"
+                                         actionListener="#{alignmentBean.searchAlignments(alignmentManualBean)}"
                                          style="color: #f47b2a; margin-left: 5px"
                                          update="searchAlignementForm messageIndex" />
                     </div>

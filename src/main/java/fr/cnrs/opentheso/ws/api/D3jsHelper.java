@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ResourceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
@@ -24,9 +24,6 @@ import org.springframework.stereotype.Service;
 public class D3jsHelper {
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private PreferenceService preferenceService;
 
 
@@ -36,6 +33,8 @@ public class D3jsHelper {
     private ResourceService resourceService;
     @Autowired
     private ThesaurusService thesaurusService;
+    @Autowired
+    private ConceptService conceptService;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
         count = 0;
@@ -259,10 +258,8 @@ public class D3jsHelper {
 
     private NodeDatas getTopNodeDatas(String idConcept, String idTheso, String idLang){
 
-        conceptHelper.setNodePreference(nodePreference);
-
-        NodeDatas nodeDatas = conceptHelper.getConceptForGraph(idConcept, idTheso, idLang);
-        if(conceptHelper.haveChildren(idTheso, idConcept)) {
+        NodeDatas nodeDatas = conceptService.getConceptForGraph(idConcept, idTheso, idLang);
+        if(conceptService.haveChildren(idTheso, idConcept)) {
             nodeDatas.setType("type2");
         } else
             nodeDatas.setType("type3");

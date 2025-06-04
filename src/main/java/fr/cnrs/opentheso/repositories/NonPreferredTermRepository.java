@@ -105,4 +105,13 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
         ORDER BY npt.lexical_value ASC
     """, nativeQuery = true)
     List<NodeEMProjection> findNonPreferredTerms(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);
+
+    @Modifying
+    @Query(value = "UPDATE non_preferred_term SET id_thesaurus = :target FROM preferred_term " +
+            "WHERE non_preferred_term.id_term = preferred_term.id_term " +
+            "AND non_preferred_term.id_thesaurus = preferred_term.id_thesaurus " +
+            "AND preferred_term.id_concept = :concept " +
+            "AND non_preferred_term.id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
 }

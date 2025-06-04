@@ -38,7 +38,7 @@
                             icon="fas fa-cut" update="containerIndex:formRightTab messageIndex" />
 
                 <!-- Coller comme terme spécifique -->
-                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and
                                         (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
@@ -46,7 +46,7 @@
                             update="containerIndex:rightTab messageIndex" />
 
                 <!-- Coller à la racine -->
-                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
                             actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
@@ -69,21 +69,21 @@
                             update="idApproveConcept" action="#{editConcept.reset('')}"
                             oncomplete="PF('approveConcept').show();"  />
 
-                <p:menuitem disabled="false" rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
+                <p:menuitem disabled="false" rendered="#{!copyAndPasteBetweenTheso.isCopyOn()}"
                             value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
-                            actionListener="#{copyAndPasteBetweenTheso.onStartCopy()}"
+                            actionListener="#{copyAndPasteBetweenThesaurus.onStartCopy()}"
                             icon="fas fa-regular fa-copy" update="containerIndex:rightTab messageIndex" />
 
-                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
-                            actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" icon="fas fa-paste"
-                            action="#{copyAndPasteBetweenTheso.setIsDropToRoot(false)}"
+                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedTheso.currentIdTheso) }"
+                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
+                            actionListener="#{copyAndPasteBetweenThesaurus.validatePaste()}" icon="fas fa-paste"
+                            action="#{copyAndPasteBetweenThesaurus.setIsDropToRoot(false)}"
                             update="containerIndex:rightTab containerIndex"
                             oncomplete="PF('copyAndPasteBetweenTheso').show();" />
 
-                <p:menuitem  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
+                <p:menuitem  rendered="#{copyAndPasteBetweenThesaurus.isCopyOn()}"
                              value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
-                             action="#{copyAndPasteBetweenTheso.reset()}" icon="fas fa-ban"
+                             action="#{copyAndPasteBetweenThesaurus.reset()}" icon="fas fa-ban"
                              update="containerIndex:rightTab messageIndex" />
 
                 <p:separator rendered="#{(roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>

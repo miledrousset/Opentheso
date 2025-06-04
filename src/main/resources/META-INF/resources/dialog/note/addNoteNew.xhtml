@@ -39,7 +39,7 @@
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}"
                                      value="#{noteBean.selectedLang}" style="width: 100%;">
                         <p:ajax event="valueChange" listener="#{noteBean.actionChangeLang(noteBean.selectedLang)}" update="groupNoteEditor listNoteTypes"/>
-                        <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}"
+                        <f:selectItems  value="#{noteBean.nodeLangues}" var="lang" itemLabel="#{lang.value}"
                                         itemValue="#{lang.code}" />
                     </p:selectOneMenu>
                 </div>

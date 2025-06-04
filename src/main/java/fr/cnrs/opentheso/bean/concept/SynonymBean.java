@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
-import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -12,10 +11,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.TermService;
@@ -46,22 +41,18 @@ import org.springframework.util.CollectionUtils;
 @Named(value = "synonymBean")
 public class SynonymBean implements Serializable {
 
+    private final CurrentUser currentUser;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
     private final PropositionBean propositionBean;
-    private final CurrentUser currentUser;
-    private final ConceptHelper conceptHelper;
-    private final ConceptDcTermRepository conceptDcTermRepository;
-    private final NonPreferredTermRepository nonPreferredTermRepository;
     private final NonPreferredTermService nonPreferredTermService;
-    private final PreferredTermRepository preferredTermRepository;
-    private final TermRepository termRepository;
     private final ThesaurusService thesaurusService;
     private final ConceptService conceptService;
     private final TermService termService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
 
     private NodeEM nodeEM;
-    private List<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangues;
     private List<NodeEM> nodeEMs, nodeEMsForEdit;
     private String selectedLang, selectedValue, value;
     private boolean hidden, duplicate;
@@ -70,7 +61,7 @@ public class SynonymBean implements Serializable {
     public void reset() {
         hidden = false;
         selectedLang = conceptBean.getSelectedLang();
-        nodeLangs = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedLang);
+        nodeLangues = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedLang);
 
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
         
@@ -106,21 +97,18 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet d'ajouter un synonyme sans controler le nom en doublon
-     *
-     * @param idUser
      */
     public void addForced(int idUser) {
 
         log.info("Recherche de preferred term");
-        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(selectedTheso.getCurrentIdTheso(),
+        var preferredTerm = termService.getPreferenceTermByThesaurusAndConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
-        var idTerm = preferredTerm.map(PreferredTerm::getIdTerm).orElse(null);
-        log.info("Id du term {}", idTerm);
+        log.info("Id du term {}", preferredTerm.getIdTerm());
 
         log.info("Enregistrement du synonyme dans la base de données");
         nonPreferredTermService.addNonPreferredTerm(Term.builder()
-                .idTerm(idTerm)
+                .idTerm(preferredTerm.getIdTerm())
                 .lexicalValue(value)
                 .lang(selectedLang)
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
@@ -140,24 +128,17 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet de modifier un synonyme
-     *
-     * @param nodeEMLocal
-     * @param idUser
      */
     public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
 
         log.info("Début de la modification du synonyme {}", nodeEMLocal.getLexicalValue());
-        if (nodeEMLocal == null) {
-            MessageUtils.showErrorMessage("Aucune sélection !");
-            return;
-        }
 
         // save de la valeur pour une modification forcée
         this.nodeEM = nodeEMLocal;
 
         if (!nodeEMLocal.getOldValue().equals(nodeEMLocal.getLexicalValue())) {
             log.info("Modification de la valeur de la synonyme");
-            if (termRepository.existsPrefLabel(nodeEMLocal.getLexicalValue(), nodeEMLocal.getLang(), selectedTheso.getCurrentIdTheso())) {
+            if (termService.existsPrefLabel(nodeEMLocal.getLexicalValue(), nodeEMLocal.getLang(), selectedTheso.getCurrentIdTheso())) {
                 MessageUtils.showWarnMessage("Un label identique existe déjà !");
                 duplicate = true;
                 return;
@@ -181,8 +162,6 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet de modifier un synonyme sans controle avec doublon
-     *
-     * @param idUser
      */
     public void updateSynonymForced(int idUser) {
 
@@ -203,8 +182,6 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet d'ajouter une nouvelle traduction au concept
-     *
-     * @param idUser
      */
     public void addNewSynonym(int idUser) {
 
@@ -227,7 +204,7 @@ public class SynonymBean implements Serializable {
             return false;
         }
 
-        if (termRepository.existsPrefLabel(value, selectedLang, selectedTheso.getCurrentIdTheso())) {
+        if (termService.existsPrefLabel(value, selectedLang, selectedTheso.getCurrentIdTheso())) {
             MessageUtils.showErrorMessage("Un label identique existe déjà !");
             duplicate = true;
             return false;
@@ -278,9 +255,6 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet de modifier un synonyme sans controle avec doublon
-     *
-     * @param nodeEM
-     * @param idUser
      */
     public void updateStatus(NodeEM nodeEM, int idUser) {
 
@@ -299,8 +273,6 @@ public class SynonymBean implements Serializable {
 
     /**
      * permet de modifier tous les synonymes
-     *
-     * @param idUser
      */
     public void updateAllSynonyms(int idUser) {
 
@@ -338,7 +310,7 @@ public class SynonymBean implements Serializable {
         }
 
         if (!synonymPropBean.getOldValue().equals(synonymPropBean.getLexicalValue())) {
-            if (termRepository.existsPrefLabel(synonymPropBean.getLexicalValue(), synonymPropBean.getLang(), selectedTheso.getCurrentIdTheso())) {
+            if (termService.existsPrefLabel(synonymPropBean.getLexicalValue(), synonymPropBean.getLang(), selectedTheso.getCurrentIdTheso())) {
                 MessageUtils.showErrorMessage("Un label identique existe déjà !");
                 return;
             }
@@ -383,9 +355,7 @@ public class SynonymBean implements Serializable {
         refreshConceptDatas(idUser);
 
         MessageUtils.showInformationMessage("Synonyme supprimé avec succès");
-
         reset();
-
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("conceptForm:listSynonimesToDelete");
     }

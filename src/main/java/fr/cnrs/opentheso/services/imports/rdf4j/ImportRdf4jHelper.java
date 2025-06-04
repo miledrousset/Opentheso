@@ -39,8 +39,8 @@ import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
-import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -52,9 +52,7 @@ import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.StatusRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
@@ -100,16 +98,7 @@ public class ImportRdf4jHelper {
     private AlignmentService alignmentService;
 
     @Autowired
-    private DeprecateService deprecateHelper;
-
-    @Autowired
     private ImageService imageService;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -175,6 +164,8 @@ public class ImportRdf4jHelper {
     private NoteService noteService;
     @Autowired
     private FacetService facetService;
+    @Autowired
+    private ConceptAddService conceptAddService;
 
     public ImportRdf4jHelper() {
         idGroups = new ArrayList<>();
@@ -551,7 +542,7 @@ public class ImportRdf4jHelper {
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
         if (isCandidatImport) {
-            if (conceptService.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
+            if (conceptAddService.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
                 return;
             }
         }
@@ -1175,11 +1166,9 @@ public class ImportRdf4jHelper {
         }
     }
 
-    public void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
+    public void addConceptToBdd(AddConceptsStruct acs, String idThesaurus, boolean isCandidatImport) {
 
-        if (!conceptHelper.insertConceptInTable(acs.concept)) {
-            System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
-        }
+        conceptService.insertConcept(acs.concept);
 
         termService.addTerms(acs.nodeTerm, idUser);
 
@@ -1351,7 +1340,8 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-            noteService.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(), idTheso, nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
+            noteService.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(), idThesaurus,
+                    nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
@@ -1362,7 +1352,7 @@ public class ImportRdf4jHelper {
             acs.term.setIdTerm(acs.nodeTerm.getIdTerm());
             acs.term.setLexicalValue(nodeEMList1.getLexicalValue());
             acs.term.setLang(nodeEMList1.getLang());
-            acs.term.setIdThesaurus(idTheso);//thesaurus.getId_thesaurus());
+            acs.term.setIdThesaurus(idThesaurus);//thesaurus.getId_thesaurus());
             acs.term.setSource(nodeEMList1.getSource());
             acs.term.setStatus(nodeEMList1.getStatus());
             acs.term.setHidden(nodeEMList1.isHiden());
@@ -1373,34 +1363,33 @@ public class ImportRdf4jHelper {
             for (NodeGps nodeGps : acs.nodeGps) {
                 if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
                     // insertion des données GPS
-                    gpsService.insertCoordinates(acs.concept.getIdConcept(), idTheso,
+                    gpsService.insertCoordinates(acs.concept.getIdConcept(), idThesaurus,
                             nodeGps.getLatitude(), nodeGps.getLongitude());
                 }
             }
         }
 
         if (acs.isTopConcept) {
-            if (!conceptHelper.setTopConcept(acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
-                // erreur;
-            }
+            conceptService.setTopConcept(acs.concept.getIdConcept(), idThesaurus, true);
         }
 
         // ajout des images externes URI
         for (NodeImage nodeImage : acs.nodeImages) {
-            imageService.addExternalImage(acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
+            imageService.addExternalImage(acs.concept.getIdConcept(), idThesaurus, nodeImage.getImageName(),
+                    nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
         }
 
         if (acs.conceptStatus.equalsIgnoreCase("dep")) {
-            deprecateHelper.deprecateConcept(acs.concept.getIdConcept(), idTheso, idUser, conceptHelper);
+            conceptService.deprecateConcept(acs.concept.getIdConcept(), idThesaurus, idUser);
         }
         /// ajout des relations de concepts dépréciés
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
-            deprecateHelper.addReplacedBy(acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
+            conceptService.addReplacedBy(acs.concept.getIdConcept(), idThesaurus, nodeIdValue.getId(), idUser);
         }
         if (isCandidatImport) {
             candidatStatusRepository.save(CandidatStatus.builder()
                     .idConcept(acs.concept.getIdConcept())
-                    .idThesaurus(idTheso)
+                    .idThesaurus(idThesaurus)
                     .idUser(idUser)
                     .date(new Date())
                     .status(statusRepository.findById(1).orElse(null))

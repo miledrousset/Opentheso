@@ -4,13 +4,18 @@ import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.entites.HierarchicalRelationshipHistorique;
 import fr.cnrs.opentheso.models.BroaderRelationProjection;
 import fr.cnrs.opentheso.models.RelatedRelationProjection;
+import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
+import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
 import fr.cnrs.opentheso.models.relations.NodeRelation;
+import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.terms.NodeBT;
+import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.repositories.HierarchicalRelationshipHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.HierarchicalRelationshipRepository;
-import fr.cnrs.opentheso.repositories.HistoriqueRepository;
+import fr.cnrs.opentheso.repositories.NtTypeRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -36,7 +42,9 @@ public class RelationService {
     private final TermRepository termRepository;
     private final HierarchicalRelationshipRepository hierarchicalRelationshipRepository;
     private final HierarchicalRelationshipHistoriqueRepository hierarchicalRelationshipHistoriqueRepository;
-    private final HistoriqueRepository historiqueRepository;
+    private final ConceptTypeService conceptTypeService;
+    private final TermService termService;
+    private final NtTypeRepository ntTypeRepository;
 
 
     public HierarchicalRelationship addHierarchicalRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
@@ -449,5 +457,107 @@ public class RelationService {
         }
 
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, relationType, idUser, "ADD");
+    }
+
+
+    public boolean isConceptHaveRelationNTorBT(String idConcept1, String idConcept2, String idThesaurus) {
+
+        log.info("Verifier si le Concept {} a une relation NT avec le concept {}", idConcept1, idConcept2);
+        var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRole(idThesaurus, idConcept1, idConcept2);
+        return CollectionUtils.isNotEmpty(result);
+    }
+
+    public boolean isConceptHaveRelationRT(String idConcept1, String idConcept2, String idThesaurus) {
+
+        log.info("Vérification si le concept {} dispose d'une relation de type RT", idConcept1);
+        return hierarchicalRelationshipRepository.existsRelationRT(idConcept1, idConcept2, idThesaurus);
+    }
+
+    public boolean isConceptHaveBrother(String idConcept1, String idConcept2, String idThesaurus) {
+
+        log.info("Vérification si le concept {} a le frère {}", idConcept1, idConcept2);
+        return hierarchicalRelationshipRepository.existsBrotherRelation(idConcept1, idConcept2, idThesaurus);
+    }
+
+    public List<String> getListIdOfBT(String idConcept, String idThesaurus) {
+
+        log.info("Recherche de la liste des BT pour le concept {}", idConcept);
+        return hierarchicalRelationshipRepository.findIdsOfBroaderConcepts(idConcept, idThesaurus);
+    }
+
+    public boolean isConceptHaveManyRelationBT(String idConcept, String idThesaurus) {
+
+        log.info("Vérification si le concept {} contient plusieurs relation de type BT", idConcept);
+        return hierarchicalRelationshipRepository.countBroaderRelations(idConcept, idThesaurus) > 1;
+    }
+
+    public List<NodeCustomRelation> getAllNodeCustomRelation(String idConcept, String idThesaurus, String idLang, String interfaceLang) {
+
+        log.info("Recherche de toutes les relations client avec le concept {}", idConcept);
+        var projections = hierarchicalRelationshipRepository.findCustomRelations(idConcept, idThesaurus);
+        if (CollectionUtils.isEmpty(projections)) {
+            log.error("Aucune relation client n'est trouvée !");
+            return List.of();
+        }
+
+        return projections.stream()
+                .map(element -> {
+                    var conceptType = conceptTypeService.getNodeTypeConcept(element.getRole(), idThesaurus);
+                    return NodeCustomRelation.builder()
+                            .targetConcept(element.getIdConcept2())
+                            .relation(element.getRole())
+                            .targetLabel(termService.getLexicalValueOfConcept(element.getIdConcept2(), idThesaurus, idLang))
+                            .relationLabel("fr".equalsIgnoreCase(interfaceLang) ? conceptType.getLabelFr() : conceptType.getLabelEn())
+                            .reciprocal(conceptType.isReciprocal())
+                            .build();
+                })
+                .toList();
+    }
+
+    public List<NodeNT> getListNT(String idConcept, String idThesaurus, String idLang, int step, int offset) {
+
+        var relations = (step == -1)
+                ? hierarchicalRelationshipRepository.findNTByConceptNoLimit(idConcept, idThesaurus)
+                : hierarchicalRelationshipRepository.findNTByConceptWithPagination(idConcept, idThesaurus, step, offset);
+
+        var nodeListNT = relations.stream()
+                .map(p -> NodeNT.builder()
+                        .idConcept(p.getIdConcept2())
+                        .role(p.getRole())
+                        .title(termService.getLexicalValueOfConcept(p.getIdConcept2(), idThesaurus, idLang))
+                        .build())
+                .toList();
+
+        Collections.sort(nodeListNT);
+        return nodeListNT;
+    }
+
+    public List<NodeHieraRelation> getAllRelationsOfConcept(String idConcept, String idThesaurus) {
+
+        return hierarchicalRelationshipRepository.getRelationsWithIdentifiers(idConcept, idThesaurus).stream()
+                .map(proj ->
+                    NodeHieraRelation.builder()
+                            .role(proj.getRole())
+                            .uri(NodeUri.builder()
+                                    .idConcept(proj.getIdConcept())
+                                    .idArk(proj.getIdArk() != null ? proj.getIdArk() : "")
+                                    .idHandle(proj.getIdHandle() != null ? proj.getIdHandle() : "")
+                                    .idDoi(proj.getIdDoi() != null ? proj.getIdDoi() : "")
+                                    .build())
+                            .build()
+                ).toList();
+    }
+
+    public List<NodeTypeRelation> getTypesRelationsNT() {
+        return ntTypeRepository.findAll()
+                .stream()
+                .map(ntType -> {
+                    NodeTypeRelation relation = new NodeTypeRelation();
+                    relation.setRelationType(ntType.getRelation());
+                    relation.setDescriptionFr(ntType.getDescriptionFr());
+                    relation.setDescriptionEn(ntType.getDescriptionEn());
+                    return relation;
+                })
+                .collect(Collectors.toList());
     }
 }

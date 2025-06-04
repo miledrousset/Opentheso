@@ -1,8 +1,6 @@
 package fr.cnrs.opentheso.bean.leftbody.viewconcepts;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -13,10 +11,11 @@ import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
-
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ResourceService;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
@@ -46,12 +45,6 @@ public class TreeConcepts implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private PropositionBean propositionBean;
 
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
@@ -61,6 +54,8 @@ public class TreeConcepts implements Serializable {
     private ResourceService resourceService;
     @Autowired
     private ConceptService conceptService;
+    @Autowired
+    private RelationService relationService;
 
 
     public void reset() {
@@ -172,8 +167,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        var ConceptsId = relationsHelper.getListNT(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
-
+        var ConceptsId = relationService.getListNT(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
         if (ConceptsId == null || ConceptsId.isEmpty()) {
             parent.setType("file");
             return true;

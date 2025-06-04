@@ -37,4 +37,8 @@ public interface CandidatVoteRepository extends JpaRepository<CandidatVote, Inte
     @Transactional
     @Query("UPDATE CandidatVote t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Modifying
+    @Query(value = "UPDATE candidat_vote SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

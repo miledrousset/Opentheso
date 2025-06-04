@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.NoteType;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -30,9 +29,6 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-
 import org.apache.commons.text.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
 
@@ -45,43 +41,26 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NoteBean implements Serializable {
 
-    @Autowired @Lazy private PropositionBean propositionBean;
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private EditFacet editFacet;
-    @Autowired @Lazy private GroupView groupView;
-
-    @Autowired @Lazy private GroupService groupService;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
+    private PropositionBean propositionBean;
+    private ConceptView conceptBean;
+    private SelectedTheso selectedTheso;
+    private CurrentUser currentUser;
+    private EditFacet editFacet;
+    private GroupView groupView;
+    private GroupService groupService;
     private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
     private ConceptService conceptService;
-    
-    private String selectedLang;
-    
-    private List<NoteType> noteTypes;
-    private List<NodeLangTheso> nodeLangs;
-    private String selectedTypeNote;
-    private String noteValue;
-    private NodeNote selectedNodeNote;
-    boolean isFacetNote;
-    boolean isConceptNote;
-    boolean isGroupNote;
+    private NoteService noteService;
+    private FacetService facetService;
+
+    private String selectedTypeNote, noteValue, selectedLang;
+    boolean isFacetNote, isConceptNote, isGroupNote;
     private NodeFacet nodeFacet;
     private NodeGroup nodeGroup;
-    private NodeNote noteToEdit;
-
-    private ArrayList<NodeNote> nodeNotesByLanguage;
-    @Autowired
-    private NoteService noteService;
-    @Autowired
-    private FacetService facetService;
+    private NodeNote selectedNodeNote, noteToEdit;
+    private List<NoteType> noteTypes;
+    private List<NodeLangTheso> nodeLangues;
+    private List<NodeNote> nodeNotesByLanguage;
 
     /**
      * permet d'initialiser l'édition des notes pour les facettes
@@ -99,7 +78,6 @@ public class NoteBean implements Serializable {
     public void resetForGroup(NodeGroup nodeGroup){
         resetNotes(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getIdLang());
         setIsGroupNote();
-//        this.nodeGroup = nodeGroup;
     }
 
     /**
@@ -112,7 +90,7 @@ public class NoteBean implements Serializable {
 
     private void resetGroup() {
         noteTypes = noteService.getNotesType();
-        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangues = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
@@ -125,7 +103,7 @@ public class NoteBean implements Serializable {
         List<NoteType> noteTypes1 = noteService.getNotesType();
         nodeNotesByLanguage = new ArrayList<>();
         setNotesByLang(noteTypes1, identifier, selectedTheso.getCurrentIdTheso(), idLang);
-        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangues = selectedTheso.getNodeLangs();
         selectedLang = idLang;
         noteValue = "";
         selectedTypeNote = null;
@@ -294,41 +272,10 @@ public class NoteBean implements Serializable {
         isGroupNote = true;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void reset() {
         List<NoteType> noteTypes1 = noteService.getNotesType();
         filterNotesByUsage(noteTypes1);
-        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangues = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
@@ -336,11 +283,6 @@ public class NoteBean implements Serializable {
         isConceptNote = false;
         isGroupNote = false;
     }
-
-
-
-
-
 
     private void filterNotesByUsage(List<NoteType> noteTypes1){
         noteTypes = new ArrayList<>();
@@ -1018,22 +960,15 @@ public class NoteBean implements Serializable {
             return new NotePropBean();
         }
         if(propositionBean.getProposition() == null) return new NotePropBean();
-        switch (selectedTypeNote) {
-            case "note":
-                return propositionBean.getProposition().getNote();
-            case "definition":
-                return propositionBean.getProposition().getDefinition();
-            case "scopeNote":
-                return propositionBean.getProposition().getScopeNote();
-            case "example":
-                return propositionBean.getProposition().getExample();
-            case "historyNote":
-                return propositionBean.getProposition().getHistoryNote();
-            case "editorialNote":
-                return propositionBean.getProposition().getEditorialNote();
-            default:
-                return propositionBean.getProposition().getChangeNote();
-        }
+        return switch (selectedTypeNote) {
+            case "note" -> propositionBean.getProposition().getNote();
+            case "definition" -> propositionBean.getProposition().getDefinition();
+            case "scopeNote" -> propositionBean.getProposition().getScopeNote();
+            case "example" -> propositionBean.getProposition().getExample();
+            case "historyNote" -> propositionBean.getProposition().getHistoryNote();
+            case "editorialNote" -> propositionBean.getProposition().getEditorialNote();
+            default -> propositionBean.getProposition().getChangeNote();
+        };
     }
 
     public void deleteNoteProp(NotePropBean notePropBean) {

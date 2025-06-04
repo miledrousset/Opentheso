@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -11,14 +10,11 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -45,20 +41,16 @@ import java.util.List;
 @Named("newConcept")
 public class NewConcept implements Serializable {
 
-    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final Tree tree;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
-    private final Tree tree;
-    private final RelationsHelper relationsHelper;
     private final GroupService groupService;
-    private final ConceptHelper conceptHelper;
     private final SearchHelper searchHelper;
-    private final TermRepository termRepository;
-    private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptAddService conceptAddService;
     private final ConceptService conceptService;
     private final TermService termService;
+    private final RelationService relationService;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
     private String prefLabel, notation, idNewConcept, source, relationType, idGroup, idBTfacet, idFacet;
@@ -80,7 +72,7 @@ public class NewConcept implements Serializable {
             idGroup = conceptBean.getNodeConcept().getNodeConceptGroup().get(0).getConceptGroup().getIdGroup();
         }
 
-        typesRelationsNT = relationsHelper.getTypesRelationsNT();
+        typesRelationsNT = relationService.getTypesRelationsNT();
         nodeGroups = groupService.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
@@ -99,34 +91,28 @@ public class NewConcept implements Serializable {
         MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Information", "Rédiger une aide ici pour Add Top Concept!");
     }
 
-    public void addTopConcept(String idLang, String status, String idTheso, int idUser) {
+    public void addTopConcept(String idLang, String status, String idThesaurus, int idUser) {
+
         isCreated = false;
         duplicate = false;
 
-        if (!validateFields(idTheso, idLang)) return;
+        if (!validateFields(idThesaurus, idLang)) return;
 
-        if (roleOnThesoBean.getNodePreference() == null) {
-            MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Le thésaurus n'a pas de préférences !");
-            return;
-        }
-
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-        Concept concept = buildConcept(idTheso, status);
-        Term term = buildTerm(idTheso, idLang, status);
+        Concept concept = buildConcept(idThesaurus, status);
+        Term term = buildTerm(idThesaurus, idLang, status);
 
         idNewConcept = conceptAddService.addConcept(null, null, concept, term, idUser);
         if (idNewConcept == null) {
-            MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
+            MessageUtils.showInformationMessage("Erreur pendant la création du concept");
             return;
         }
 
-        conceptBean.getConcept(idTheso, idNewConcept, idLang, currentUser);
+        conceptBean.getConcept(idThesaurus, idNewConcept, idLang, currentUser);
         isCreated = true;
 
         MessageUtils.showMessage(FacesMessage.SEVERITY_INFO, "Information", "Le top concept a bien été ajouté");
-        tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang, notation);
-        tree.expandTreeToPath(idNewConcept, idTheso, idLang);
+        tree.addNewChild(tree.getRoot(), idNewConcept, idThesaurus, idLang, notation);
+        tree.expandTreeToPath(idNewConcept, idThesaurus, idLang);
         init();
 
         PrimeFaces.current().ajax().update("messageIndex");
@@ -139,7 +125,7 @@ public class NewConcept implements Serializable {
             return false;
         }
         String label = prefLabel.trim();
-        if (termRepository.existsPrefLabel(label, idLang, idTheso)) {
+        if (termService.existsPrefLabel(label, idLang, idTheso)) {
             duplicate = true;
             MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Un prefLabel existe déjà avec ce nom !");
             return false;
@@ -149,11 +135,11 @@ public class NewConcept implements Serializable {
             MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Un synonyme existe déjà avec ce nom !");
             return false;
         }
-        if (StringUtils.isNotBlank(notation) && conceptHelper.isNotationExist(idTheso, notation.trim())) {
+        if (StringUtils.isNotBlank(notation) && conceptService.isNotationExist(idTheso, notation.trim())) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre !");
             return false;
         }
-        if (StringUtils.isNotBlank(idNewConcept) && conceptService.isIdExiste(idNewConcept, idTheso)) {
+        if (StringUtils.isNotBlank(idNewConcept) && conceptAddService.isIdExiste(idNewConcept, idTheso)) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué !");
             return false;
         }

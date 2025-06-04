@@ -1,14 +1,14 @@
 package fr.cnrs.opentheso.bean.diagram;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.TermService;
 
 import org.abego.treelayout.TreeLayout;
 import org.abego.treelayout.util.DefaultConfiguration;
 import org.abego.treelayout.util.DefaultTreeForTreeLayout;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,9 +50,6 @@ public class ConceptsDiagramBean implements Serializable {
 
     
     @Autowired @Lazy private SelectedTheso selectedTheso;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
     
     private String elementSelected;
     private DefaultDiagramModel model;
@@ -60,6 +57,10 @@ public class ConceptsDiagramBean implements Serializable {
     private List<ElementDiagram> elements;
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
+    @Autowired
+    private ConceptService conceptService;
+    @Autowired
+    private TermService termService;
 
 
     public void clear(){
@@ -95,7 +96,7 @@ public class ConceptsDiagramBean implements Serializable {
      */
     public void init(String conceptId, String idTheso, String idLang) {
 
-        nodeConceptSelected = conceptHelper.getConcept(conceptId, idTheso, idLang, -1, -1);
+        nodeConceptSelected = conceptService.getConceptOldVersion(conceptId, idTheso, idLang, -1, -1);
         elementSelected = nodeConceptSelected.getTerm().getLexicalValue();
         TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexicalValue(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
@@ -140,12 +141,11 @@ public class ConceptsDiagramBean implements Serializable {
             } else {
                 root.addEndPoint(createEndPoint(EndPointAnchor.TOP));
 
-                String idConcept = conceptHelper.getConceptIdFromPrefLabel(elements.get(i).name,
+                String idConcept = termService.getConceptIdFromPrefLabel(elements.get(i).name,
                         selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
 
-                List<NodeConceptTree> childs = conceptHelper.getListConcepts(
-                        idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
-
+                var childs = conceptService.getListConcepts(idConcept, selectedTheso.getSelectedIdTheso(),
+                        selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
                 if (!CollectionUtils.isEmpty(childs)) {
                     root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
                 }
@@ -349,11 +349,11 @@ public class ConceptsDiagramBean implements Serializable {
 
         if (parentElement != null) {
             
-            String idConcept = conceptHelper.getConceptIdFromPrefLabel(elementSelected,
-                    selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
+            String idConcept = termService.getConceptIdFromPrefLabel(elementSelected, selectedTheso.getSelectedIdTheso(),
+                    selectedTheso.getCurrentLang());
             
-            nodeConceptSelected = conceptHelper.getConcept(
-                    idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), -1, -1);
+            nodeConceptSelected = conceptService.getConceptOldVersion(idConcept, selectedTheso.getSelectedIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
 
             List<TextInBox> temp = defaultTreeForTreeLayout.getChildrenList(parentElement);
             if (!CollectionUtils.isEmpty(temp)) {
@@ -361,8 +361,8 @@ public class ConceptsDiagramBean implements Serializable {
                 return;
             }
             
-            List<NodeConceptTree> childs = conceptHelper.getListConcepts(
-                    idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+            var childs = conceptService.getListConcepts(idConcept, selectedTheso.getSelectedIdTheso(),
+                    selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
             if (CollectionUtils.isEmpty(childs)) {
                 showMessage(FacesMessage.SEVERITY_INFO, "Le concept '" + elementSelected + "' n'a pas d'enfant !");

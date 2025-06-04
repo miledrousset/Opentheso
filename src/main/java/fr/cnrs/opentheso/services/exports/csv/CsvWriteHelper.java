@@ -1,7 +1,5 @@
 package fr.cnrs.opentheso.services.exports.csv;
 
-
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
@@ -23,6 +21,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.models.skosapi.SKOSReplaces;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.services.ConceptService;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fr.cnrs.opentheso.services.ConceptService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -47,8 +45,6 @@ public class CsvWriteHelper {
 
     private final String delim_multi_datas = "##";
 
-    @Autowired
-    private ConceptHelper conceptHelper;
     @Autowired
     private ConceptService conceptService;
 
@@ -558,9 +554,9 @@ public class CsvWriteHelper {
                     if (idConcepts == null) {
                         idConcepts = new ArrayList<>();
                     }
-                    ArrayList<String> idConceptsTemp;
+
                     for (String idGroup : idGroups) {
-                        idConceptsTemp = conceptHelper.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
+                        var idConceptsTemp = conceptService.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
                         if (idConceptsTemp != null) {
                             idConcepts.addAll(idConceptsTemp);
                         }
@@ -579,7 +575,7 @@ public class CsvWriteHelper {
                 boolean first = true;
                 for (String idConcept : idConcepts) {
                     try {
-                        nodeConcept = conceptHelper.getConcept(idConcept, idTheso, idLang, -1, -1);
+                        nodeConcept = conceptService.getConceptOldVersion(idConcept, idTheso, idLang, -1, -1);
                         record.add(nodeConcept.getConcept().getIdConcept());
                         record.add(nodeConcept.getConcept().getIdArk());
                         record.add(nodeConcept.getConcept().getIdHandle());
@@ -840,10 +836,7 @@ public class CsvWriteHelper {
                 
                 csvFilePrinter.printRecord(header);
 
-                ArrayList<NodeDeprecated> nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(idTheso, idLang);
-                if (nodeDeprecateds == null) {
-                    return null;
-                }
+                var nodeDeprecateds = conceptService.getAllDeprecatedConceptOfThesaurus(idTheso, idLang);
 
                 /// écritures des données
                 ArrayList<Object> record = new ArrayList<>();

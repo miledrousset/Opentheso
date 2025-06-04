@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
@@ -28,7 +27,6 @@ import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ArkService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
-import fr.cnrs.opentheso.services.DeprecateService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.services.NonPreferredTermService;
@@ -124,9 +122,6 @@ public class ImportFileBean implements Serializable {
     private PreferredTermRepository preferredTermRepository;
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private SearchHelper searchHelper;
 
     @Autowired
@@ -140,9 +135,6 @@ public class ImportFileBean implements Serializable {
 
     @Autowired
     private PreferenceService preferenceService;
-
-    @Autowired
-    private DeprecateService deprecateHelper;
 
     @Autowired
     private ImageService imageService;
@@ -1193,7 +1185,6 @@ public class ImportFileBean implements Serializable {
             nodePreference.setSourceLang(selectedLang);
             preferenceService.addPreference(nodePreference, idNewTheso);
         }
-        conceptHelper.setNodePreference(preferenceService.getThesaurusPreferences(idNewTheso));
         // ajout des concepts et collections
         for (NodeTree nodeTree : racine.getChildrens()) {
             insertDB(nodeTree, idNewTheso, null);
@@ -1531,7 +1522,7 @@ public class ImportFileBean implements Serializable {
                 branchIds = conceptService.getAllIdConceptOfThesaurus(idTheso);
             } else {
                 // on exporte la branche
-                if (!conceptService.isIdExiste(selectedConcept, idTheso)) {
+                if (!conceptAddService.isIdExiste(selectedConcept, idTheso)) {
                     error.append("L'identifiant n'existe pas !!");
                     showError();
                     return null;
@@ -1740,22 +1731,17 @@ public class ImportFileBean implements Serializable {
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
-                if (!conceptService.isIdExiste(idConcept, idTheso)) {
+                if (!conceptAddService.isIdExiste(idConcept, idTheso)) {
                     continue;
                 }
-                if (!deprecateHelper.deprecateConcept(idConcept, idTheso, idUser1, conceptHelper)) {
+                if (!conceptService.deprecateConcept(idConcept, idTheso, idUser1)) {
                     error.append("ce concept n'a pas été déprécié : ");
                     error.append(idConcept);
                     return;
                 }
                 if (!StringUtils.isEmpty(nodeDeprecated.getReplacedById())) {
                     idConceptReplacedBy = getIdConcept(nodeDeprecated.getReplacedById(), idTheso);
-                    if (!deprecateHelper.addReplacedBy(
-                            idConcept, idTheso, idConceptReplacedBy, idUser1)) {
-                        error.append("Ce concept n'a pas été replacé par : ");
-                        error.append(idConceptReplacedBy);
-                        return;
-                    }
+                    conceptService.addReplacedBy(idConcept, idTheso, idConceptReplacedBy, idUser1);
                 }
 
                 if (!noteService.isNoteExist(idConcept, idTheso, nodeDeprecated.getNoteLang(), nodeDeprecated.getNote(), "note")) {
@@ -1848,7 +1834,7 @@ public class ImportFileBean implements Serializable {
                 }
                 nodeReplaceValueByValue.setIdConcept(idConcept);
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -1916,10 +1902,10 @@ public class ImportFileBean implements Serializable {
         String idConcept = null;
         if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
 
-            idConcept = conceptHelper.getIdConceptFromArkId(idToFind, idTheso);
+            idConcept = conceptService.getIdConceptFromArkId(idToFind, idTheso);
         }
         if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-            idConcept = conceptHelper.getIdConceptFromHandleId(idToFind);
+            idConcept = conceptService.getIdConceptFromHandleId(idToFind);
         }
         if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
             idConcept = idToFind;
@@ -1974,7 +1960,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2086,9 +2072,9 @@ public class ImportFileBean implements Serializable {
             multipleIds1 = nodeIdValue.getId().split("##");
             for (String multipleId : multipleIds1) {
                 if(StringUtils.isEmpty(multipleIds2)){
-                    multipleIds2 = conceptHelper.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());
+                    multipleIds2 = conceptService.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());
                 } else
-                    multipleIds2 = multipleIds2 + "##" + conceptHelper.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());;
+                    multipleIds2 = multipleIds2 + "##" + conceptService.getIdConceptFromArkId(multipleId, selectedTheso.getCurrentIdTheso());;
             }
             nodeIdValue.setValue(multipleIds2);
         }
@@ -2139,10 +2125,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(conceptObject.getIdConcept());
+                    idConcept = conceptService.getIdConceptFromHandleId(conceptObject.getIdConcept());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getIdConcept();
@@ -2152,7 +2138,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2274,10 +2260,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(conceptObject.getIdConcept());
+                    idConcept = conceptService.getIdConceptFromHandleId(conceptObject.getIdConcept());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getIdConcept();
@@ -2287,7 +2273,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2350,10 +2336,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(conceptObject.getIdConcept());
+                    idConcept = conceptService.getIdConceptFromHandleId(conceptObject.getIdConcept());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getIdConcept();
@@ -2363,7 +2349,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2442,10 +2428,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(conceptObject.getLocalId());
+                    idConcept = conceptService.getIdConceptFromHandleId(conceptObject.getLocalId());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getLocalId();
@@ -2455,7 +2441,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2522,10 +2508,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(nodeIdValue.getId());
+                    idConcept = conceptService.getIdConceptFromHandleId(nodeIdValue.getId());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = nodeIdValue.getId();
@@ -2536,18 +2522,18 @@ public class ImportFileBean implements Serializable {
                 }
 
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
                 if (clearBefore) {
-                    if (conceptHelper.updateNotation(idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
+                    if (conceptService.updateNotation(idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                         total++;
                     }
                 } else {
                     var concept = conceptService.getConcept(idConcept, selectedTheso.getCurrentIdTheso());
                     if (StringUtils.isEmpty(concept.getNotation())) {
-                        if (conceptHelper.updateNotation(idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
+                        if (conceptService.updateNotation(idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue())) {
                             total++;
                         }
                     }
@@ -2600,10 +2586,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(nodeIdValue.getId());
+                    idConcept = conceptService.getIdConceptFromHandleId(nodeIdValue.getId());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = nodeIdValue.getId();
@@ -2614,7 +2600,7 @@ public class ImportFileBean implements Serializable {
                 }
 
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2674,10 +2660,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(nodeAlignmentImport.getLocalId(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(nodeAlignmentImport.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(nodeAlignmentImport.getLocalId());
+                    idConcept = conceptService.getIdConceptFromHandleId(nodeAlignmentImport.getLocalId());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = nodeAlignmentImport.getLocalId();
@@ -2687,7 +2673,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
 
@@ -2756,10 +2742,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
+                    idConcept = conceptService.getIdConceptFromArkId(conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromHandleId(conceptObject.getLocalId());
+                    idConcept = conceptService.getIdConceptFromHandleId(conceptObject.getLocalId());
                 }
                 if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getLocalId();
@@ -2768,7 +2754,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
+                if (!conceptAddService.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
                 }
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
@@ -2869,7 +2855,7 @@ public class ImportFileBean implements Serializable {
                             }
                             conceptObject.setIdConcept(idConcept);
                             // controle pour vérifier l'existance de l'Id
-                            if (conceptService.isIdExiste(conceptObject.getIdConcept(), idTheso)) {
+                            if (conceptAddService.isIdExiste(conceptObject.getIdConcept(), idTheso)) {
                                 continue;
                             }
                         }

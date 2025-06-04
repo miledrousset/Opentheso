@@ -77,4 +77,12 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
         AND pt.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = :idThesaurus)
     """, nativeQuery = true)
     int countNotesOfTermsWithoutGroup(@Param("idThesaurus") String idThesaurus, @Param("lang") String lang);
+
+    @Modifying
+    @Query(value = "UPDATE note SET id_thesaurus = :target FROM preferred_term WHERE note.id_term = preferred_term.id_term AND note.id_thesaurus = preferred_term.id_thesaurus AND preferred_term.id_concept = :concept AND note.id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurusByTerm(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
+    @Modifying
+    @Query(value = "UPDATE note SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurusByConcept(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

@@ -66,7 +66,7 @@ public class AlignmentService {
                     .alignmentLabelType(element.getLabel())
                     .alignmentLabelSkosType(element.getLabel_skos())
                     .alignementLocalValide(element.getUrl_available())
-                    .id_source(element.getId_alignement_source())
+                    .id_source(element.getId_alignement_source() == null ? 0 : element.getId_alignement_source())
                     .build()
         ).toList();
     }
@@ -120,10 +120,13 @@ public class AlignmentService {
                     .conceptTarget(conceptTarget)
                     .thesaurusTarget(thesaurusTarget)
                     .uriTarget(uriTarget)
+                    .urlAvailable(true)
                     .alignementType(alignementType.get())
                     .internalIdConcept(idConcept)
                     .internalIdThesaurus(idThesaurus)
                     .alignementSource(alignementSource.get())
+                    .created(new Date())
+                    .modified(new Date())
                     .build());
         }
 

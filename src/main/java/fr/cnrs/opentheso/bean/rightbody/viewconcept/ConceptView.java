@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import fr.cnrs.opentheso.NodeFullConceptMapper;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
@@ -20,11 +20,10 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.ConceptTypeService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
@@ -72,8 +71,6 @@ public class ConceptView implements Serializable {
     private final ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
     private final ViewEditorHomeBean viewEditorHomeBean;
     private final LanguageRepository languageRepository;
-    private final RelationsHelper relationsHelper;
-    private final ConceptHelper conceptHelper;
     private final PathService pathService;
     private final GpsService gpsService;
     private final LanguageBean languageBean;
@@ -85,6 +82,8 @@ public class ConceptView implements Serializable {
     private final ResourceService resourceService;
     private final ConceptService conceptService;
     private final FacetService facetService;
+    private final ConceptTypeService conceptTypeService;
+    private final NodeFullConceptMapper nodeFullConceptMapper;
 
     private int step, countOfBranch, offset;
     private String mapScripte = "";
@@ -141,6 +140,7 @@ public class ConceptView implements Serializable {
         example = null;
         historyNote = null;
     }
+
     private void clearNotesAllLang() {    
         noteAllLang = new ArrayList<>();
         scopeNoteAllLang = new ArrayList<>();
@@ -171,16 +171,12 @@ public class ConceptView implements Serializable {
      * permet de retourner le label du type de concept en focntion de la langue de l'interface
      *
      * @param conceptType
-     * @param idTheso
+     * @param idThesaurus
      * @return
      */
-    public String getLabelOfConceptType(String conceptType, String idTheso) {
+    public String getLabelOfConceptType(String conceptType, String idThesaurus) {
 
-        String idLang = getIdLangOfInterface();
-        return relationsHelper.getLabelOfTypeConcept(
-                conceptType,
-                idTheso,
-                idLang);
+        return conceptTypeService.getLabelOfTypeConcept(conceptType, idThesaurus, getIdLangOfInterface());
     }
 
     /**
@@ -199,7 +195,7 @@ public class ConceptView implements Serializable {
         if (StringUtils.isEmpty(idLang)) {
             idLang = languageBean.getIdLangue();
         }
-        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
 
         logConcept();
@@ -209,8 +205,7 @@ public class ConceptView implements Serializable {
             roleOnThesoBean.initNodePref(idTheso);
         }
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
+        nodeConcept = nodeFullConceptMapper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         searchedForCorpus = false;
@@ -219,7 +214,7 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, interfaceLang);
+            nodeCustomRelations = relationsService.getAllNodeCustomRelation(idConcept, idTheso, idLang, interfaceLang);
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -357,18 +352,17 @@ public class ConceptView implements Serializable {
         selectedLang = idLang;
         offset = 0;
 
-        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step+1);
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
         logConcept();
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
+        nodeConcept = nodeFullConceptMapper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, getIdLangOfInterface());
+            nodeCustomRelations = relationsService.getAllNodeCustomRelation(idConcept, idTheso, idLang, getIdLangOfInterface());
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -489,9 +483,10 @@ public class ConceptView implements Serializable {
             nodeCustomRelationReciprocals = null;
     }
 
-    public void getNextNT(String idTheso, String idConcept, String idLang) {
+    public void getNextNT(String idThesaurus, String idLang) {
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            List<ConceptRelation> conceptRelations = resourceService.getListNT(idTheso, ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), idLang, offset, step + 1);
+            var conceptRelations = resourceService.getListNT(idThesaurus,
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), idLang, offset, step + 1);
             if (conceptRelations != null && !conceptRelations.isEmpty()) {
                 nodeFullConcept.getNarrowers().addAll(conceptRelations);
                 setOffset();

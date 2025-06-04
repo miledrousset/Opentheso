@@ -51,4 +51,15 @@ public interface ConceptFacetRepository extends JpaRepository<ConceptFacet, Inte
     """)
     List<String> findConceptIdsByFacet(@Param("idThesaurus") String idThesaurus, @Param("idFacet") String idFacet);
 
+    @Query(value = """
+        SELECT COUNT(ta.id_facet)
+        FROM thesaurus_array ta
+        WHERE ta.id_concept_parent = :idConcept
+          AND ta.id_thesaurus = :idThesaurus
+    """, nativeQuery = true)
+    int countFacets(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
+
+    @Modifying
+    @Query(value = "UPDATE concept_facet SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

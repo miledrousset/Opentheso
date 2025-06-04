@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.services;
 import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.ThesaurusLabel;
-import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
@@ -23,7 +22,6 @@ import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

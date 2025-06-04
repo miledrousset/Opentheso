@@ -218,12 +218,7 @@ public class UserService {
         }
 
         return groupLabels.stream()
-                .collect(Collectors.toMap(
-                        g -> String.valueOf(g.getId()),
-                        UserGroupLabel::getLabel,
-                        (v1, v2) -> v1,
-                        LinkedHashMap::new
-                ));
+                .collect(Collectors.toMap(g -> String.valueOf(g.getId()), UserGroupLabel::getLabel, (v1, v2) -> v1, LinkedHashMap::new));
     }
 
     public List<UserGroupLabel> getProjectOfUser(int userId) {

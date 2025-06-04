@@ -1,13 +1,19 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.entites.Concept;
+import fr.cnrs.opentheso.models.ConceptIdView;
+import fr.cnrs.opentheso.models.NodeDeprecatedProjection;
+import fr.cnrs.opentheso.models.TopConceptProjection;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.nodes.NodeTree;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +21,9 @@ import java.util.Optional;
 
 public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
-    Optional<Concept> findByIdConcept(String idConcept);
+    List<Concept> findByIdConcept(String idConcept);
+
+    List<Concept> findAllByIdThesaurusAndNotationLike(String idThesaurus, String notation);
 
     Optional<Concept> findByIdConceptAndIdThesaurus(String idConcept, String idThesaurus);
 
@@ -50,10 +58,10 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     Long getNextConceptNumericId();
 
     @Query(value = """
-        SELECT created, modified, status 
-        FROM concept 
+        SELECT created, modified, status\s
+        FROM concept\s
         WHERE id_concept = :idConcept AND id_thesaurus = :idThesaurus
-    """, nativeQuery = true)
+   \s""", nativeQuery = true)
     Optional<Object[]> getConceptMetadata(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
     @Modifying
@@ -122,12 +130,12 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     Optional<String> findConceptIdFromLabel(@Param("idTheso") String idTheso, @Param("label") String label, @Param("idLang") String idLang);
 
     @Query("""
-        SELECT c.modified FROM Concept c 
-        WHERE c.idThesaurus = :idThesaurus 
-        AND c.status <> 'CA' 
-        AND c.modified IS NOT NULL 
+        SELECT c.modified FROM Concept c\s
+        WHERE c.idThesaurus = :idThesaurus\s
+        AND c.status <> 'CA'\s
+        AND c.modified IS NOT NULL\s
         ORDER BY c.modified DESC
-    """)
+   \s""")
     List<Date> findLastModifiedDates(@Param("idThesaurus") String idThesaurus, PageRequest pageable);
 
     @Query(value = """
@@ -150,5 +158,157 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     """)
     List<String> findAllNonEmptyIdHandleByThesaurus(@Param("idThesaurus") String idThesaurus);
 
+    @Query(value = """
+        SELECT c.id_concept AS idConcept, c.notation AS notation, c.status AS status
+        FROM concept c
+        WHERE c.top_concept = true
+          AND c.status != 'CA'
+          AND c.id_thesaurus = :idThesaurus
+        """, nativeQuery = true)
+    List<TopConceptProjection> findTopConcepts(@Param("idThesaurus") String idThesaurus);
 
+    @Query(value = """
+        SELECT c.id_concept AS idConcept, c.notation AS notation, c.status AS status
+        FROM concept c
+        LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
+        LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
+        WHERE c.top_concept = true
+          AND c.status != 'CA'
+          AND c.id_thesaurus = :idThesaurus
+        GROUP BY c.id_concept, c.notation, c.status
+        HAVING BOOL_OR(cg.private IS NULL OR cg.private = false)
+    """, nativeQuery = true)
+    List<TopConceptProjection> findTopConceptsPrivate(@Param("idThesaurus") String idThesaurus);
+
+    @Query(value = """
+        SELECT COUNT(h.id_concept2)
+        FROM hierarchical_relationship h
+        JOIN concept c ON h.id_concept2 = c.id_concept AND h.id_thesaurus = c.id_thesaurus
+        WHERE h.id_thesaurus = :idThesaurus
+          AND h.id_concept1 = :idConcept
+          AND h.role LIKE 'NT%'
+          AND c.status != 'CA'
+    """, nativeQuery = true)
+    int countChildren(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
+
+    @Query(value = """
+        SELECT c.id_concept as idConcept, c.modified as modified, u.username as username, t.lexical_value as lexicalValue
+        FROM concept c
+            JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+            JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+            JOIN users u ON c.contributor = u.id_user
+        WHERE c.id_thesaurus = :idThesaurus
+            AND t.lang = :idLang
+             AND c.status = 'DEP'
+        ORDER BY unaccent(lower(t.lexical_value))
+    """, nativeQuery = true)
+    List<NodeDeprecatedProjection> findAllDeprecatedConcepts(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);
+
+    @Query("""
+        SELECT c.idArk
+        FROM Concept c
+            JOIN HierarchicalRelationship h ON h.idConcept2 = c.idConcept AND h.idThesaurus = c.idThesaurus
+        WHERE h.idThesaurus = :idThesaurus
+            AND h.idConcept1 = :idConcept
+        AND h.role LIKE 'NT%'
+        AND c.status <> 'CA'
+    """)
+    List<String> findArkIdsOfChildren(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
+
+    @Transactional
+    @Modifying
+    @Query(value = """
+        UPDATE concept
+        SET id_concept = :newIdConcept
+        WHERE id_concept = :oldIdConcept AND id_thesaurus = :idThesaurus
+    """, nativeQuery = true)
+    void updateConceptId(@Param("idThesaurus") String idThesaurus, @Param("oldIdConcept") String oldIdConcept, @Param("newIdConcept") String newIdConcept);
+
+    @Query("SELECT c.idConcept FROM Concept c WHERE LOWER(c.idHandle) = LOWER(:handleId)")
+    Optional<String> findConceptIdByHandleIgnoreCase(@Param("handleId") String handleId);
+
+    @Query(value = """
+        SELECT c.id_concept\s
+        FROM concept c\s
+        WHERE c.id_thesaurus = :idThesaurus\s
+        AND REPLACE(c.id_ark, '-', '') ILIKE REPLACE(:arkId, '-', '')
+   \s""", nativeQuery = true)
+    Optional<String> findConceptIdByArkIgnoreCase(@Param("arkId") String arkId, @Param("idThesaurus") String idThesaurus);
+
+    @Query(value = "SELECT id_concept FROM concept WHERE id_thesaurus = :idThesaurus AND (id_ark IS NULL OR id_ark = '') AND status != 'CA'",
+            nativeQuery = true)
+    List<String> findAllIdConceptsWithoutArk(@Param("idThesaurus") String idThesaurus);
+
+    @Query("""
+        SELECT new fr.cnrs.opentheso.models.concept.NodeUri(COALESCE(c.idArk, ''), COALESCE(c.idHandle, ''), COALESCE(c.idDoi, ''), c.idConcept)
+        FROM Concept c
+        WHERE c.idThesaurus = :idThesaurus
+            AND c.topConcept = true
+            AND c.status <> 'CA'
+    """)
+    List<NodeUri> findAllTopConceptsWithUris(@Param("idThesaurus") String idThesaurus);
+
+    @Query("""
+        SELECT c.idConcept
+        FROM Concept c
+        WHERE c.idThesaurus = :idThesaurus
+          AND c.status <> 'CA'
+          AND c.modified >= :startDate
+    """)
+    List<String> findConceptIdsModifiedSince(@Param("idThesaurus") String idThesaurus, @Param("startDate") LocalDate startDate);
+
+    boolean existsByIdConceptAndIdThesaurus(String idConcept, String idThesaurus);@Query(value = """
+        SELECT c.id_concept AS idConcept
+        FROM concept c
+        JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
+        WHERE c.id_thesaurus = :idThesaurus
+          AND c.status != 'CA'
+          AND LOWER(cgc.idgroup) IN (:groupIds)
+        """, nativeQuery = true)
+    List<ConceptIdView> findAllByThesaurusAndGroups(@Param("idThesaurus") String idThesaurus, @Param("groupIds") List<String> groupIds);
+
+    @Query("SELECT new fr.cnrs.opentheso.models.concept.NodeUri(c.idArk, c.idHandle, c.idDoi, c.idConcept) " +
+            "FROM Concept c JOIN ConceptGroupConcept cgc ON c.idConcept = cgc.idConcept AND c.idThesaurus = cgc.idThesaurus " +
+            "WHERE c.idThesaurus = :idThesaurus AND LOWER(cgc.idGroup) = LOWER(:idGroup) AND c.status <> 'CA'")
+    List<NodeUri> findConceptsByThesaurusAndGroup(@Param("idThesaurus") String idThesaurus, @Param("idGroup") String idGroup);
+
+    @Query("SELECT c.idConcept FROM Concept c " +
+            "JOIN ConceptGroupConcept cgc ON c.idConcept = cgc.idConcept AND c.idThesaurus = cgc.idThesaurus " +
+            "WHERE c.idThesaurus = :idThesaurus " +
+            "AND LOWER(cgc.idGroup) = LOWER(:idGroup) " +
+            "AND c.status != 'CA'")
+    List<String> findAllConceptIdsByGroup(@Param("idThesaurus") String idThesaurus, @Param("idGroup") String idGroup);
+
+    @Query("SELECT c.idConcept FROM Concept c " +
+            "WHERE c.idThesaurus = :idThesaurus " +
+            "AND (c.idHandle IS NULL OR c.idHandle = '')")
+    List<String> findAllIdsWithoutHandle(@Param("idThesaurus") String idThesaurus);
+
+    @Query("SELECT c.idConcept FROM Concept c " +
+            "WHERE c.idThesaurus = :idThesaurus " +
+            "AND c.topConcept = true " +
+            "AND c.status <> 'CA'")
+    List<String> findAllTopConceptIdsByThesaurus(@Param("idThesaurus") String idThesaurus);
+
+    @Query("SELECT c.idThesaurus FROM Concept c WHERE REPLACE(c.idArk, '-', '') = REPLACE(:arkId, '-', '')")
+    Optional<String> findIdThesaurusByArkId(@Param("arkId") String arkId);
+
+    @Query("""
+        SELECT new fr.cnrs.opentheso.models.nodes.NodeTree(c.idConcept, t.lexicalValue)
+        FROM Concept c
+            JOIN PreferredTerm pt ON pt.idConcept = c.idConcept AND pt.idThesaurus = c.idThesaurus
+            JOIN Term t ON t.idTerm = pt.idTerm AND t.idThesaurus = pt.idThesaurus
+        WHERE c.idThesaurus = :idThesaurus
+            AND c.topConcept = true
+        AND c.status != 'CA'
+        AND t.lang = :idLang
+        ORDER BY t.lexicalValue
+    """)
+    List<NodeTree> findTopConceptsWithTermByThesaurusAndLang(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);
+
+    Optional<Concept> findByIdHandle(String idHandle);
+
+    @Modifying
+    @Query(value = "UPDATE concept SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

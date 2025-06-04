@@ -1,49 +1,43 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "cutAndPaste")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "cutAndPaste")
 public class CutAndPaste implements Serializable {
 
-    
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private Tree tree;
+    private final Tree tree;
+    private final ConceptView conceptBean;
+    private final CurrentUser currentUser;
+    private final SelectedTheso selectedTheso;
+    private final ConceptService conceptService;
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    private boolean isCopyOn;
-    private boolean isValidPaste;
+    private boolean isCopyOn, isValidPaste, isDropToRoot;
     private NodeConcept nodeConceptDrag;
-    private ArrayList<NodeBT> nodeBTsToCut;
-
+    private List<NodeBT> nodeBTsToCut;
     private NodeConcept nodeConceptDrop;
 
-    private boolean isDropToRoot;
 
     public void clear(){
         nodeConceptDrag = null;
@@ -66,8 +60,7 @@ public class CutAndPaste implements Serializable {
     }
 
     public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Copy and paste !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Rédiger une aide ici pour Copy and paste !");
     }
  
     /**
@@ -95,8 +88,7 @@ public class CutAndPaste implements Serializable {
      */
     private boolean moveFromConceptToConcept(){
         // cas de déplacement d'un concept à concept
-        FacesMessage msg;
-        ArrayList<String> oldBtToDelete = new ArrayList<>();
+        List<String> oldBtToDelete = new ArrayList<>();
         for (NodeBT nodeBT : nodeBTsToCut) {
             if (nodeBT.isSelected()) {
                 // on prépare les BT sélectionné pour la suppression
@@ -104,64 +96,46 @@ public class CutAndPaste implements Serializable {
             }
         }
         if (oldBtToDelete.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "aucun parent n'est sélectionné pour déplacement ");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Aucun parent n'est sélectionné pour déplacement ");
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(
-                nodeConceptDrag.getConcept().getIdConcept(),
-                oldBtToDelete,
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant la suppression des branches !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (!conceptService.moveBranchFromConceptToConcept(nodeConceptDrag.getConcept().getIdConcept(), oldBtToDelete,
+                nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
+            MessageUtils.showErrorMessage("Erreur pendant la suppression des branches !!");
             return false;
         }
         return true;
     }
     
     private boolean moveFromRootToConcept() {
-        FacesMessage msg;
-        if (!conceptHelper.moveBranchFromRootToConcept(
-                nodeConceptDrag.getConcept().getIdConcept(),
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (!conceptService.moveBranchFromRootToConcept(nodeConceptDrag.getConcept().getIdConcept(),
+                nodeConceptDrop.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
+            MessageUtils.showErrorMessage("Erreur pendant le déplacement dans la base de données ");
             return false;
         }
         return true;
     }
     
     private boolean moveFromConceptToRoot(){
-        FacesMessage msg;
-        ArrayList<String> oldBtToDelete = new ArrayList<>();
+
+        List<String> oldBtToDelete = new ArrayList<>();
         
         for (NodeBT nodeBT : nodeBTsToCut) {
             oldBtToDelete.add(nodeBT.getIdConcept());
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (!conceptService.setTopConcept(nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), true)) {
+                MessageUtils.showErrorMessage("Erreur pendant le déplacement dans la base de données ");
                 return false;
             }
             return true;
         } 
         
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    oldIdBT,
-                    selectedTheso.getCurrentIdTheso(),
-                    currentUser.getNodeUser().getIdUser())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (!conceptService.moveBranchFromConceptToRoot(nodeConceptDrag.getConcept().getIdConcept(), oldIdBT,
+                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser())) {
+                MessageUtils.showErrorMessage("Erreur pendant le déplacement dans la base de données ");
                 return false;
             }
         }
@@ -204,9 +178,7 @@ public class CutAndPaste implements Serializable {
      *
      */
     public void paste() {
-        FacesMessage msg;  
-     
-        
+
         if(isDropToRoot) {
             // cas de déplacement d'un concept à la racine   
             if(!moveFromConceptToRoot()) return;
@@ -216,8 +188,7 @@ public class CutAndPaste implements Serializable {
             }
 
             if (nodeConceptDrop.getConcept().getIdConcept().equalsIgnoreCase(nodeConceptDrag.getConcept().getIdConcept())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Impossible de coller au même endroit ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showWarnMessage("Impossible de coller au même endroit ");
                 return;
             }
 
@@ -236,24 +207,16 @@ public class CutAndPaste implements Serializable {
         reloadTree();
         
         if(isDropToRoot)
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                    nodeConceptDrag.getTerm().getLexicalValue()
-                            + " -> "
-                            + "Root");
+           MessageUtils.showInformationMessage(nodeConceptDrag.getTerm().getLexicalValue() + " -> " + "Root");
         else
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                nodeConceptDrag.getTerm().getLexicalValue()
-                        + " -> "
-                        + nodeConceptDrop.getTerm().getLexicalValue());
-                
-        FacesContext.getCurrentInstance().addMessage(null, msg);        
+            MessageUtils.showInformationMessage(nodeConceptDrag.getTerm().getLexicalValue() + " -> " + nodeConceptDrop.getTerm().getLexicalValue());
+
         PrimeFaces.current().executeScript("PF('cutAndPaste').hide();");
         reset();
     }
   
     public void rollBackAfterErrorOrCancelDragDrop() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", "Déplacement annulé ");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Déplacement annulé ");
         PrimeFaces.current().executeScript("PF('cutAndPaste').hide();");
     }
 

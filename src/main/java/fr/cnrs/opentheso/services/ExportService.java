@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.repositories.ExportRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -20,27 +19,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExportService {
 
-    private final ExportRepository exportRepository;
-    private final ConceptHelper conceptHelper;
-
     private static final String SEPARATOR = "##";
     private static final String SUB_SEPARATOR = "@@";
+
+    private final ExportRepository exportRepository;
     private final FacetService facetService;
+    private final ConceptService conceptService;
 
 
-    public List<SKOSResource> getAllFacettes(String idTheso, String baseUrl, String originalUri, Preferences nodePreference) throws Exception {
-        List<SkosFacetProjection> projections = exportRepository.getAllFacettes(idTheso, baseUrl);
+    public List<SKOSResource> getAllFacettes(String idThesaurus, String baseUrl, String originalUri, Preferences nodePreference) throws Exception {
+
+        var projections = exportRepository.getAllFacettes(idThesaurus, baseUrl);
         List<SKOSResource> result = new ArrayList<>();
 
         for (SkosFacetProjection p : projections) {
-            SKOSResource resource = new SKOSResource(getUriForFacette(p.getId_facet(), idTheso, originalUri), SKOSProperty.FACET);
+            SKOSResource resource = new SKOSResource(getUriForFacette(p.getId_facet(), idThesaurus, originalUri), SKOSProperty.FACET);
             resource.setIdentifier(p.getId_facet());
             resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
 
-            List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idTheso);
+            List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idThesaurus);
             for (String idConcept : members) {
-                NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
-                resource.addRelation(nodeUri.getIdConcept(), buildUri(nodeUri, idTheso, idConcept, originalUri, nodePreference), SKOSProperty.MEMBER);
+                NodeUri nodeUri = conceptService.getNodeUriOfConcept(idConcept, idThesaurus);
+                resource.addRelation(nodeUri.getIdConcept(), buildUri(nodeUri, idThesaurus, idConcept, originalUri, nodePreference), SKOSProperty.MEMBER);
             }
 
             resource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
@@ -60,11 +60,12 @@ public class ExportService {
         return result;
     }
 
-    public List<SKOSResource> getAllConcepts(String idTheso, String baseUrl, String idGroup, String originalUri,
+    public List<SKOSResource> getAllConcepts(String idThesaurus, String baseUrl, String idGroup, String originalUri,
                                              Preferences nodePreference, boolean filterHtmlCharacter) {
+
         List<SkosConceptProjection> projections = StringUtils.isEmpty(idGroup)
-                ? exportRepository.getAllConcepts(idTheso, baseUrl)
-                : exportRepository.getAllConceptsByGroup(idTheso, baseUrl, idGroup);
+                ? exportRepository.getAllConcepts(idThesaurus, baseUrl)
+                : exportRepository.getAllConceptsByGroup(idThesaurus, baseUrl, idGroup);
 
         List<SKOSResource> result = new ArrayList<>();
 
@@ -86,7 +87,7 @@ public class ExportService {
             addLabels(p.getAltLab(), resource, SKOSProperty.ALT_LABEL);
 
             if (StringUtils.isEmpty(p.getBroader())) {
-                resource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.TOP_CONCEPT_OF);
+                resource.addRelation(idThesaurus, getUriThesoFromId(idThesaurus, originalUri, nodePreference), SKOSProperty.TOP_CONCEPT_OF);
             }
 
             addDoc(p.getDefinition(), resource, SKOSProperty.DEFINITION);
@@ -97,7 +98,7 @@ public class ExportService {
             addDoc(p.getExample(), resource, SKOSProperty.EXAMPLE);
             addDoc(p.getChangenote(), resource, SKOSProperty.CHANGE_NOTE);
 
-            resource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.INSCHEME);
+            resource.addRelation(idThesaurus, getUriThesoFromId(idThesaurus, originalUri, nodePreference), SKOSProperty.INSCHEME);
 
             if (StringUtils.isNotEmpty(p.getNotation())) resource.addNotation(p.getNotation());
 

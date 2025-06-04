@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -38,7 +37,6 @@ public class AlignmentManualBean implements Serializable {
     private final ConceptView conceptView;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
-    private final ConceptHelper conceptHelper;
     private final ConceptDcTermRepository conceptDcTermRepository;
     private final AlignmentService alignmentService;
     private final ConceptService conceptService;
@@ -78,8 +76,6 @@ public class AlignmentManualBean implements Serializable {
                 conceptView.getSelectedLang(), currentUser);
 
         MessageUtils.showInformationMessage("Alignement supprimé avec succès");
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
 
         reset();
@@ -106,7 +102,6 @@ public class AlignmentManualBean implements Serializable {
         
         alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
@@ -135,8 +130,6 @@ public class AlignmentManualBean implements Serializable {
                 conceptView.getSelectedLang(), currentUser);
 
         MessageUtils.showInformationMessage("Alignement modifié avec succès");
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
@@ -159,8 +152,6 @@ public class AlignmentManualBean implements Serializable {
                 conceptView.getSelectedLang(), currentUser);
 
         MessageUtils.showInformationMessage("Alignement modifié avec succès");
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
@@ -195,10 +186,7 @@ public class AlignmentManualBean implements Serializable {
         }
 
         MessageUtils.showInformationMessage("Alignement ajouté avec succès");
-        
         alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
 

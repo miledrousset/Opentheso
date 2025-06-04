@@ -24,14 +24,13 @@ import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -73,13 +72,7 @@ public class CsvImportHelper {
     private GroupService groupService;
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private GpsService gpsService;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
 
     @Autowired
     private RelationService relationService;
@@ -119,6 +112,8 @@ public class CsvImportHelper {
     private NoteService noteService;
     @Autowired
     private FacetService facetService;
+    @Autowired
+    private ConceptService conceptService;
 
 
     /**
@@ -196,7 +191,6 @@ public class CsvImportHelper {
         String idTerm = null;
 
         // ajout du concept
-        conceptHelper.setNodePreference(nodePreference);
         Concept concept = new Concept();
 
         // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des relations
@@ -824,8 +818,6 @@ public class CsvImportHelper {
             message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
             return false;
         }
-
-        conceptHelper.setNodePreference(nodePreference);
         Concept concept = new Concept();
 
         // On vérifie si le concept a des BT (termes génériques), alors il faut ajouter un TopTerm, sinon, c'est un concept avec des rerlations
@@ -856,10 +848,7 @@ public class CsvImportHelper {
         }
 
         // ajout du concept
-        if (!conceptHelper.insertConceptInTable(concept)) {
-            message = message + "\n" + "erreur dans l'intégration du concept " + conceptObject.getIdConcept();
-            return false;
-        }
+        conceptService.insertConcept(concept);
 
         Term term = new Term();
         term.setIdThesaurus(idTheso);
@@ -953,7 +942,7 @@ public class CsvImportHelper {
             if (relationService.addHierarchicalRelation(idConcept2, idTheso, "NT", conceptObject.getIdConcept()) == null) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
-            conceptHelper.setNotTopConcept(conceptObject.getIdConcept(), idTheso);
+            conceptService.setTopConcept(conceptObject.getIdConcept(), idTheso, false);
         }
 
         for (String idConcept2 : conceptObject.getNarrowers()) {
@@ -1173,13 +1162,13 @@ public class CsvImportHelper {
         return true;
     }
 
-    private boolean updateAltLabel(String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+    private boolean updateAltLabel(String idThesaurus, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
         if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
             return false;
         }
 
-        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, nodeReplaceValueByValue.getIdConcept());
+        var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idThesaurus, nodeReplaceValueByValue.getIdConcept());
         if (preferredTerm.isEmpty()) {
             return false;
         }
@@ -1190,7 +1179,7 @@ public class CsvImportHelper {
                 // on met remplace la valeur du altLabel par la nouvelle valeur
                 if(nonPreferredTermService.updateNonPreferredTerm(nodeReplaceValueByValue.getOldValue(),
                         nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(), nodeReplaceValueByValue.getIdLang(),
-                        idTheso, false, idUser1)) {
+                        idThesaurus, false, idUser1)) {
                     addMessage("Rename AltLabel error :", nodeReplaceValueByValue);
                 }                
             }
@@ -1201,7 +1190,7 @@ public class CsvImportHelper {
                         .idTerm(preferredTerm.get().getIdTerm())
                         .lexicalValue(nodeReplaceValueByValue.getNewValue())
                         .lang(nodeReplaceValueByValue.getIdLang())
-                        .idThesaurus(idTheso)
+                        .idThesaurus(idThesaurus)
                         .hidden(false)
                         .source("")
                         .status("")
@@ -1261,7 +1250,7 @@ public class CsvImportHelper {
         }
 
         relationService.addRelationBT(nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1);
-        conceptHelper.setNotTopConcept(nodeReplaceValueByValue.getIdConcept(), idTheso);
+        conceptService.setTopConcept(nodeReplaceValueByValue.getIdConcept(), idTheso, false);
         return true;
     }      
     private void addMessage(String error, NodeReplaceValueByValue nodeReplaceValueByValue) {

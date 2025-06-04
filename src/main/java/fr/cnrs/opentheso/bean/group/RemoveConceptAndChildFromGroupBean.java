@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
@@ -34,7 +33,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     private final ConceptView conceptView;
     private final TreeGroups treeGroups;
     private final GroupView groupView;
-    private final ConceptHelper conceptHelper;
     private final GroupService groupService;
     private final ConceptService conceptService;
 

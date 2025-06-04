@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
@@ -17,6 +16,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
@@ -32,12 +32,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GraphD3jsHelper {
 
-    private final ConceptHelper conceptHelper;
     private final UriHelper uriHelper;
     private final PreferenceService preferenceService;
     private final ThesaurusService thesaurusService;
     private final GroupService groupService;
     private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
 
     private NodeGraphD3js nodeGraphD3js;
     private Preferences nodePreference;
@@ -62,7 +62,7 @@ public class GraphD3jsHelper {
         }
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        ArrayList<NodeUri> nodeTTs = conceptHelper.getAllTopConcepts(idTheso);
+        var nodeTTs = conceptService.getAllTopConcepts(idTheso);
         nodeGraphD3js.getRelationships().addAll(getRelationshipOfTheso(nodeTTs, idTheso));        
         
         /// récupérer les concepts
@@ -72,7 +72,7 @@ public class GraphD3jsHelper {
         }
         
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1); 
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1);
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
@@ -91,7 +91,7 @@ public class GraphD3jsHelper {
         }        
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        if(!conceptService.isIdExiste(idConcept)){
+        if(!conceptAddService.isIdExiste(idConcept)){
             return;
         }
         
@@ -101,7 +101,7 @@ public class GraphD3jsHelper {
             listIdConcept = listIdConcept.subList(0, 2000);
         }        
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1 ); 
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1 );
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
@@ -130,7 +130,7 @@ public class GraphD3jsHelper {
         node.setProperties(properties);
         return node;
     }    
-    private List<Relationship> getRelationshipOfTheso(ArrayList<NodeUri> nodeUri, String idTheso){
+    private List<Relationship> getRelationshipOfTheso(List<NodeUri> nodeUri, String idTheso){
         List<Relationship> relationships = new ArrayList<>();
         for (NodeUri nodeUri1 : nodeUri) {
             Relationship relationship = new Relationship();

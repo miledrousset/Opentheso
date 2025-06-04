@@ -23,4 +23,8 @@ public interface PropositionRepository extends JpaRepository<Proposition, Intege
     @Query("UPDATE Proposition t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
+    @Modifying
+    @Query(value = "UPDATE proposition SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
 }

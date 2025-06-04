@@ -8,13 +8,10 @@ import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
@@ -26,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-
 import java.io.Serializable;
 import java.util.List;
+
 
 @Data
 @Slf4j
@@ -41,20 +38,18 @@ public class AddConcept implements Serializable {
     private final SelectedTheso selectedTheso;
     private final EditFacet editFacet;
     private final CurrentUser currentUser;
-    private final ConceptHelper conceptHelper;
-    private final RelationsHelper relationsHelper;
-    private final TermRepository termRepository;
     private final ConceptService conceptService;
     private final GroupService groupService;
-    private final NonPreferredTermRepository nonPreferredTermRepository;
     private final ConceptAddService conceptAddService;
     private final TermService termService;
+    private final RelationService relationService;
 
     private boolean isCreated, duplicate, isConceptUnderFacet;
     private String prefLabel, notation, idNewConcept, source, relationType, idGroup, idBTfacet, idFacet;
     private List<NodeTypeRelation> typesRelationsNT;
     private List<NodeGroup> nodeGroups;
     private List<NodeSearchMini> nodeSearchMinis;
+
 
     public void addNewConcept(String idConceptParent, String idLang, String status, String idTheso, int idUser) {
         isCreated = false;
@@ -65,7 +60,7 @@ public class AddConcept implements Serializable {
             return;
         }
 
-        if (termRepository.existsPrefLabel(prefLabel.trim(), idLang, idTheso)) {
+        if (termService.existsPrefLabel(prefLabel.trim(), idLang, idTheso)) {
             duplicate = true;
             MessageUtils.showWarnMessage("un prefLabel existe déjà avec ce nom !");
             updateUIOnError();
@@ -114,7 +109,7 @@ public class AddConcept implements Serializable {
                     .ifPresent(nodeGroup -> idGroup = nodeGroup.getConceptGroup().getIdGroup());
         }
 
-        typesRelationsNT = relationsHelper.getTypesRelationsNT();
+        typesRelationsNT = relationService.getTypesRelationsNT();
         nodeGroups = groupService.getListConceptGroup(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
@@ -134,8 +129,8 @@ public class AddConcept implements Serializable {
         return true;
     }
 
-    private boolean isNotationValid(String idTheso) {
-        return StringUtils.isBlank(notation) || !conceptHelper.isNotationExist(idTheso, notation.trim());
+    private boolean isNotationValid(String idThesaurus) {
+        return StringUtils.isBlank(notation) || !conceptService.isNotationExist(idThesaurus, notation.trim());
     }
 
     private void updateUIOnError() {

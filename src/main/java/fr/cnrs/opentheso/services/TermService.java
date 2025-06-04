@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.entites.Permuted;
 import fr.cnrs.opentheso.entites.PreferredTerm;
 import fr.cnrs.opentheso.entites.TermHistorique;
 import fr.cnrs.opentheso.models.NodeEMProjection;
-import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -366,15 +365,16 @@ public class TermService {
     }
 
     public List<NodeTermTraduction> getTraductionsOfConcept(String idConcept, String idThesaurus, String idLang) {
-        List<Object[]> rawResults = termRepository.getConceptTranslationsRaw(idConcept, idThesaurus, idLang);
+
+        var rawResults = termRepository.getConceptTranslationsRaw(idConcept, idThesaurus, idLang);
         List<NodeTermTraduction> results = new ArrayList<>();
 
         for (Object[] row : rawResults) {
             results.add(new NodeTermTraduction(
                     (String) row[0],     // lang
-                    (String) row[3],     // nomLang (case when)
                     (String) row[1],     // lexicalValue
-                    (String) row[2]      // codePays
+                    (String) row[2],     // codePays
+                    (String) row[3]      // nomLang (case when)
             ));
         }
 
@@ -410,13 +410,6 @@ public class TermService {
 
         log.info("Le nom du concept dont l'id {} est {}", idConcept, label.get());
         return label.get();
-    }
-
-    @Transactional
-    public void deleteEMByIdTermAndLang(String idTerm, String idThesaurus, String idLang) {
-
-        log.info("Suppression du terme id {} (langue : {} et thésaurus id {})", idTerm, idLang, idThesaurus);
-        nonPreferredTermRepository.deleteByIdThesaurusAndIdTermAndLang(idThesaurus, idTerm, idLang);
     }
 
     public void updateIntitule(String intitule, String idTerm, String idThesaurus, String lang) {
@@ -473,6 +466,8 @@ public class TermService {
                 .status(term.getStatus())
                 .contributor(term.getContributor())
                 .creator(term.getCreator())
+                .created(new Date())
+                .modified(new Date())
                 .build());
     }
 
@@ -502,4 +497,20 @@ public class TermService {
         }
         return term.get();
     }
-}
+
+    public List<NodeTermTraduction> getTraductionByConcept(String idThesaurus, String idConcept) {
+
+        log.info("Recherche des traductions pour le concept id {}", idConcept);
+        var traductions = termRepository.findAllTraductionsOfConcept(idConcept, idThesaurus);
+        if (CollectionUtils.isEmpty(traductions)) {
+            log.info("Aucune traduction trouvée pour le concept id {}", idConcept);
+            return List.of();
+        }
+        return traductions;
+    }
+
+    public String getConceptIdFromPrefLabel(String label, String idThesaurus, String lang) {
+        return preferredTermRepository.findConceptIdByLabel(label.replace("'", "%"), idThesaurus, lang)
+                .orElse(null);
+    }
+ }

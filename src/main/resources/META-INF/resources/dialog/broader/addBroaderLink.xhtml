@@ -51,7 +51,7 @@
                                  update="containerIndex messageIndex"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  oncomplete="PF('addBroaderLink').hide();"
-                                 actionListener="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{broaderBean.addNewBroaderLink()}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

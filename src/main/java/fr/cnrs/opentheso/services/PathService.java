@@ -4,9 +4,7 @@ import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +26,6 @@ import org.springframework.stereotype.Service;
 public class PathService {
 
     private final TermService termService;
-    private final ConceptHelper conceptHelper;
-    private final RelationsHelper relationsHelper;
     private final PreferenceService preferenceService;
     private final RelationGroupService relationGroupService;
     private final NonPreferredTermRepository nonPreferredTermRepository;

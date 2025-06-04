@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NodeUri {
 
-    private String idConcept;
     private String idArk;
     private String idHandle;
     private String idDoi;
+    private String idConcept;
 
 }

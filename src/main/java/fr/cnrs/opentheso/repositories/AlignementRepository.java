@@ -113,4 +113,8 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     @Transactional
     @Query("UPDATE Alignement t SET t.internalIdThesaurus = :newIdThesaurus WHERE t.internalIdThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Modifying
+    @Query(value = "UPDATE alignement SET internal_id_thesaurus = :target WHERE internal_id_concept = :concept AND internal_id_thesaurus = :from", nativeQuery = true)
+    void updateInternalThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import lombok.Data;
@@ -69,7 +70,8 @@ public class TraductionCandidatBean implements Serializable {
     public void deleteTraduction() {
 
         termService.deleteTerm(candidatBean.getCandidatSelected().getIdThesaurus(), candidatBean.getCandidatSelected().getIdTerm(), langage);
-        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+
+        loadTraductionList();
         MessageUtils.showInformationMessage(languageBean.getMsg("candidat.traduction.msg2"));
         PrimeFaces.current().ajax().update("containerIndex");
     }
@@ -78,7 +80,8 @@ public class TraductionCandidatBean implements Serializable {
 
         termService.updateIntitule(traduction, candidatBean.getCandidatSelected().getIdTerm(),
                 candidatBean.getCandidatSelected().getIdThesaurus(), langage);
-        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+
+        loadTraductionList();
         MessageUtils.showInformationMessage(languageBean.getMsg("candidat.traduction.msg3"));
         PrimeFaces.current().ajax().update("containerIndex");
     }
@@ -102,8 +105,22 @@ public class TraductionCandidatBean implements Serializable {
         term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
         termService.addNewTerme(term);
 
-        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        loadTraductionList();
         MessageUtils.showInformationMessage(languageBean.getMsg("candidat.traduction.msg1"));
+    }
+
+    private void loadTraductionList() {
+
+        var traductions = termService.getTraductionsOfConcept(candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus(), candidatBean.getCandidatSelected().getLang());
+        var traductionsMapped = traductions.stream()
+                .map(element -> TraductionDto.builder()
+                        .langue(element.getLang())
+                        .traduction(element.getLexicalValue())
+                        .codePays(element.getCodePays())
+                        .build())
+                .toList();
+        candidatBean.getCandidatSelected().setTraductions(traductionsMapped);
         PrimeFaces.current().ajax().update("containerIndex");
     }
 }

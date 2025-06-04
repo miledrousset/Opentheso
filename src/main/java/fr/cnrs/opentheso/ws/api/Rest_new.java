@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.api;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -53,9 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "Ancienne API", description = "Anciennes requêtes API REST")
 public class Rest_new {
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private TermRepository termRepository;
@@ -581,7 +577,7 @@ public class Rest_new {
             if (StringUtils.isEmpty(idark)) {
                 return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             } else {
-                idConcept = conceptHelper.getIdConceptFromArkId(idark, idTheso);
+                idConcept = conceptService.getIdConceptFromArkId(idark, idTheso);
                 if(idConcept == null)
                     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             }
@@ -783,7 +779,7 @@ public class Rest_new {
 
     private String getlistAllTopConceptOfTheso__(String idTheso) {
 
-        List<String> listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(idTheso);
+        List<String> listIdTopConceptOfTheso = conceptService.getAllTopConceptIds(idTheso);
 
         List<NodeTermTraduction> nodeTermTraductions;
 

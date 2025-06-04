@@ -26,7 +26,6 @@ import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.AlignmentSourceService;
 import fr.cnrs.opentheso.services.ConceptService;
@@ -80,12 +79,10 @@ public class AlignmentBean implements Serializable {
     private final LanguageBean languageBean;
     private final CurrentUser currentUser;
     private final AlignementAutomatique alignementAutomatique;
-
     private final ConceptDcTermRepository conceptDcTermRepository;
 
     private final ImageService imageService;
     private final ThesaurusService thesaurusService;
-    private final TermRepository termRepository;
     private final GpsService gpsService;
     private final AlignmentService alignmentService;
     private final TermService termService;
@@ -122,7 +119,6 @@ public class AlignmentBean implements Serializable {
     private List<Map.Entry<String, String>> alignmentTypes;
 
 
-
     public void deleteAlignment(AlignementElement alignement) {
 
         log.info("Suppression de l'alignement avec id {} et situé dans le thésaurus id {}",
@@ -135,7 +131,6 @@ public class AlignmentBean implements Serializable {
                 conceptBean.getSelectedLang());
 
         getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement supprimé avec succès !");
     }
 
@@ -179,7 +174,7 @@ public class AlignmentBean implements Serializable {
 
         for (NodeIdValue idsAndValue : idsAndValues) {
 
-            List<NodeAlignment> alignements = alignmentService.getAllAlignmentOfConcept(idsAndValue.getId(), idThesaurus);
+            var alignements = alignmentService.getAllAlignmentOfConcept(idsAndValue.getId(), idThesaurus);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
@@ -689,7 +684,6 @@ public class AlignmentBean implements Serializable {
         HashMap<String, String> map = alignmentService.getAlignmentTypes();
         alignmentTypes.addAll(map.entrySet());           
     }
- 
     
     private void reset() {
         traductionsOfAlignment = new ArrayList<>();
@@ -708,18 +702,11 @@ public class AlignmentBean implements Serializable {
     }
 
     private void resetVariables() {
-        if (traductionsOfAlignment != null) {
-            traductionsOfAlignment.clear();
-        }
-        if (descriptionsOfAlignment != null) {
-            descriptionsOfAlignment.clear();
-        }
-        if (imagesOfAlignment != null) {
-            imagesOfAlignment.clear();
-        }
-        if (nodeAlignmentSmall != null) {
-            nodeAlignmentSmall.clear();
-        }
+
+        traductionsOfAlignment = new ArrayList<>();
+        descriptionsOfAlignment = new ArrayList<>();
+        imagesOfAlignment = new ArrayList<>();
+        nodeAlignmentSmall = new ArrayList<>();
         isSelectedAllLang = true;
         nom = "";
         prenom = "";
@@ -736,8 +723,7 @@ public class AlignmentBean implements Serializable {
     /**
      * lance la recherche des alignements pour le concept sélectionné avec la source sélectionnée
      */
-    public void searchAlignments(AlignmentManualBean alignmentManualBean, String idTheso, String idConcept,
-                                 String lexicalValue, String idLang) {
+    public void searchAlignments(AlignmentManualBean alignmentManualBean) {
 
         reset();
         for (AlignementSource alignementSource : alignementSources) {
@@ -750,64 +736,76 @@ public class AlignmentBean implements Serializable {
         if (!ObjectUtils.isEmpty(selectedAlignementSource)) {
             // si l'alignement est de type Wikidata, on récupère la liste des concepts pour préparer le choix de l'utilisateur
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql")) {
-                getAlignmentWikidata_sparql(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentWikidata_sparql(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
-                getAlignmentWikidata_rest(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentWikidata_rest(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
 
             // ici IdRef pour les sujets
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefSujets")) {
-                getAlignmentIdRefSubject(selectedAlignementSource, idTheso, idConcept, lexicalValue);
+                getAlignmentIdRefSubject(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment);
             }
 
             // ici IdRef pour les noms de personnes
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefPersonnes")) {
-                getAlignmentIdRefPerson(selectedAlignementSource, idTheso, idConcept, lexicalValue);
+                getAlignmentIdRefPerson(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment);
             }
 
             // ici IdRef pour les auteurs
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefAuteurs")) {
-                getAlignmentIdRefNames(selectedAlignementSource, idTheso, idConcept);
+                getAlignmentIdRefNames(selectedAlignementSource, selectedTheso.getSelectedIdTheso(), idConceptSelectedForAlignment);
             }
 
             // ici IdRef pour les Lieux
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefLieux")) {
-                getAlignmentIdRefLieux(selectedAlignementSource, idTheso, idConcept, lexicalValue);
+                getAlignmentIdRefLieux(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment);
             }
 
             // ici IdRef pour les Titres Uniformes
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("IdRefTitreUniforme")) {
-                getAlignmentIdRefUniformtitle(selectedAlignementSource, idTheso, idConcept, lexicalValue);
+                getAlignmentIdRefUniformtitle(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment);
             }
 
             // ici AAT du Getty
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Getty_AAT")) {
-                getAlignmentGettyAAT(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentGettyAAT(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
 
             // ici pour un alignement de type Opentheso
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Opentheso")) {
-                getAlignmentOpentheso(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentOpentheso(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
 
             // ici pour un alignement de type Gemet
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Gemet")) {
-                getAlignmentGemet(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentGemet(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
 
             // ici pour un alignement de type Agrovoc
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Agrovoc")) {
-                getAlignmentAgrovoc(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentAgrovoc(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
 
             // ici pour un alignement de type GeoNames
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("GeoNames")) {
-                getAlignmentGeoNames(selectedAlignementSource, idTheso, idConcept, lexicalValue, idLang);
+                getAlignmentGeoNames(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment, selectedTheso.getCurrentLang());
             }
             // ici pour un alignement de type Ontome
             if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Ontome")) {
-                getAlignmentOntome(selectedAlignementSource, idTheso, idConcept, lexicalValue);
+                getAlignmentOntome(selectedAlignementSource, selectedTheso.getSelectedIdTheso(),
+                        idConceptSelectedForAlignment, conceptValueForAlignment);
             }
         }
 
@@ -1125,11 +1123,11 @@ public class AlignmentBean implements Serializable {
     /**
      * initialisation des valeurs du concept local pour comparaison avec leconcept à aligner
      */
-    private void getValuesOfLocalConcept(String idTheso, String idConcept) {
-        nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
-        nodeNotes = noteService.getListNotesAllLang(idConcept, idTheso);
-        nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idTheso);
-        nodeAlignmentSmall = alignmentService.getAllAlignmentsOfConcept(idConcept, idTheso);
+    private void getValuesOfLocalConcept(String idThesaurus, String idConcept) {
+        nodeTermTraductions = termService.getTraductionByConcept(idThesaurus, idConcept);
+        nodeNotes = noteService.getListNotesAllLang(idConcept, idThesaurus);
+        nodeImages = imageService.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        nodeAlignmentSmall = alignmentService.getAllAlignmentsOfConcept(idConcept, idThesaurus);
     }
 
     /**
@@ -1162,12 +1160,6 @@ public class AlignmentBean implements Serializable {
         this.selectedNodeAlignment = selectedNodeAlignment;
         // initialisation des valeurs du concept local pour comparaison avec le concept à aligner
         getValuesOfLocalConcept(idTheso, idConceptSelectedForAlignment);
-
-        /**
-         * ici on filtre les données par rapport à la source d'alignement on
-         * prépare les objets pour recevoir les informations suivant les options
-         * sélectionnées : traductions, notes, images
-         */
 
         // si l'alignement est de type Wikidata
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql") || selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.entites;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -26,7 +27,8 @@ public class ConceptType implements Serializable {
     private String code;
 
     @Id
-    private String idTheso;
+    @Column(name = "id_Theso")
+    private String idThesaurus;
 
     private String labelFr;
 

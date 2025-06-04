@@ -21,9 +21,9 @@ import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "noteBeanCandidat")
 @SessionScoped
 @RequiredArgsConstructor
+@Named(value = "noteBeanCandidat")
 public class NoteBeanCandidat implements Serializable {
 
     private final SelectedTheso selectedTheso;
@@ -33,7 +33,7 @@ public class NoteBeanCandidat implements Serializable {
     private final CurrentUser currentUser;
 
     private List<NoteType> noteTypes;
-    private List<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangues;
     private String selectedLang, selectedTypeNote, noteValue, noteValueToChange;
     private NodeNote selectedNodeNote;
     private boolean isEditMode, visible;
@@ -42,7 +42,7 @@ public class NoteBeanCandidat implements Serializable {
     public void reset() {
         visible = true;
         noteTypes = noteService.getNotesType();
-        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangues = selectedTheso.getNodeLangs();
         selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
         selectedTypeNote = null;

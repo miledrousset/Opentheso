@@ -1,9 +1,8 @@
 package fr.cnrs.opentheso.models.exports;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-
 import fr.cnrs.opentheso.services.ConceptService;
+
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +13,6 @@ import org.springframework.stereotype.Service;
 @Data
 @Service
 public class UriHelper {
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     private Preferences nodePreference;
     private String idTheso;

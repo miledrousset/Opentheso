@@ -13,7 +13,7 @@
                 <h:outputText value="Copier : "/>                 
             </div>
             <div class="col-4">
-                <h:outputText value="#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue} (#{copyAndPasteBetweenTheso.nodeConceptDrag.concept.idConcept})"/>
+                <h:outputText value="#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.concept.idConcept})"/>
             </div>                
         </div>
 
@@ -22,7 +22,7 @@
                 <h:outputText value="du thésaurus : "/>                      
             </div>
             <div class="col-4">
-                <h:outputText value="#{copyAndPasteBetweenTheso.idThesoOrigin}"/>                      
+                <h:outputText value="#{copyAndPasteBetweenThesaurus.idThesaurusOrigin}"/>
             </div>
         </div>            
 
@@ -41,7 +41,7 @@
                 <h:outputText value="récupérer les identifiants : "/>                      
             </div>
             <div class="col-4">
-                <p:selectOneMenu id="basic" value="#{copyAndPasteBetweenTheso.identifierType}">
+                <p:selectOneMenu id="basic" value="#{copyAndPasteBetweenThesaurus.identifierType}">
                     <f:selectItem itemLabel="Non" itemValue="sans" />
                     <f:selectItem itemLabel="Ark" itemValue="ark" />
                     <f:selectItem itemLabel="Handle" itemValue="handle" />
@@ -68,7 +68,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex messageIndex"
-                                 actionListener="#{copyAndPasteBetweenTheso.paste()}"
+                                 actionListener="#{copyAndPasteBetweenThesaurus.paste()}"
                                  oncomplete="PF('copyAndPasteBetweenTheso').hide();"/>
             </div>
         </div>

@@ -28,7 +28,6 @@ import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.FacetService;
@@ -55,9 +54,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ExportRdf4jHelperNew {
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private GroupService groupService;
@@ -104,7 +100,7 @@ public class ExportRdf4jHelperNew {
     public SKOSResource exportConceptV2(String idTheso, String idConcept, boolean isCandidatExport) {
 
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(idConcept, idTheso, isCandidatExport);
+        NodeConceptExport nodeConcept = conceptService.getConceptForExport(idConcept, idTheso, isCandidatExport);
 
         if (nodeConcept == null) {
             messages = messages + ("Erreur concept non exporté importé: " + idConcept + "\n");
@@ -215,7 +211,7 @@ public class ExportRdf4jHelperNew {
     public SKOSResource addSingleConceptByLangV2(String idTheso, String idConcept, String idLang, boolean showLabels) {
 
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(idConcept, idTheso, false);
+        NodeConceptExport nodeConcept = conceptService.getConceptForExport(idConcept, idTheso, false);
 
         if (nodeConcept == null) {
             return null;
@@ -322,7 +318,7 @@ public class ExportRdf4jHelperNew {
         }
 
         //liste top concept
-        var nodeTTs = conceptHelper.getAllTopConcepts(idTheso);
+        var nodeTTs = conceptService.getAllTopConcepts(idTheso);
 
         nodeTTs.forEach((nodeTT) -> {
             conceptScheme.addRelation(nodeTT.getIdConcept(), getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.HAS_TOP_CONCEPT);
@@ -400,7 +396,7 @@ public class ExportRdf4jHelperNew {
         }
 
         var childURIs = relationGroupService.getListGroupChildOfGroup(idTheso, idOfGroupChild);
-        var nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
+        var nodeUris = conceptService.getListConceptsOfGroup(idTheso, idOfGroupChild);
 
         for (var nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
@@ -489,7 +485,7 @@ public class ExportRdf4jHelperNew {
 
         List<String> members = facetService.getAllMembersOfFacet(nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
-            NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
+            NodeUri nodeUri = conceptService.getNodeUriOfConcept(idConcept, idTheso);
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
         }
     }
@@ -540,7 +536,7 @@ public class ExportRdf4jHelperNew {
         }
 
         var childURIs = relationGroupService.getListGroupChildOfGroup(idTheso, idOfGroupChild);
-        var nodeUris = conceptHelper.getListConceptsOfGroup(idTheso, idOfGroupChild);
+        var nodeUris = conceptService.getListConceptsOfGroup(idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
@@ -671,7 +667,7 @@ public class ExportRdf4jHelperNew {
                 String htmlTagsRegEx = "<[^>]*>";
                 NodeNote nodeNote = noteService.getNoteByIdNote(Integer.parseInt(vote.getIdNote()));
                 if (nodeNote != null) {
-                    String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalValue());
+                    String str = conceptService.formatLinkTag(nodeNote.getLexicalValue());
                     skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
                 }
             }

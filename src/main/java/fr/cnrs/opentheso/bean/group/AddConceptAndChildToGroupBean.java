@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import jakarta.enterprise.context.SessionScoped;
@@ -46,9 +45,6 @@ public class AddConceptAndChildToGroupBean implements Serializable {
 
     @Autowired
     private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 

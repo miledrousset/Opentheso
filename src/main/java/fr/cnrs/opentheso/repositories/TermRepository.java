@@ -123,4 +123,19 @@ public interface TermRepository extends JpaRepository<Term, Integer> {
     """, nativeQuery = true)
     Optional<String> getLexicalValueOfConcept(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
                                               @Param("idLang") String idLang);
+
+    @Query(value = """
+        SELECT t.lexical_value
+        FROM term t
+                JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
+        WHERE pt.id_concept = :idConcept
+        AND t.id_thesaurus = :idThesaurus
+        AND t.lang = :idLang
+        LIMIT 1
+    """, nativeQuery = true)
+    String findLexicalValueOfConcept(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);
+
+    @Modifying
+    @Query(value = "UPDATE term SET id_thesaurus = :target FROM preferred_term WHERE term.id_term = preferred_term.id_term AND term.id_thesaurus = preferred_term.id_thesaurus AND preferred_term.id_concept = :concept AND term.id_thesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

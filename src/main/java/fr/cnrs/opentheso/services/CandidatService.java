@@ -29,12 +29,11 @@ import fr.cnrs.opentheso.repositories.ConceptTermCandidatRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.NoteRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.PropositionRepository;
 import fr.cnrs.opentheso.repositories.StatusRepository;
+import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.repositories.TermCandidatRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.repositories.UserRepository;
 import fr.cnrs.opentheso.utils.MessageUtils;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
@@ -45,7 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -67,29 +65,30 @@ public class CandidatService {
 
     private final MailService mailBean;
     private final ImageService imageService;
-    private final StatusRepository statusRepository;
-    private final ConceptRepository conceptRepository;
-    private final PropositionRepository propositionRepository;
-    private final CandidatVoteRepository candidatVoteRepository;
-    private final CandidatStatusRepository candidatStatusRepository;
-    private final CandidatMessageRepository candidatMessageRepository;
-    private final ThesaurusRepository thesaurusRepository;
-    private final NonPreferredTermRepository nonPreferredTermRepository;
-    private final PreferredTermRepository preferredTermRepository;
-    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
-    private final ConceptTermCandidatRepository conceptTermCandidatRepository;
-    private final TermRepository termRepository;
-    private final NoteRepository noteRepository;
     private final TermService termService;
     private final AlignmentService alignmentService;
-    private final ConceptCandidatRepository conceptCandidatRepository;
-    private final TermCandidatRepository termCandidatRepository;
     private final ConceptAddService conceptAddService;
     private final NoteService noteService;
     private final RelationService relationService;
     private final GroupService groupService;
-    private final UserRepository userRepository;
     private final LanguageBean languageBean;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final CandidatMessageRepository candidatMessageRepository;
+    private final CandidatVoteRepository candidatVoteRepository;
+    private final StatusRepository statusRepository;
+    private final CandidatStatusRepository candidatStatusRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptGroupConceptRepository conceptGroupConceptRepository;
+    private final ConceptCandidatRepository conceptCandidatRepository;
+    private final ConceptTermCandidatRepository conceptTermCandidatRepository;
+    private final PropositionService propositionService;
+    private final UserRepository userRepository;
+    private final TermCandidatRepository termCandidatRepository;
+    private final PreferredTermRepository preferredTermRepository;
+    private final TermRepository termRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final NoteRepository noteRepository;
+    private final ThesaurusRepository thesaurusRepository;
 
 
     public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int stat) {
@@ -100,8 +99,7 @@ public class CandidatService {
             var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
             candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
 
-            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(candidatDto.getIdConcepte(), idThesaurus);
-            candidatDto.setNbrDemande(CollectionUtils.isEmpty(proposition) ? 0 : proposition.size());
+            candidatDto.setNbrDemande(propositionService.getPropositionByConceptAndThesaurus(idThesaurus, candidatDto.getIdConcepte()).size());
 
             var candidatVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel());
             candidatDto.setNbrVote(CollectionUtils.isEmpty(candidatVotes) ? 0 : candidatVotes.size());
@@ -128,8 +126,7 @@ public class CandidatService {
             var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
             candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
 
-            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(candidatDto.getIdConcepte(), idThesaurus);
-            candidatDto.setNbrDemande(CollectionUtils.isEmpty(proposition) ? 0 : proposition.size());
+            candidatDto.setNbrDemande(propositionService.getPropositionByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus).size());
 
             var candidatVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel());
             candidatDto.setNbrVote(CollectionUtils.isEmpty(candidatVotes) ? 0 : candidatVotes.size());
@@ -201,7 +198,7 @@ public class CandidatService {
         }
 
         // Employé pour
-        termService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
+        nonPreferredTermService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
             candidatSelected.getEmployePourList().forEach(employe -> termService.addSynonyme(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
@@ -228,13 +225,18 @@ public class CandidatService {
 
         candidatSelected.setNodeNotes(noteService.getNotesCandidat(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
-        candidatSelected.getNodeNotes().forEach(note -> note.setVoted(getVote(candidatSelected.getIdThesaurus(),
+        candidatSelected.getNodeNotes().forEach(note -> note.setVoted(isHaveVote(candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte(), candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE)));
 
-        candidatSelected.setTraductions(termService.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
-                term -> new TraductionDto(term.getLang(),
-                        term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
+        var traductions = termService.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getLang());
+        candidatSelected.setTraductions(traductions.stream()
+                .map(element -> TraductionDto.builder()
+                        .langue(element.getLang())
+                        .traduction(element.getLexicalValue())
+                        .codePays(element.getCodePays())
+                        .build())
+                .toList());
 
         var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
@@ -273,7 +275,7 @@ public class CandidatService {
                 .build());
     }
 
-    public boolean getVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) {
+    public boolean isHaveVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) {
 
         return CollectionUtils.isNotEmpty(candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndIdUserAndIdNoteAndTypeVote(idConcept,
                 idThesaurus, idUser, idNote, voteType.getLabel()));
@@ -328,7 +330,7 @@ public class CandidatService {
         
         for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
             nodeCandidateOld.setNodeTraductions(getCandidatesTraductionsFromOldModule(nodeCandidateOld.getIdCandidate(), idTheso));
-            var proposition = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(nodeCandidateOld.getIdCandidate(), idTheso);
+            var proposition = propositionService.getPropositionByConceptAndThesaurus(idTheso, nodeCandidateOld.getIdCandidate());
             if (CollectionUtils.isNotEmpty(proposition)) {
                 nodeCandidateOld.setNodePropositions(proposition.stream()
                         .map(element-> NodeProposition.builder()
@@ -351,7 +353,7 @@ public class CandidatService {
             log.info("ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue");
             for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
                 log.info("Vérification de l'existance du terme (recherche dans prefLabels)");
-                if (termRepository.existsPrefLabel(nodeTraduction.getTitle().trim(), nodeTraduction.getIdLang(), idTheso)){
+                if (termService.existsPrefLabel(nodeTraduction.getTitle().trim(), nodeTraduction.getIdLang(), idTheso)){
                     messages.append("Candidat existe : ").append(nodeTraduction.getTitle());
                     exist = true;
                     break;
@@ -448,7 +450,7 @@ public class CandidatService {
         log.error("Création du nouveau concept dans la base");
         var thesaurus = thesaurusRepository.findById(candidate.getThesoId());
         if (thesaurus.isEmpty()) {
-            log.error("Le thesaurus {} n'existe pas", candidate.getThesoId());
+            log.error("Le thésaurus avec id {} n'existe pas dans la base de données", candidate.getThesoId());
             return false;
         }
         conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()

@@ -27,11 +27,11 @@ import jakarta.inject.Named;
 public class DeeplTranslate implements Serializable {
 
     private final NoteService noteService;
-    private RoleOnThesaurusBean roleOnThesoBean;
-    private CurrentUser currentUser;
-    private SelectedTheso selectedTheso;
-    private DeeplService deeplHelper;
-    private ConceptView conceptView;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final CurrentUser currentUser;
+    private final SelectedTheso selectedTheso;
+    private final DeeplService deeplHelper;
+    private final ConceptView conceptView;
 
     private String fromLang, fromLangLabel, textToTranslate, existingTranslatedText, sourceTranslatedText, translatingText;
     private String toLang = "en-GB";
@@ -41,7 +41,7 @@ public class DeeplTranslate implements Serializable {
 
     public void init() {
 
-        var keyApi = roleOnThesoBean.getNodePreference().getDeeplApiKey();
+        var keyApi = roleOnThesaurusBean.getNodePreference().getDeeplApiKey();
         sourceLangs = deeplHelper.getSourceLanguages(keyApi);
         targetLangs = deeplHelper.getTargetLanguages(keyApi);
         existingTranslatedText = null;
@@ -119,7 +119,7 @@ public class DeeplTranslate implements Serializable {
 
     public void translate() {
 
-        var keyApi = roleOnThesoBean.getNodePreference().getDeeplApiKey();
+        var keyApi = roleOnThesaurusBean.getNodePreference().getDeeplApiKey();
         translatingText = deeplHelper.translate(keyApi, textToTranslate, fromLang, toLang);
     }
 

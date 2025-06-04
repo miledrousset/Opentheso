@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
@@ -14,14 +13,13 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
-
 import fr.cnrs.opentheso.services.RelationGroupService;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
@@ -56,9 +54,6 @@ public class TreeGroups implements Serializable {
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
     private PropositionBean propositionBean;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private GroupService groupService;

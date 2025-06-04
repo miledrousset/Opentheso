@@ -29,9 +29,13 @@ public interface GpsRepository extends JpaRepository<Gps, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Gps g SET g.latitude = :lat, g.longitude = :lon WHERE g.idConcept = :idConcept AND g.idTheso = :idTheso")
-    int updateCoordinates(@Param("idConcept") String idConcept, @Param("idTheso") String idTheso,
+    @Query("UPDATE Gps g SET g.latitude = :lat, g.longitude = :lon WHERE g.idConcept = :idConcept AND g.idTheso = :idThesaurus")
+    int updateCoordinates(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
                           @Param("lat") double latitude, @Param("lon") double longitude);
+
+    @Modifying
+    @Query(value = "UPDATE gps SET id_theso = :target WHERE id_concept = :concept AND id_theso = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 
     @Modifying
     @Transactional

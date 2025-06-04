@@ -9,16 +9,14 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ImageService;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
-import java.io.Serializable;
-import java.util.List;
-
-import jakarta.inject.Named;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import java.io.Serializable;
+import java.util.List;
+import jakarta.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -50,19 +48,11 @@ public class ImageBean implements Serializable {
         nodeImagesForEdit = imageService.getAllExternalImages(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
     }
-    
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour images !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
- 
-    /**
-     * permet d'ajouter une image
-     */
+
     public void addNewImage(int idUser) {
         
         if(StringUtils.isEmpty(uri)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune URI insérée !");
+            MessageUtils.showErrorMessage("Aucune URI insérée !");
             return;
         }
 
@@ -82,25 +72,15 @@ public class ImageBean implements Serializable {
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
+        MessageUtils.showInformationMessage("Image ajoutée avec succès");
         reset();
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
-    private void showMessage(FacesMessage.Severity severity, String message) {
-        FacesMessage msg = new FacesMessage(severity, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
-    }
-
-
     public void updateImage(NodeImage nodeImage, int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();    
         
         if(nodeImage == null || nodeImage.getUri().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Aucune image sélectionnée !");
             return;
         }
 
@@ -118,9 +98,8 @@ public class ImageBean implements Serializable {
                 .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        MessageUtils.showInformationMessage("L'URI du l'image est modifiée avec succès");
         reset();
     }       
 
@@ -128,8 +107,7 @@ public class ImageBean implements Serializable {
     public void deleteImage(NodeImage nodeImage, int idUser) {
         
         if(nodeImage == null || nodeImage.getUri().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", "Aucune sélection !"));
+            MessageUtils.showWarnMessage("Aucune sélection !");
             return;
         }
 
@@ -148,12 +126,8 @@ public class ImageBean implements Serializable {
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès"));
-
+        MessageUtils.showInformationMessage("Image supprimée avec succès");
         reset();
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 

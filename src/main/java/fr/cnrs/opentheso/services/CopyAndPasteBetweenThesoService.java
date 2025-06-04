@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.Preferences;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
@@ -21,7 +20,6 @@ public class CopyAndPasteBetweenThesoService {
 
     private final ImportRdf4jHelper importRdf4jHelper;
     private final ExportRdf4jHelperNew exportRdf4jHelperNew;
-    private final ConceptHelper conceptHelper;
     private final PreferenceService preferenceService;
     private final ConceptAddService conceptAddService;
     private final ConceptService conceptService;
@@ -78,9 +76,8 @@ public class CopyAndPasteBetweenThesoService {
         for (String idBT : nodeBT) {
             relationService.deleteRelationBT(fromIdConcept, currentIdThesaurus, idBT, idUser);
         }
-
         // Passer la branche en TopTerm
-        conceptHelper.setTopConcept(fromIdConcept, currentIdThesaurus);
+        conceptService.setTopConcept(fromIdConcept, currentIdThesaurus, true);
         return true;
     }
 

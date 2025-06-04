@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.PathService;
@@ -68,7 +67,6 @@ public class Tree implements Serializable {
     private final CurrentUser currentUser;
     private final AlignmentBean alignmentBean;
     private final PropositionBean propositionBean;
-    private final ConceptHelper conceptHelper;
     private final PathService pathService;
     private final DragAndDrop dragAndDrop;
     private final ConceptService conceptService;
@@ -139,8 +137,8 @@ public class Tree implements Serializable {
 
         TreeNodeData data;
         // la liste est triée par alphabétique ou notation
-        List<NodeConceptTree> nodeConceptTrees = conceptHelper.getListOfTopConcepts(idTheso, idLang,
-                selectedTheso.isSortByNotation(), ObjectUtils.isEmpty(currentUser.getNodeUser()));
+        var nodeConceptTrees = conceptService.getTopConcepts(idTheso, idLang, selectedTheso.isSortByNotation(),
+                ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         if (nodeConceptTrees.size() >= 2000) {
             manySiblings = true;
@@ -157,7 +155,7 @@ public class Tree implements Serializable {
                     true,//isTopConcept
                     "topTerm"
             );
-            if (conceptHelper.haveChildren(idTheso, nodeConceptTree.getIdConcept())) {
+            if (conceptService.haveChildren(idTheso, nodeConceptTree.getIdConcept())) {
                 if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
                     dataService.addNodeWithChild("deprecated", data, root);
                 } else {
@@ -282,8 +280,7 @@ public class Tree implements Serializable {
                     false,
                     "facetMember");
             data.setIdFacetParent(((TreeNodeData) parent.getData()).getNodeId());
-            boolean haveConceptChild = conceptHelper.haveChildren(idTheso,
-                    nodeIdValue.getId());
+            boolean haveConceptChild = conceptService.haveChildren(idTheso, nodeIdValue.getId());
             if (haveConceptChild) {
                 if (conceptService.isDeprecated(nodeIdValue.getId(), idTheso)) {
                     dataService.addNodeWithChild("deprecated", data, parent);
@@ -407,7 +404,7 @@ public class Tree implements Serializable {
                 false,//isTopConcept
                 "term"
         );
-        if (conceptHelper.haveChildren(idTheso, idConcept)) {
+        if (conceptService.haveChildren(idTheso, idConcept)) {
             dataService.addNodeWithChild("concept", data, parent);
         } else {
             dataService.addNodeWithoutChild("file", data, parent);
@@ -494,7 +491,7 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
         onNodeSelectByNode(node);
-        if(dragAndDrop.isIsCopyOn())
+        if(dragAndDrop.isCopyOn())
             PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 

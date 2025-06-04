@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class NodeAlignment {
 
     private int id_alignement;
-    private int id_source;
+    private Integer id_source;
     private Date created;
     private Date modified;
     private int id_author;

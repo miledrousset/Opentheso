@@ -94,4 +94,8 @@ public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Inte
     @Transactional
     @Query("UPDATE ConceptGroup t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    @Modifying
+    @Query(value = "UPDATE concept_group_concept SET idthesaurus = :target WHERE idconcept = :concept AND idthesaurus = :from", nativeQuery = true)
+    void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 }

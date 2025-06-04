@@ -16,6 +16,6 @@ import java.io.Serializable;
 public class ConceptTypeId implements Serializable {
 
     private String code;
-    private String idTheso;
+    private String idThesaurus;
 
 }

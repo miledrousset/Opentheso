@@ -1,11 +1,9 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.ThesaurusService;
-import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 
@@ -44,9 +42,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_RD
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class ThesaurusIdController {
-
-    @Autowired
-    private ConceptHelper conceptHelper;
 
     @Autowired
     private RestRDFHelper restRDFHelper;
@@ -92,12 +87,12 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(thesaurusId);
+        var listIdTopConceptOfThesaurus = conceptService.getAllTopConceptIds(thesaurusId);
 
         List<NodeTermTraduction> nodeTermTraductions;
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        for (String idConcept : listIdTopConceptOfTheso) {
+        for (String idConcept : listIdTopConceptOfThesaurus) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idConcept", idConcept);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
