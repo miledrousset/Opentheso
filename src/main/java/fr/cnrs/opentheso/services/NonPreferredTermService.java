@@ -38,6 +38,8 @@ public class NonPreferredTermService {
                 .source(term.getSource())
                 .status(term.getStatus())
                 .hiden(term.isHidden())
+                .created(new Date())
+                .modified(new Date())
                 .build());
 
         saveTrace(term.getIdTerm(), term.getLexicalValue(), term.getIdTerm(), term.getLang(), idUser, term.isHidden(), "ADD");
@@ -95,16 +97,17 @@ public class NonPreferredTermService {
         return false;
     }
 
-    private void saveTrace(String idTerm, String lexicalValue, String idTheso, String idLang, int idUser, boolean isHidden, String action) {
+    private void saveTrace(String idTerm, String lexicalValue, String idThesaurus, String idLang, int idUser, boolean isHidden, String action) {
         log.info("Enregistrement du trace de l'action du mise à jour");
         nonPreferredTermHistoriqueRepository.save(NonPreferredTermHistorique.builder()
                 .idTerm(idTerm)
                 .lexicalValue(lexicalValue)
-                .idThesaurus(idTheso)
+                .idThesaurus(idThesaurus)
                 .lang(idLang)
                 .idUser(idUser)
                 .hiden(isHidden)
                 .action(action)
+                .modified(new Date())
                 .status("")
                 .source("")
                 .build());

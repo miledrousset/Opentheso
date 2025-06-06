@@ -9,57 +9,39 @@ import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.RelationGroupService;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Named;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
+import lombok.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import jakarta.faces.model.SelectItem;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-/**
- *
- * @author miledrousset
- */
+
 @Data
 @SessionScoped
 @Named(value = "modifyGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private TreeGroups treeGroups;
-    @Autowired @Lazy
-    private GroupView groupView;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private CurrentUser currentUser;
+    private final TreeGroups treeGroups;
+    private final GroupView groupView;
+    private final CurrentUser currentUser;
+    private final GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final GroupTypeService groupTypeService;
+    private final RelationGroupService relationGroupService;
 
-    @Autowired
-    private GroupTypeService groupTypeService;
-
-    @Autowired
-    private GroupService groupService;
-
-    private String selectedGroupType;
-    private String idGroup;
-    private String titleGroup;
-    private String notation;
-    private List<SelectItem> listGroupType;
-
-    private NodeAutoCompletion selectedNodeAutoCompletionGroup;
     private boolean moveToRoot = false;
-    @Autowired
-    private RelationGroupService relationGroupService;
+    private List<SelectItem> listGroupType;
+    private String selectedGroupType, idGroup, titleGroup, notation;
+    private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 
 
     public void init() {
@@ -72,16 +54,9 @@ public class ModifyGroupBean implements Serializable {
         listGroupType = groupTypeService.getAllGroupType();
     }
 
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Group !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-
     public void moveGroupTo(){
         if(StringUtils.isEmpty(idGroup)){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Pas de sélection !");
             return;
         }
 
@@ -91,36 +66,31 @@ public class ModifyGroupBean implements Serializable {
             if(!StringUtils.isEmpty(idParent)) {
                 relationGroupService.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso());
             } else {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement à la même place !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("Déplacement à la même place !");
                 return;
             }
         } else {
 
             if(selectedNodeAutoCompletionGroup == null || StringUtils.isEmpty(selectedNodeAutoCompletionGroup.getIdGroup())){
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Pas de sélection !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("Pas de sélection !");
                 return;
             }
 
             if(selectedNodeAutoCompletionGroup.getIdGroup().equalsIgnoreCase(idGroup)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("Déplacement impossible !");
                 return;
             }
 
             /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
             if(groupService.isMoveToDescending(idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage(" Déplacement impossible !");
                 return;
             }
 
 
             if(!StringUtils.isEmpty(idParent)) {
                 if(selectedNodeAutoCompletionGroup.getIdGroup().equalsIgnoreCase(idParent)) {
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement à la même place !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    MessageUtils.showErrorMessage("Déplacement à la même place !");
                     return;
                 }
 
@@ -130,16 +100,11 @@ public class ModifyGroupBean implements Serializable {
         }
 
         selectedTheso.reloadGroups();
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", " Déplacement réussi !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Déplacement réussi !");
     }
 
     /**
-     * permet de retourner la liste des groupes / collections contenus dans le
-     * thésaurus
-     *
-     * @param value
-     * @return
+     * permet de retourner la liste des groupes / collections contenus dans le thésaurus
      */
     public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
@@ -155,35 +120,20 @@ public class ModifyGroupBean implements Serializable {
      *
      */
     public void renameGroup() {
-        FacesMessage msg;
-
-        PrimeFaces pf = PrimeFaces.current();
 
         if (titleGroup.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, " ", " Le label ne doit pas être vide !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage("Le label ne doit pas être vide !");
             return;
         }
 
         if (groupService.isDomainExist(titleGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, " ", " un group existe déjà avec ce nom !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage("Un group existe déjà avec ce nom !");
             return;
         }
         if(groupService.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
             if (groupService.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
                     currentUser.getNodeUser().getIdUser())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
+                MessageUtils.showErrorMessage("Erreur lors de la modification du label !");
                 return;
             }
         } else {
@@ -192,8 +142,7 @@ public class ModifyGroupBean implements Serializable {
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Libellé modifié avec succès !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Libellé modifié avec succès !");
 
         if (treeGroups.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
@@ -203,54 +152,32 @@ public class ModifyGroupBean implements Serializable {
                     groupView.getNodeGroup().getConceptGroup().getIdGroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setName(titleGroup);
             }
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab:tabTree:treeGroups");
-            }
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:treeGroups");
         }
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     public void updateNotation() {
 
-        PrimeFaces pf = PrimeFaces.current();
-        FacesMessage msg;
-
         if (notation == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Notation ne doit pas être null !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage(" Notation ne doit pas être null !");
             return;
         }
 
         if (groupService.isNotationExist(notation, selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage(" La notation existe déjà !");
             return;
         }
 
         if (!groupService.setNotationOfGroup(notation, idGroup, selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage(" Erreur pendant la modification !");
             return;
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Notation modifiée avec succès !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Notation modifiée avec succès !");
 
         if (treeGroups.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
@@ -262,44 +189,25 @@ public class ModifyGroupBean implements Serializable {
             }
         }
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:treeGroups");
     }
 
     public void updateGroupType() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
         if (selectedGroupType == null || selectedGroupType.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Le Type de groupe ne doit pas être vide !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage(" Le Type de groupe ne doit pas être vide !");
             return;
         }
 
         if (!groupTypeService.updateTypeGroup(selectedGroupType, selectedTheso.getCurrentIdTheso(), idGroup)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showErrorMessage(" Erreur pendant la modification !");
             return;
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " groupe modifié avec succès !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
-        }
+        MessageUtils.showInformationMessage("Groupe modifié avec succès !");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:treeGroups");
     }
 }

@@ -23,7 +23,7 @@
         <!-- Nom du thésaurus -->
         <h:panelGroup rendered="#{selectedTheso.isFromUrl()}">
             <p:commandButton icon="pi pi-arrow-circle-left" style="margin-right: 15px"
-                             actionListener="#{selectedTheso.setIsFromUrl(false)}" process="@this" ajax="true"
+                             actionListener="#{selectedTheso.setFromUrl(false)}" process="@this" ajax="true"
                              onclick="changeUrl();" update="wrapper"/>
 
             <h:outputLabel value="#{selectedTheso.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
@@ -93,7 +93,7 @@
             </h:panelGroup>
 
             <!-- Nav Item - Alerts -->
-            <h:panelGroup rendered="#{currentUser.isHasRoleAsAdmin() and menuBean.isNotificationPannelVisible()}"
+            <h:panelGroup rendered="#{currentUser.isHasRoleAsAdmin() and menuBean.isNotificationPanelVisible()}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}"
                                rendered="#{propositionBean.getNbrNewPropositions() > 0}" >

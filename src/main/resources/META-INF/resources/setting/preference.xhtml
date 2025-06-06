@@ -46,7 +46,7 @@
                         <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.setting')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.preference')}</span></h1>
                         </div>
-                        <p:scrollPanel mode="native" style="width:100%; max-height: 600px">
+                        <h:panelGroup style="width:100%;">
                             <div class="col-12" style="height: 100%">
                                 <div class="card shadow mb-4" style="height: 100%;"> 
                                     <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
@@ -313,11 +313,10 @@
                                                     <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                                         <div class="row" style="padding-top: 3px;">
                                                             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
-                                                                <h:outputText value="#{langueBean.getMsg('preferences.deeplApiKey')}"
-                                                                              style="font-size: 14px; font-weight: bold;"/>
+                                                                <h:outputText value="#{langueBean.getMsg('preferences.deeplApiKey')}" style="font-size: 14px; font-weight: bold;"/>
                                                             </div>
                                                             <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                                <p:password value="#{preferenceBean.preferences.deeplApiKey}" style="width: 100%"/>
+                                                                <h:inputText value="#{preferenceBean.preferences.deeplApiKey}" style="width: 100%"/>
                                                                 
                                                                 <h:outputText rendered="#{preferenceBean.preferences.deeplApiKey != null and preferenceBean.preferences.deeplApiKey != '' }"
                                                                               value="#{langueBean.getMsg('preferences.actualDeeplApiKey')} = ........#{preferenceBean.preferences.deeplApiKey.substring(preferenceBean.preferences.deeplApiKey.length()/2)}"/>
@@ -330,7 +329,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </p:scrollPanel>
+                        </h:panelGroup>
                         <div class="row" style="padding-top: 5px; ">
                             <div class="col-12" style="text-align: center;width: 100%">
                                 <p:commandButton value="#{langueBean.getMsg('candidat.save')}" styleClass="ui-button-success"

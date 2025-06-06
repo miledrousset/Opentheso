@@ -450,6 +450,10 @@ public class ConceptService {
         }
 
         concept.get().setModified(new Date());
+        concept.get().setContributor(contributor);
+        concept.get().setNotation(concept.get().getNotation() == null ? "" : concept.get().getNotation());
+        concept.get().setIdDoi(concept.get().getIdDoi() == null ? "" : concept.get().getIdDoi());
+        concept.get().setIdArk(concept.get().getIdArk() == null ? "" : concept.get().getIdArk());
         conceptRepository.save(concept.get());
         log.info("Mise à jour de la date de modification du concept id {}", idConcept);
         return true;

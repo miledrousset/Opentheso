@@ -4,12 +4,12 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.fusion.FusionService;
 
 import fr.cnrs.opentheso.utils.MessageUtils;
+import jakarta.enterprise.context.SessionScoped;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import jakarta.inject.Named;
-import jakarta.faces.view.ViewScoped;
 import jakarta.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 
@@ -23,7 +23,7 @@ import org.primefaces.model.StreamedContent;
 
 
 @Data
-@ViewScoped
+@SessionScoped
 @Named("atelierThesBean")
 public class AtelierThesBean implements Serializable {
 

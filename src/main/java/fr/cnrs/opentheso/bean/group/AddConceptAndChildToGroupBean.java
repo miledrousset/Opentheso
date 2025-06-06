@@ -9,16 +9,14 @@ import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -30,21 +28,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptAndChildToGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private ConceptView conceptView;
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private ConceptService conceptService;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
+    private final SelectedTheso selectedTheso;
+    private final ConceptView conceptView;
+    private final CurrentUser currentUser;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
 
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 
@@ -54,13 +43,6 @@ public class AddConceptAndChildToGroupBean implements Serializable {
     }
 
 
-    /**
-     * permet de retourner la liste des groupes / collections contenus dans le
-     * thésaurus
-     *
-     * @param value
-     * @return
-     */
     public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
@@ -76,13 +58,8 @@ public class AddConceptAndChildToGroupBean implements Serializable {
      */
     public void addConceptAndChildToGroup(int idUser) {
 
-        // selectedAtt.getIdConcept() est le terme TG à ajouter
-        // terme.getIdC() est le terme séléctionné dans l'arbre
-        // terme.getIdTheso() est l'id du thésaurus
-        FacesMessage msg;
-        if (selectedNodeAutoCompletionGroup == null || selectedNodeAutoCompletionGroup.getIdGroup().equals("")) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "pas de sélection !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (selectedNodeAutoCompletionGroup == null || "".equals(selectedNodeAutoCompletionGroup.getIdGroup())) {
+            MessageUtils.showErrorMessage("Aucune sélection !!");
             return;
         }
 
@@ -93,12 +70,9 @@ public class AddConceptAndChildToGroupBean implements Serializable {
 
         // addConceptToGroup
         for (String idConcept : allId) {
-            if (!groupService.addConceptGroupConcept(
-                    selectedNodeAutoCompletionGroup.getIdGroup(),
-                    idConcept,
+            if (!groupService.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(), idConcept,
                     selectedTheso.getCurrentIdTheso())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de l'ajout du concept à la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("Erreur lors de l'ajout du concept à la collection !!");
                 return;
             }
         }
@@ -115,22 +89,8 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La branche a bien été ajoutée à la collection");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("La branche a bien été ajoutée à la collection");
         PrimeFaces.current().executeScript("PF('addConceptAndChildToGroup').hide();");
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
-    }
-
-    public NodeAutoCompletion getSelectedNodeAutoCompletionGroup() {
-        return selectedNodeAutoCompletionGroup;
-    }
-
-    public void setSelectedNodeAutoCompletionGroup(NodeAutoCompletion selectedNodeAutoCompletionGroup) {
-        this.selectedNodeAutoCompletionGroup = selectedNodeAutoCompletionGroup;
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 }

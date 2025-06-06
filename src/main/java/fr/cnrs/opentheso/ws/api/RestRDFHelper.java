@@ -2,12 +2,10 @@ package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
-import fr.cnrs.opentheso.services.ExportService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
@@ -22,8 +20,10 @@ import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.exports.ExportService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
@@ -78,9 +78,6 @@ public class RestRDFHelper {
     private PreferenceService preferenceService;
 
     @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
     private ResourceService resourceService;
 
     @Autowired
@@ -91,6 +88,8 @@ public class RestRDFHelper {
     private ConceptService conceptService;
     @Autowired
     private ConceptAddService conceptAddService;
+    @Autowired
+    private SearchService searchService;
 
 
     private enum Choix {
@@ -821,15 +820,15 @@ public class RestRDFHelper {
             return null;
         }
 
-        ArrayList<String> idConcepts = null;
+        List<String> idConcepts = null;
         if(StringUtils.isEmpty(match)){
-            idConcepts = searchHelper.searchAutoCompletionWSForWidget(value, lang, groups, idTheso);
+            idConcepts = searchService.searchAutoCompletionWSForWidget(value, lang, groups, idTheso);
         } else {
             if(match.equalsIgnoreCase("exact")) {
-                idConcepts = searchHelper.searchAutoCompletionWSForWidgetMatchExact(value, lang, groups, idTheso);               
+                idConcepts = searchService.searchAutoCompletionWSForWidgetMatchExact(value, lang, groups, idTheso);
             }
             if(match.equalsIgnoreCase("exactone")) {
-                idConcepts = searchHelper.searchAutoCompletionWSForWidgetMatchExactForOneLabel(value, lang, groups, idTheso);            
+                idConcepts = searchService.searchAutoCompletionWSForWidgetMatchExactForOneLabel(value, lang, groups, idTheso);
             }
         }
 
@@ -883,7 +882,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ArrayList<String> idConcepts = searchHelper.searchNotationId(value, idTheso);
+        List<String> idConcepts = searchService.searchNotationId(value, idTheso);
 
         if (idConcepts == null || idConcepts.isEmpty()) {
             return null;
@@ -954,10 +953,10 @@ public class RestRDFHelper {
 
         JsonHelper jsonHelper = new JsonHelper();
         String uri;
-        ArrayList<NodeAutoCompletion> nodeAutoCompletion;
+        List<NodeAutoCompletion> nodeAutoCompletion;
 
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(value, lang, groups, idTheso, withNotes);
+        nodeAutoCompletion = searchService.searchAutoCompletionWS(value, lang, groups, idTheso, withNotes);
 
         if (nodeAutoCompletion == null || nodeAutoCompletion.isEmpty()) {
             return null;
@@ -1073,11 +1072,11 @@ public class RestRDFHelper {
         } else
             value = "";
 
-        ArrayList<String> nodeIds;
+        List<String> nodeIds;
         if(match) {
-            nodeIds = searchHelper.searchAutoCompletionWSForWidgetMatchExact(value, lang, groups, idTheso);
+            nodeIds = searchService.searchAutoCompletionWSForWidgetMatchExact(value, lang, groups, idTheso);
         } else {
-            nodeIds = searchHelper.searchAutoCompletionWSForWidget(value, lang, groups, idTheso);
+            nodeIds = searchService.searchAutoCompletionWSForWidget(value, lang, groups, idTheso);
         }
 
         if (CollectionUtils.isEmpty(nodeIds)) {

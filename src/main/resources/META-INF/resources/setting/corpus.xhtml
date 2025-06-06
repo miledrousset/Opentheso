@@ -110,7 +110,8 @@
                                             </p:commandButton>
 
                                             <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" ajax="true"
-                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
+                                                             update="containerIndex:idConfirmDeleteCorpus"
                                                              oncomplete="PF('confirmDeleteCorpus').show()"/>
                                         </p:column>
 

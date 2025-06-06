@@ -1,9 +1,5 @@
 package fr.cnrs.opentheso.bean.leftbody.viewgroups;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -22,53 +18,42 @@ import fr.cnrs.opentheso.services.RelationGroupService;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "treeGroups")
+
+@Data
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "treeGroups")
 public class TreeGroups implements Serializable {
 
-    @Autowired @Lazy
-    private RightBodySetting rightBodySetting;
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-    @Autowired @Lazy
-    private ConceptView conceptView;
-    @Autowired @Lazy
-    private GroupView groupView;
-    @Autowired @Lazy
-    private LeftBodySetting leftBodySetting;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private PropositionBean propositionBean;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private PathService pathService;
+    private final RightBodySetting rightBodySetting;
+    private final CurrentUser currentUser;
+    private final ConceptView conceptView;
+    private final GroupView groupView;
+    private final LeftBodySetting leftBodySetting;
+    private final SelectedTheso selectedTheso;
+    private final PropositionBean propositionBean;
+    private final GroupService groupService;
+    private final PathService pathService;
+    private final ConceptService conceptService;
+    private final RelationGroupService relationGroupService;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
     private boolean sortByNotation;
-    @Autowired
-    private RelationGroupService relationGroupService;
-    @Autowired
-    private ConceptService conceptService;
+
 
     public void reset() {
         root = null;
@@ -110,18 +95,6 @@ public class TreeGroups implements Serializable {
             }
         }
         return true;
-    }
-
-    public TreeNode getRoot() {
-        return root;
-    }
-
-    public TreeNode getSelectedNode() {
-        return selectedNode;
-    }
-
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
@@ -390,19 +363,6 @@ public class TreeGroups implements Serializable {
         return ((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup();
     }
 
-    public boolean isSortByNotation() {
-        return sortByNotation;
-    }
-
-    public void setSortByNotation(boolean sortByNotation) {
-        this.sortByNotation = sortByNotation;
-    }
-
-    /**
-     * permet de savoir si le groupe/collection a un sous group/collection
-     *
-     * @return
-     */
     public boolean isThisGroupHaveSubGroup() {
         if (selectedNode == null) {
             return false;

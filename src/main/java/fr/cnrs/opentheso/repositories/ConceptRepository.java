@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -311,4 +312,10 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     @Modifying
     @Query(value = "UPDATE concept SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
     void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
+    @Procedure(procedureName = "opentheso_add_new_concept")
+    void addNewConcept(String idTheso, String idConcept, Integer idUser, String status, String conceptType, String notation,
+            String arkId, Boolean isTopConcept, String handle, String doi, String prefLabels, String relations,
+            String customRelations, String notes, String nonPrefLabels, String alignments, String images, String replacedBy,
+            Boolean hasGps, String gps, String created, String modified, String dcterms);
 }

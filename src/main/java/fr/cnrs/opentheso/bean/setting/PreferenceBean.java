@@ -79,8 +79,6 @@ public class PreferenceBean implements Serializable {
                 nodePreference.setUseArk(false);
                 nodePreference.setUseArkLocal(false);
                 preferenceService.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());
-                break;                
-            default:
                 break;
         }
     }
@@ -95,14 +93,8 @@ public class PreferenceBean implements Serializable {
             return;
         }
 
-        preferences.setOriginalUriIsArk(false);
-        preferences.setOriginalUriIsHandle(false);
-
-        if (uriType.equalsIgnoreCase("ark")) {
-            preferences.setOriginalUriIsArk(true);
-        } else if (uriType.equalsIgnoreCase("handle")) {
-            preferences.setOriginalUriIsHandle(true);
-        }
+        preferences.setOriginalUriIsArk(uriType.equalsIgnoreCase("ark"));
+        preferences.setOriginalUriIsHandle(uriType.equalsIgnoreCase("handle"));
         preferenceService.updateAllPreferenceUser(preferences);
 
         MessageUtils.showInformationMessage("Préférences enregistrées avec succès");

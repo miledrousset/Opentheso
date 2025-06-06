@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.entites.ConceptFacet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,4 +63,7 @@ public interface ConceptFacetRepository extends JpaRepository<ConceptFacet, Inte
     @Modifying
     @Query(value = "UPDATE concept_facet SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
     void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
+    @Procedure(procedureName = "opentheso_add_facet")
+    void addFacet(String idFacet, Integer idUser, String idTheso, String idConceptParent, String labels, String members, String notes);
 }

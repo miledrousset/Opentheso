@@ -167,7 +167,7 @@ public class SynonymBean implements Serializable {
 
         duplicate = false;
 
-        if (nonPreferredTermService.updateNonPreferredTerm(nodeEM.getOldValue(), nodeEM.getLexicalValue(),
+        if (!nonPreferredTermService.updateNonPreferredTerm(nodeEM.getOldValue(), nodeEM.getLexicalValue(),
                 conceptBean.getNodeConcept().getTerm().getIdTerm(), nodeEM.getLang(), selectedTheso.getCurrentIdTheso(),
                 nodeEM.isHiden(), idUser)) {
             MessageUtils.showErrorMessage("La modification a échoué !");

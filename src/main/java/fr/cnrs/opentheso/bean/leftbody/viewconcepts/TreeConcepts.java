@@ -16,46 +16,40 @@ import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ResourceService;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-
 import jakarta.enterprise.context.SessionScoped;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "treeConcepts")
+
+@Data
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "treeConcepts")
 public class TreeConcepts implements Serializable {
 
-    @Autowired @Lazy private RightBodySetting rightBodySetting;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private GroupView groupView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private PropositionBean propositionBean;
+    private final GroupView groupView;
+    private final CurrentUser currentUser;
+    private final ConceptView conceptView;
+    private final GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final PropositionBean propositionBean;
+    private final ConceptService conceptService;
+    private final RelationService relationService;
+    private final ResourceService resourceService;
+    private final RightBodySetting rightBodySetting;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private ResourceService resourceService;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private RelationService relationService;
 
 
     public void reset() {
@@ -92,18 +86,6 @@ public class TreeConcepts implements Serializable {
             }
         }
         return true;
-    }
-
-    public TreeNode getRoot() {
-        return root;
-    }
-
-    public TreeNode getSelectedNode() {
-        return selectedNode;
-    }
-
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
     }
 
     public void onNodeExpand(NodeExpandEvent event) {

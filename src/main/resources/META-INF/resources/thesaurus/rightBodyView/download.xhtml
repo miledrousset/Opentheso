@@ -18,29 +18,25 @@
 
                             <p:commandButton value="RDF/XML" ajax="true" process="@this" update="messageIndex"
                                              style="font-size: 13px; color: #164A78; background: none; border: none; box-shadow: none">
-                                <p:fileDownload  value="#{exportFileBean.conceptToFile(
-                                                          conceptView.nodeConcept.concept.idConcept,
+                                <p:fileDownload  value="#{exportFileBean.conceptToFile(conceptView.nodeConcept.concept.idConcept,
                                                           conceptView.nodeConcept.concept.idThesaurus,'skos')}"/>
                             </p:commandButton>
 
                             <p:commandButton value="Json" ajax="true" process="@form" update="messageIndex"
                                              style="font-size: 13px; color: #164A78; background: none; border: none; box-shadow: none">
-                                <p:fileDownload  value="#{exportFileBean.conceptToFile(
-                                                          conceptView.nodeConcept.concept.idConcept,
+                                <p:fileDownload  value="#{exportFileBean.conceptToFile(conceptView.nodeConcept.concept.idConcept,
                                                           conceptView.nodeConcept.concept.idThesaurus,'json')}" />
                             </p:commandButton>
 
                             <p:commandButton value="JsonLd"  ajax="true" process="@form" update="messageIndex"
                                              style="font-size: 13px; color: #164A78; background: none; border: none; box-shadow: none">
-                                <p:fileDownload  value="#{exportFileBean.conceptToFile(
-                                                          conceptView.nodeConcept.concept.idConcept,
+                                <p:fileDownload  value="#{exportFileBean.conceptToFile(conceptView.nodeConcept.concept.idConcept,
                                                           conceptView.nodeConcept.concept.idThesaurus,'jsonld')}" />
                             </p:commandButton>
 
                             <p:commandButton  value="Turtle"  ajax="true" process="@form" update="messageIndex"
                                               style="font-size: 13px; color: #164A78; background: none; border: none; box-shadow: none;">
-                                <p:fileDownload  value="#{exportFileBean.conceptToFile(
-                                                          conceptView.nodeConcept.concept.idConcept,
+                                <p:fileDownload  value="#{exportFileBean.conceptToFile(conceptView.nodeConcept.concept.idConcept,
                                                           conceptView.nodeConcept.concept.idThesaurus,'turtle')}" />
                             </p:commandButton>
                             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

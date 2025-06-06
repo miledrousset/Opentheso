@@ -21,7 +21,6 @@ import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ArkService;
@@ -33,6 +32,7 @@ import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
@@ -65,9 +65,7 @@ import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
@@ -97,130 +95,61 @@ public class ImportFileBean implements Serializable {
     private String workLanguage;
 
     private final ThesaurusService thesaurusService;
-    
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-    @Autowired
-    private RelationGroupService relationGroupService;
-    @Autowired @Lazy
-    private RoleOnThesaurusBean roleOnThesoBean;
-    @Autowired @Lazy
-    private ViewEditionBean viewEditionBean;
-    @Autowired @Lazy
-    private ConceptView conceptView;
-    @Autowired @Lazy
-    private Tree tree;
-    @Autowired @Lazy
-    private CandidatBean candidatBean;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private PreferredTermRepository preferredTermRepository;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
-    private CsvImportHelper csvImportHelper;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private ImportRdf4jHelper importRdf4jHelper;
-
-    @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository;
-
-    @Autowired
-    private NonPreferredTermService nonPreferredTermService;
-
-    @Autowired
-    private AlignmentService alignmentService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final ArkService arkService;
+    private final NoteService noteService;
+    private final SearchService searchService;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final CurrentUser currentUser;
+    private final RelationGroupService relationGroupService;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final ViewEditionBean viewEditionBean;
+    private final ConceptView conceptView;
+    private final Tree tree;
+    private final CandidatBean candidatBean;
+    private final SelectedTheso selectedTheso;
+    private final GroupService groupService;
+    private final PreferredTermRepository preferredTermRepository;
+    private final CsvImportHelper csvImportHelper;
+    private final LanguageRepository languageRepository;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final PreferenceService preferenceService;
+    private final ImageService imageService;
+    private final ImportRdf4jHelper importRdf4jHelper;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final AlignmentService alignmentService;
 
     private double progress = 0;
     private double progressStep = 0;
+    private int typeImport, total;
 
-    private int typeImport;
+    private String info = "";
+    private String warning = "";
+    private String formatDate = "yyyy-MM-dd";
     private String selectedIdentifier = "sans";
-    private String prefixHandle;
-    private boolean isCandidatImport;
-    private String prefixDoi;
-
-    // import CSV
+    private String prefixHandle, selectedIdentifierImportAlign, prefixDoi, uri, thesaurusName, selectedUserProject,
+            selectedConcept, alignmentSource, selectedLang, fileName, selectedSearchType, idLang;
+    private boolean loadDone, BDDinsertEnable, importDone, importInProgress, isCandidatImport, haveError, clearBefore;
     private char delimiterCsv = ',';
     private int choiceDelimiter = 0;
-    private String thesaurusName;
-    private ArrayList<CsvReadHelper.ConceptObject> conceptObjects;
-    private ArrayList<String> langs;
-    private String idLang;
-    private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
+    private List<CsvReadHelper.ConceptObject> conceptObjects;
+    private List<String> langs;
 
-    private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;
-    private ArrayList<NodeDeprecated> nodeDeprecateds;
+    private List<NodeAlignmentImport> nodeAlignmentImports;
+    private List<NodeReplaceValueByValue> nodeReplaceValueByValues;
+    private List<NodeDeprecated> nodeDeprecateds;
+    private List<LanguageIso639> allLangs;
+    private List<UserGroupLabel> nodeUserProjects;
+    private List<NodeIdValue> nodeIdValues;
+    private List<NodeCompareTheso> nodeCompareThesos;
 
     //CSV Structuré
     private NodeTree racine;
-
-    private String selectedIdentifierImportAlign;
-
-    private String formatDate = "yyyy-MM-dd";
-    private String uri;
-    private int total;
-
-    private boolean loadDone = false;
-    private boolean BDDinsertEnable = false;
-    private boolean importDone = false;
-    private boolean importInProgress = false;
-
     private SKOSXmlDocument sKOSXmlDocument;
-    private String info = "";
     private StringBuffer error = new StringBuffer();
-    private String warning = "";
 
-    private List<UserGroupLabel> nodeUserProjects;
-    private String selectedUserProject;
-
-    private List<LanguageIso639> allLangs;
-    private String selectedLang;
-
-    // pour les alignements
-    private String selectedConcept;
-    private String alignmentSource;
-
-    private boolean haveError;
-
-    private boolean clearBefore;
-
-    private ArrayList<NodeIdValue> nodeIdValues;
-    private ArrayList<NodeCompareTheso> nodeCompareThesos;
-
-    private String fileName;
-
-    private String selectedSearchType;
-    @Autowired
-    private NonPreferredTermRepository nonPreferredTermRepository;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private ConceptAddService conceptAddService;
-    @Autowired
-    private ArkService arkService;
-    @Autowired
-    private NoteService noteService;
 
 
     public void init() {
@@ -1168,7 +1097,7 @@ public class ImportFileBean implements Serializable {
             selectedLang = workLanguage;
         }
 
-        String idNewTheso = csvImportHelper.createTheso(thesaurusName, selectedLang,
+        String idNewTheso = csvImportHelper.createThesaurus(thesaurusName, selectedLang,
                 idProject, currentUser.getNodeUser());
 
         if (idNewTheso == null || idNewTheso.isEmpty()) {
@@ -1255,7 +1184,7 @@ public class ImportFileBean implements Serializable {
         }
 
         // création du thésaurus
-        String idNewTheso = csvImportHelper.createTheso(thesaurusName, selectedLang,
+        String idNewTheso = csvImportHelper.createThesaurus(thesaurusName, selectedLang,
                 idProject, currentUser.getNodeUser());
 
         if (idNewTheso == null || idNewTheso.isEmpty()) {
@@ -1353,7 +1282,7 @@ public class ImportFileBean implements Serializable {
         }
 
         // création du thésaurus
-        String idNewTheso = csvImportHelper.createTheso(thesaurusName, selectedLang,
+        String idNewTheso = csvImportHelper.createThesaurus(thesaurusName, selectedLang,
                 idProject, currentUser.getNodeUser());
         if (idNewTheso == null || idNewTheso.isEmpty()) {
             return;
@@ -1605,9 +1534,9 @@ public class ImportFileBean implements Serializable {
 
         PrimeFaces.current().executeScript("PF('waitDialog').show();");
 
-        ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
 
-        ArrayList<NodeCompareTheso> nodeCompareThesosTemp = new ArrayList<>();
+        List<NodeCompareTheso> nodeCompareThesosTemp = new ArrayList<>();
         boolean writtenInfo;
 
         // mise à jouor des concepts
@@ -1622,16 +1551,16 @@ public class ImportFileBean implements Serializable {
                 }
                 switch (selectedSearchType) {
                     case "exactWord":
-                        nodeSearchMinis = searchHelper.searchExactTermForAutocompletion(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        nodeSearchMinis = searchService.searchExactTermForAutocompletion(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
                         break;
                     case "containsExactWord":
-                        nodeSearchMinis = searchHelper.searchExactMatch(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
+                        nodeSearchMinis = searchService.searchExactMatch(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     case "startWith":
-                        nodeSearchMinis = searchHelper.searchStartWith(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
+                        nodeSearchMinis = searchService.searchStartWith(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     case "elastic":
-                        nodeSearchMinis = searchHelper.searchFullTextElastic(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
+                        nodeSearchMinis = searchService.searchFullTextElastic(nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso, false);
                         break;
                     default:
                         break;

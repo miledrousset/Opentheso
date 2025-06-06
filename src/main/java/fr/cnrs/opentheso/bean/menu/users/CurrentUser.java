@@ -32,11 +32,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import jakarta.inject.Named;
+
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "currentUser")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentUser implements Serializable {
@@ -207,7 +210,7 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         if ("index".equals(menuBean.getActivePageName())) {
-            menuBean.setNotificationPannelVisible(true);
+            menuBean.setNotificationPanelVisible(true);
         }
 
         setInfos();

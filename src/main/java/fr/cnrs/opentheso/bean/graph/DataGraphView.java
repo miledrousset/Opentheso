@@ -2,65 +2,43 @@ package fr.cnrs.opentheso.bean.graph;
 
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
-
 import fr.cnrs.opentheso.models.graphs.GraphObject;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.graphs.GraphService;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.ExternalContext;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
+import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.net.URISyntaxException;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.AjaxBehaviorEvent;
-import jakarta.inject.Named;
-import lombok.Data;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.primefaces.component.chip.Chip;
 import org.primefaces.extensions.event.ClipboardErrorEvent;
 import org.primefaces.extensions.event.ClipboardSuccessEvent;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.http.client.utils.URIBuilder;
 import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.EagerResult;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
-import org.primefaces.PrimeFaces;
-import org.apache.http.client.utils.URIBuilder;
-import java.net.URISyntaxException;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 
-/**
- *
- * @author miledrousset
- */
 @Data
-@Named
-@SessionScoped
-public class DataGraphView implements Serializable {
-
-
-    private final SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private GraphService graphService;
-
-    @Autowired
-    private SearchHelper searchHelper;
+@Service
+@RequiredArgsConstructor
+public class DataGraphView {
 
     @Value("${neo4j.serverName}")
     private String serverNameNeo4j;
@@ -77,49 +55,21 @@ public class DataGraphView implements Serializable {
     @Value("${neo4j.databaseName}")
     private String databaseNameNeo4j;
 
-    @Autowired
-    private ThesaurusService thesaurusService;
-
-    private List<GraphObject> graphObjects;
-
-    private GraphObject selectedGraph;
+    private final LanguageBean langueBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final GraphService graphService;
+    private final ThesaurusService thesaurusService;
+    private final PreferenceService preferenceService;
+    private final TermService termService;
+    private final SearchService searchService;
 
     private int selectedViewId;
-    private String selectedViewName;
-
-    private String newViewName;
-    private String newViewDescription;
-    private String newViewDataToAdd;
+    private String selectedViewName, newViewName, newViewDescription, newViewDataToAdd, selectedIdTheso;
     private List<ImmutablePair<String, String>> newViewExportedData;
-    
-    private String selectedIdTheso;
     private NodeSearchMini searchSelected;
-    @Autowired
-    private LanguageBean langueBean;
-
-    @Autowired
-    private PreferenceService preferenceService;
-    @Autowired
-    private TermService termService;
-    @Autowired
-    private SearchService searchService;
-
-    @jakarta.inject.Inject
-    public DataGraphView(@Named("selectedTheso") SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-
-    private Properties getPrefOfNeo4j(){
-
-        var props = new Properties();
-        props.setProperty("neo4j.serverName", serverNameNeo4j);
-        props.setProperty("neo4j.serverPort", serverPortNeo4j);
-        props.setProperty("neo4j.user", userNeo4j);
-        props.setProperty("neo4j.password", passwordNeo4j);
-        props.setProperty("neo4j.databaseName", databaseNameNeo4j);
-        return props;
-    }
+    private GraphObject selectedGraph;
+    private List<GraphObject> graphObjects;
 
     /**
      * permet de retourner la liste des concepts possibles pour ajouter une
@@ -137,7 +87,9 @@ public class DataGraphView implements Serializable {
     }
 
     public void init() {
-        graphObjects = new ArrayList<>(graphService.getViews().values());
+
+        int idUser = currentUser.getNodeUser().getIdUser();
+        graphObjects = new ArrayList<>(graphService.getViews(idUser).values());
         selectedIdTheso = null;
         searchSelected = null;
     }
@@ -151,37 +103,35 @@ public class DataGraphView implements Serializable {
         newViewExportedData = new ArrayList<>();
     }
 
-    // pour afficher la valeur des identifiants de thésaurus et concept
-    public void onSelectTheso(AjaxBehaviorEvent e) {
+    public void onSelectThesaurus(AjaxBehaviorEvent e) {
         String idTheso = ((Chip) e.getSource()).getLabel();
         String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
         String nameOfTheso = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        MessageUtils.showInformationMessage("Thesaurus : " + nameOfTheso);
     }
 
     // pour afficher la valeur des identifiants de thésaurus et concept
-    public void onSelectThesoConcept(AjaxBehaviorEvent e) {
-        String idThesoConcept = ((Chip) e.getSource()).getLabel();
-        String[] idValue = idThesoConcept.split(",");
+    public void onSelectThesaurusConcept(AjaxBehaviorEvent e) {
 
-        String idTheso = idValue[0].trim();
-        String idConcept = idValue[1].trim();
+        var idValue = ((Chip) e.getSource()).getLabel().split(",");
+        var idThesaurus = idValue[0].trim();
+        var idConcept = idValue[1].trim();
 
-        String idLang = preferenceService.getWorkLanguageOfThesaurus(idTheso);
-        String nameOfTheso = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
-        String nameOfConcept = termService.getLexicalValueOfConcept(idConcept,idTheso,idLang);
-        FacesMessage message1 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Thesaurus", nameOfTheso);
-        FacesMessage message2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "Concept", nameOfConcept);
-        FacesContext.getCurrentInstance().addMessage(null, message1);
-        FacesContext.getCurrentInstance().addMessage(null, message2);
+        var idLang = preferenceService.getWorkLanguageOfThesaurus(idThesaurus);
+        var nameOfThesaurus = thesaurusService.getTitleOfThesaurus(idThesaurus, idLang);
+        var nameOfConcept = termService.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
+
+        MessageUtils.showInformationMessage("Thesaurus : " + nameOfThesaurus);
+        MessageUtils.showInformationMessage("Concept : " + nameOfConcept);
     }
 
     public void initEditViewDialog(String id) {
-        GraphObject viewToEdit = graphService.getView(id);
+
+        var viewToEdit = graphService.getView(id);
         if (viewToEdit == null) {
             return;
         }
+
         selectedViewId = viewToEdit.getId();
         newViewName = viewToEdit.getName();
         newViewDescription = viewToEdit.getDescription();
@@ -190,8 +140,8 @@ public class DataGraphView implements Serializable {
     }
 
     public String generateGraphVisualizationUrl(String viewId) throws URISyntaxException {
-        GraphObject view = graphService.getView(viewId);
 
+        var view = graphService.getView(viewId);
         if (view == null) {
             return null;
         }
@@ -204,7 +154,7 @@ public class DataGraphView implements Serializable {
         final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
 
         // Utilisation de URIBuilder pour construire l'URL
-        URIBuilder uriBuilder = new URIBuilder(baseDataURL);
+        var uriBuilder = new URIBuilder(baseDataURL);
         uriBuilder.addParameter("lang", "fr");
 
         if (!view.getExportedData().isEmpty()) {
@@ -214,82 +164,63 @@ public class DataGraphView implements Serializable {
             });
         }
 
-        String urlString = uriBuilder.build().toString();
-
         // Construit l'URL de redirection
-        URIBuilder redirectUrlBuilder = new URIBuilder(opethesoUrl + "/d3js/index.xhtml");
-
-        redirectUrlBuilder.addParameter("dataUrl", urlString);
-
+        var redirectUrlBuilder = new URIBuilder(opethesoUrl + "/d3js/index.xhtml");
+        redirectUrlBuilder.addParameter("dataUrl", uriBuilder.build().toString());
         redirectUrlBuilder.addParameter("format", "opentheso");
         return redirectUrlBuilder.build().toString();
     }
 
     public void exportToNeo4J(String viewId) {
         
-        Properties properties = getPrefOfNeo4j();
-        if(properties == null){
-            showMessage(FacesMessage.SEVERITY_ERROR, "La base de données Neo4J n'est pas paramétrée, ouvrez hikari.properties et faire le changement !");
-            return;
-        }
-        
-        GraphObject view = graphService.getView(viewId);
+        var properties = getPrefOfNeo4j();
+        var view = graphService.getView(viewId);
         if (view == null) {
             return;
         }
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        //       String openthesoUrl = "http://localhost:8080/opentheso2";
-        String openthesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
+
+        var context = FacesContext.getCurrentInstance().getExternalContext();
+        var openthesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
                 + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
                 + context.getApplicationContextPath();
 
-        final String dbUri = "neo4j://" + properties.getProperty("neo4j.serverName") + ":" + properties.getProperty("neo4j.serverPort"); //"neo4j://localhost:7687";
-        final String dbUser = properties.getProperty("neo4j.user");//"neo4j";
-        final String dbPassword = properties.getProperty("neo4j.password");//"neo4j1234";
-        final String dbName = properties.getProperty("neo4j.databaseName");//"neo4j"; //TODO mettre Neo4j avant de commit
+        var dbUri = "neo4j://" + properties.getProperty("neo4j.serverName") + ":" + properties.getProperty("neo4j.serverPort"); //"neo4j://localhost:7687";
+        var dbUser = properties.getProperty("neo4j.user");
+        var dbPassword = properties.getProperty("neo4j.password");
+        var dbName = properties.getProperty("neo4j.databaseName");
 
-        final String thesaurusImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/thesaurus/%THESO_ID%";
-        final String branchImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/concept/%THESO_ID%/%TOP_CONCEPT_ID%/expansion?way=down";
+        var thesaurusImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/thesaurus/%THESO_ID%";
+        var branchImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/concept/%THESO_ID%/%TOP_CONCEPT_ID%/expansion?way=down";
 
         try (var driver = GraphDatabase.driver(dbUri, AuthTokens.basic(dbUser, dbPassword))) {
             driver.verifyConnectivity();
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             view.getExportedData().forEach((data) -> {
-
-                String importURL;
-                if (data.right == null) {
-                    importURL = thesaurusImportURIWithPlaceholder.replace("%THESO_ID%", data.left);
-                } else {
-                    importURL = branchImportURIWithPlaceholder.replace("%THESO_ID%", data.left).replace("%TOP_CONCEPT_ID%", data.right);
-                }
-
                 builder.append("CALL n10s.rdf.import.fetch(\""); 
-                builder.append(importURL);
+                builder.append(data.right == null
+                        ? thesaurusImportURIWithPlaceholder.replace("%THESO_ID%", data.left)
+                        : branchImportURIWithPlaceholder.replace("%THESO_ID%", data.left).replace("%TOP_CONCEPT_ID%", data.right));
                 builder.append("\", \"RDF/XML\", {headerParams: { Accept: \"application/rdf+xml;charset=utf-8\"}});\n");
             });
 
-           // System.out.println(builder);
-
-            EagerResult result = driver.executableQuery("CALL apoc.cypher.runMany('" + builder.toString() + "', {}, {statistics:false,timeout:10})")
+            var result = driver.executableQuery("CALL apoc.cypher.runMany('" + builder.toString() + "', {}, {statistics:false,timeout:10})")
                     .withConfig(QueryConfig.builder().withDatabase(dbName).build())
                     .execute();
 
             List<org.neo4j.driver.Record> records = result.records();
-
             if (!records.isEmpty()) {
                 records.forEach(System.out::println);
             }
-            showMessage(FacesMessage.SEVERITY_INFO, "Export réussi vers Neo4J !");
+            MessageUtils.showInformationMessage("Export réussi vers Neo4J !");
         } catch (Exception e) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de connexion à la base de données Neo4J !");
-            e.printStackTrace();
+            MessageUtils.showErrorMessage("Erreur de connexion à la base de données Neo4J !");
         }
     }
 
     public void removeView(String viewId) {
         graphService.deleteView(viewId);
-        showMessage(FacesMessage.SEVERITY_INFO, "Vue supprimée avec succès");
+        MessageUtils.showInformationMessage("Vue supprimée avec succès");
         init();
     }
 
@@ -311,7 +242,7 @@ public class DataGraphView implements Serializable {
         tuple = new ImmutablePair<>(selectedIdTheso, idConcept);
         
         if(graphService.isExistDatas(selectedViewId, selectedIdTheso, idConcept)){
-            showMessage(FacesMessage.SEVERITY_WARN, "Cette combinaison existe déjà !");
+            MessageUtils.showWarnMessage("Cette combinaison existe déjà !");
             init();
             return;
         }
@@ -324,27 +255,28 @@ public class DataGraphView implements Serializable {
 
     public void applyView() {
         if (newViewName.isEmpty() || newViewDescription.isEmpty()) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Une vue doit possèder un nom et une description");
+            MessageUtils.showErrorMessage("Une vue doit possèder un nom et une description");
             return;
         }
         if (selectedViewId == -1) {
-            int newViewId = graphService.createView(new GraphObject(newViewName, newViewDescription, new ArrayList<>()));
+            int idUser = currentUser.getNodeUser().getIdUser();
+            int newViewId = graphService.createView(new GraphObject(newViewName, newViewDescription, new ArrayList<>()), idUser);
             if(newViewId == -1){
-                showMessage(FacesMessage.SEVERITY_ERROR, "La création de la vue a échoué");
+                MessageUtils.showErrorMessage("La création de la vue a échoué");
                 init();
                 return;
             }
             selectedViewId = newViewId;
-            showMessage(FacesMessage.SEVERITY_INFO, "Vue créée avec succès");
+            MessageUtils.showInformationMessage("Vue créée avec succès");
         } else {
             graphService.saveView(new GraphObject(selectedViewId, newViewName, newViewDescription, newViewExportedData));
-            showMessage(FacesMessage.SEVERITY_INFO, "Vue modifiée avec succès");
+            MessageUtils.showInformationMessage("Vue modifiée avec succès");
         }
         init();
     }
 
     public void removeExportedDataRow(String left, String right) {
-        Optional<ImmutablePair<String, String>> optTuple = newViewExportedData.stream().filter(data -> {
+        var optTuple = newViewExportedData.stream().filter(data -> {
             if (data.right == null) {
                 return data.left.equals(left);
             } else {
@@ -358,22 +290,23 @@ public class DataGraphView implements Serializable {
         init();
     }
 
-    public void showMessage(FacesMessage.Severity messageType, String messageValue) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
-        PrimeFaces.current().ajax().update("messageIndex");
-    }
-
-
     public void successListener(final ClipboardSuccessEvent successEvent) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                langueBean.getMsg("copied"));
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage(langueBean.getMsg("copied"));
     }
 
     public void errorListener(final ClipboardErrorEvent errorEvent) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                "Component id: " + errorEvent.getComponent().getId() + " Action: " + errorEvent.getAction());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showErrorMessage("Component id: " + errorEvent.getComponent().getId() + " Action: " + errorEvent.getAction());
+    }
+
+    private Properties getPrefOfNeo4j(){
+
+        var props = new Properties();
+        props.setProperty("neo4j.serverName", serverNameNeo4j);
+        props.setProperty("neo4j.serverPort", serverPortNeo4j);
+        props.setProperty("neo4j.user", userNeo4j);
+        props.setProperty("neo4j.password", passwordNeo4j);
+        props.setProperty("neo4j.databaseName", databaseNameNeo4j);
+        return props;
     }
 
 }

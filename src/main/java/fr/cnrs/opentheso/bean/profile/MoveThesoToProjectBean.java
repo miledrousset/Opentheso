@@ -8,13 +8,12 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 import java.io.Serializable;
@@ -23,36 +22,20 @@ import java.util.List;
 
 @Data
 @SessionScoped
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Named(value = "moveThesoToProjectBean")
 public class MoveThesoToProjectBean implements Serializable {
 
-    private MyProjectBean myProjectBean;
-    private CurrentUser currentUser;
-    private SuperAdminBean superAdminBean;
-    private UserGroupLabelRepository userGroupLabelRepository;
-    private UserRoleGroupRepository userRoleGroupRepository;
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final MyProjectBean myProjectBean;
+    private final CurrentUser currentUser;
+    private final SuperAdminBean superAdminBean;
+    private final UserGroupLabelRepository userGroupLabelRepository;
+    private final UserRoleGroupRepository userRoleGroupRepository;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
     
     private NodeIdValue selectedThesoToMove;
     private NodeUserGroup newProject;
 
-
-    @Inject
-    public MoveThesoToProjectBean(MyProjectBean myProjectBean,
-                                  CurrentUser currentUser,
-                                  SuperAdminBean superAdminBean,
-                                  UserGroupLabelRepository userGroupLabelRepository,
-                                  UserRoleGroupRepository userRoleGroupRepository,
-                                  UserGroupThesaurusRepository userGroupThesaurusRepository) {
-
-        this.myProjectBean = myProjectBean;
-        this.currentUser = currentUser;
-        this.superAdminBean = superAdminBean;
-        this.userGroupLabelRepository = userGroupLabelRepository;
-        this.userRoleGroupRepository = userRoleGroupRepository;
-        this.userGroupThesaurusRepository = userGroupThesaurusRepository;
-    }
 
     public void setTheso(NodeIdValue selectedThesoToMove) {
         this.selectedThesoToMove = selectedThesoToMove;

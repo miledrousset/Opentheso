@@ -58,7 +58,6 @@ import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
 import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
 import fr.cnrs.opentheso.services.ThesaurusService;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

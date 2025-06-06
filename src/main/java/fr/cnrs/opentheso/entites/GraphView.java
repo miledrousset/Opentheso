@@ -18,17 +18,17 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "graph_view_exported_concept_branch")
-public class GraphViewExportedConceptBranch {
+@Table(name = "graph_view")
+public class GraphView {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer graphViewId;
+    private String name;
 
-    private String topConceptId;
+    private String description;
 
-    private String topConceptThesaurusId;
+    private Integer idUser;
 }
 

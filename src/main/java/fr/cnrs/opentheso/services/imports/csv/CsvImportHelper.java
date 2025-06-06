@@ -1,11 +1,5 @@
 package fr.cnrs.opentheso.services.imports.csv;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import fr.cnrs.opentheso.entites.ExternalResource;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.PreferredTerm;
@@ -18,12 +12,13 @@ import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.repositories.ConceptFacetRepository;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
@@ -39,128 +34,88 @@ import fr.cnrs.opentheso.services.NonPreferredTermService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import fr.cnrs.opentheso.services.ThesaurusService;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.sql.DataSource;
 
 
 @Data
+@Slf4j
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class CsvImportHelper {
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private GpsService gpsService;
-
-    @Autowired
-    private RelationService relationService;
-
-    @Autowired
-    private ExternalResourcesRepository externalResourcesRepository;
-
-    @Autowired
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
-
-    @Autowired
-    private TermService termService;
-
-    @Autowired
-    private TermRepository termRepository;
-
-    @Autowired
-    private NonPreferredTermService nonPreferredTermService;
-
-    @Autowired
-    private AlignmentService alignmentService;
 
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
+
+    private final GpsService gpsService;
+    private final ImageService imageService;
+    private final GroupService groupService;
+    private final RelationService relationService;
+    private final TermService termService;
+    private final TermRepository termRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final AlignmentService alignmentService;
+    private final NoteService noteService;
+    private final FacetService facetService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final ThesaurusService thesaurusService;
+    private final ExternalResourcesRepository externalResourcesRepository;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final PreferredTermRepository preferredTermRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptFacetRepository conceptFacetRepository;
 
     private String message = "";
     private Preferences nodePreference;
     private String langueSource, formatDate;
     private int idUser;
-    @Autowired
-    private PreferredTermRepository preferredTermRepository;
-    @Autowired
-    private ThesaurusService thesaurusService;
-    @Autowired
-    private ConceptAddService conceptAddService;
-    @Autowired
-    private NoteService noteService;
-    @Autowired
-    private FacetService facetService;
-    @Autowired
-    private ConceptService conceptService;
 
 
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
      * elle retourne l'identifiant du thésaurus, sinon Null
      */
-    public String createTheso(String thesoName, String idLang, int idProject, NodeUser nodeUser) {
+    public String createThesaurus(String thesoName, String idLang, int idProject, NodeUser nodeUser) {
 
-        try ( Connection conn = dataSource.getConnection()) {
-            Thesaurus thesaurus = new Thesaurus();
+        Thesaurus thesaurus = new Thesaurus();
+        thesaurus.setCreator(nodeUser.getName());
+        thesaurus.setContributor(nodeUser.getName());
+        thesaurus.setLanguage(idLang);
 
-            thesaurus.setCreator(nodeUser.getName());
-            thesaurus.setContributor(nodeUser.getName());
-            thesaurus.setLanguage(idLang);
+        var idThesaurus = thesaurusService.addThesaurusRollBack();
+        thesaurus.setId_thesaurus(idThesaurus);
 
-            conn.setAutoCommit(false);
-
-            String idTheso1;
-            if ((idTheso1 = thesaurusService.addThesaurusRollBack()) == null) {
-                conn.rollback();
-                conn.close();
-                return null;
-            }
-
-            thesaurus.setId_thesaurus(idTheso1);
-
-            if (thesoName.isEmpty()) {
-                thesoName = "theso_" + idTheso1;
-            }
-            thesaurus.setTitle(thesoName);
-
-            thesaurusService.addThesaurusTraductionRollBack(thesaurus);
-
-            // ajouter le thésaurus dans le group de l'utilisateur
-            if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(thesaurus.getId_thesaurus()).idGroup(idProject).build();
-                userGroupThesaurusRepository.save(userGroupThesaurus);
-            }
-            conn.commit();
-            return idTheso1;
-        } catch (SQLException ex) {
-            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        if (thesoName.isEmpty()) {
+            thesoName = "theso_" + idThesaurus;
         }
-        return null;
+        thesaurus.setTitle(thesoName);
+
+        thesaurusService.addThesaurusTraductionRollBack(thesaurus);
+
+        // ajouter le thésaurus dans le group de l'utilisateur
+        if (idProject != -1) {
+            // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
+            var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(thesaurus.getId_thesaurus()).idGroup(idProject).build();
+            userGroupThesaurusRepository.save(userGroupThesaurus);
+        }
+        return idThesaurus;
     }
 
-    public void addLangsToThesaurus(ArrayList<String> langs, String idTheso) {
+    public void addLangsToThesaurus(List<String> langs, String idTheso) {
 
         for (String idLang : langs) {
             if (thesaurusService.isLanguageExistOfThesaurus(idTheso, idLang)) {
@@ -363,7 +318,7 @@ public class CsvImportHelper {
             return false;
         }
 
-        String conceptStatus = "";
+        String conceptStatus;
         String conceptType;
         String idHandle = "";
         String idDoi = "";
@@ -615,41 +570,39 @@ public class CsvImportHelper {
         String dcterms = null;
         
         String sql = "";
-        try ( Connection conn = dataSource.getConnection();  Statement stmt = conn.createStatement()) {
-            sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
-                    + "'" + conceptObject.getIdConcept() + "', "
-                    + idUser + ", "
-                    + "'" + conceptStatus + "', "
-                    + "'" + conceptType + "', "
-                    + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
-                    + ","
-                    + (conceptObject.getArkId() == null ? "''":  "'" + conceptObject.getArkId() + "'") + ", "
-                    + isTopConcept + ", "
-                    + "'" + idHandle + "', "
-                    + "'" + idDoi + "', "
-                    + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (relations == null ? null : "'" + relations + "'") + ", "
-                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "                    
-                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
-                    + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
-                    + (images == null ? null : "'" + images + "'") + ", "
-                    + (replacedBy == null ? null : "'" + replacedBy + "'")  + ", "
-                    + (gps != null) + ", "
-                    + (gps == null ? null : "'" + gps + "'") + ", "
-                    + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
-                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
-                    + (dcterms == null ? null : "'" + dcterms + "'") 
-                    + ")";
-
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.out.println("SQL : " + sql);
-            System.out.println(e.getMessage());
-            System.out.println("--------------------------------");
-            message = message + "Erreur concept : " + prefTerm + "(" + conceptObject.getIdConcept() +"(\n";
+        try {
+            conceptRepository.addNewConcept(
+                    idTheso,
+                    conceptObject.getIdConcept(),
+                    idUser,
+                    conceptStatus,
+                    conceptType,
+                    conceptObject.getNotation(),
+                    conceptObject.getArkId(),
+                    isTopConcept,
+                    idHandle,
+                    idDoi,
+                    (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'"),
+                    (relations == null ? null : "'" + relations + "'") ,
+                    (customRelations == null ? null : "'" + customRelations + "'"),
+                    (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'"),
+                    (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'"),
+                    (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'"),
+                    (images == null ? null : "'" + images + "'"),
+                    (replacedBy == null ? null : "'" + replacedBy + "'"),
+                    gps != null,
+                    (gps == null ? null : "'" + gps + "'"),
+                    (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'"),
+                    (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'"),
+                    (dcterms == null ? null : "'" + dcterms + "'")
+            );
+        } catch (Exception e) {
+            log.error("Erreur lors de l'appel à opentheso_add_new_concept pour le concept {} : {}", conceptObject.getIdConcept(), e.getMessage(), e);
+            message += "Erreur concept : " + prefTerm + " (" + conceptObject.getIdConcept() + ")\n";
             return false;
         }
+
+
         addExternalResources(idTheso, conceptObject.getIdConcept(), conceptObject.getExternalResources());        
         return true;
     }
@@ -792,22 +745,14 @@ public class CsvImportHelper {
         //Notes
         //-- 'value@typeCode@lang@id_term'
         String notes = getNotes(conceptObject);
-        
-        String sql = "";
-        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            sql = "CALL opentheso_add_facet('" + idFacet + "', "
-                    + idUser + ", '"
-                    + idTheso + "', '"
-                    + idConceptParent + "', '"
-                    + labels.replaceAll("'", "''") + "', "
-                    + (membres == null ? null : "'" + membres + "'") + ", "
-                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'")
-                    + ")";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.out.println("SQL : " + sql);
-            System.out.println(e.getMessage());
-            System.out.println("--------------------------------");
+        try {
+            conceptFacetRepository.addFacet(idFacet, idUser, idTheso, idConceptParent,
+                    labels.replaceAll("'", "''"),
+                    (membres == null ? null : "'" + membres + "'") ,
+                    (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'"));
+        } catch (Exception e) {
+            log.error("Erreur lors de l'appel à opentheso_add_facet : {}", e.getMessage(), e);
+            System.out.println("Erreur SQL lors de l'ajout de la facette : " + idFacet);
         }
 
     }    

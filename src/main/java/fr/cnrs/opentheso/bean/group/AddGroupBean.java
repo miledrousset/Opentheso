@@ -9,65 +9,39 @@ import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-/**
- *
- * @author miledrousset
- */
+
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "addGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddGroupBean implements Serializable {
+    
+    private final LeftBodySetting leftBodySetting;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final TreeGroups treeGroups;
+    private final RelationGroupService relationGroupService;
+    private final GroupService groupService;
+    private final NoteService noteService;
+    private final GroupTypeService groupTypeService;
 
-    @Autowired @Lazy
-    private LeftBodySetting leftBodySetting;
-
-    @Autowired @Lazy
-    private RoleOnThesaurusBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private TreeGroups treeGroups;
-
-    @Autowired
-    private RelationGroupService relationGroupService;
-
-    @Autowired
-    private GroupService groupService;
-
-    private String selectedGroupType;
-    private String titleGroup;
-    private String notation;
     private List<SelectItem> listGroupType;
-
-    private String definition;
-
-    private ArrayList<NodeNote> notes;
-    private ArrayList<NodeNote> scopeNotes;
-    private ArrayList<NodeNote> changeNotes;
-    private ArrayList<NodeNote> definitions;
-    private ArrayList<NodeNote> editorialNotes;
-    private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;
-    @Autowired
-    private GroupTypeService groupTypeService;
-    @Autowired
-    private NoteService noteService;
+    private String selectedGroupType, titleGroup, notation, definition;
+    private List<NodeNote> notes, scopeNotes, changeNotes, definitions, editorialNotes, examples, historyNotes;
 
 
     public void init() {
@@ -80,31 +54,18 @@ public class AddGroupBean implements Serializable {
             selectedGroupType = listGroupType.get(0).getLabel();
         }
     }
-
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Group !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    /**
-     * Création d'un domaine/colection avec mise à jour dans l'arbre
-     *
-     * @param idTheso
-     * @param idLang
-     * @param idUser
-     */
+    
     public void addGroup(String idTheso, String idLang, int idUser) {
 
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Le thésaurus n'a pas de préférences !");
             return;
         }
 
         NodeGroup nodeGroup = new NodeGroup();
         if (titleGroup.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le label est obligatoire !"));
+            MessageUtils.showErrorMessage("Le label est obligatoire !");
             return;
         }
 
@@ -121,19 +82,17 @@ public class AddGroupBean implements Serializable {
         if(notation == null || notation.isEmpty()){
         } else {
             if (groupService.isNotationExist(notation, idTheso)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("La notation existe déjà !");
                 return;
             }
         }
 
         String idGroup = groupService.addGroup(nodeGroup, idUser);
         if (idGroup == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "","Erreur interne"));
+            MessageUtils.showErrorMessage("Erreur interne");
             return;
         }
-        if(roleOnThesoBean.getNodePreference().isUseArkLocal()) {
+        if(roleOnThesaurusBean.getNodePreference().isUseArkLocal()) {
             generateArkGroup(idGroup, titleGroup, idTheso);
         }
 
@@ -145,84 +104,41 @@ public class AddGroupBean implements Serializable {
 
         treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
 
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                titleGroup + " a été ajouté avec succès"));
+        MessageUtils.showInformationMessage(titleGroup + " a été ajouté avec succès");
 
         PrimeFaces.current().executeScript("PF('addGroup').hide();");
-
         leftBodySetting.setIndex("2");
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("containerIndex");
     }
-
-    /**
-     * permet de générer l'identifiant Ark, s'il n'existe pas, il sera créé,
-     * sinon, il sera mis à jour.
-     * @param idGroup
-     * @param groupLabel
-     * @param idTheso
-     */
+    
     public void generateArkGroup(String idGroup, String groupLabel, String idTheso) {
-        FacesMessage msg;
+
         if(StringUtils.isEmpty(idGroup) || StringUtils.isEmpty(idTheso)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas de groupe séléctionné !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Pas de groupe séléctionné !!");
             return;
         }
 
         if(!groupService.addIdArkGroup(idTheso, idGroup, groupLabel)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("La génération de Ark a échoué !!");
             return;
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
-
+        MessageUtils.showInformationMessage("La génération de Ark a réussi !!");
     }
+    
+    public void addSubGroup(String idGroupFather, String idTheso, String idLang, int idUser) {
 
 
-    /**
-     * permet d'ajouter un sous groupe avec un type défini, le groupe père doit
-     * exister.Le sous-groupe prend le même type que le père On ajoute aussi la
-     * notation
-     *
-     * @param idGroupFather
-     * @param idTheso
-     * @param idLang
-     * @param idUser
-     */
-    public void addSubGroup(
-            String idGroupFather,
-            String idTheso,
-            String idLang,
-            int idUser) {
-        // typeDom = "";
-        //si on a bien selectioner un group
-        //  String idGroup = tree.getSelectedTerme().getIdC();
-
-
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("le thésaurus n'a pas de préférences !");
             return;
         }
         if(idGroupFather == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
-                            "Id groupe Parent null "));
+            MessageUtils.showErrorMessage("Id groupe Parent null ");
             return;
         }
         if (titleGroup.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "", "Le label est obligatoire"));
+            MessageUtils.showErrorMessage("Le label est obligatoire");
             return;
         }
         NodeGroup nodeGroup = new NodeGroup();
@@ -238,22 +154,16 @@ public class AddGroupBean implements Serializable {
 
         String idSubGroup = groupService.addGroup(nodeGroup, idUser);
         if (idSubGroup == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne"));
+            MessageUtils.showErrorMessage("Erreur interne");
             return;
         }
 
         relationGroupService.addSubGroup(idGroupFather, idSubGroup, idTheso);
         treeGroups.addNewSubGroupToTree(treeGroups.getSelectedNode(), idSubGroup, idTheso, idLang);
 
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                titleGroup + " a été ajouté avec succès"));
+        MessageUtils.showInformationMessage(titleGroup + " a été ajouté avec succès");
 
         PrimeFaces.current().executeScript("PF('addSubGroup').hide();");
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("formLeftTab:tabGroups:treeGroups");
-        }
+        PrimeFaces.current().ajax().update("formLeftTab:tabGroups:treeGroups");
     }
 }

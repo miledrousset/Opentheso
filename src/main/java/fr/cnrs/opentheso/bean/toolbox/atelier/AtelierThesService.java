@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -11,6 +10,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.UserService;
 
@@ -25,9 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import jakarta.faces.view.ViewScoped;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.event.FileUploadEvent;
@@ -35,37 +34,30 @@ import org.primefaces.event.FileUploadEvent;
 
 @Named
 @ViewScoped
+@RequiredArgsConstructor
 public class AtelierThesService implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private CurrentUser currentUser;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private SearchHelper searchHelper;
-    @Autowired
-    private ThesaurusService thesaurusService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ConceptService conceptService;
+    private final CurrentUser currentUser;
+    private final LanguageBean languageBean;
+    private final PreferenceService preferenceService;
+    private final ThesaurusService thesaurusService;
+    private final UserService userService;
+    private final ConceptService conceptService;
+    private final SearchService searchService;
 
 
-    public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
+    public List<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
 
         var nodePreference = preferenceService.getThesaurusPreferences(thesoSelected.getId());
         
-        ArrayList<ConceptResultNode> list = new ArrayList<>();
+        List<ConceptResultNode> list = new ArrayList<>();
         int limit = 5;
         for (List<String> data : datas) {
             if(data.get(position) == null || data.get(position).isEmpty()) continue;
-            ArrayList<NodeSearchMini> temp = searchHelper.searchFullText(
-                    data.get(position), languageBean.getIdLangue(), thesoSelected.getId(), limit);
+            List<NodeSearchMini> temp = searchService.searchFullText(data.get(position), languageBean.getIdLangue(), thesoSelected.getId(), limit);
             
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
@@ -112,9 +104,7 @@ public class AtelierThesService implements Serializable {
                 conceptResultNode.setPrefLabelOrigine(data.get(position));
                 list.add(conceptResultNode);    
             }
-            
         }
-        
         return list;
     }
     
@@ -176,7 +166,6 @@ public class AtelierThesService implements Serializable {
             nodeIdValue.setValue(thesaurusService.getTitleOfThesaurus(idTheso1, preferredIdLangOfTheso));
             nodeIdValue.setStatus(thesaurus.getIsPrivate());
             nodeListThesaurus.add(nodeIdValue);
-            
         }
         
         return nodeListThesaurus;

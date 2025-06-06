@@ -43,7 +43,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         nodeGroups = conceptView.getNodeConcept().getNodeConceptGroup();
     }
 
-
     public void removeConceptAndChildFromGroup(String idGroup) {
 
         log.info("Début de la suppression de tous les concepts rattachés au group id {}", idGroup);

@@ -33,6 +33,8 @@ import fr.cnrs.opentheso.services.ResourceService;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,12 +154,21 @@ public class ConceptView implements Serializable {
     }
     
     public String getDrapeauImgLocal(String codePays) {
+
+        var facesContext = FacesContext.getCurrentInstance();
+        var externalContext = facesContext.getExternalContext();
         if (StringUtils.isEmpty(codePays)) {
-            return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
+            return externalContext.getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
-        return FacesContext.getCurrentInstance().getExternalContext()
-                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
+
+        var relativePath = "/resources/img/flag/" + codePays + ".png";
+        var absolutePath = externalContext.getRealPath(relativePath);
+        var file = new File(absolutePath);
+        if (file.exists()) {
+            return externalContext.getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
+        } else {
+            return externalContext.getRequestContextPath() + "/resources/img/flag/noflag.png";
+        }
     }
     
     public String getFlagFromCodeLang(String idLang){

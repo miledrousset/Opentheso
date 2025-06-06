@@ -10,8 +10,9 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
-import org.primefaces.PrimeFaces;
 
+import lombok.AllArgsConstructor;
+import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UIViewRoot;
@@ -21,30 +22,27 @@ import jakarta.faces.component.html.HtmlSelectManyCheckbox;
 import jakarta.faces.component.html.HtmlSelectOneMenu;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 
 
-@Named(value = "sessionControl")
 @SessionScoped
+@AllArgsConstructor
+@Named(value = "sessionControl")
 public class SessionControl implements Serializable {
 
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private TreeGroups treeGroups;
-    @Autowired @Lazy private TreeConcepts treeConcepts;
-    @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private ListIndex listIndex;
-    @Autowired @Lazy private ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private CopyAndPasteBetweenThesaurus copyAndPasteBetweenTheso;
-    @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
-    @Autowired @Lazy private IndexSetting indexSetting;
-
-    @Autowired
-    private SelectedTheso selectedTheso;
+    private final Tree tree;
+    private final ListIndex listIndex;
+    private final TreeGroups treeGroups;
+    private final CurrentUser currentUser;
+    private final TreeConcepts treeConcepts;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final ViewEditorThesaurusHomeBean viewEditorThesaurusHomeBean;
+    private final CopyAndPasteBetweenThesaurus copyAndPasteBetweenThesaurus;
 
     
     public void isTimeout() throws IOException {
@@ -58,11 +56,11 @@ public class SessionControl implements Serializable {
             listIndex.reset();
             treeGroups.reset();
             treeConcepts.reset();
-            viewEditorThesoHomeBean.reset();
-            roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
-            copyAndPasteBetweenTheso.reset();
+            viewEditorThesaurusHomeBean.reset();
+            roleOnThesaurusBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
+            copyAndPasteBetweenThesaurus.reset();
             indexSetting.setIsThesoActive(true);
-            roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);
+            roleOnThesaurusBean.setAndClearThesoInAuthorizedList(selectedTheso);
             PrimeFaces.current().ajax().update("containerIndex");
         }
 

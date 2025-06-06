@@ -386,8 +386,12 @@ public class SelectedTheso implements Serializable {
         if (selectedLang.equalsIgnoreCase("all")) {
             isActionFromConcept = false;
             return;
-        }        
-        startNewLang();
+        }
+        try {
+            startNewLang();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -426,7 +430,7 @@ public class SelectedTheso implements Serializable {
         conceptBean.init();
     }
 
-    private void startNewLang() {
+    private void startNewLang() throws IOException {
         currentLang = selectedLang;
         
         treeGroups.reset();
@@ -503,7 +507,7 @@ public class SelectedTheso implements Serializable {
         } else {
             // gestion de l'accès par thésaurus d'un identifiant différent
             var thesaurus = thesaurusService.getThesaurusById(idThesoFromUri);
-            if (!thesaurus.getIsPrivate()) {
+            if (thesaurus != null && !thesaurus.getIsPrivate()) {
                 currentUser.resetUserPermissionsForThisThesaurus();
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;

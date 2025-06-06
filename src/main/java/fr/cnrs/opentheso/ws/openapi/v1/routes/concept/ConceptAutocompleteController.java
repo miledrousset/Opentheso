@@ -3,8 +3,8 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,12 +37,10 @@ public class ConceptAutocompleteController {
 
     @Autowired
     private RestRDFHelper restRDFHelper;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private SearchService searchService;
 
 
     @GetMapping(value = "/{input}", produces = APPLICATION_JSON_UTF_8)
@@ -73,7 +71,7 @@ public class ConceptAutocompleteController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-        var concepts = searchHelper.searchConceptWSV2(input, lang, idGroup, idTheso);
+        var concepts = searchService.searchConceptWSV2(input, lang, idGroup, idTheso);
         var jsonString = new ObjectMapper().writeValueAsString(concepts);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
     }

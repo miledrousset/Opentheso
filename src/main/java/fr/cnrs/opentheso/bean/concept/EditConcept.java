@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.PreferredTerm;
-import fr.cnrs.opentheso.entites.Term;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -17,7 +16,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ArkService;
 import fr.cnrs.opentheso.services.ConceptAddService;
@@ -36,15 +34,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
@@ -61,84 +56,35 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EditConcept implements Serializable {
 
-    
-    @Autowired @Lazy private RoleOnThesaurusBean roleOnThesoBean;
-    @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private HandleService handleService;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final LanguageBean languageBean;
+    private final ConceptView conceptView;
+    private final SelectedTheso selectedTheso;
+    private final Tree tree;
+    private final CurrentUser currentUser;
+    private final HandleService handleService;
+    private final PreferredTermRepository preferredTermRepository;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final CsvWriteHelper csvWriteHelper;
+    private final RelationService relationService;
+    private final HandleService handleHelper;
+    private final TermService termService;
+    private final TermRepository termRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final HandleConceptService handleConceptService;
+    private final ArkService arkService;
+    private final ConceptTypeService conceptTypeService;
+    private final SearchService searchService;
 
-    @Autowired
-    private PreferredTermRepository preferredTermRepository;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
-
-    @Autowired
-    private CsvWriteHelper csvWriteHelper;
-
-    @Autowired
-    private RelationService relationService;
-
-    @Autowired
-    private HandleService handleHelper;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
-    private TermService termService;
-
-    @Autowired
-    private TermRepository termRepository;
-
-    @Autowired
-    private NonPreferredTermRepository nonPreferredTermRepository;
-
-    @Autowired
-    private GroupService groupService;
-
-    private String prefLabel;
-    private String notation;
-    private String source;
-    private boolean applyToBranch;
-    private boolean reciprocalRelationship;
-    
-    private boolean isCreated;
-    private boolean duplicate;
-    private boolean forDelete;
-
-    private boolean inProgress;
-    
-    private boolean isReplacedByRTrelation;
-    
+    private String prefLabel, source, notation, selectedConceptType;
+    private boolean applyToBranch, reciprocalRelationship, isCreated, duplicate, forDelete, inProgress, isReplacedByRTrelation;
+    private NodeSearchMini searchSelected;
+    private List<NodeIdValue> nodeIdValues, nodeReplaceBy;
+    private NodeConceptType nodeConceptTypeToDelete, nodeConceptTypeToAdd;
     private List<NodeConceptType> nodeConceptTypes;
-    private String selectedConceptType;
-
-    // dépréciation
-    private List<NodeIdValue> nodeReplaceBy;
-    
-    private NodeSearchMini searchSelected;    
-    
-    private List<NodeIdValue> nodeIdValues;
-    
-    private NodeConceptType nodeConceptTypeToDelete;
-    private NodeConceptType nodeConceptTypeToAdd;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private ConceptAddService conceptAddService;
-    @Autowired
-    private HandleConceptService handleConceptService;
-    @Autowired
-    private ArkService arkService;
-    @Autowired
-    private ConceptTypeService conceptTypeService;
-    @Autowired
-    private SearchService searchService;
 
 
     public void clear() {
@@ -156,9 +102,6 @@ public class EditConcept implements Serializable {
         nodeConceptTypeToAdd = null;
     }
 
-    public EditConcept() {
-    }
-
     public void reset(String label) {
         isCreated = false;
         duplicate = false;
@@ -173,6 +116,7 @@ public class EditConcept implements Serializable {
 
         nodeReplaceBy = conceptView.getNodeConcept().getReplacedBy();
     }
+
     public void initForConceptType(){
 
         nodeConceptTypes = conceptTypeService.getAllTypesOfConcept(selectedTheso.getCurrentIdTheso());
@@ -181,42 +125,30 @@ public class EditConcept implements Serializable {
         reciprocalRelationship = false;
         nodeConceptTypeToDelete = null;
         nodeConceptTypeToAdd = null;
-
-      //  PrimeFaces.current().executeScript("window.location.reload();");
-    }
-
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour modifier Concept !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public void removeAllConceptFromCollection(String idGroup){
         groupService.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso());
 
         selectedTheso.reloadGroups();
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tous les concepts ont été retirés de la collection.");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Tous les concepts ont été retirés de la collection.");
     }
 
     /**
      * permet de changer les informations dans la table du type de concept
-     * @param nodeConceptType
      */
     public void applyChangeForConceptType(NodeConceptType nodeConceptType){
         if(nodeConceptType == null || StringUtils.isEmpty(nodeConceptType.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("pas de sélection !");
             return;
         }
 
         if(!conceptTypeService.updateConceptType(selectedTheso.getCurrentIdTheso(), nodeConceptType)){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("Erreur pendant le changement !");
             return;
         }
         initForConceptType();
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Changement réussi !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);   
+        MessageUtils.showInformationMessage("Changement réussi !");
     }
     
     /**
@@ -224,16 +156,14 @@ public class EditConcept implements Serializable {
      */
     public void deleteCustomRelationship(){
         if(nodeConceptTypeToDelete == null || StringUtils.isEmpty(nodeConceptTypeToDelete.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("pas de sélection !");
             return;            
         }
 
         conceptTypeService.deleteConceptType(selectedTheso.getCurrentIdTheso(), nodeConceptTypeToDelete);
 
         initForConceptType();
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Suppression réussie !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);         
+        MessageUtils.showInformationMessage("Suppression réussie !");
     }
     
     /**
@@ -241,13 +171,11 @@ public class EditConcept implements Serializable {
      */
     public void addNewConceptType(){
         if(nodeConceptTypeToAdd == null || StringUtils.isEmpty(nodeConceptTypeToAdd.getCode())){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("pas de sélection !");
             return;            
         }    
         if(StringUtils.isEmpty( selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("pas de sélection !");
             return;              
         }
         
@@ -255,31 +183,23 @@ public class EditConcept implements Serializable {
         nodeConceptTypeToAdd.setCode(nodeConceptTypeToAdd.getCode().replaceAll(" ", ""));
         
         if(conceptTypeService.isConceptTypeExist(selectedTheso.getCurrentIdTheso(), nodeConceptTypeToAdd)){
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le type de concept existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("le type de concept existe déjà !");
             return;
         }
 
         conceptTypeService.addNewConceptType(selectedTheso.getCurrentIdTheso(), nodeConceptTypeToAdd);
 
         initForConceptType();
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Ajout réussi !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);         
+        MessageUtils.showInformationMessage("Ajout réussi !");
     }    
     
     /**
      * permet de chnager le type du concept
-     * @param idUser 
      */
     public void updateTypeConcept(int idUser) {
-        PrimeFaces pf = PrimeFaces.current();
 
         if (selectedConceptType == null || selectedConceptType.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "aucune relation n'est définie !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            MessageUtils.showWarnMessage("aucune relation n'est définie !");
             return;
         }
 
@@ -288,11 +208,7 @@ public class EditConcept implements Serializable {
                     selectedTheso.getCurrentIdTheso());
 
             if( (allId == null) || (allId.isEmpty())) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "aucun concept sélectionné !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }                
+                MessageUtils.showWarnMessage("aucun concept sélectionné !");
                 return;
             }
             for (String conceptId : allId) {
@@ -303,24 +219,19 @@ public class EditConcept implements Serializable {
                     conceptView.getNodeConcept().getConcept().getIdConcept(), selectedConceptType)  ;
         }
 
-        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
                 .value(currentUser.getNodeUser().getName())
-                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang(), currentUser);
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
         
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le changement a réussi");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }       
+        MessageUtils.showInformationMessage("Le changement a réussi");
     }
     
     
@@ -328,51 +239,24 @@ public class EditConcept implements Serializable {
      * permet d'ajouter un nouveau top concept si le groupe = null, on ajoute un
      * TopConcept sans groupe si l'id du concept est fourni, il faut controler
      * s'il est unique
-     *
-     * @param idLang
-     * @param idTheso
-     * @param idUser
      */
-    public void updateLabel(
-            String idTheso,
-            String idLang,
-            int idUser) {
+    public void updateLabel(String idTheso, String idLang, int idUser) {
 
         duplicate = false;
-        PrimeFaces pf = PrimeFaces.current();
-
         if (prefLabel == null || prefLabel.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Le label est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-                PrimeFaces.current().ajax().update("containerIndex:rightTab:idRenameConcept");                
-            }
+            MessageUtils.showWarnMessage("Le label est obligatoire !");
+            PrimeFaces.current().ajax().update("containerIndex:rightTab:idRenameConcept");
             return;
         }
 
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
         var value = fr.cnrs.opentheso.utils.StringUtils.convertString(prefLabel.trim());
         var termFound = termRepository.findByLexicalValueAndLangAndIdThesaurus(value, idLang, idTheso);
-        String idTerm = termFound.map(Term::getIdThesaurus).orElse(null);
 
-        if (idTerm != null) {
-            var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idTheso, idLang);
-            var label = term.isPresent() ? term.get().getLexicalValue() : "";
-            MessageUtils.showWarnMessage("Le label '" + label + "' existe déjà ! voulez-vous continuer ?");
+        if (termFound.isPresent()) {
+            MessageUtils.showWarnMessage("Le label '" + termFound.get().getLexicalValue() + "' existe déjà ! voulez-vous continuer ?");
             duplicate = true;
             PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
-            return;
-        }
-        if (termService.isAltLabelExist(idTerm, idTheso, idLang)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            duplicate = true;
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-                PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
-                PrimeFaces.current().executeScript("PF('renameConcept').show();");
-            }
             return;
         }
 
@@ -400,6 +284,8 @@ public class EditConcept implements Serializable {
                     .idThesaurus(selectedTheso.getCurrentIdTheso())
                     .source("")
                     .status("")
+                    .created(new Date())
+                    .modified(new Date())
                     .build();
             termService.addTermTraduction(term, idUser);
         }
@@ -409,7 +295,7 @@ public class EditConcept implements Serializable {
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
                 .value(currentUser.getNodeUser().getName())
-                .idConcept(conceptBean.getNodeConcept().getConcept().getIdConcept())
+                .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
@@ -437,85 +323,58 @@ public class EditConcept implements Serializable {
     }
 
     public void infosDelete() {
-        String message;
-        if (conceptView.getNodeConcept().getNodeNT().isEmpty()) { // pas d'enfants
-            message = languageBean.getMsg("rightbody.conceptdialog.infoDeleteConcept");// rightbody.conceptdialog.infoDeleteConcept "La suppression du concept est définitive !!";
-        } else {
-            message = languageBean.getMsg("rightbody.conceptdialog.infoDeleteBranch"); //"La suppression de la branche est définitive !!";
-        }
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention !", message);
-        FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }  
+        if (conceptView.getNodeConcept().getNodeNT().isEmpty()) { // pas d'enfants
+            MessageUtils.showWarnMessage(languageBean.getMsg("rightbody.conceptdialog.infoDeleteConcept"));// rightbody.conceptdialog.infoDeleteConcept "La suppression du concept est définitive !!";
+        } else {
+            MessageUtils.showWarnMessage(languageBean.getMsg("rightbody.conceptdialog.infoDeleteBranch")); //"La suppression de la branche est définitive !!";
+        }
         forDelete = true;
     }
 
-    /**
-     * permet de supprimer un concept
-     *
-     * @param idTheso
-     * @param idUser
-     */
-    public void deleteConcept(String idTheso, int idUser) {
+    public void deleteConcept(String idThesaurus, int idUser) {
 
-        if (roleOnThesoBean.getNodePreference() == null) {
-            // erreur de préférences de thésaurusa
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (roleOnThesaurusBean.getNodePreference() == null) {
+            MessageUtils.showErrorMessage("Le thésaurus n'a pas de préférences !");
             return;
         }
 
         if (conceptView.getNodeConcept().getNodeNT().isEmpty()) {
             // suppression du concept
-            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus)) {
+                MessageUtils.showErrorMessage("La suppression a échoué !!");
                 return;
             }
         } else {
             /// suppression d'une branche
-            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso)){
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué, vérifier la poly-hiérarchie pour le concept");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus)){
+                MessageUtils.showErrorMessage("La suppression a échoué, vérifier la poly-hiérarchie pour le concept");
                 return;                
             }
         }
 
         // mise à jour
-        PrimeFaces pf = PrimeFaces.current();
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
                     conceptView.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                        idTheso,
-                        selectedTheso.getCurrentLang());
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus, selectedTheso.getCurrentLang());
             }
             TreeNode parent = tree.getSelectedNode().getParent();
             if (parent != null) {
                 parent.getChildren().remove(tree.getSelectedNode());
-
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("formLeftTab:tabTree:tree");
-                }
+                PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
             }
         }
 
         if (CollectionUtils.isNotEmpty(conceptView.getNodeConcept().getNodeBT())){// !conceptView.getNodeConcept().getNodeBT().isEmpty()) {
-            conceptView.getConcept(idTheso, conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
+            conceptView.getConcept(idThesaurus, conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
                     selectedTheso.getCurrentLang(), currentUser);
         }
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été supprimé");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Le concept a bien été supprimé");
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
         reset("");
     }
@@ -524,12 +383,9 @@ public class EditConcept implements Serializable {
 //////// gestion des concepts dépérciés    
 ///////////////////////////////////////////////////////////////////////////////    
     public void deprecateConcept(String idConcept, String idTheso, int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
         if (!conceptService.deprecateConcept(idConcept, idTheso, idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été déprécié !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Le concept n'a pas été déprécié !");
             return;
         }
 
@@ -548,32 +404,22 @@ public class EditConcept implements Serializable {
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptBean.getSelectedLang());
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptView.getSelectedLang());
             }
             ((DefaultTreeNode) tree.getSelectedNode()).setType("deprecated");
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-            }
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
         }         
-        
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept est maintenant obsolète");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        MessageUtils.showInformationMessage("Le concept est maintenant obsolète");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
     public void approveConcept(String idConcept, String idTheso, int idUser){
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+
         if (!conceptService.approveConcept(idConcept, idTheso, idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été approuvé !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("le concept n'a pas été approuvé !");
             return;
         }
         if (isReplacedByRTrelation) {
@@ -598,29 +444,24 @@ public class EditConcept implements Serializable {
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptBean.getSelectedLang());
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptView.getSelectedLang());
             }
             if((tree.getSelectedNode()).getChildCount() == 0)
                 (tree.getSelectedNode()).setType("file");
             else 
                 (tree.getSelectedNode()).setType("concept");
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-            }
-        }          
+
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
+        }
         
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept n'est plus obsolète maintenant");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("le concept n'est plus obsolète maintenant");
     }
 
     public void addReplacedBy(String idConceptDeprecated, String idTheso, int idUser) {
-        FacesMessage msg;
         
         if ( searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showInformationMessage("Pas de concept sélectionné !");
             return;
         }
 
@@ -637,28 +478,23 @@ public class EditConcept implements Serializable {
 
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang(), currentUser);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("containerIndex:rightTab:idReplaceBy containerIndex:rightTab:idDeprecatedLabel");
-        }
+        MessageUtils.showInformationMessage("Relation ajoutée avec succès");
+        PrimeFaces.current().ajax().update("containerIndex:rightTab:idReplaceBy containerIndex:rightTab:idDeprecatedLabel");
     }
     
     public List<NodeSearchMini> getAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null){
-            liste = searchService.searchAutoCompletionForRelation(value, conceptBean.getSelectedLang(),
+        if (selectedTheso.getCurrentIdTheso() != null && conceptView.getSelectedLang() != null){
+            liste = searchService.searchAutoCompletionForRelation(value, conceptView.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), false);
         }
         return liste;
     }      
 
     public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser){
-        FacesMessage msg;        
+
         if(idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Pas de concept sélectionné !");
             return;              
         }
 
@@ -675,25 +511,15 @@ public class EditConcept implements Serializable {
 
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang(), currentUser);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Relation supprimée avec succès");
 
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("containerIndex:idDeleteReplaceBy");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:idDeleteReplaceBy");
         reset("");
-
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//////////// générer les identifiants Ark    //////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
     public void infosArk() {
         String message = "Permet de générer un identifiant Ark, si l'identifiant existe, il sera mise à jour !!";
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage(message);
     }
 
     /**
@@ -714,7 +540,7 @@ public class EditConcept implements Serializable {
 
         List<String> idConcepts = conceptService.getAllIdConceptOfThesaurusWithoutArk(selectedTheso.getCurrentIdTheso());
 
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         generateArkIds(idConcepts);
@@ -725,7 +551,7 @@ public class EditConcept implements Serializable {
      * identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void generateArkForThisBranch() {
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         if (conceptView.getNodeConcept() == null) {
@@ -742,7 +568,7 @@ public class EditConcept implements Serializable {
      * cette fonction ne fait que la mise à jour de l'URL et ne permet de créer des identifiants ARK
      */
     public void updateUriArkForThisBranch(){
-        if(roleOnThesoBean.getNodePreference() == null) return;
+        if(roleOnThesaurusBean.getNodePreference() == null) return;
         if(conceptView.getNodeConcept() == null) return;
 
         var idConcepts = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
@@ -758,7 +584,7 @@ public class EditConcept implements Serializable {
 
         var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         nodeIdValues = new ArrayList<>();
@@ -773,58 +599,38 @@ public class EditConcept implements Serializable {
 
         var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         nodeIdValues = arkService.generateArkIdFast(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang());
 
-        FacesMessage msg;
         if(nodeIdValues == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée avec succès !!");
+            MessageUtils.showInformationMessage("L'opération est terminée avec succès !!");
         } else {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+            MessageUtils.showInformationMessage("L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
         }
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }        
     }    
 
     private List<NodeIdValue> generateArkIds(List<String> idConcepts) {
-        FacesMessage msg;
         nodeIdValues = conceptAddService.generateArkId(selectedTheso.getCurrentIdTheso(), idConcepts, selectedTheso.getCurrentLang(), null);
         if(nodeIdValues == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée avec succès !!");
+            MessageUtils.showInformationMessage("L'opération est terminée avec succès !!");
         } else {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
-        }
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showInformationMessage("L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
         }
         return nodeIdValues;
     }
 
 
     private void updateUriArkIds(List<String> idConcepts){
-        FacesMessage msg;
+
         if(!arkService.updateUriArk(selectedTheso.getCurrentIdTheso(), idConcepts)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La mise à jour des URIs Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("La mise à jour des URIs Ark a échoué !!");
             return;
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La mise à jour des URIs Ark a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
+        MessageUtils.showInformationMessage("La mise à jour des URIs Ark a réussi !!");
     }
 
-
-    /**
-     * récupération du résultat du traitement
-     * @return 
-     */
     public StreamedContent getResultOfProcess(){
         if(nodeIdValues == null) return null; 
         /// pour retourner le résultat du traitement
@@ -839,72 +645,55 @@ public class EditConcept implements Serializable {
         } catch (IOException ex) {
         }
         return new DefaultStreamedContent();            
-    }    
+    }
 
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//////////// générer les identifiants Handle //////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
     public void infosHandle() {
         String message = "Permet de générer un identifiant Handle, si l'identifiant existe, il sera mise à jour !!";
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage(message);
     }
 
     public void infosDeleteHandle() {
         String message = "Permet de supprimer un identifiant Handle, il sera définitivement supprimé !!";
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage(message);
     }
 
     /**
      * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void deleteHandle() {
-        FacesMessage msg;
-        if (roleOnThesoBean.getNodePreference() == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas de préférences pour le thésaurus !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (roleOnThesaurusBean.getNodePreference() == null) {
+            MessageUtils.showErrorMessage("Pas de préférences pour le thésaurus !!");
             return;
         }
         if (conceptView.getNodeConcept().getConcept().getIdHandle() == null || conceptView.getNodeConcept().getConcept().getIdHandle().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas d'identifiant Handle à supprimer !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Pas d'identifiant Handle à supprimer !!");
             return;
         }
         
-        if(roleOnThesoBean.getNodePreference().isUseHandleWithCertificat()) {
-            if (!handleHelper.deleteIdHandle(conceptView.getNodeConcept().getConcept().getIdHandle(), roleOnThesoBean.getNodePreference())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", handleHelper.getMessage());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(roleOnThesaurusBean.getNodePreference().isUseHandleWithCertificat()) {
+            if (!handleHelper.deleteIdHandle(conceptView.getNodeConcept().getConcept().getIdHandle(), roleOnThesaurusBean.getNodePreference())) {
+                MessageUtils.showErrorMessage(handleHelper.getMessage());
+                MessageUtils.showErrorMessage("La suppression de Handle a échoué !!");
                 return;
             }
 
             handleConceptService.updateHandleIdOfConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), "");
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            MessageUtils.showErrorMessage("La suppression de Handle a réussi !!");
         } else {
-     //       HandleService hs = new HandleService();
-            handleService.applyNodePreference(roleOnThesoBean.getNodePreference());
+            handleService.applyNodePreference(roleOnThesaurusBean.getNodePreference());
             if(!handleService.connectHandle()){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("La suppression de Handle a échoué !!");
                 return;
             }
             try {
                 handleService.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
             } catch (Exception ex) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
+                MessageUtils.showErrorMessage("La suppression de Handle a échoué !!");
                 return;
             }
             handleConceptService.updateHandleIdOfConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), "");
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);                
+            MessageUtils.showInformationMessage("La suppression de Handle a réussi !!");
         }
     }
 
@@ -913,7 +702,7 @@ public class EditConcept implements Serializable {
      */
     public void generateHandle() {
 
-        ArrayList<String> idConcepts = new ArrayList<>();
+        List<String> idConcepts = new ArrayList<>();
         idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         generateHandleIds(idConcepts);
     }
@@ -925,9 +714,8 @@ public class EditConcept implements Serializable {
      */
     public void generateHandleForConceptWithoutHandle() {
 
-        List<String> idConcepts = conceptService.getAllIdConceptsWithoutHandle(selectedTheso.getCurrentIdTheso());
-
-        if (roleOnThesoBean.getNodePreference() == null) {
+        var idConcepts = conceptService.getAllIdConceptsWithoutHandle(selectedTheso.getCurrentIdTheso());
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         generateHandleIds(idConcepts);
@@ -939,7 +727,7 @@ public class EditConcept implements Serializable {
      * identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void generateHandleForThisBranch() {
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesaurusBean.getNodePreference() == null) {
             return;
         }
         if (conceptView.getNodeConcept() == null) {
@@ -949,7 +737,6 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso());
 
         generateHandleIds(idConcepts);
-
         PrimeFaces.current().executeScript("window.location.reload();");
     }
 
@@ -960,26 +747,15 @@ public class EditConcept implements Serializable {
     public void generateAllHandle() {
 
         var idConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
-
-        if (roleOnThesoBean.getNodePreference() == null) {
-            return;
-        }
         generateHandleIds(idConcepts);
-
         PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     private void generateHandleIds(List<String> idConcepts) {
-        FacesMessage msg;
         if (!handleConceptService.generateHandleId(idConcepts, selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Handle a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("La génération de Handle a échoué !!");
         } else {
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Handle a réussi !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showErrorMessage("La génération de Handle a réussi !!");
         }
     }
 }

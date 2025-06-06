@@ -18,17 +18,17 @@ import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.NoteService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.cnrs.opentheso.services.NoteService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
 
@@ -37,21 +37,22 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Data
-@Named(value = "noteBean")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "noteBean")
 public class NoteBean implements Serializable {
 
-    private PropositionBean propositionBean;
-    private ConceptView conceptBean;
-    private SelectedTheso selectedTheso;
-    private CurrentUser currentUser;
-    private EditFacet editFacet;
-    private GroupView groupView;
-    private GroupService groupService;
-    private ConceptDcTermRepository conceptDcTermRepository;
-    private ConceptService conceptService;
-    private NoteService noteService;
-    private FacetService facetService;
+    private final PropositionBean propositionBean;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final EditFacet editFacet;
+    private final GroupView groupView;
+    private final GroupService groupService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ConceptService conceptService;
+    private final NoteService noteService;
+    private final FacetService facetService;
 
     private String selectedTypeNote, noteValue, selectedLang;
     boolean isFacetNote, isConceptNote, isGroupNote;

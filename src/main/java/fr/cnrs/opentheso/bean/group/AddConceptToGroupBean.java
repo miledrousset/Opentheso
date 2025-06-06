@@ -9,38 +9,35 @@ import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
+
+
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "addConceptToGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptToGroupBean implements Serializable {
 
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private CurrentUser currentUser;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private ConceptService conceptService;
-
-    @Autowired
-    private ConceptDcTermRepository conceptDcTermRepository;
+    private final SelectedTheso selectedTheso;
+    private final ConceptView conceptView;
+    private final CurrentUser currentUser;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
 
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 
@@ -49,13 +46,9 @@ public class AddConceptToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = null;
     }
 
-
     /**
      * permet de retourner la liste des groupes / collections contenus dans le
      * thésaurus
-     *
-     * @param value
-     * @return
      */
     public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
@@ -71,22 +64,15 @@ public class AddConceptToGroupBean implements Serializable {
      */
     public void addConceptToGroup(int idUser) {
 
-        // selectedAtt.getIdConcept() est le terme TG à ajouter
-        // terme.getIdC() est le terme séléctionné dans l'arbre
-        // terme.getIdTheso() est l'id du thésaurus
-
-        if (selectedNodeAutoCompletionGroup == null || selectedNodeAutoCompletionGroup.getIdGroup() == null
-                || selectedNodeAutoCompletionGroup.getIdGroup().equals("")) {
-            var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Aucune sélection !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (selectedNodeAutoCompletionGroup == null || StringUtils.isEmpty(selectedNodeAutoCompletionGroup.getIdGroup())) {
+           MessageUtils.showErrorMessage("Aucune sélection !!");
             return;
         }
 
         // addConceptToGroup
         if (!groupService.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
-            var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Erreur de bases de données !!");
             return;
         }
 
@@ -103,14 +89,8 @@ public class AddConceptToGroupBean implements Serializable {
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a été ajouté à la collection");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Le concept a été ajouté à la collection");
         PrimeFaces.current().executeScript("PF('addConceptToGroup').hide();");
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 }

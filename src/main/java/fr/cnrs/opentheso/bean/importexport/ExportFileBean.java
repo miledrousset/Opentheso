@@ -11,7 +11,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.services.ConceptService;
-import fr.cnrs.opentheso.services.ExportService;
+import fr.cnrs.opentheso.services.exports.ExportService;
 import fr.cnrs.opentheso.services.FacetService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
@@ -262,12 +262,10 @@ public class ExportFileBean implements Serializable {
         if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
             byte[] datas;
             if (viewExportBean.isToogleFilterByGroup()) {
-                datas = csvWriteHelper.writeCsvById(
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                datas = csvWriteHelper.writeCsvById(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(), viewExportBean.getCsvDelimiterChar());
             } else {
-                datas = csvWriteHelper.writeCsvById(
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                datas = csvWriteHelper.writeCsvById(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), null, viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {

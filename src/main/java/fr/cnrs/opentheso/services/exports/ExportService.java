@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.services;
+package fr.cnrs.opentheso.services.exports;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.SkosConceptProjection;
 import fr.cnrs.opentheso.models.SkosFacetProjection;
@@ -7,6 +7,8 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.repositories.ExportRepository;
 
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;

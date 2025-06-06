@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
@@ -46,7 +45,6 @@ public class NewConcept implements Serializable {
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
     private final GroupService groupService;
-    private final SearchHelper searchHelper;
     private final ConceptAddService conceptAddService;
     private final ConceptService conceptService;
     private final TermService termService;
@@ -83,10 +81,6 @@ public class NewConcept implements Serializable {
         idFacet = nodeFacet.getIdFacet();
     }
 
-    public void infos() {
-        MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Information", "Rédiger une aide ici pour Add Concept !");
-    }
-
     public void infosTopConcept() {
         MessageUtils.showMessage(FacesMessage.SEVERITY_WARN, "Information", "Rédiger une aide ici pour Add Top Concept!");
     }
@@ -115,7 +109,6 @@ public class NewConcept implements Serializable {
         tree.expandTreeToPath(idNewConcept, idThesaurus, idLang);
         init();
 
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:idAddTopConcept");
     }
 

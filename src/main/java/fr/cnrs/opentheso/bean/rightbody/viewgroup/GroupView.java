@@ -12,39 +12,35 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.IpAddressService;
-
 import fr.cnrs.opentheso.services.NoteService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.annotation.PreDestroy;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+
 
 @Data
 @Slf4j
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "groupView")
 public class GroupView implements Serializable {
 
-    
-    @Autowired @Lazy private IndexSetting indexSetting;     
-    @Autowired @Lazy private ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired private IpAddressService ipAddressService;
-    @Autowired
-    private SelectedTheso selectedTheso;
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private ConceptStatusRepository conceptStatusRepository;
+    private final NoteService noteService;
+    private final IndexSetting indexSetting;
+    private final GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final GroupTypeService groupTypeService;
+    private final IpAddressService ipAddressService;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final ConceptStatusRepository conceptStatusRepository;
+    private final ViewEditorThesaurusHomeBean viewEditorThesaurusHomeBean;
 
     private NodeGroup nodeGroup;
     private List<NodeGroupTraductions> nodeGroupTraductions;
@@ -59,26 +55,25 @@ public class GroupView implements Serializable {
     private NodeNote historyNote;
 
     /// Notes du concept pour l'affichage du multilingue
-    private ArrayList<NodeNote> noteAllLang;
-    private ArrayList<NodeNote> scopeNoteAllLang;
-    private ArrayList<NodeNote> changeNoteAllLang;
-    private ArrayList<NodeNote> definitionAllLang;
-    private ArrayList<NodeNote> editorialNoteAllLang;
-    private ArrayList<NodeNote> exampleAllLang;
-    private ArrayList<NodeNote> historyNoteAllLang;
+    private List<NodeNote> noteAllLang;
+    private List<NodeNote> scopeNoteAllLang;
+    private List<NodeNote> changeNoteAllLang;
+    private List<NodeNote> definitionAllLang;
+    private List<NodeNote> editorialNoteAllLang;
+    private List<NodeNote> exampleAllLang;
+    private List<NodeNote> historyNoteAllLang;
     
     private int count;
+    private boolean toggleSwitchNotesLang = true;
 
-    private boolean toggleSwitchNotesLang;
-    @Autowired
-    private GroupTypeService groupTypeService;
-    @Autowired
-    private NoteService noteService;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
+    public void init() {
+        count = 0;
+        nodeGroup = null;
+        nodeGroupType = null;
+        nodeGroupTraductions = null;
+    }
+
     public void clear(){
         if(nodeGroupTraductions!= null){
             nodeGroupTraductions.clear();
@@ -86,32 +81,10 @@ public class GroupView implements Serializable {
         }
         nodeGroup = null;
         nodeGroupType = null;
-    }      
-    
-    /**
-     * Creates a new instance of ConceptBean
-     */
-    public GroupView() {
-        toggleSwitchNotesLang = true;
-    }
-
-    public void init() {
-        /*  if(isUriRequest) {
-            isUriRequest = false;
-            return;
-        }*/
-        count = 0;
-        nodeGroup = null;
-        nodeGroupType = null;
-        nodeGroupTraductions = null;
     }
 
     /**
      * récuparation des informations pour le concept sélectionné
-     *
-     * @param idTheso
-     * @param idGroup
-     * @param idLang
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
 
@@ -125,23 +98,23 @@ public class GroupView implements Serializable {
         count = conceptStatusRepository.countConceptsInGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
-        viewEditorThesoHomeBean.reset();
+        viewEditorThesaurusHomeBean.reset();
     }
 
     private void logGroup() {
-        String ipAddress = ipAddressService.getClientIpAddress();
+        var ipAddress = ipAddressService.getClientIpAddress();
         log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdGroup(),
                 selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 
-    public void setNotes(String idTheso, String idGroup, String idLang) {
+    public void setNotes(String idThesaurus, String idGroup, String idLang) {
 
         if (toggleSwitchNotesLang) {
-            setNotesForAllLang(noteService.getListNotesAllLang(idGroup, idTheso));
+            setNotesForAllLang(noteService.getListNotesAllLang(idGroup, idThesaurus));
         } else {
-            setAllNotes(noteService.getListNotes(idGroup, idTheso, idLang));
+            setAllNotes(noteService.getListNotes(idGroup, idThesaurus, idLang));
         }
-    };
+    }
     
     /////////////////////////////////
     /////////////////////////////////

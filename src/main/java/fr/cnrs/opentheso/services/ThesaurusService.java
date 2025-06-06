@@ -75,7 +75,6 @@ public class ThesaurusService {
             log.error("Le thésaurus avec id {} n'existe pas dans la base de données", idThesaurus);
             return null;
         }
-
         return thesaurus.get();
     }
 

@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.entites;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
@@ -30,7 +32,6 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class Concept implements Serializable {
 
-    @Id
     @Column(name = "id_concept", nullable = false)
     private String idConcept;
 
@@ -76,5 +77,7 @@ public class Concept implements Serializable {
     @Column(name = "concept_type", nullable = false)
     private String conceptType = "concept";
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 }

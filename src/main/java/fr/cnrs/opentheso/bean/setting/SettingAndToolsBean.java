@@ -4,21 +4,20 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 
 @Data
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "settingAndToolsBean")
 public class SettingAndToolsBean implements Serializable {
 
     private final PreferenceBean preferenceBean;
+
     private boolean isPreferenceActive, isIdentifierActive, isCorpusActive, isMaintenanceActive;
     private String preferenceColor, identifierColor, corpusColor, maintenanceColor;
 
-
-    public SettingAndToolsBean(PreferenceBean preferenceBean) {
-        this.preferenceBean = preferenceBean;
-    }
 
     public void reset() {
         isPreferenceActive = true;

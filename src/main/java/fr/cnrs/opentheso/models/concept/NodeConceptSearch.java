@@ -7,12 +7,18 @@ import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.terms.NodeRT;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.text.Normalizer;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeConceptSearch implements Comparable {
 
     private String thesoName;    

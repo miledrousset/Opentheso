@@ -775,7 +775,7 @@ public class CsvWriteHelper {
      * @param idLang
      * @return
      */
-    public byte[] writeCsvFromNodeCompareTheso(ArrayList<NodeCompareTheso> nodeCompareThesos, String idLang) {
+    public byte[] writeCsvFromNodeCompareTheso(List<NodeCompareTheso> nodeCompareThesos, String idLang) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {

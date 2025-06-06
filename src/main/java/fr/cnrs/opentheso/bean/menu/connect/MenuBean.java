@@ -14,67 +14,46 @@ import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.FlagBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.statistique.StatistiqueBean;
+
+import java.io.Serializable;
 import java.io.IOException;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 
-@Named(value = "menuBean")
+@Data
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "menuBean")
 public class MenuBean implements Serializable {
 
-    @Autowired @Lazy 
-    private SuperAdminBean superAdminBean;
-
-    @Autowired @Lazy 
-    private MyAccountBean myAccountBean;
-
-    @Autowired @Lazy 
-    private MyProjectBean myProjectBean;
-
-    @Autowired @Lazy 
-    private CorpusBean corpusBean;
-
-    @Autowired @Lazy 
-    private PreferenceBean preferenceBean;
-    
-    @Autowired @Lazy
-    private ViewEditionBean viewEditionBean;
-
-    @Autowired @Lazy
-    private FlagBean flagBean;
-    
     @Autowired @Lazy
     private AtelierThesBean atelierThesBean;
-    
-    @Autowired @Lazy
-    private StatistiqueBean statistiqueBean;
-    
-    @Autowired @Lazy 
-    private SelectedTheso selectedTheso;
-    
-    @Autowired @Lazy 
-    private CandidatBean candidatBean;
-    
-    @Autowired @Lazy 
-    private CurrentUser currentUser;
-    
-    @Autowired @Lazy
-    private PropositionBean propositionBean;
 
-    @Autowired @Lazy
-    private DataGraphView dataGraphView;    
-    
-    private boolean notificationPannelVisible;
-    
+    private final SuperAdminBean superAdminBean;
+    private final MyAccountBean myAccountBean;
+    private final MyProjectBean myProjectBean;
+    private final CorpusBean corpusBean;
+    private final PreferenceBean preferenceBean;
+    private final ViewEditionBean viewEditionBean;
+    private final FlagBean flagBean;
+    private final StatistiqueBean statistiqueBean;
+    private final SelectedTheso selectedTheso;
+    private final CandidatBean candidatBean;
+    private final CurrentUser currentUser;
+    private final PropositionBean propositionBean;
+    private final DataGraphView dataGraphView;
+
+    private boolean notificationPanelVisible;
     private String activePageName = "index";
     
     
@@ -90,7 +69,7 @@ public class MenuBean implements Serializable {
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
         activePageName = "index";
-        notificationPannelVisible = true;
+        notificationPanelVisible = true;
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
@@ -100,7 +79,7 @@ public class MenuBean implements Serializable {
     // LOGIN Page
     public void redirectToCandidatPage() throws IOException {
         activePageName = "candidat";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         candidatBean.initCandidatModule();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -111,7 +90,7 @@ public class MenuBean implements Serializable {
     // LOGIN Page
     public void redirectToGraphPage() throws IOException {
         activePageName = "graph";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         dataGraphView.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/graphview/graph.xhtml");
@@ -120,7 +99,7 @@ public class MenuBean implements Serializable {
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
         activePageName = "users";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -130,7 +109,7 @@ public class MenuBean implements Serializable {
 
     public void redirectToProjetsPage() throws IOException {
         activePageName = "Projects";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -140,7 +119,7 @@ public class MenuBean implements Serializable {
 
     public void redirectToThesorusPage() throws IOException {
         activePageName = "thesorus";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -150,7 +129,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToMyProfilePage() throws IOException {
         activePageName = "myAccount";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         myAccountBean.loadDataPage();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -160,7 +139,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToMesProjectsPage() throws IOException {
         activePageName = "myProject";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         myProjectBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -171,7 +150,7 @@ public class MenuBean implements Serializable {
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
         activePageName = "identifier";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -181,7 +160,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToPreferencePage() throws IOException {
         activePageName = "preference";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -191,7 +170,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToCorpusPage() throws IOException {
         activePageName = "corpus";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         corpusBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -202,7 +181,7 @@ public class MenuBean implements Serializable {
     ///Boite à outils
     public void redirectToEditionPage() throws IOException {
         activePageName = "edition";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         viewEditionBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
@@ -212,7 +191,7 @@ public class MenuBean implements Serializable {
 
     public void redirectToFlagPage() throws IOException {
         activePageName = "flag";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         flagBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/flag.xhtml");
@@ -229,7 +208,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToMaintenancePage() throws IOException {
         activePageName = "service";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -246,7 +225,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToStatistiquePage() throws IOException {
         activePageName = "statistic";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -264,23 +243,10 @@ public class MenuBean implements Serializable {
     // LOGIN Page
     public void redirectToLoginPage() throws IOException {
         activePageName = "login";
-        notificationPannelVisible = false;
+        notificationPanelVisible = false;
         propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/login.xhtml");
     }
-
-    public boolean isNotificationPannelVisible() {
-        return notificationPannelVisible;
-    }
-
-    public void setNotificationPannelVisible(boolean notificationPannelVisible) {
-        this.notificationPannelVisible = notificationPannelVisible;
-    }
-
-    public String getActivePageName() {
-        return activePageName;
-    }
-    
 }

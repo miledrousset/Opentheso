@@ -43,4 +43,9 @@ public class NodeIdValue implements Comparable<NodeIdValue>, Serializable {
     public int compareTo(NodeIdValue o) {
         return value.compareTo(o.value);
     }
+
+    public NodeIdValue(String id, String value) {
+        this.id = id;
+        this.value = value;
+    }
 }

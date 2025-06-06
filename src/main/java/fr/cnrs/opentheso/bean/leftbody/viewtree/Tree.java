@@ -224,25 +224,9 @@ public class Tree implements Serializable {
     }
 
     public void reloadSelectedConcept(){
-        /*if (getSelectedNode() != null) {
-                getSelectedNode().getChildren().removeAll(getSelectedNode().getChildren());
-                expandTreeToPath(((TreeNodeData) getSelectedNode().getData()).getNodeId(),
-                        selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getCurrentLang());
-            PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
-       /*     TreeNode parent = getSelectedNode().getParent();
-            if (parent != null) {
-                parent.getChildren().remove(getSelectedNode());
-
-                if (PrimeFaces.current().isAjaxRequest()) {
-                    PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
-                }
-            }
-        }*/
         initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         if(getSelectedNode() != null) {
-            expandTreeToPath(
-                    ((TreeNodeData) getSelectedNode().getData()).getNodeId(),
+            expandTreeToPath(((TreeNodeData) getSelectedNode().getData()).getNodeId(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang());
         }
@@ -389,21 +373,17 @@ public class Tree implements Serializable {
     /////// pour l'ajout d'un fils supplementaire après un ajout de concept
     public void addNewChild(TreeNode parent, String idConcept, String idTheso, String idLang, String notation) {
 
-        TreeNodeData data;
         String label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
         if (label == null || label.isEmpty()) {
             label = "(" + idConcept + ")";
         }
-        data = new TreeNodeData(
-                idConcept,
-                label,
-                notation,
+        var data = new TreeNodeData(idConcept, label, notation,
                 false,//isgroup
                 false,//isSubGroup
                 true,//isConcept
                 false,//isTopConcept
-                "term"
-        );
+                "term");
+
         if (conceptService.haveChildren(idTheso, idConcept)) {
             dataService.addNodeWithChild("concept", data, parent);
         } else {
@@ -636,9 +616,7 @@ public class Tree implements Serializable {
         if (paths == null || paths.isEmpty()) {
             return;
         }
-        
-        // deselectionner et fermer toutes les noeds de l'arbres
-//        initialiserEtatNoeuds(root);
+
         // cas de changement de langue pendant la navigation dans les concepts
         // il faut reconstruire l'arbre dès le début
         if (idLang != null && !idLang.equalsIgnoreCase(this.idLang)) {
