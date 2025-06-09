@@ -526,7 +526,7 @@ public class RelationService {
                         .role(p.getRole())
                         .title(termService.getLexicalValueOfConcept(p.getIdConcept2(), idThesaurus, idLang))
                         .build())
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
         Collections.sort(nodeListNT);
         return nodeListNT;

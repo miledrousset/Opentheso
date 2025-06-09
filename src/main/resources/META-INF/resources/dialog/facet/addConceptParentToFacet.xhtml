@@ -45,7 +45,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
                                  styleClass="ui-button-success" icon="pi pi-check" 
-                                 update="containerIndex messageIndex" ajax="true" process="@form"
+                                 update="containerIndex" ajax="true" process="@form"
                                  oncomplete="PF('addConceptParentToFacet').hide();"
                                  actionListener="#{editFacet.modifierConceptParent()}"/>
             </div>

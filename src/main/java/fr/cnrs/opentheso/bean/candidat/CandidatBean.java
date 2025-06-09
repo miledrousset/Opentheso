@@ -734,7 +734,9 @@ public class CandidatBean implements Serializable {
         if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
             try {
                 nonPreferredTermService.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(), candidatSelected.getLang());
-                candidatSelected.getEmployePourList().remove(synonyme);
+                candidatSelected.setEmployePourList(candidatSelected.getEmployePourList().stream()
+                        .filter(element -> element.equals(synonyme))
+                        .toList());
                 PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
                 MessageUtils.showInformationMessage("Synonyme supprimé avec succès !");
             } catch (Exception ex) {
@@ -898,7 +900,11 @@ public class CandidatBean implements Serializable {
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
-        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
+        if (CollectionUtils.isEmpty(alignmentBean.getAlignementSources())) {
+            MessageUtils.showWarnMessage("Vous devez choisir le type d'alignement d'abord !");
+        } else {
+            PrimeFaces.current().executeScript("PF('searchAlignement').show();");
+        }
     }
 
     public void searchAlignementAuto() {

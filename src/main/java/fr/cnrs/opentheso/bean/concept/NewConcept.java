@@ -103,13 +103,13 @@ public class NewConcept implements Serializable {
 
         conceptBean.getConcept(idThesaurus, idNewConcept, idLang, currentUser);
         isCreated = true;
-
-        MessageUtils.showMessage(FacesMessage.SEVERITY_INFO, "Information", "Le top concept a bien été ajouté");
+        
+        MessageUtils.showInformationMessage("Le top concept a bien été ajouté");
         tree.addNewChild(tree.getRoot(), idNewConcept, idThesaurus, idLang, notation);
         tree.expandTreeToPath(idNewConcept, idThesaurus, idLang);
         init();
 
-        PrimeFaces.current().ajax().update("containerIndex:idAddTopConcept");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     private boolean validateFields(String idTheso, String idLang) {

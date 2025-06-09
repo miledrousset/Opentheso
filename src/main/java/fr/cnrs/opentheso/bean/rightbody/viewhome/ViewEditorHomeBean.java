@@ -2,13 +2,12 @@ package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.HomePageService;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import lombok.Data;
 import java.io.Serializable;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import lombok.RequiredArgsConstructor;
 import org.primefaces.PrimeFaces;
 
@@ -71,8 +70,6 @@ public class ViewEditorHomeBean implements Serializable {
         selectedTheso.setOptionThesoSelected("Option1");
 
         reset();
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex");
     }
 
@@ -89,24 +86,20 @@ public class ViewEditorHomeBean implements Serializable {
         var lang = homePageService.getLanguage();
 
         if (!homePageService.setHomePage(text, lang)) {
-            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showErrorMessage("L'ajout a échoué !");
             return;
         }
 
-        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "texte ajouté avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        MessageUtils.showInformationMessage("Texte ajouté avec succès");
 
         isInEditing = false;
         isViewPlainText = false;
         isInEditingHomePage = false;
         isInEditingGoogleAnalytics = false;
 
-        reset();
+        selectedTheso.setOptionThesoSelected("Option1");
 
-        PrimeFaces.current().ajax().update("messageIndex");
+        reset();
         PrimeFaces.current().ajax().update("containerIndex");
     }
 
@@ -119,8 +112,6 @@ public class ViewEditorHomeBean implements Serializable {
             colorOfTextButton = "#8C8C8C;";
         }
         isViewPlainText = status;
-
-        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex");
     }
 

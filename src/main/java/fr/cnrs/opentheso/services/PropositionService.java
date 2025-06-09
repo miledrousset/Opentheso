@@ -526,10 +526,6 @@ public class PropositionService {
             return false;
         }
 
-        if (termService.isAltLabelExist(termFound.get().getIdTerm(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
-            MessageUtils.showWarnMessage("Un synonyme existe déjà !");
-            return false;
-        }
         return true;
     }
 

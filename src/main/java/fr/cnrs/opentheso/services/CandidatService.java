@@ -784,6 +784,7 @@ public class CandidatService {
                 .idUser(idUser)
                 .userName(userName)
                 .status("CA")
+                .creator(idUser)
                 .build());
 
         if (idNewConcept == null) {

@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -325,22 +327,20 @@ public class TermService {
     public Term getThisTerm(String idConcept, String idThesaurus, String idLang) {
 
         if (isTraductionExistOfConcept(idConcept, idThesaurus, idLang)) {
-            Optional<Object[]> result = termRepository.getPreferredTermWithConceptInfo(idConcept, idThesaurus, idLang);
-
-            if (result.isPresent()) {
-                Object[] row = result.get();
+            var result = termRepository.getPreferredTermWithConceptInfo(idConcept, idThesaurus, idLang);
+            if (result instanceof Object[] row) {
                 return Term.builder()
                         .idTerm((String) row[0])
                         .idConcept((String) row[1])
                         .lexicalValue((String) row[2])
                         .lang((String) row[3])
                         .idThesaurus((String) row[4])
-                        .created((Date) row[5])
-                        .modified((Date) row[6])
+                        .created(Date.from((Instant) row[5]))
+                        .modified(Date.from((Instant) row[6]))
                         .source((String) row[7])
                         .status((String) row[8])
                         .contributor((Integer) row[9])
-                        .creator((Integer) row[10])
+                        .creator(row[10] != null ? (Integer)row[10] : -1)
                         .build();
             }
         } else {

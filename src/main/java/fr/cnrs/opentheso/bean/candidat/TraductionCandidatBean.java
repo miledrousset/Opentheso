@@ -10,12 +10,14 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 
@@ -46,6 +48,11 @@ public class TraductionCandidatBean implements Serializable {
         newLangage = "";
         newTraduction = "";
         initLanguages();
+        if (CollectionUtils.isEmpty(nodeLanguesFiltered)) {
+            MessageUtils.showWarnMessage("Le candidat est traduit dans toutes les langues du thésaurus");
+        } else {
+            PrimeFaces.current().executeScript("PF('newTraduction').show();");
+        }
     }
 
     private void initLanguages() {

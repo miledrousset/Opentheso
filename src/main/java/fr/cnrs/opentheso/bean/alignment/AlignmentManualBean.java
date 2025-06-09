@@ -22,6 +22,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -54,6 +55,15 @@ public class AlignmentManualBean implements Serializable {
         manualAlignmentUri = "";
         manualAlignmentType = -1;
         nodeAlignments = alignmentService.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
+    }
+
+    public void showManuelAlignmentDialog() {
+        reset();
+        if (CollectionUtils.isEmpty(alignmentBean.getAlignmentTypes())) {
+            MessageUtils.showWarnMessage("Vous devez choisir le type d'alignement d'abord !");
+        } else {
+            PrimeFaces.current().executeScript("PF('addManualAlignment').show();");
+        }
     }
 
     public void infos() {

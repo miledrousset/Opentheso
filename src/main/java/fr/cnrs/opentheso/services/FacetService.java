@@ -19,9 +19,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -78,7 +80,7 @@ public class FacetService {
                             .id(facet.getIdFacet())
                             .value(lexicalValue)
                             .build();
-                }).toList());
+                }).collect(Collectors.toCollection(ArrayList::new)));
         Collections.sort(listFacets);
         return listFacets;
     }
@@ -223,14 +225,8 @@ public class FacetService {
     }
 
     public void updateFacetParent(String idConceptParent, String idFacet, String idThesaurus) {
-
-        var facet = thesaurusArrayRepository.findAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
-        if (facet.isEmpty()) {
-            log.error("Aucune facette n'est trouvée avec l'id {}", idFacet);
-            return;
-        }
-        facet.get().setIdConceptParent(idConceptParent);
-        thesaurusArrayRepository.save(facet.get());
+        log.info("Mise à jour du concept parent pour la facet id {}", idFacet);
+        thesaurusArrayRepository.updateConceptParent(idConceptParent, idThesaurus, idFacet);
     }
 
     public void deleteFacet(String idFacet, String idThesaurus) {
@@ -287,6 +283,8 @@ public class FacetService {
                 .idThesaurus(idThesaurus)
                 .lexicalValue(lexicalValue)
                 .lang(idLang)
+                .created(new Date())
+                .modified(new Date())
                 .build());
     }
 
@@ -385,7 +383,7 @@ public class FacetService {
                             .id(conceptId)
                             .value(termRepository.getLexicalValueOfConcept(conceptId, idTheso, idLang).orElse(""))
                             .build())
-                    .toList();
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             Collections.sort(results);
             log.info("{} concepts trouvés pour la facette '{}'", results.size(), idFacet);

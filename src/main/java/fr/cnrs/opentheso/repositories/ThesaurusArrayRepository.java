@@ -27,6 +27,13 @@ public interface ThesaurusArrayRepository extends JpaRepository<ThesaurusArray, 
     @Query("UPDATE ThesaurusArray t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE ThesaurusArray t SET t.idConceptParent = :newConceptParent WHERE t.idThesaurus = :idThesaurus AND t.idFacet = :idFacet")
+    void updateConceptParent(@Param("newConceptParent") String newConceptParent,
+                             @Param("idThesaurus") String idThesaurus,
+                             @Param("idFacet") String idFacet);
+
     @Query("""
         SELECT t.idFacet AS idFacet, t.idConceptParent AS idConceptParent
         FROM ThesaurusArray t

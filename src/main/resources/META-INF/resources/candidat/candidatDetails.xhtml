@@ -400,7 +400,6 @@
                             <i class="fa fa-language" style="color: #78261f; margin-right: 10px" />
                             <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_traduction')}"
                                              update="idNewTraduction newTraductionForm"
-                                             oncomplete="PF('newTraduction').show();"
                                              actionListener="#{traductionCandidatBean.init()}"
                                              styleClass="rounded-button ui-button-outlined"
                                              style="color: #f47b2a;" />
@@ -471,8 +470,7 @@
                             <i class="pi pi-align-justify" style="color: #78261f; margin-right: 10px; margin-left: 10px" />
                             <p:commandButton value="#{langueBean.getMsg('alignment.addNewAlignment')}"
                                              update="idAddManualAlignment" process="@this" ajax="true"
-                                             oncomplete="PF('addManualAlignment').show();"
-                                             actionListener="#{alignmentManualBean.reset()}"
+                                             actionListener="#{alignmentManualBean.showManuelAlignmentDialog()}"
                                              styleClass="rounded-button ui-button-outlined"
                                              style="color: #f47b2a;" />
 

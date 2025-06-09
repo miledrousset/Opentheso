@@ -24,6 +24,7 @@ import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.TreeDragDropEvent;
@@ -33,19 +34,20 @@ import org.primefaces.model.TreeNode;
 
 @Data
 @Slf4j
-@Named(value = "dragAndDrop")
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "dragAndDrop")
 public class DragAndDrop implements Serializable {
 
-    private ConceptView conceptBean;
-    private SelectedTheso selectedTheso;
-    private CurrentUser currentUser;
-    private Tree tree;
-    private GroupService groupService;
-    private ConceptDcTermRepository conceptDcTermRepository;
-    private ConceptService conceptService;
-    private FacetService facetService;
-    private RelationService relationService;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final Tree tree;
+    private final GroupService groupService;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final ConceptService conceptService;
+    private final FacetService facetService;
+    private final RelationService relationService;
 
     private boolean isCopyOn, isValidPaste, isDragAndDrop, isDropToRoot, isGroupToCut;
     private List<NodeBT> nodeBTsToCut;

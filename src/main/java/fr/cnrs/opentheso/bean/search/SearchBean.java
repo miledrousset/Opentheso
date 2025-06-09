@@ -350,7 +350,6 @@ public class SearchBean implements Serializable {
                 concepts.add(nodeConceptSearch);
             }
         }
-    //    Collections.sort(concepts);
         return concepts;
     }
 

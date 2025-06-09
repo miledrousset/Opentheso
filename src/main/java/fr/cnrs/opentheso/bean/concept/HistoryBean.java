@@ -17,9 +17,9 @@ import jakarta.enterprise.context.SessionScoped;
 @Named(value = "historyBean")
 public class HistoryBean implements Serializable {
 
-    private ConceptView conceptBean;
-    private SelectedTheso selectedTheso;
-    private HistoryService historyService;
+    private final ConceptView conceptBean;
+    private final SelectedTheso selectedTheso;
+    private final HistoryService historyService;
 
     private List<HistoryValue> historyLabels, historySynonyms, historyRelations, historyNotes;
 

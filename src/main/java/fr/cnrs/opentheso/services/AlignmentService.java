@@ -202,7 +202,7 @@ public class AlignmentService {
         log.info("Recherche de la liste de tous les types d'alignements");
         var alignementTypes = alignementTypeRepository.findAll();
 
-        if (CollectionUtils.isEmpty(alignementTypes)) {
+        if (CollectionUtils.isNotEmpty(alignementTypes)) {
             log.info("{} types d'alignements trouvés !", alignementTypes.size());
             return alignementTypes.stream()
                     .map(element -> NodeAlignmentType.builder()

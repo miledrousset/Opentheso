@@ -106,6 +106,17 @@ public class EditFacet implements Serializable {
         newFacetName = facetSelected.getLexicalValue();
     }
 
+    public void finishAddingNewConcept() {
+
+        if (facetSelected != null) {
+            conceptList = facetService.getAllMembersOfFacetSorted(facetSelected.getIdFacet(), selectedTheso.getCurrentLang(),
+                    selectedTheso.getCurrentIdTheso());
+
+            PrimeFaces.current().ajax().update("containerIndex");
+            PrimeFaces.current().executeScript("PF('addNTFacette').hide();");
+        }
+    }
+
     private void setAllNotes(List<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
@@ -373,8 +384,7 @@ public class EditFacet implements Serializable {
 
         conceptParentTerme = concepParent.getTerm().getLexicalValue();
 
-        PrimeFaces.current().ajax().update("formRightTab:facetView");
-        PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+        PrimeFaces.current().ajax().update("containerIndex");
         PrimeFaces.current().executeScript("PF('addConceptParentToFacet').hide();");
 
     }

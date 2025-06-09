@@ -128,11 +128,11 @@
                                 <p:commandLink rendered="#{replaces.label != ''}" value="#{replaces.label}"
                                                title="#{replaces.identifier}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
-                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through" />
+                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"/>
                                 <p:commandLink rendered="#{replaces.label == ''}" value="(#{replaces.identifier})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
-                                               style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;" />
+                                               style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"/>
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>
@@ -159,7 +159,7 @@
                                             oncomplete="PF('addSynonym').show();" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
-                                            actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();" 
+                                            actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();"
                                             update="containerIndex:idRenameSynonym" icon="fas fa-edit"/>
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
@@ -314,8 +314,7 @@
                                                 oncomplete="PF('addConceptToFacet').show();" />
                                     <p:menuitem value="#{langueBean.getMsg('leftbody.removeTheConceptOfFacets')}" icon="far fa-trash-alt"
                                                 oncomplete="PF('removeConceptFromFracets').show();"
-                                                update="containerIndex:idRemoveConceptFromFracets"
-                                                disabled="#{conceptView.nodeFacets.size() == 0}"/>                                      
+                                                update="containerIndex:idRemoveConceptFromFracets"/>
                                 </p:menuButton>
 
                                 <h:panelGroup rendered="#{conceptView.nodeFacets.size() == 0}" >                          

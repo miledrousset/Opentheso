@@ -88,8 +88,8 @@ public interface TermRepository extends JpaRepository<Term, Integer> {
         ORDER BY t.lexical_value DESC
         LIMIT 1
     """, nativeQuery = true)
-    Optional<Object[]> getPreferredTermWithConceptInfo(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
-                                                       @Param("idLang") String idLang);
+    Object getPreferredTermWithConceptInfo(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus,
+                                           @Param("idLang") String idLang);
 
     @Query(value = """
         SELECT t.lang AS lang, t.lexical_value AS lexicalValue, l.code_pays AS codePays,

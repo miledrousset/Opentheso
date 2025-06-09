@@ -132,13 +132,11 @@
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
                                                 oncomplete="PF('renameFacetTraduction').show();"
                                                 update="containerIndex:idRenameFacetTraduction"
-                                                disabled="#{editFacet.facetTraductions.size() == 0}"
                                                 icon="fas fa-pencil-alt"/>
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
                                                 oncomplete="PF('deleteFacetTraduction').show();"
                                                 update="containerIndex:idDeleteFacetTraduction"
-                                                disabled="#{editFacet.facetTraductions.size() == 0}"
                                                 icon="far fa-trash-alt"/>
                                 </p:menuButton> 
 
@@ -162,25 +160,7 @@
                 </h:panelGroup>
 
                 <p:spacer height="20px" />
-                
-                
-          
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+
                 <p:spacer height="2px" width="98%" style="margin-left: 10px; 
                           background-color: #CBD1DC; font-weight: 100"  />                
                 
@@ -204,11 +184,6 @@
                         </p:menuButton>
                     </h:panelGroup>                          
                 </div>
-                
-          
-                
-                
-                
 
                 <!-- Note -->
                 <h:panelGroup rendered="#{editFacet.note != null}">

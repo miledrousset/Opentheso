@@ -236,7 +236,11 @@ public class ConceptService {
         corpusLinkRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
-        conceptRepository.deleteAllByIdThesaurus(idThesaurus);
+        try {
+            conceptRepository.deleteAllByIdThesaurus(idThesaurus);
+        } catch (Exception ex) {
+            log.info("Aucun thésaurus n'est présent dans le thésaurus");
+        }
         conceptTypeRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptFacetRepository.deleteAllByIdThesaurus(idThesaurus);
     }
@@ -413,17 +417,19 @@ public class ConceptService {
                 ? conceptRepository.findTopConceptsByGroup(idThesaurus, idGroup)
                 : conceptRepository.findConceptsByGroup(idThesaurus, idGroup);
 
-        List<NodeIdValue> result = new ArrayList<>(rawConcepts.stream().map(row -> {
-            String idConcept = (String) row[0];
-            String notation = (String) row[1];
-            String lexicalValue = termService.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
+        List<NodeIdValue> result = new ArrayList<>(rawConcepts.stream()
+                .map(row -> {
+                    String idConcept = (String) row[0];
+                    String notation = (String) row[1];
+                    String lexicalValue = termService.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
 
-            NodeIdValue node = new NodeIdValue();
-            node.setId(idConcept);
-            node.setNotation(notation);
-            node.setValue(StringUtils.isEmpty(lexicalValue) ? "__" + idConcept : lexicalValue);
-            return node;
-        }).toList());
+                    NodeIdValue node = new NodeIdValue();
+                    node.setId(idConcept);
+                    node.setNotation(notation);
+                    node.setValue(StringUtils.isEmpty(lexicalValue) ? "__" + idConcept : lexicalValue);
+                    return node;
+                })
+                .collect(Collectors.toCollection(ArrayList::new)));
 
         if (!isSortByNotation) {
             Collections.sort(result);
@@ -668,6 +674,11 @@ public class ConceptService {
         var concept = getConcept(idConcept, idThesaurus);
         if (concept != null) {
             concept.setTopConcept(isTopConcept);
+            concept.setNotation(StringUtils.isEmpty(concept.getNotation()) ? "" : concept.getNotation());
+            concept.setIdArk(StringUtils.isEmpty(concept.getIdArk()) ? "" : concept.getIdArk());
+            concept.setIdDoi(StringUtils.isEmpty(concept.getIdDoi()) ? "" : concept.getIdDoi());
+            concept.setIdHandle(StringUtils.isEmpty(concept.getIdHandle()) ? "" : concept.getIdHandle());
+            concept.setConceptType(StringUtils.isEmpty(concept.getConceptType()) ? "" : concept.getConceptType());
             conceptRepository.save(concept);
             return true;
         }

@@ -157,7 +157,7 @@ public class ConceptAddService {
 
         conceptBean.getConcept(idThesaurus, idConceptParent, idLang, currentUser);
 
-        MessageUtils.showMessage(FacesMessage.SEVERITY_INFO, "Information", "Le concept a bien été ajouté");
+        MessageUtils.showInformationMessage("Le concept a bien été ajouté");
 
         log.info("Fin de l'ajout du nouveau concept");
         return true;
@@ -468,14 +468,13 @@ public class ConceptAddService {
     }
 
     private String getNumericConceptId() {
-
         var idNumerique = conceptRepository.getNextConceptNumericId();
         if (idNumerique == null) {
             throw new IllegalStateException("Impossible de récupérer un ID depuis la séquence concept__id_seq");
         }
 
         String idConcept = String.valueOf(idNumerique);
-        while (conceptRepository.findByIdConcept(idConcept) != null) {
+        while (!conceptRepository.findByIdConcept(idConcept).isEmpty()) {
             idConcept = String.valueOf(++idNumerique);
         }
 
