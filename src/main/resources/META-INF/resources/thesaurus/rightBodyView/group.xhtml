@@ -14,7 +14,6 @@
         <div class="card mb-4 py-3 border-left-success" style="margin-top: -5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
 
-
                 <!-- ligne Label du groupe -->
                 <div class="list-group-item list-group-item-action">
                     <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px; height: 30px;">
@@ -27,8 +26,7 @@
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                <p:menuButton
-                                        icon="fas fa-cog"
+                                <p:menuButton icon="fas fa-cog"
                                         style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('candidat.edit')}"
                                                 action="#{modifyGroupBean.init()}"

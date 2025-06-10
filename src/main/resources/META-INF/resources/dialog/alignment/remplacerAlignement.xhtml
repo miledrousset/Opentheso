@@ -100,7 +100,7 @@
 
                 <p:commandButton styleClass="ui-button-success" value="#{langueBean.getMsg('btnValidate')}"
                                  update="containerIndex"
-                                 actionListener="#{alignmentBean.remplacerAlignementSelected(selectedTheso.getCurrentIdTheso())}"
+                                 actionListener="#{alignmentBean.remplacerAlignementSelected()}"
                                  icon="pi pi-check" ajax="true" process="@this"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

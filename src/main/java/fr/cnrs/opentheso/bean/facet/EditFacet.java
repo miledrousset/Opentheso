@@ -91,16 +91,16 @@ public class EditFacet implements Serializable {
         definition = null;
     }
 
-    public void initEditFacet(String facetId, String idTheso, String idLang) {
+    public void initEditFacet(String facetId, String idThesaurus, String idLang) {
 
-        facetSelected = facetService.getFacet(facetId, idTheso, idLang);
+        facetSelected = facetService.getFacet(facetId, idThesaurus, idLang);
         if(facetSelected == null || facetSelected.getIdFacet() == null) return;
-        concepParent = conceptService.getConceptOldVersion(facetSelected.getIdConceptParent(), idTheso, idLang, 21, 0);
+        concepParent = conceptService.getConceptOldVersion(facetSelected.getIdConceptParent(), idThesaurus, idLang, 21, 0);
 
         conceptParentTerme = concepParent.getTerm().getLexicalValue();
 
-        facetTraductions = facetService.getAllTraductionsFacet(facetId, idTheso, idLang);
-        setAllNotes(noteService.getListNotes(facetId, idTheso, idLang));
+        facetTraductions = facetService.getAllTraductionsFacet(facetId, idThesaurus, idLang);
+        setAllNotes(noteService.getListNotes(facetId, idThesaurus, idLang));
         conceptList = facetService.getAllMembersOfFacetSorted(facetSelected.getIdFacet(), selectedTheso.getCurrentLang(),
                 selectedTheso.getCurrentIdTheso());
         newFacetName = facetSelected.getLexicalValue();
@@ -112,7 +112,7 @@ public class EditFacet implements Serializable {
             conceptList = facetService.getAllMembersOfFacetSorted(facetSelected.getIdFacet(), selectedTheso.getCurrentLang(),
                     selectedTheso.getCurrentIdTheso());
 
-            PrimeFaces.current().ajax().update("containerIndex");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
             PrimeFaces.current().executeScript("PF('addNTFacette').hide();");
         }
     }

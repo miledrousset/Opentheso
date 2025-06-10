@@ -105,7 +105,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
                                  styleClass="ui-button-success" icon="pi pi-check" 
-                                 update="containerIndex" process="@form" ajax="true"
+                                 update="containerIndex:formRightTab containerIndex" process="@form" ajax="true"
                                  oncomplete="#{editFacet.finishAddingNewConcept()}"
                                  actionListener="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
                                                    selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>

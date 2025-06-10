@@ -44,6 +44,7 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -439,6 +440,8 @@ public class AlignmentBean implements Serializable {
                     term.setIdTerm(preferredTerm.getIdTerm());
                     term.setContributor(idUser);
                     term.setCreator(idUser);
+                    term.setCreated(new Date());
+                    term.setModified(new Date());
                     term.setSource("");
                     term.setStatus("");
                     if (termService.isTraductionExistOfConcept(idConcept, idTheso, selectedResource.getIdLang())) {
@@ -451,6 +454,8 @@ public class AlignmentBean implements Serializable {
                                 .idThesaurus(idTheso)
                                 .source("")
                                 .status("")
+                                .created(new Date())
+                                .modified(new Date())
                                 .build();
                         termService.addTermTraduction(termToSave, idUser);
                     }
@@ -483,14 +488,12 @@ public class AlignmentBean implements Serializable {
         }
     }
 
-    public void remplacerAlignementSelected(String idThesaurus) throws SQLException {
+    public void remplacerAlignementSelected() throws SQLException {
 
-        supprimerAlignementLocal(alignementSelect, idThesaurus);
+        supprimerAlignementLocal(alignementSelect, selectedTheso.getCurrentIdTheso());
 
-        addSingleAlignment(alignementSelect,
-                selectedTheso.getCurrentIdTheso(),
-                alignementSelect.getInternal_id_concept(),
-                selectedTheso.getCurrentUser().getNodeUser().getIdUser());
+        addSingleAlignment(alignementSelect, selectedTheso.getCurrentIdTheso(),
+                alignementSelect.getInternal_id_concept(), selectedTheso.getCurrentUser().getNodeUser().getIdUser());
 
         // Supprimer le nouvel alignement de la liste des propositions des alignements
         allAlignementFound = allAlignementFound.stream()
@@ -510,7 +513,6 @@ public class AlignmentBean implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement remplacé avec succès");
         PrimeFaces.current().executeScript("PF('remplacerAlignement').hide();");
-
     }
 
     private boolean isEquals(NodeAlignment element, NodeAlignment alignementSelect) {

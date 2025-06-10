@@ -276,6 +276,9 @@ public class GroupService {
                 .idTypeCode(nodeConceptGroup.getConceptGroup().getIdTypeCode())
                 .notation(nodeConceptGroup.getConceptGroup().getNotation())
                 .idHandle("")
+                .idDoi("")
+                .created(new Date())
+                .modified(new Date())
                 .build());
 
         log.info("Ajout de la traduction du group {}", idGroup);

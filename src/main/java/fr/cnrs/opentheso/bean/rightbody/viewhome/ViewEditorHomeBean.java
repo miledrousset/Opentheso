@@ -4,7 +4,12 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.HomePageService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
+
+import java.io.IOException;
 import java.io.Serializable;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -81,7 +86,7 @@ public class ViewEditorHomeBean implements Serializable {
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on
      * applique une mise à jour
      */
-    public void updateHomePage() {
+    public void updateHomePage() throws IOException {
 
         var lang = homePageService.getLanguage();
 
@@ -100,7 +105,10 @@ public class ViewEditorHomeBean implements Serializable {
         selectedTheso.setOptionThesoSelected("Option1");
 
         reset();
-        PrimeFaces.current().ajax().update("containerIndex");
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        String currentUrl = ec.getRequestContextPath() + ((HttpServletRequest) ec.getRequest()).getServletPath();
+        ec.redirect(currentUrl);
     }
 
     public void setViewPlainTextTo(boolean status) {

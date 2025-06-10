@@ -99,7 +99,7 @@ public class SetAlignmentSourceBean implements Serializable {
         if (selectedAlignment.isSelected()) {
             alignmentSourceService.addSourceAlignementToThesaurus(selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         } else {
-            alignmentService.deleteAlignment(selectedAlignment.getIdAlignmentSource(), selectedTheso.getCurrentIdTheso());
+            alignmentSourceService.deleteAlignmentSource(selectedAlignment.getIdAlignmentSource());
         }
         MessageUtils.showInformationMessage("Source mise à jour !");
     }

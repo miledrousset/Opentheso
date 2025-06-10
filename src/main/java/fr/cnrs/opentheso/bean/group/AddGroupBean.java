@@ -3,6 +3,8 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.services.GroupService;
@@ -38,6 +40,8 @@ public class AddGroupBean implements Serializable {
     private final GroupService groupService;
     private final NoteService noteService;
     private final GroupTypeService groupTypeService;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
 
     private List<SelectItem> listGroupType;
     private String selectedGroupType, titleGroup, notation, definition;
@@ -55,10 +59,9 @@ public class AddGroupBean implements Serializable {
         }
     }
     
-    public void addGroup(String idTheso, String idLang, int idUser) {
+    public void addGroup() {
 
         if (roleOnThesaurusBean.getNodePreference() == null) {
-            // erreur de préférences de thésaurusa
             MessageUtils.showErrorMessage("Le thésaurus n'a pas de préférences !");
             return;
         }
@@ -70,8 +73,8 @@ public class AddGroupBean implements Serializable {
         }
 
         nodeGroup.setLexicalValue(titleGroup);
-        nodeGroup.setIdLang(idLang);
-        nodeGroup.getConceptGroup().setIdThesaurus(idTheso);
+        nodeGroup.setIdLang(selectedTheso.getCurrentLang());
+        nodeGroup.getConceptGroup().setIdThesaurus(selectedTheso.getCurrentIdTheso());
         nodeGroup.getConceptGroup().setNotation(notation);
 
         if (selectedGroupType == null || selectedGroupType.isEmpty()) {
@@ -81,28 +84,29 @@ public class AddGroupBean implements Serializable {
 
         if(notation == null || notation.isEmpty()){
         } else {
-            if (groupService.isNotationExist(notation, idTheso)) {
+            if (groupService.isNotationExist(notation, selectedTheso.getCurrentIdTheso())) {
                 MessageUtils.showErrorMessage("La notation existe déjà !");
                 return;
             }
         }
 
-        String idGroup = groupService.addGroup(nodeGroup, idUser);
+        String idGroup = groupService.addGroup(nodeGroup, currentUser.getNodeUser().getIdUser());
         if (idGroup == null) {
             MessageUtils.showErrorMessage("Erreur interne");
             return;
         }
         if(roleOnThesaurusBean.getNodePreference().isUseArkLocal()) {
-            generateArkGroup(idGroup, titleGroup, idTheso);
+            generateArkGroup(idGroup, titleGroup, selectedTheso.getCurrentIdTheso());
         }
 
         // ajout de la définition s'il elle est renseignée
         if(StringUtils.isNotEmpty(definition)) {
-            noteService.addNote(idGroup, idLang, idTheso, definition, "definition", "",  idUser);
+            noteService.addNote(idGroup, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(), definition,
+                    "definition", "",  currentUser.getNodeUser().getIdUser());
         }
 
 
-        treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
+        treeGroups.addNewGroupToTree(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         MessageUtils.showInformationMessage(titleGroup + " a été ajouté avec succès");
 

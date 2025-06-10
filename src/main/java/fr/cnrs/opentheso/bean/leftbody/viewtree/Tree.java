@@ -471,8 +471,7 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
         onNodeSelectByNode(node);
-        if(dragAndDrop.isCopyOn())
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        if(dragAndDrop.isCopyOn()) PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     /**
@@ -482,7 +481,6 @@ public class Tree implements Serializable {
      */
     public void onNodeSelectByNode(DefaultTreeNode node) {
 
-//        alignmentManualBean.reset();
         propositionBean.setRubriqueVisible(false);
 
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
