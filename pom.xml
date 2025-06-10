@@ -32,10 +32,14 @@
     <dependencies>
 
         <!-- Ajout de la connexion Keycloak -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-spring-boot-starter</artifactId>
             <version>25.0.3</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
 
         <dependency>

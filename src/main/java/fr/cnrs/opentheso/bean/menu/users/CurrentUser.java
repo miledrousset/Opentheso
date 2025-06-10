@@ -103,7 +103,10 @@ public class CurrentUser implements Serializable {
     private NodeUser nodeUser;
     private String username;
     private String password;
+    private String mail;
     private boolean ldapEnable = false;
+
+    private boolean keyCloak = false;
 
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
     
@@ -211,12 +214,8 @@ public class CurrentUser implements Serializable {
         }
 
         Optional<User> user;
-        if (ldapEnable) {
-            if (!ldapService.authentificationLdapCheck(username, password)) {
-                showErrorMessage("User or password LDAP wrong, please try again");
-                return;
-            }
-            user = userRepository.findAllByUsername(username);
+        if (keyCloak) {
+            user = userRepository.findByMail(mail);
         } else {
             user = userRepository.findByUsernameAndPassword(username, MD5Password.getEncodedPassword(password));
         }

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services.users;
 
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.entites.UserRoleGroup;
 import fr.cnrs.opentheso.entites.UserRoleOnlyOn;
 import fr.cnrs.opentheso.repositories.RoleRepository;
@@ -10,9 +11,11 @@ import fr.cnrs.opentheso.repositories.UserRoleOnlyOnRepository;
 import fr.cnrs.opentheso.repositories.UserRoleGroupRepository;
 
 import lombok.AllArgsConstructor;
+import org.apache.xmlbeans.impl.xb.xsdschema.Attribute;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -44,6 +47,10 @@ public class UserRoleGroupService {
 
         user.setIsSuperAdmin(isSuperAdmin);
         userRepository.save(user);
+    }
+
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByMail(email);
     }
 
     @Transactional
