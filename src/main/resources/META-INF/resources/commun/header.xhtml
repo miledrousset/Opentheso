@@ -54,7 +54,7 @@
         </h:panelGroup>
 
         <p:commandLink rendered="#{selectedTheso.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
-                                   and (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
+                                   and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
                        actionListener="#{editThesaurusBean.init(selectedTheso.currentIdTheso)}"
                        action="#{viewEditionBean.setViewModifyTheso(true)}">
@@ -83,7 +83,7 @@
             </h:panelGroup>
 
 
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisThesaurus() or roleOnTheso.isSuperAdmin())}"
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                 style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
                 <p:commandLink rendered="#{newVersionBean.newVersionFound()}" onclick="PF('newVersionNotificationPanel').show()"
                                update="containerIndex:notificationNewVersion">

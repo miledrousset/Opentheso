@@ -40,7 +40,7 @@ public class EditThesaurusBean implements Serializable {
     private final MenuBean menuBean;
     private final CurrentUser currentUser;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
     private final ThesaurusMetadataAdd thesaurusMetadataAdd;
 
     private final GroupService groupService;
@@ -153,7 +153,7 @@ public class EditThesaurusBean implements Serializable {
         }
 
         nodeIdValueOfThesaurus.setId(newIdThesaurus);
-        roleOnTheso.showListThesaurus(currentUser, newIdThesaurus);
+        roleOnThesaurusBean.showListThesaurus(currentUser, newIdThesaurus);
         MessageUtils.showInformationMessage("Le changement d'identifiant a réussi, veuillez recharger les thésaurus");
     }
 
@@ -192,7 +192,7 @@ public class EditThesaurusBean implements Serializable {
         }
 
         init(nodeIdValueOfThesaurus);
-        roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
+        roleOnThesaurusBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         PrimeFaces.current().ajax().update("toolBoxForm:idLangToModify");
     }
 
@@ -224,7 +224,7 @@ public class EditThesaurusBean implements Serializable {
         thesaurus.setLanguage(selectedLang);
         thesaurusService.addThesaurusTraductionRollBack(thesaurus);
 
-        roleOnTheso.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
+        roleOnThesaurusBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         MessageUtils.showInformationMessage("Langue ajoutée avec succès");
         init(nodeIdValueOfThesaurus);
         PrimeFaces.current().ajax().update("containerIndex");
@@ -254,7 +254,7 @@ public class EditThesaurusBean implements Serializable {
             return;
         }
 
-        roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
+        roleOnThesaurusBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         MessageUtils.showInformationMessage("Langue modifiée avec succès");
 
         var sourceLang = preferenceService.getWorkLanguageOfThesaurus(nodeIdValueOfThesaurus.getId());

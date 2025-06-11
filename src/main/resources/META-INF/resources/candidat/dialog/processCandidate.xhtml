@@ -42,7 +42,7 @@
                 <p:commandButton value="#{langueBean.getMsg('insert')}" styleClass="ui-button-success" icon="pi pi-check"
                                  ajax="true"
                                  update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
-                                 actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}"/>
+                                 actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser, roleOnThesaurus.nodePreference)}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

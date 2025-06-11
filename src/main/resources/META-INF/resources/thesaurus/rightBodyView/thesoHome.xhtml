@@ -61,11 +61,11 @@
                             <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                 <p:link
-                                        href="#{not empty selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) ? selectedTheso.getUriOfTheso(roleOnTheso.nodePreference) : '#'}"
-                                        value="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
+                                        href="#{not empty selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference) ? selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference) : '#'}"
+                                        value="#{selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference)}"
                                         style="color: #164A78; font-size: 13px;color: #F47B2A;" />
                             </h:panelGroup>
-                            <h:panelGroup rendered="#{!roleOnTheso.nodePreference.originalUriIsArk}">
+                            <h:panelGroup rendered="#{!roleOnThesaurus.nodePreference.originalUriIsArk}">
                                 <p:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                         value="#{request.serverName}#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                         style="font-size: 13px; color: #F47B2A;" >
