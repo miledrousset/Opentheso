@@ -243,4 +243,11 @@ public interface HierarchicalRelationshipRepository extends JpaRepository<Hierar
     @Modifying
     @Query(value = "UPDATE hierarchical_relationship SET id_thesaurus = :target WHERE id_concept2 = :concept AND id_thesaurus = :from", nativeQuery = true)
     void updateThesaurusByConcept2(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
+
+    @Modifying
+    @Query(value = "UPDATE hierarchical_relationship SET role = :role WHERE id_concept1 = :idConcept1 AND id_concept2 = :idConcept2 AND id_thesaurus = :idThesaurus", nativeQuery = true)
+    void updateRole(@Param("role") String role,
+                    @Param("idConcept1") String idConcept1,
+                    @Param("idConcept2") String idConcept2,
+                    @Param("idThesaurus") String idThesaurus);
 }

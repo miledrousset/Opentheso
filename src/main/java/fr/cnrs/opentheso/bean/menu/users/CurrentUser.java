@@ -254,7 +254,7 @@ public class CurrentUser implements Serializable {
         treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         tree.loadConceptTree();
 
-        PrimeFaces.current().executeScript("PF('login').hiden();");
+        PrimeFaces.current().executeScript("PF('login').hide();");
 
         PrimeFaces.current().ajax().update("idLogin");
         PrimeFaces.current().ajax().update("containerIndex:header");

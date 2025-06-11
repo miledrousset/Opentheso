@@ -679,6 +679,7 @@ public class ConceptService {
             concept.setIdDoi(StringUtils.isEmpty(concept.getIdDoi()) ? "" : concept.getIdDoi());
             concept.setIdHandle(StringUtils.isEmpty(concept.getIdHandle()) ? "" : concept.getIdHandle());
             concept.setConceptType(StringUtils.isEmpty(concept.getConceptType()) ? "" : concept.getConceptType());
+            concept.setModified(new Date());
             conceptRepository.save(concept);
             return true;
         }
