@@ -48,6 +48,7 @@ public class NoteService {
                 .modified(note.get(0).getModified())
                 .created(note.get(0).getCreated())
                 .noteTypeCode(note.get(0).getNoteTypeCode())
+                .noteSource(note.get(0).getNoteSource())
                 .identifier(note.get(0).getIdentifier())
                 .build();
     }
@@ -63,8 +64,8 @@ public class NoteService {
         }
 
         log.info("Mise à jour de la note id {} ", idNote);
-        noteValue.get().setLexicalValue(note);
-        noteValue.get().setNoteSource(StringUtils.convertString(noteSource));
+        noteValue.get().setLexicalValue(StringUtils.clearNoteFromP(note));
+        noteValue.get().setNoteSource(noteSource);
         noteValue.get().setModified(new Date());
         noteRepository.save(noteValue.get());
 
@@ -130,9 +131,11 @@ public class NoteService {
 
         idLang = normalizeIdLang(idLang);
 
-        note = note.replaceAll("<p>", "");
-        note = note.replaceAll("</p>", "\n");
+        note = StringUtils.clearValue(note);
+        note = StringUtils.clearNoteFromP(note);
         note = StringEscapeUtils.unescapeXml(note);
+      //  note = StringUtils.convertString(note);
+      //  noteSource = StringUtils.convertString(noteSource);
 
         if(isNoteExistInThatLang(identifier, idThesaurus, idLang, noteTypeCode)) {
             log.info("Mise à jour d'une note existante");
@@ -144,16 +147,13 @@ public class NoteService {
             }
         } else {
             log.info("Enregistrement d'une nouvelle note");
-            note = StringUtils.clearValue(note);
-            note = StringEscapeUtils.unescapeXml(note);
-            note = StringUtils.convertString(note);
             noteRepository.save(Note.builder()
                     .noteTypeCode(noteTypeCode)
                     .idThesaurus(idThesaurus)
                     .lang(idLang)
                     .lexicalValue(note)
                     .identifier(identifier)
-                    .noteSource(StringUtils.convertString(noteSource))
+                    .noteSource(noteSource)
                     .idUser(idUser)
                     .created(new Date())
                     .modified(new Date())

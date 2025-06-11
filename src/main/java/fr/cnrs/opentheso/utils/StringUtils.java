@@ -6,18 +6,18 @@ import java.text.Normalizer;
 
 public class StringUtils {
 
+    public static String clearNoteFromP(String rawNote) {
+        if (rawNote.startsWith("<p>")) {
+            rawNote = rawNote.substring(3); // Retire les 3 premiers caractères
+        }
+        if (rawNote.endsWith("</p>")) {
+            rawNote = rawNote.substring(0, rawNote.length() - 4); // Retire les 4 derniers caractères
+        }
+        rawNote = rawNote.replaceAll("<p></p>", "");
+        return rawNote;
+    }
 
     public static String clearValue(String rawNote) {
-        rawNote = rawNote.replaceAll("<br></p>", "");
-        rawNote = rawNote.replaceAll("<p>", "");
-        rawNote = rawNote.replaceAll("</p>", "</br>");
-        try {
-            if("</br>".equalsIgnoreCase(rawNote.substring(rawNote.length() -5, rawNote.length()))){
-                rawNote = rawNote.substring(0, rawNote.length() -5);
-            }
-        } catch (Exception e) {
-        }
-
         // enlève les code ascii non visibles
         return rawNote.replace((char) 27, ' ');
     }

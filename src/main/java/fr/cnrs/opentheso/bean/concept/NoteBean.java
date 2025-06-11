@@ -154,7 +154,6 @@ public class NoteBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(selectedNodeNote.getLexicalValue());
         noteValue = StringEscapeUtils.unescapeXml(selectedNodeNote.getLexicalValue());
         if(noteService.isNoteExistInThatLang(selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode())){
@@ -218,9 +217,10 @@ public class NoteBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
         nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
         nodeNote.setNoteSource(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getNoteSource()));
+        nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearNoteFromP(nodeNote.getLexicalValue()));
+
         if (!noteService.updateNote(nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdentifier(), nodeNote.getLang(), selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(), nodeNote.getNoteSource(), nodeNote.getNoteTypeCode(), idUser)) {
