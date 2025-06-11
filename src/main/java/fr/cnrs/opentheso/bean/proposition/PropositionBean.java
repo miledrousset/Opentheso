@@ -314,7 +314,7 @@ public class PropositionBean implements Serializable {
         }
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
-        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
+        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hide();");
     }
 
     private void switchToConceptOnglet() {

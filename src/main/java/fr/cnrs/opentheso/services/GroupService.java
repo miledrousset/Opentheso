@@ -525,11 +525,12 @@ public class GroupService {
 
         log.info("Enregistrement d'une nouvelle historique pour la table ConceptGroupLabel");
         conceptGroupLabelHistoriqueRepository.save(ConceptGroupLabelHistorique.builder()
-                        .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(value))
-                        .lang(idLang)
-                        .idThesaurus(idThesaurus)
-                        .idGroup(idGroup.toLowerCase())
-                        .idUser(idUser)
+                .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(value))
+                .lang(idLang)
+                .idThesaurus(idThesaurus)
+                .idGroup(idGroup.toLowerCase())
+                .idUser(idUser)
+                .modified(new Date())
                 .build());
     }
 
@@ -810,6 +811,7 @@ public class GroupService {
                 .idThesaurus(conceptGroupLabel.getIdthesaurus())
                 .idGroup(conceptGroupLabel.getIdgroup().toLowerCase())
                 .idUser(idUser)
+                .modified(new Date())
                 .build());
     }
 

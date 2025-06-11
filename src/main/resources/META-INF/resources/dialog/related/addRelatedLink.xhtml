@@ -60,7 +60,7 @@
                 <p:commandButton id="addRelatedLinkBtn" update="messageIndex containerIndex:idAddRelatedLink"
                                  oncomplete="PF('addRelatedLink').show();" value="#{langueBean.getMsg('btnValidate')}"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{relatedBean.addNewRelatedLink()}" />
             </div>            
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

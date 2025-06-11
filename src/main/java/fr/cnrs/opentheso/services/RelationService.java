@@ -365,21 +365,8 @@ public class RelationService {
     @Transactional
     public boolean updateRelationNT(String idConcept1, String idConcept2, String idThesaurus, String directRelation, String inverseRelation, int idUser) {
 
-        var relation1 = hierarchicalRelationshipRepository.findByIdThesaurusAndIdConcept1AndIdConcept2(idThesaurus, idConcept1, idConcept2);
-        if (relation1.isEmpty()) {
-            log.error("Aucune relation n'est trouvée !");
-            return false;
-        }
-        relation1.get().setRole(directRelation);
-        hierarchicalRelationshipRepository.save(relation1.get());
-
-        var relation2 = hierarchicalRelationshipRepository.findByIdThesaurusAndIdConcept1AndIdConcept2(idThesaurus, idConcept2, idConcept1);
-        if (relation2.isEmpty()) {
-            log.error("Aucune relation n'est trouvée !");
-            return false;
-        }
-        relation2.get().setRole(directRelation);
-        hierarchicalRelationshipRepository.save(relation2.get());
+        hierarchicalRelationshipRepository.updateRole(directRelation, idConcept1, idConcept2, idThesaurus);
+        hierarchicalRelationshipRepository.updateRole(directRelation, idConcept2, idConcept1, idThesaurus);
 
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, directRelation, idUser, "UPDATE");
         return true;

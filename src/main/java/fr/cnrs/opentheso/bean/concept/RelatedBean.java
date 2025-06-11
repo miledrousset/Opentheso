@@ -145,7 +145,7 @@ public class RelatedBean implements Serializable {
         PrimeFaces.current().executeScript("PF('deleteQualifierLink').show();");
     }
 
-    public void addNewRelatedLink(int idUser) {
+    public void addNewRelatedLink() {
 
         if (searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
             MessageUtils.showErrorMessage("Aucune relation n'est sélectionné !");
@@ -160,20 +160,21 @@ public class RelatedBean implements Serializable {
         }
 
         relationService.addRelationRT(conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(),
-                searchSelected.getIdConcept(), idUser);
+                searchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
 
         // mettre à jour le label du concept si l'option TAG est activée
         if (tagPrefLabel) {
             var taggedValue = termService.getLexicalValueOfConcept(searchSelected.getIdConcept(), selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang());
             termService.updateTermTraduction(conceptBean.getNodeConcept().getTerm().getLexicalValue() + " (" + taggedValue + ")",
                     conceptBean.getNodeConcept().getTerm().getIdTerm(), conceptBean.getSelectedLang(),
-                    selectedTheso.getCurrentIdTheso(), idUser);
+                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
         }
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -199,10 +200,8 @@ public class RelatedBean implements Serializable {
         MessageUtils.showInformationMessage("Relation ajoutée avec succès");
 
         reset();
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab:viewTabConcept:idPrefLabelRow");
-        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-        PrimeFaces.current().executeScript("PF('addRelatedLink').show();");
+        PrimeFaces.current().ajax().update("containerIndex");
+        PrimeFaces.current().executeScript("PF('addRelatedLink').hide();");
     }
 
     public void deleteRelatedLink(NodeRT nodeRT, int idUser) {
