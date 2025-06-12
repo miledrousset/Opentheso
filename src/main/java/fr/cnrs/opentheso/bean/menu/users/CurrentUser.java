@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -82,7 +83,9 @@ public class CurrentUser implements Serializable {
     private boolean ldapEnable;
     private UserPermissions userPermissions;
     private List<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
-
+    //pour KeyCloak
+    private boolean keyCloak = false;
+    private String mail;
 
     public void clear() {
         if (allAuthorizedProjectAsAdmin != null) {
@@ -184,13 +187,12 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        User user;
-        if (ldapEnable) {
-            if (!ldapService.authentificationLdapCheck(username, password)) {
-                showErrorMessage("User or password LDAP wrong, please try again");
-                return;
+        User user = null;
+        if (keyCloak) {
+            Optional<User> user2 = userService.findByMail(mail);
+            if(user2.isPresent()) {
+                user = user2.get();
             }
-            user = userService.getUserByUserName(username);
         } else {
             user = userService.findByUsernameAndPassword(username, password);
         }
