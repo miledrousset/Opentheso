@@ -49,6 +49,10 @@ public class UserService {
     private final UserGroupThesaurusRepository userGroupThesaurusRepository;
 
 
+    public Optional<User> findByMail(String mail) {
+        return userRepository.findByMail(mail);
+    }
+
     public NodeUser getUserById(Integer userId) {
 
         log.info("Rechercher l'utilisateur avec id {}", userId);

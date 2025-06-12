@@ -27,15 +27,12 @@ public class HomePageService {
 
 
     public boolean setHomePage(String htmlText, String idLang) {
-
         var homePage = homePageRepository.findByLang(idLang);
-        var homePageValue = fr.cnrs.opentheso.utils.StringUtils.convertString(htmlText);
-
         if (homePage.isPresent() && StringUtils.isNotEmpty(homePage.get().getHtmlCode())) {
-            return homePageRepository.updateHtmlCodeByLang(homePageValue, idLang) > 0;
+            return homePageRepository.updateHtmlCodeByLang(htmlText, idLang) > 0;
         } else {
             var result = homePageRepository.save(HomePage.builder()
-                    .htmlCode(homePageValue)
+                    .htmlCode(htmlText)
                     .lang(idLang)
                     .build());
             return ObjectUtils.isNotEmpty(result);
