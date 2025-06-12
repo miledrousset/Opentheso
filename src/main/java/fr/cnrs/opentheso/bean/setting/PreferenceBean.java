@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Named(value = "preferenceBean")
 public class PreferenceBean implements Serializable {
 
-    private final RoleOnThesaurusBean roleOnThesoBean;
     private final SelectedTheso selectedTheso;
     private final PreferenceService preferenceService;
     private final HomePageService homePageService;
@@ -63,24 +61,20 @@ public class PreferenceBean implements Serializable {
 
     public void updateSelectedServer(String selectedServer){
 
-        var nodePreference = roleOnThesoBean.getNodePreference();
         switch (selectedServer) {
             case "ark":
-                nodePreference.setUseArkLocal(false);
-                nodePreference.setUseHandle(false);
-                preferenceService.setUseArk(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());
+                preferences.setUseArkLocal(false);
+                preferences.setUseHandle(false);
                 break;
             case "arklocal":
-                nodePreference.setUseArk(false);
-                nodePreference.setUseHandle(false);
-                preferenceService.setUseArkLocal(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());
+                preferences.setUseArk(false);
+                preferences.setUseHandle(false);
                 break;
             case "handle":
-                nodePreference.setUseArk(false);
-                nodePreference.setUseArkLocal(false);
-                preferenceService.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());
-                break;
+                preferences.setUseArk(false);
+                preferences.setUseArkLocal(false);
         }
+        preferenceService.setIdentifierFlags(selectedTheso.getCurrentIdTheso(), preferences.isUseArk(), preferences.isUseArkLocal(), preferences.isUseHandle());
     }
     
     public String getGoogleAnalytics() {

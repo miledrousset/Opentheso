@@ -245,7 +245,10 @@ public class SelectedTheso implements Serializable {
                 projectsList = userGroupLabelRepository.findAll();
                 projectsList.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             } else {
-                projectsList = userGroupLabelRepository.findProjectsByUserId(currentUser.getNodeUser().getIdUser());
+                var rows = userGroupLabelRepository.findProjectsByUserIdNative(currentUser.getNodeUser().getIdUser());
+                projectsList = rows.stream()
+                        .map(row -> new UserGroupLabel(((Number) row[0]).intValue(), (String) row[1]))
+                        .collect(Collectors.toList());
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {

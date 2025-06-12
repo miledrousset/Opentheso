@@ -34,12 +34,14 @@ public interface UserGroupLabelRepository extends JpaRepository<UserGroupLabel, 
 
     Optional<UserGroupLabel> findByLabelLike(String label);
 
-    @Query("SELECT DISTINCT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +
-            "FROM UserRoleGroup urg " +
-            "JOIN urg.group ugl " +
-            "WHERE urg.user.id = :idUser " +
-            "ORDER BY lower(ugl.label)")
-    List<UserGroupLabel> findProjectsByUserId(@Param("idUser") int userId);
+    @Query(value = """
+        SELECT DISTINCT ugl.id_group AS id, ugl.label_group AS label
+        FROM user_role_group urg
+        JOIN user_group_label ugl ON urg.id_group = ugl.id_group
+        WHERE urg.id_user = :idUser
+        ORDER BY LOWER(ugl.label_group)
+    """, nativeQuery = true)
+    List<Object[]> findProjectsByUserIdNative(@Param("idUser") int userId);
 
     @Query("""
         SELECT DISTINCT new fr.cnrs.opentheso.entites.UserGroupLabel(lab.id, lab.label)

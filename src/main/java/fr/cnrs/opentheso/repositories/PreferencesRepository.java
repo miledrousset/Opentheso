@@ -23,4 +23,19 @@ public interface PreferencesRepository extends JpaRepository<Preferences, Intege
     @Query("UPDATE Preferences t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Preferences t SET t.userArk = :userArk WHERE t.idThesaurus = :idThesaurus")
+    void updateUserArk(@Param("idThesaurus") String idThesaurus, @Param("userArk") String userArk);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Preferences t SET t.useArkLocal = :useArkLocal WHERE t.idThesaurus = :idThesaurus")
+    void updateUserArkLocal(@Param("idThesaurus") String idThesaurus, @Param("useArkLocal") String useArkLocal);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Preferences t SET t.useHandle = :useHandle WHERE t.idThesaurus = :idThesaurus")
+    void updateUserHandle(@Param("idThesaurus") String idThesaurus, @Param("useHandle") String useHandle);
+
 }
