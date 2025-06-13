@@ -119,6 +119,8 @@ public class AlignmentSourceService {
                 .alignementFormat(alignement.getAlignement_format())
                 .description(alignement.getDescription())
                 .idUser(idUser)
+                .gps(false)
+                .sourceFilter("")
                 .build());
 
         if (StringUtils.isNotEmpty(idThesaurus)) {

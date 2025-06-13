@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.alignment.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -40,6 +41,7 @@ public class SetAlignmentSourceBean implements Serializable {
     private final AlignmentBean alignmentBean;
     private final AlignmentService alignmentService;
     private final AlignmentSourceService alignmentSourceService;
+    private final CurrentUser currentUser;
 
     private String sourceName, sourceUri, sourceIdThesaurus, description, sourceSelectedName;
     private AlignementSource selectedAlignementSource, alignementSourceToUpdate;
@@ -200,7 +202,7 @@ public class SetAlignmentSourceBean implements Serializable {
     /**
      * permet d'ajouter une source d'alignement et affecter cette source au thésaurus en cours.
      */
-    public void addAlignmentSource(int idUser) throws Exception {
+    public void addAlignmentSource() throws Exception {
 
         if (sourceName == null || sourceName.isEmpty()) {
             MessageUtils.showWarnMessage("Le nom de la source est obligatoire !");
@@ -231,7 +233,8 @@ public class SetAlignmentSourceBean implements Serializable {
         alignementSource.setRequete(sourceUri + "/api/search?q=##value##&lang=##lang##&theso=" + sourceIdThesaurus);
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
-        if (!alignmentSourceService.addNewAlignmentSource(alignementSource, selectedTheso.getCurrentIdTheso(), idUser)) {
+        if (!alignmentSourceService.addNewAlignmentSource(alignementSource, selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser())) {
             MessageUtils.showWarnMessage("Erreur côté base de données !");
             return;
         }
