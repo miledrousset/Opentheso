@@ -445,9 +445,9 @@ public class GroupService {
         }
 
         log.info("Mise à jour du nom du group dans la base de données");
-        conceptGroupLabel.get().setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label));
-        conceptGroupLabel.get().setModified(new Date());
-        conceptGroupLabelRepository.save(conceptGroupLabel.get());
+        conceptGroupLabel.get(0).setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label));
+        conceptGroupLabel.get(0).setModified(new Date());
+        conceptGroupLabelRepository.save(conceptGroupLabel.get(0));
 
         addGroupTraductionHistoriqueRollBack(idGroup, idThesaurus, idLang, label, idUser);
         updateModifiedDate(idGroup, idThesaurus);
@@ -500,10 +500,10 @@ public class GroupService {
         return NodeGroup.builder()
                 .groupPrivate(conceptGroup.get().isPrivate())
                 .conceptGroup(conceptGroup.get())
-                .lexicalValue(conceptGroupDetail.isPresent() ? conceptGroupDetail.get().getLexicalValue() : "")
+                .lexicalValue(CollectionUtils.isNotEmpty(conceptGroupDetail) ? conceptGroupDetail.get(0).getLexicalValue() : "")
                 .idLang(idLang)
-                .created(conceptGroupDetail.map(ConceptGroupLabel::getCreated).orElse(null))
-                .modified(conceptGroupDetail.map(ConceptGroupLabel::getModified).orElse(null))
+                .created(CollectionUtils.isNotEmpty(conceptGroupDetail) ? conceptGroupDetail.get(0).getCreated() : null)
+                .modified(CollectionUtils.isNotEmpty(conceptGroupDetail) ? conceptGroupDetail.get(0).getModified() : null)
                 .build();
     }
 
@@ -518,7 +518,7 @@ public class GroupService {
 
         log.info("Vérification de l'existance du group {} avec la langue {}", idGroup, idLang);
         var conceptGroup = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idGroup, idThesaurus, idLang);
-        return conceptGroup.isPresent();
+        return CollectionUtils.isNotEmpty(conceptGroup);
     }
 
     private void addGroupTraductionHistoriqueRollBack(String idGroup, String idThesaurus, String idLang, String value, int idUser) {

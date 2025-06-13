@@ -114,8 +114,9 @@ public class ProjectBean implements Serializable {
             allLangs = languageRepository.findAll();
         }
 
-        projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, langCodeSelected).get();
-        if (!ObjectUtils.isEmpty(projectDescriptionSelected)) {
+        var project = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, langCodeSelected);
+        if (project.isPresent()) {
+            projectDescriptionSelected = project.get();
             description = projectDescriptionSelected.getDescription();
             langCode = projectDescriptionSelected.getLang();
         } else {

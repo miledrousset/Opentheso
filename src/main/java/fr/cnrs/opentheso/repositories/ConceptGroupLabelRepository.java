@@ -19,7 +19,7 @@ public interface ConceptGroupLabelRepository extends JpaRepository<ConceptGroupL
 
     List<ConceptGroupLabel> findAllByIdThesaurusAndIdGroupAndLangNot(String idThesaurus, String idGroup, String idLang);
 
-    Optional<ConceptGroupLabel> findAllByIdThesaurusAndIdGroupAndLang(String idThesaurus, String idGroup, String idLang);
+    List<ConceptGroupLabel> findAllByIdThesaurusAndIdGroupAndLang(String idThesaurus, String idGroup, String idLang);
 
     Optional<ConceptGroupLabel> findByLexicalValueLikeAndLangAndIdThesaurus(String lexicalValue, String lang, String idThesaurus);
 
