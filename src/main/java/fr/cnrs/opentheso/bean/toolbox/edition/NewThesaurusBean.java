@@ -77,8 +77,7 @@ public class NewThesaurusBean implements Serializable {
             return;
         }
 
-        var preferences = roleOnThesoBean.getNodePreference();
-        editThesaurusService.addNewThesaurus(title, selectedLang, selectedProject, currentUser.getNodeUser().getName(), preferences);
+        editThesaurusService.addNewThesaurus(title, selectedLang, selectedProject, currentUser.getNodeUser().getName());
 
         MessageUtils.showInformationMessage("Thesaurus ajouté avec succès");
 

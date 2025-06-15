@@ -27,7 +27,7 @@ public class EditThesaurusService {
     private final PreferenceService preferenceService;
 
 
-    public void addNewThesaurus(String title, String selectedLang, String selectedProject, String userName, Preferences preferences) {
+    public void addNewThesaurus(String title, String selectedLang, String selectedProject, String userName) {
 
         int idProject = -1;
         try {
@@ -60,13 +60,7 @@ public class EditThesaurusService {
         }
 
         // écriture des préférences en utilisant le thésaurus en cours pour duppliquer les infos
-        if (preferences == null) {
-            preferenceService.initPreferences(idNewThesaurus, selectedLang);
-        } else {
-            preferences.setPreferredName(title);
-            preferences.setSourceLang(selectedLang);
-            preferenceService.addPreference(preferences, idNewThesaurus);
-        }
+        preferenceService.initPreferences(idNewThesaurus, selectedLang);
     }
 
     public String generateArkIdForThesaurus(String idThesaurus) {
