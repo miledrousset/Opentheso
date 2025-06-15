@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.NodeMetaData;
 import fr.cnrs.opentheso.models.group.NodeGroup;
