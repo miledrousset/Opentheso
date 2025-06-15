@@ -86,12 +86,9 @@ public class TraductionBean implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(nodeLangs)) {
-            nodeLangsFiltered.addAll(nodeLangs);
-            for (NodeLangTheso nodeLang : nodeLangs) {
-                if (langsToRemove.contains(nodeLang.getCode())) {
-                    nodeLangsFiltered.remove(nodeLang);
-                }
-            }
+            nodeLangsFiltered = nodeLangs.stream()
+                    .filter(element -> !toRemove(element.getCode(), langsToRemove))
+                    .toList();
         }
 
         if (CollectionUtils.isEmpty(nodeLangsFiltered)) {
@@ -100,6 +97,16 @@ public class TraductionBean implements Serializable {
         } else {
             PrimeFaces.current().executeScript("PF('addTraduction').show();");
         }
+    }
+
+    private boolean toRemove(String lang, List<String> langsToRemove) {
+
+        for (String langToRemove : langsToRemove) {
+            if (lang.equals(langToRemove)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setLangWithNoTraductionProp() {

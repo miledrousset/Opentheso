@@ -34,7 +34,7 @@ public class NodeConceptTree implements Comparable <NodeConceptTree>{
     @Override
     public int compareTo(NodeConceptTree o) {
         if(StringUtils.isEmpty(o.getTitle())) return 0;
-        if(this.title.equalsIgnoreCase(o.getTitle())) return 0;
+        if(!StringUtils.isEmpty(title) && title.equalsIgnoreCase(o.getTitle())) return 0;
 
         String str1 = StringUtils.defaultIfEmpty(this.title, "");
         String str2 = StringUtils.defaultIfEmpty(o.getTitle(), "");        
