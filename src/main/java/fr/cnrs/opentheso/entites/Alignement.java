@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -74,5 +76,6 @@ public class Alignement {
 
     @ManyToOne
     @JoinColumn(name = "id_alignement_source", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private AlignementSource alignementSource;
 }

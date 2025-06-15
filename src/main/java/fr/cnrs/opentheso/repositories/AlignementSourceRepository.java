@@ -21,9 +21,9 @@ public interface AlignementSourceRepository extends JpaRepository<AlignementSour
         SELECT a.gps, a.source, a.requete, a.type_rqt AS typeRequete,a.alignement_format, a.id, a.description, a.source_filter
         FROM alignement_source a
         JOIN thesaurus_alignement_source tas ON tas.id_alignement_source = a.id
-        WHERE tas.id_thesaurus = :idTheso
+        WHERE tas.id_thesaurus = :idThesaurus
         ORDER BY a.source ASC
     """, nativeQuery = true)
-    List<AlignementSourceProjection> findAllByThesaurus(@Param("idTheso") String idTheso);
+    List<AlignementSourceProjection> findAllByThesaurus(@Param("idThesaurus") String idThesaurus);
 
 }

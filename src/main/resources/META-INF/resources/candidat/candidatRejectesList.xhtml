@@ -53,7 +53,7 @@
         </p:column>
         
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
-            <h:outputText value="#{candidat.creationDate}" />
+            <h:outputText value="#{candidatBean.formatDate(candidat.creationDate)}" />
         </p:column>  
 
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.processedBy')}">
@@ -61,7 +61,7 @@
         </p:column>        
         
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.processingDate')}" sortBy="#{candidat.insertionDate}">
-            <h:outputText value="#{candidat.insertionDate}" />
+            <h:outputText value="#{candidatBean.formatDate(candidat.insertionDate)}" />
         </p:column>           
         
         <p:column width="20" headerText="#{langueBean.getMsg('candidate.vote')}">

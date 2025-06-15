@@ -120,7 +120,7 @@ public class AlignmentSourceService {
                 .description(alignement.getDescription())
                 .idUser(idUser)
                 .gps(false)
-                .sourceFilter("")
+                .sourceFilter(StringUtils.isEmpty(alignement.getSource_filter()) ? "Opentheso" : alignement.getSource_filter())
                 .build());
 
         if (StringUtils.isNotEmpty(idThesaurus)) {

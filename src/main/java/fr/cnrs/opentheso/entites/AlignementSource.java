@@ -26,7 +26,7 @@ public class AlignementSource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "source", unique = true)
+    @Column(name = "source")
     private String source;
 
     @Column(name = "requete")

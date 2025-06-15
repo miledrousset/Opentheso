@@ -117,8 +117,8 @@
                     </p:column>
 
                     <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{candidat.creationDate}">
-                        <h:outputText value="#{candidat.creationDate}" style="font-size: 13px;" />
-                    </p:column>  
+                        <h:outputText value="#{candidatBean.formatDate(candidat.creationDate)}" style="font-size: 13px;" />
+                    </p:column>
                     <p:column width="20" headerText="Votes" sortBy="#{candidat.nbrVote}">
                         <p:badge rendered="#{candidat.nbrVote > 0}" severity="danger" value="#{candidat.nbrVote}" styleClass="p-mr-2"></p:badge>
                     </p:column>   

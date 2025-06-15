@@ -34,8 +34,10 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -233,7 +235,7 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .toList();
         } else {
-            loadCandidatsList();
+            getAllCandidatsByThesoAndLangue();
         }
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
@@ -271,18 +273,14 @@ public class CandidatBean implements Serializable {
 
     public void searchRejectCandByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue3)) {
-            rejetCadidat = rejetCadidat.stream().filter(candidat -> checkCandidat(candidat))
+            rejetCadidat = rejetCadidat.stream().filter(candidat -> candidatCheck(candidat, searchValue3))
                     .toList();
         } else {
             getRejectCandidatByThesoAndLangue();
         }
+        tabViewIndexSelected = 2;
         MessageUtils.showInformationMessage(new StringBuffer().append(rejetCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
-    }
-
-    private boolean checkCandidat(CandidatDto candidat) {
-        return (StringUtils.isNotEmpty(candidat.getNomPref()) && candidat.getNomPref().contains(searchValue3))
-                || (StringUtils.isNotEmpty(candidat.getUser()) && candidat.getUser().contains(searchValue3));
     }
 
     public void selectMyAcceptedCandidats() {
@@ -301,28 +299,31 @@ public class CandidatBean implements Serializable {
     public void searchAcceptedCandByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue2)) {
             acceptedCadidat = acceptedCadidat.stream()
-                    .filter(candidat -> candidatCheck(candidat))
+                    .filter(candidat -> candidatCheck(candidat, searchValue2))
                     .toList();
         } else {
             getAcceptedCandidatByThesoAndLangue();
         }
 
+        tabViewIndexSelected = 1;
         MessageUtils.showInformationMessage(new StringBuffer().append(acceptedCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
-    private boolean candidatCheck(CandidatDto candidat) {
-        return (StringUtils.isNotEmpty(candidat.getNomPref()) && candidat.getNomPref().contains(searchValue2))
-                || (StringUtils.isNotEmpty(candidat.getUser()) && candidat.getUser().contains(searchValue2));
+    private boolean candidatCheck(CandidatDto candidat, String searchValue) {
+        return (StringUtils.isNotEmpty(candidat.getNomPref()) && candidat.getNomPref().contains(searchValue))
+                || (StringUtils.isNotEmpty(candidat.getUser()) && candidat.getUser().contains(searchValue));
     }
 
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue1)) {
-            candidatList = candidatService.searchCandidats(searchValue1, selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang(), 1, "CA");
+            candidatList = candidatList.stream()
+                    .filter(candidat -> candidatCheck(candidat, searchValue1))
+                    .toList();
         } else {
             loadCandidatsList();
         }
+        tabViewIndexSelected = 0;
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
@@ -944,5 +945,12 @@ public class CandidatBean implements Serializable {
         candidatService.updateIntitule(candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
                 candidatSelected.getLang(), candidatSelected.getIdTerm());
         modifiedLabel = false;
+    }
+
+    public String formatDate(Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm").format(date);
     }
 }
