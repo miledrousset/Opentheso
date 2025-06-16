@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
@@ -40,6 +42,8 @@ import org.primefaces.model.StreamedContent;
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
 
+    private final Tree tree;
+    private final RoleOnThesaurusBean roleOnThesaurus;
     private final CandidatBean candidatBean;
     private final SelectedTheso selectedTheso;
     private final CurrentUser currentUser;
@@ -53,7 +57,7 @@ public class ProcessCandidateBean implements Serializable {
     private final HandleConceptService handleConceptService;
     private final ArkService arkService;
     private final UserService userService;
-    
+
     private CandidatDto selectedCandidate;
     private String adminMessage;
 
@@ -85,13 +89,13 @@ public class ProcessCandidateBean implements Serializable {
     }
     
     
-    public void insertCandidat(int idUser, Preferences nodePreference) throws IOException {
+    public void insertCandidat() throws IOException {
         if (selectedCandidate == null) {
             MessageUtils.showErrorMessage("Pas de candidat sélectionné");
             return;
         }
 
-        if (candidatService.insertCandidate(selectedCandidate, adminMessage, idUser)) {
+        if (candidatService.insertCandidate(selectedCandidate, adminMessage, currentUser.getNodeUser().getIdUser())) {
             MessageUtils.showErrorMessage("Erreur d'insertion");
             return;
         }
@@ -101,9 +105,10 @@ public class ProcessCandidateBean implements Serializable {
         if(nodeUser != null && nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
-        generateArk(nodePreference, selectedCandidate);
+        generateArk(roleOnThesaurus.getNodePreference(), selectedCandidate);
 
-        conceptService.updateDateOfConcept(selectedCandidate.getIdThesaurus(), selectedCandidate.getIdConcepte(), idUser);
+        conceptService.updateDateOfConcept(selectedCandidate.getIdThesaurus(), selectedCandidate.getIdConcepte(),
+                currentUser.getNodeUser().getIdUser());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
@@ -113,12 +118,15 @@ public class ProcessCandidateBean implements Serializable {
                 .build());
 
         MessageUtils.showInformationMessage("Candidat inséré avec succès");
+
         reset(null);
+
         candidatBean.getAllCandidatsByThesoAndLangue();
         candidatBean.setIsListCandidatsActivate(true);
         candidatBean.initCandidatModule();
 
-        PrimeFaces.current().ajax().update("messageIndex");
+        tree.loadConceptTree();
+
         PrimeFaces.current().ajax().update("containerIndex:tabViewCandidat");
     }
     
@@ -151,13 +159,13 @@ public class ProcessCandidateBean implements Serializable {
         }          
     }
     
-    public void rejectCandidat(int idUser) throws IOException {
+    public void rejectCandidat() throws IOException {
         if (selectedCandidate == null) {
             MessageUtils.showErrorMessage("Pas de candidat sélectionné");
             return;
         }
 
-        if (candidatService.rejectCandidate(selectedCandidate, adminMessage, idUser)) {
+        if (candidatService.rejectCandidate(selectedCandidate, adminMessage, currentUser.getNodeUser().getIdUser())) {
             MessageUtils.showErrorMessage("Erreur d'insertion");
             return;
         }
@@ -168,6 +176,7 @@ public class ProcessCandidateBean implements Serializable {
         
         MessageUtils.showInformationMessage("Candidat(s) rejeté(s) avec succès");
         reset(null);
+
         candidatBean.getAllCandidatsByThesoAndLangue();
         candidatBean.setIsListCandidatsActivate(true);
         candidatBean.initCandidatModule();
@@ -209,7 +218,7 @@ public class ProcessCandidateBean implements Serializable {
         candidatBean.setIsListCandidatsActivate(true);
     }     
     
-    public void rejectCandidatList(int idUser) throws IOException {
+    public void rejectCandidatList() throws IOException {
         if (candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             MessageUtils.showErrorMessage("Pas de candidat sélectionné");
             return;
@@ -217,13 +226,14 @@ public class ProcessCandidateBean implements Serializable {
 
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             selectedCandidate1 = candidatBean.getAllInfosOfCandidate(selectedCandidate1);
-            if (candidatService.rejectCandidate(selectedCandidate1, adminMessage, idUser)) {
+            if (candidatService.rejectCandidate(selectedCandidate1, adminMessage, currentUser.getNodeUser().getIdUser())) {
                 MessageUtils.showErrorMessage("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
             var nodeUser = userService.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail()) sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);
-            conceptService.updateDateOfConcept(selectedCandidate1.getIdThesaurus(), selectedCandidate1.getIdConcepte(), idUser);
+            conceptService.updateDateOfConcept(selectedCandidate1.getIdThesaurus(), selectedCandidate1.getIdConcepte(),
+                    currentUser.getNodeUser().getIdUser());
 
             conceptDcTermRepository.save(ConceptDcTerm.builder()
                     .name(DCMIResource.CONTRIBUTOR)
@@ -234,7 +244,9 @@ public class ProcessCandidateBean implements Serializable {
         }
 
         MessageUtils.showInformationMessage("Candidats insérés avec succès");
+
         reset(null);
+
         candidatBean.initCandidatModule();
         candidatBean.getAllCandidatsByThesoAndLangue();
         candidatBean.setIsListCandidatsActivate(true);

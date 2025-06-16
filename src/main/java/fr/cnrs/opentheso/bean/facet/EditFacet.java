@@ -171,7 +171,7 @@ public class EditFacet implements Serializable {
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
         tree.expandTreeToPath(facetSelected.getIdConceptParent(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-        tree.setIdConcept(facetSelected.getIdConceptParent());
+        tree.setIdConceptParent(facetSelected.getIdConceptParent());
 
         indexSetting.setIsFacetSelected(false);
         indexSetting.setIsValueSelected(true);

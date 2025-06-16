@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import jakarta.inject.Named;
@@ -51,6 +52,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
  *
  * @author miledrousset
  */
+@Data
 @SessionScoped
 @Named(value = "tree")
 @RequiredArgsConstructor
@@ -61,7 +63,7 @@ public class Tree implements Serializable {
     private final LeftBodySetting leftBodySetting;
     private final ConceptView conceptBean;
     private final SelectedTheso selectedTheso;
-    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
     private final IndexSetting indexSetting;
     private final EditFacet editFacet;
     private final CurrentUser currentUser;
@@ -100,9 +102,9 @@ public class Tree implements Serializable {
         manySiblings = false;
     }
 
-    public void initialise(String idTheso, String idLang) {
+    public void initialise(String idThesaurus, String idLang) {
         manySiblings = false;
-        this.idTheso = idTheso;
+        this.idTheso = idThesaurus;
         this.idLang = idLang;
         selectedTheso.setSelectedLang(idLang);
         selectedTheso.setCurrentLang(idLang);
@@ -123,17 +125,13 @@ public class Tree implements Serializable {
         if (nodeUser == null) {
             return false;
         }
-        if (roleOnThesoBean == null) {
+        if (roleOnThesaurusBean == null) {
             return false;
         }
-        if (roleOnThesoBean.isSuperAdmin() || roleOnThesoBean.isAdminOnThisThesaurus() || roleOnThesoBean.isManagerOnThisThesaurus()) {
-            return true;
-        } else {
-            return false;
-        }
+        return roleOnThesaurusBean.isSuperAdmin() || roleOnThesaurusBean.isAdminOnThisThesaurus() || roleOnThesaurusBean.isManagerOnThisThesaurus();
     }
 
-    private boolean addFirstNodes() {
+    private void addFirstNodes() {
 
         TreeNodeData data;
         // la liste est triée par alphabétique ou notation
@@ -180,27 +178,6 @@ public class Tree implements Serializable {
             }
         }
 
-        return true;
-    }
-
-    public TreeNode getRoot() {
-        return root;
-    }
-
-    public TreeNode getSelectedNode() {
-        return selectedNode;
-    }
-
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
-    }
-
-    public List<TreeNode> getClickselectedNodes() {
-        return clickselectedNodes;
-    }
-
-    public void setClickselectedNodes(List<TreeNode> clickselectedNodes) {
-        this.clickselectedNodes = clickselectedNodes;
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
@@ -225,8 +202,8 @@ public class Tree implements Serializable {
 
     public void reloadSelectedConcept(){
         initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        if(getSelectedNode() != null) {
-            expandTreeToPath(((TreeNodeData) getSelectedNode().getData()).getNodeId(),
+        if(selectedNode != null) {
+            expandTreeToPath(((TreeNodeData) selectedNode.getData()).getNodeId(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang());
         }
@@ -235,12 +212,6 @@ public class Tree implements Serializable {
             PrimeFaces.current().ajax().update("containerIndex:languageSelect");
             PrimeFaces.current().executeScript("srollToSelected()");
         }
-    }
-
-
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
     }
 
     /// l'évennement ne focntionne pas avec tree dynamic="true"
@@ -283,11 +254,8 @@ public class Tree implements Serializable {
 
     /**
      * Nouvelle méthode en utilisant Plpgsql beaucoup plus rapide
-     * @param parent
-     * @return 
-     * #MR
      */
-    private boolean addConceptsChild(TreeNode parent) {
+    private void addConceptsChild(TreeNode parent) {
 
         List<NodeConceptTree> nodeConceptTrees = resourceService.getConceptsNTForTree(idTheso, ((TreeNodeData) parent.getData()).getNodeId(),
                 selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation(), !ObjectUtils.isEmpty(currentUser.getNodeUser()));
@@ -302,7 +270,7 @@ public class Tree implements Serializable {
             }
             if (nodeConceptTree.isFacet()) {
                 TreeNodeData data = new TreeNodeData(
-                        nodeConceptTree.getIdConcept() + "",
+                        nodeConceptTree.getIdConcept(),
                         StringUtils.isEmpty(nodeConceptTree.getTitle()) ? "(" + nodeConceptTree.getIdConcept() + ")" : nodeConceptTree.getTitle(),
                         null,
                         false,
@@ -343,15 +311,14 @@ public class Tree implements Serializable {
                 }
             }
         }
-        return true;
     }
 
     public List<NodeTree> searchFacettesForTree(String conceptParentId, String idTheso, String idLang) {
         List<NodeTree> facaets = new ArrayList<>();
         List<NodeIdValue> nodeIdValues = facetService.getAllIdValueFacetsOfConcept(conceptParentId, idTheso, idLang);
-        nodeIdValues.stream().forEach(facette -> {
+        nodeIdValues.forEach(facette -> {
             TreeNodeData data = new TreeNodeData(
-                    facette.getId() + "",
+                    facette.getId(),
                     facette.getValue().isEmpty() ? "(" + facette.getId() + ")" : facette.getValue(),
                     null,
                     false,
@@ -412,9 +379,9 @@ public class Tree implements Serializable {
     private void addFacettes(TreeNode parent) {
         List<NodeIdValue> nodeIdValues = facetService.getAllIdValueFacetsOfConcept(
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, selectedTheso.getCurrentLang());
-        nodeIdValues.stream().forEach(facette -> {
+        nodeIdValues.forEach(facette -> {
             TreeNodeData data = new TreeNodeData(
-                    facette.getId() + "",
+                    facette.getId(),
                     facette.getValue().isEmpty() ? "(" + facette.getId() + ")" : facette.getValue(),
                     null,
                     false,
@@ -451,13 +418,10 @@ public class Tree implements Serializable {
         List<TreeNode> treeNodes = selectedNode.getChildren();
         for (TreeNode treeNode : treeNodes) {
             if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
-                try {
-                    if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)) {
-                        selectedNode.setSelected(false);
-                        selectedNode = treeNode;
-                        selectedNode.setSelected(true);
-                    }
-                } catch (Exception e) {
+                if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)) {
+                    selectedNode.setSelected(false);
+                    selectedNode = treeNode;
+                    selectedNode.setSelected(true);
                 }
             }
         }
@@ -465,8 +429,6 @@ public class Tree implements Serializable {
 
     /**
      * récupération du noeud sélectionné dans l'arbre et appliquer les actions
-     *
-     * @param event
      */
     public void onNodeSelect(NodeSelectEvent event) {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
@@ -476,8 +438,6 @@ public class Tree implements Serializable {
 
     /**
      * appliquer les actions sur un noeud fourni par l'utilisateur
-     *
-     * @param node
      */
     public void onNodeSelectByNode(DefaultTreeNode node) {
 
@@ -585,24 +545,12 @@ public class Tree implements Serializable {
         }
     }
 
-    public String getIdConceptSelected() {
-        return idConceptSelected;
-    }
-
-    public void setIdConceptSelected(String idConceptSelected) {
-        this.idConceptSelected = idConceptSelected;
-    }
-
     public boolean isGrapheLinkVisible() {
         return !StringUtils.isEmpty(idConceptSelected);
     }
 
     /**
      * permet de déplier l'arbre suivant le Path ou les paths en paramètre
-     *
-     * @param idConcept
-     * @param idTheso
-     * @param idLang #MR
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
         List<String> graphPaths = pathService.getGraphOfConcept(idConcept, idTheso);
@@ -704,10 +652,7 @@ public class Tree implements Serializable {
     }
 
     public boolean isGraphNotVisible() {
-        if (selectedNode == null || selectedNode.isLeaf()) {
-            return true;
-        }
-        return false;
+        return selectedNode == null || selectedNode.isLeaf();
     }
 
     public String getColor() {
@@ -721,10 +666,6 @@ public class Tree implements Serializable {
     /**
      * permet de déplier l'arbre suivant le Path ou les paths en paramètre On
      * reconstruit l'arbre dès le début suite à des modifications
-     *
-     * @param idConcept
-     * @param idTheso
-     * @param idLang #MR
      */
     public void initAndExpandTreeToPath(String idConcept, String idTheso, String idLang) {
 
@@ -771,10 +712,6 @@ public class Tree implements Serializable {
      * concept, sinon, on récupère les fils et on se positionne sur le concept
      * Cas d'un noeud Facette : on zappe le neoud puisque le concept est sous
      * cette facette, ensuite, on se positionne sur le concept
-     *
-     * @param treeNodeParent
-     * @param idConceptChildToFind
-     * @return
      */
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
@@ -826,71 +763,4 @@ public class Tree implements Serializable {
         // pas de noeud trouvé dans les fils
         return null;
     }
-
-    public DataService getDataService() {
-        return dataService;
-    }
-
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
-    }
-
-    public String getIdConcept() {
-        return idConceptParent;
-    }
-
-    public void setIdConcept(String idConcept) {
-        this.idConceptParent = idConcept;
-    }
-
-    public TreeNodeData getTreeNodeDataSelect() {
-        return treeNodeDataSelect;
-    }
-
-    public void setTreeNodeDataSelect(TreeNodeData treeNodeDataSelect) {
-        this.treeNodeDataSelect = treeNodeDataSelect;
-    }
-
-    public boolean isManySiblings() {
-        return manySiblings;
-    }
-
-    public void setManySiblings(boolean manySiblings) {
-        this.manySiblings = manySiblings;
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * permet de déplier tout l'arbre
-     *
-     * #MR
-     */
-    public void expandAllNode() {
-        dataService = null;
-        dataService = new DataService();
-        root = dataService.createRoot();
-        addFirstNodes();
-        List<TreeNode> treeNodes = root.getChildren();
-
-        for (TreeNode treeNode : treeNodes) {
-            expandedAllRecursively(treeNode, true);
-        }
-    }
-
-    private void expandedAllRecursively(TreeNode node, boolean expanded) {
-        if (node.getChildCount() == 1 && ((TreeNode) node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
-            node.getChildren().remove(0);
-            addConceptsChild(node);
-        }
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////      
 }
