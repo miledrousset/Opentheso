@@ -87,8 +87,7 @@
                                  value="#{langueBean.getMsg('btnAdd')}"
                                  update="messageIndex containerIndex" oncomplete="PF('addNT').show();"
                                  ajax="true" process="@form"
-                                 action="#{addConcept.addNewConcept(conceptView.nodeFullConcept.identifier,
-                                           selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
+                                 action="#{addConcept.addNewConcept(conceptView.nodeFullConcept.identifier, true)}"/>
                 
                 <!-- concept duppliqué, forcer la création ou annuler -->
                 <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 

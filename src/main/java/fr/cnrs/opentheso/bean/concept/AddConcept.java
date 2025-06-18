@@ -53,30 +53,34 @@ public class AddConcept implements Serializable {
     private List<NodeSearchMini> nodeSearchMinis;
 
 
-    public void addNewConcept(String idConceptParent, String idLang, String status, String idTheso, int idUser) {
+    public void addNewConcept(String idConceptParent, boolean fromConcept) {
         isCreated = false;
         duplicate = false;
 
-        if (!isLabelValid() || !isNotationValid(idTheso)) {
+        if (!isLabelValid() || !isNotationValid(selectedTheso.getCurrentIdTheso())) {
             updateUIOnError();
             return;
         }
 
-        if (termService.existsPrefLabel(prefLabel.trim(), idLang, idTheso)) {
+        if (termService.existsPrefLabel(prefLabel.trim(), selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso())) {
             duplicate = true;
             MessageUtils.showWarnMessage("un prefLabel existe déjà avec ce nom !");
             updateUIOnError();
             return;
         }
 
-        if (termService.isAltLabelExist(prefLabel.trim(), idTheso, idLang)) {
+        if (termService.isAltLabelExist(prefLabel.trim(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())) {
             duplicate = true;
             MessageUtils.showWarnMessage("un synonyme existe déjà avec ce nom !");
             updateUIOnError();
             return;
         }
 
-        addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
+        addNewConceptForced(idConceptParent, selectedTheso.getCurrentLang(), "D", selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
+
+        if (!fromConcept) {
+            editFacet.finishAddingNewConcept();
+        }
     }
 
     public void addNewConceptForced(String idConceptParent, String idLang, String status, String idThesaurus, int idUser) {

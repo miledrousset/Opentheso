@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +117,7 @@ public class EditFacet implements Serializable {
             conceptList = facetService.getAllMembersOfFacetSorted(facetSelected.getIdFacet(), selectedTheso.getCurrentLang(),
                     selectedTheso.getCurrentIdTheso());
 
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+            PrimeFaces.current().ajax().update("containerIndex");
             PrimeFaces.current().executeScript("PF('addNTFacette').hide();");
         }
     }
