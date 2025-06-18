@@ -183,12 +183,13 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     @Query(value = """
         SELECT COUNT(h.id_concept2)
-        FROM hierarchical_relationship h
-        JOIN concept c ON h.id_concept2 = c.id_concept AND h.id_thesaurus = c.id_thesaurus
-        WHERE h.id_thesaurus = :idThesaurus
-          AND h.id_concept1 = :idConcept
-          AND h.role LIKE 'NT%'
-          AND c.status != 'CA'
+        FROM hierarchical_relationship h, concept c
+        WHERE h.id_concept2 = c.id_concept 
+              AND h.id_thesaurus = c.id_thesaurus
+              AND h.id_thesaurus = :idThesaurus
+              AND h.id_concept1 = :idConcept
+              AND h.role LIKE 'NT%'
+              AND c.status != 'CA'
     """, nativeQuery = true)
     int countChildren(@Param("idThesaurus") String idThesaurus, @Param("idConcept") String idConcept);
 

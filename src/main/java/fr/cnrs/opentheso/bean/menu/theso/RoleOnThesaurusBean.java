@@ -14,7 +14,9 @@ import fr.cnrs.opentheso.services.UserRoleGroupService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.TreeNode;
@@ -35,7 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "roleOnThesaurus")

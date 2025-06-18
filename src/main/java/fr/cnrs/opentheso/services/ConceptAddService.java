@@ -193,31 +193,27 @@ public class ConceptAddService {
             if (relationType == null) {
                 relationType = "NT";
             }
-            switch (relationType) {
-                case "NT":
-                    inverseRelation = "BT";
-                    break;
-                case "NTG":
-                    inverseRelation = "BTG";
-                    break;
-                case "NTP":
-                    inverseRelation = "BTP";
-                    break;
-                case "NTI":
-                    inverseRelation = "BTI";
-                    break;
-            }
+            inverseRelation = switch (relationType) {
+                case "NT" -> "BT";
+                case "NTG" -> "BTG";
+                case "NTP" -> "BTP";
+                case "NTI" -> "BTI";
+                default -> inverseRelation;
+            };
 
-            HierarchicalRelationship hierarchicalRelationship = new HierarchicalRelationship();
-            hierarchicalRelationship.setIdConcept1(idParent);
-            hierarchicalRelationship.setIdConcept2(idConcept);
-            hierarchicalRelationship.setIdThesaurus(concept.getIdThesaurus());
-            hierarchicalRelationship.setRole(relationType);
-            hierarchicalRelationship.setIdConcept1(idConcept);
-            hierarchicalRelationship.setIdConcept2(idParent);
-            hierarchicalRelationship.setIdThesaurus(concept.getIdThesaurus());
-            hierarchicalRelationship.setRole(inverseRelation);
-            relationService.addLinkHierarchicalRelation(hierarchicalRelationship, idUser);
+            relationService.addLinkHierarchicalRelation(HierarchicalRelationship.builder()
+                    .idConcept1(idParent)
+                    .idConcept2(idConcept)
+                    .idThesaurus(concept.getIdThesaurus())
+                    .role(relationType)
+                    .build(), idUser);
+
+            relationService.addLinkHierarchicalRelation(HierarchicalRelationship.builder()
+                    .idConcept1(idConcept)
+                    .idConcept2(idParent)
+                    .idThesaurus(concept.getIdThesaurus())
+                    .role(inverseRelation)
+                    .build(), idUser);
         }
 
         var preferences = preferenceService.getThesaurusPreferences(concept.getIdThesaurus());
@@ -226,23 +222,19 @@ public class ConceptAddService {
             if (preferences.isUseHandle()) {
                 if (!handleConceptService.addIdHandle(idConcept, concept.getIdThesaurus())) {
                     MessageUtils.showErrorMessage("La création du Ark local a échoué");
-                    log.error("La création du Ark local a échoué");
                 }
             }
-        }
 
-        var preference = preferenceService.getThesaurusPreferences(concept.getIdThesaurus());
-        if (preference != null) {
             // Si on arrive ici, c'est que tout va bien
             // alors c'est le moment de récupérer le code ARK
-            if (preference.isUseArk()) {
-                var result = generateArkId(concept.getIdThesaurus(), List.of(idConcept), term.getLang(), preference);
+            if (preferences.isUseArk()) {
+                var result = generateArkId(concept.getIdThesaurus(), List.of(idConcept), term.getLang(), preferences);
                 if (CollectionUtils.isEmpty(result)) {
                     MessageUtils.showErrorMessage("La création du Ark local a échoué");
                     log.error("La création du Ark local a échoué");
                 }
             }
-            if (preference.isUseArkLocal()) {
+            if (preferences.isUseArkLocal()) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 idConcepts.add(idConcept);
                 if (arkService.generateArkIdLocal(concept.getIdThesaurus(), idConcepts)) {

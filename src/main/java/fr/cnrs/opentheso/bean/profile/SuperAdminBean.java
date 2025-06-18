@@ -12,13 +12,15 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "superAdminBean")

@@ -19,13 +19,16 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @Named(value = "listIndex")
 @RequiredArgsConstructor

@@ -18,15 +18,17 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.faces.model.SelectItem;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "addGroupBean")

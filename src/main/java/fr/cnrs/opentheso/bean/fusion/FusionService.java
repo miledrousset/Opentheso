@@ -21,7 +21,9 @@ import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 
 import lombok.Data;
 import jakarta.inject.Named;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -31,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Named
 @Service
 @RequiredArgsConstructor

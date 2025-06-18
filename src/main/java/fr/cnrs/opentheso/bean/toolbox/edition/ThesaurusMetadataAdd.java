@@ -12,17 +12,17 @@ import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.RowEditEvent;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "thesaurusMetadataAdd")

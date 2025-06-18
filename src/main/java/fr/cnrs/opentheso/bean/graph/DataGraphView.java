@@ -21,7 +21,9 @@ import java.net.URISyntaxException;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.component.chip.Chip;
 import org.primefaces.extensions.event.ClipboardErrorEvent;
 import org.primefaces.extensions.event.ClipboardSuccessEvent;
@@ -35,7 +37,8 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
 
 
-@Data
+@Getter
+@Setter
 @Service
 @RequiredArgsConstructor
 public class DataGraphView {

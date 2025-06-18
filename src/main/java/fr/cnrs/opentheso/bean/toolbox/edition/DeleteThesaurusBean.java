@@ -13,14 +13,16 @@ import java.io.IOException;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  *
  * @author miledrousset
  */
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "deleteThesaurusBean")

@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "showVoteNote")

@@ -9,12 +9,16 @@ import fr.cnrs.opentheso.services.MailService;
 import java.io.Serializable;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 
-@Data
+@Getter
+@Setter
 @RequestScoped
+@RequiredArgsConstructor
 @Named(value = "forgetPassBean")
 public class ForgetPassBean implements Serializable {
 

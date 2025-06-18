@@ -12,6 +12,8 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
@@ -28,6 +30,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 
+@Getter
+@Setter
 @SessionScoped
 @AllArgsConstructor
 @Named(value = "sessionControl")
@@ -87,20 +91,16 @@ public class SessionControl implements Serializable {
         while (childrenIt.hasNext()) {
             UIComponent component = childrenIt.next();
             if (component != null) {
-                if (component instanceof HtmlInputText) {
-                    HtmlInputText com = (HtmlInputText) component;
+                if (component instanceof HtmlInputText com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectOneMenu) {
-                    HtmlSelectOneMenu com = (HtmlSelectOneMenu) component;
+                if (component instanceof HtmlSelectOneMenu com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectBooleanCheckbox) {
-                    HtmlSelectBooleanCheckbox com = (HtmlSelectBooleanCheckbox) component;
+                if (component instanceof HtmlSelectBooleanCheckbox com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectManyCheckbox) {
-                    HtmlSelectManyCheckbox com = (HtmlSelectManyCheckbox) component;
+                if (component instanceof HtmlSelectManyCheckbox com) {
                     com.resetValue();
                 }
 

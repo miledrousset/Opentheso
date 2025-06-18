@@ -32,8 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import jakarta.inject.Named;
 
@@ -52,7 +53,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
  *
  * @author miledrousset
  */
-@Data
+@Getter
+@Setter
 @SessionScoped
 @Named(value = "tree")
 @RequiredArgsConstructor
@@ -762,5 +764,24 @@ public class Tree implements Serializable {
         }
         // pas de noeud trouvé dans les fils
         return null;
+    }
+
+    public void expandAllNode() {
+        dataService = null;
+        dataService = new DataService();
+        root = dataService.createRoot();
+        addFirstNodes();
+        List<TreeNode> treeNodes = root.getChildren();
+
+        for (TreeNode treeNode : treeNodes) {
+            expandedAllRecursively(treeNode, true);
+        }
+    }
+
+    private void expandedAllRecursively(TreeNode node, boolean expanded) {
+        if (node.getChildCount() == 1 && ((TreeNode) node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+            node.getChildren().remove(0);
+            addConceptsChild(node);
+        }
     }
 }

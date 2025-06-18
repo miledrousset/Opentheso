@@ -19,8 +19,9 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -30,7 +31,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 
 @Slf4j
-@Data
+@Setter
+@Getter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "setAlignmentSourceBean")

@@ -23,8 +23,9 @@ import java.util.List;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.TreeDragDropEvent;
@@ -32,7 +33,8 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @SessionScoped
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class DragAndDrop implements Serializable {
     private final FacetService facetService;
     private final RelationService relationService;
 
-    private boolean isCopyOn, isValidPaste, isDragAndDrop, isDropToRoot, isGroupToCut;
+    private boolean copyOn, isValidPaste, isDragAndDrop, isDropToRoot, isGroupToCut;
     private List<NodeBT> nodeBTsToCut;
     private NodeConcept nodeConceptDrag, nodeConceptDrop;
     private List<BTNode> groupNodeBtToCut;
@@ -94,7 +96,7 @@ public class DragAndDrop implements Serializable {
             nodeGroupsToCut.clear();
         if(nodeGroupsToAdd != null)
             nodeGroupsToAdd.clear();          
-        isCopyOn = false;
+        copyOn = false;
         isValidPaste = false;
         
         if(nodeConceptDrag != null)
@@ -205,7 +207,7 @@ public class DragAndDrop implements Serializable {
         this.dragNode = tree.getSelectedNode();
 
         nodeConceptDrag = nodeConcept;
-        isCopyOn = true;
+        copyOn = true;
 
         if (nodeConceptDrag.getTerm() != null) {
             MessageUtils.showInformationMessage("Couper " + nodeConceptDrag.getTerm().getLexicalValue() 

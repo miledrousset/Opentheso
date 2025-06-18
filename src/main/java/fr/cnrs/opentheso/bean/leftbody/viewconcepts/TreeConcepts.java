@@ -16,8 +16,9 @@ import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.ResourceService;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
@@ -30,7 +31,8 @@ import java.io.Serializable;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "treeConcepts")

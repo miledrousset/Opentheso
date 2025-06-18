@@ -7,13 +7,17 @@ import fr.cnrs.opentheso.services.HistoryService;
 
 import java.io.Serializable;
 import java.util.List;
-import lombok.Data;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "historyBean")
 public class HistoryBean implements Serializable {
 

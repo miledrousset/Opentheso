@@ -22,16 +22,20 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
-@Named(value = "editFacet")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "editFacet")
 public class EditFacet implements Serializable {
 
     private final Tree tree;

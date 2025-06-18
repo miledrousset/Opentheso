@@ -18,13 +18,15 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "newThesaurusBean")

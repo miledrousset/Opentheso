@@ -28,14 +28,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
+@Getter
+@Setter
 @Named(value = "searchBean")
 @SessionScoped
 @RequiredArgsConstructor

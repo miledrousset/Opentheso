@@ -20,11 +20,11 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -34,8 +34,9 @@ import org.springframework.util.CollectionUtils;
  *
  * @author miledrousset
  */
-@Data
 @Slf4j
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "synonymBean")
@@ -177,7 +178,7 @@ public class SynonymBean implements Serializable {
         refreshConceptDatas(idUser);
 
         MessageUtils.showInformationMessage("Synonyme modifié avec succès");
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");;
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     /**

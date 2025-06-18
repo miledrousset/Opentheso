@@ -4,12 +4,14 @@ import java.io.InputStream;
 import java.io.Serializable;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 
-@Data
+@Getter
+@Setter
 @ViewScoped
 @Named(value = "helpfileDownload")
 public class HelpFileDownload implements Serializable{

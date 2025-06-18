@@ -14,15 +14,17 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
 @Slf4j
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "removeConceptAndChildFromGroupBean")

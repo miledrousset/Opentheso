@@ -19,13 +19,15 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @SessionScoped
 @RequiredArgsConstructor
@@ -71,14 +73,11 @@ public class GroupView implements Serializable {
         count = 0;
         nodeGroup = null;
         nodeGroupType = null;
-        nodeGroupTraductions = null;
+        nodeGroupTraductions = new ArrayList<>();
     }
 
     public void clear(){
-        if(nodeGroupTraductions!= null){
-            nodeGroupTraductions.clear();
-            nodeGroupTraductions = null;
-        }
+        nodeGroupTraductions = new ArrayList<>();
         nodeGroup = null;
         nodeGroupType = null;
     }

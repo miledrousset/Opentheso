@@ -2,13 +2,16 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 
 
-@Data
-@Named(value = "viewEditionBean")
+@Getter
+@Setter
 @SessionScoped
+@Named(value = "viewEditionBean")
 public class ViewEditionBean implements Serializable {
 
     private String alternateColor, login, password, urlServer, nomGraphe;

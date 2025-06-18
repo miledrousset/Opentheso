@@ -2,10 +2,9 @@ package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.fusion.FusionService;
-
 import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,6 +12,9 @@ import jakarta.inject.Named;
 import jakarta.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -22,8 +24,10 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named("atelierThesBean")
 public class AtelierThesBean implements Serializable {
 

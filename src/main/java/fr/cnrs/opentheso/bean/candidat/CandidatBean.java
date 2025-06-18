@@ -48,7 +48,9 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ExternalContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -58,8 +60,9 @@ import org.apache.commons.lang3.StringUtils;
 import jakarta.enterprise.context.SessionScoped;
 
 
-@Data
 @Slf4j
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "candidatBean")

@@ -11,21 +11,25 @@ import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.RelationGroupService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
-import lombok.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.model.SelectItem;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "modifyGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {

@@ -116,14 +116,12 @@
                                                     icon="fas fa-pen"
                                                     actionListener="#{traductionGroupBean.reset()}"
                                                     oncomplete="PF('renameTraductionGroup').show();"
-                                                    disabled="#{groupView.nodeGroupTraductions.size() == 0}"
                                                     update="containerIndex:idRenameTraductionGroup"/>
 
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}"
                                                     icon="fas fa-trash-alt"
                                                     actionListener="#{traductionGroupBean.reset()}"
                                                     oncomplete="PF('deleteTraductionGroup').show();"
-                                                    disabled="#{groupView.nodeGroupTraductions.size() == 0}"
                                                     update="containerIndex:idDeleteTraductionGroup"/>
                                     </p:menuButton>
                                 </div>
@@ -669,7 +667,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
                         </h:panelGroup>
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
-                            <p:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idGroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
+                            <p:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idGroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idThesaurus}"
                                     value="#{groupView.nodeGroup.conceptGroup.idGroup}" style="font-size: 14px;">
                                 <i class="pi pi-link" style="color: #43B572;"/>
                             </p:link>
@@ -677,7 +675,7 @@
                     </div>
                 </div>
 
-                <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idARk != ''}">
+                <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idArk != ''}">
                     <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
@@ -689,8 +687,8 @@
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
-                                <p:link href="#{roleOnThesaurus.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idARk}"
-                                        value="#{roleOnThesaurus.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idARk}"
+                                <p:link href="#{roleOnThesaurus.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idArk}"
+                                        value="#{roleOnThesaurus.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idArk}"
                                         target="_blank" style="color: #164A78; font-size: 14px;">
                                     <i class="pi pi-link"/>
                                 </p:link>

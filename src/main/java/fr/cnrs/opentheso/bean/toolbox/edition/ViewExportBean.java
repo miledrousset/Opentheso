@@ -9,44 +9,40 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
-
 import fr.cnrs.opentheso.services.ThesaurusService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.event.ToggleSelectEvent;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "viewExportBean")
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
+@Named(value = "viewExportBean")
 public class ViewExportBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
     private final ThesaurusService thesaurusService;
-
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private ExportFileBean downloadBean;
-    @Autowired @Lazy private LanguageBean languageBean;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final ExportFileBean downloadBean;
+    private final LanguageBean languageBean;
+    private final PreferenceService preferenceService;
+    private final GroupService groupService;
 
     private List<NodeLangTheso> languagesOfTheso;
     private List<NodeGroup> groupList;
@@ -81,48 +77,7 @@ public class ViewExportBean implements Serializable {
     private String selectedLang2_PDF;
      
     private boolean exportDone;
-    
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }    
-    
-    public void clear() {
-        nodePreference = null;    
-        nodeIdValueOfTheso = null;            
-        csvDelimiter = ";";  
-        formatFile = null;  
-        typeSelected = null;  
-        selectedExportFormat = null;  
-        selectedLang1_PDF = null;  
-        selectedLang2_PDF = null;  
-        selectedIdLangTheso = null;
-        
-        if(languagesOfTheso != null){
-            languagesOfTheso.clear();
-            languagesOfTheso = null;
-        }
-        if(groupList != null){
-            groupList.clear();
-            groupList = null;
-        }
-        if(selectedLanguages != null){
-            selectedLanguages.clear();
-            selectedLanguages = null;
-        }
-        if(selectedGroups != null){
-            selectedGroups.clear();
-            selectedGroups = null;
-        }
-        if(selectedIdGroups != null){
-            selectedIdGroups.clear();
-            selectedIdGroups = null;
-        }
 
-        exportFormat = null;
-        types = null;
-    }    
-    
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
         nodePreference = preferenceService.getThesaurusPreferences(nodeIdValueOfTheso.getId());

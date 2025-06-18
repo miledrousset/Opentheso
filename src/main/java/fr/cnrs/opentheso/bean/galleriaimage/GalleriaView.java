@@ -10,10 +10,13 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.model.ResponsiveOption;
 
 
-@Data
+@Getter
+@Setter
 @Named
 @ViewScoped
 public class GalleriaView implements Serializable {

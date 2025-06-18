@@ -16,17 +16,21 @@ import fr.cnrs.opentheso.services.RelationService;
 import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
-import lombok.Data;
 import java.util.List;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 
 
-@Data
-@Named(value = "narrowerBean")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "narrowerBean")
 public class NarrowerBean implements Serializable {
 
     private final Tree tree;

@@ -38,8 +38,9 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
@@ -49,7 +50,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "currentUser")

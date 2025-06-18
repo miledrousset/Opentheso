@@ -5,7 +5,9 @@ import com.google.gson.reflect.TypeToken;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,14 +28,15 @@ import fr.cnrs.opentheso.models.releases.ReleaseDto;
 import fr.cnrs.opentheso.models.releases.TagDto;
 import fr.cnrs.opentheso.repositories.ReleaseRepository;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import fr.cnrs.opentheso.entites.Release;
 
 
 @Slf4j
-@Data
+@Getter
+@Setter
 @ApplicationScoped
+@RequiredArgsConstructor
 @Named(value = "newVersionBean")
 public class NewVersionService implements Serializable {
 

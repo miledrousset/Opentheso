@@ -20,9 +20,10 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
 import jakarta.inject.Named;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,8 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 
 
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @SessionScoped
 @RequiredArgsConstructor

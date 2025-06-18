@@ -13,8 +13,9 @@ import java.time.LocalDate;
 import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,8 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Slf4j
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "myAccountBean")

@@ -10,10 +10,11 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.entites.ProjectDescription;
 import fr.cnrs.opentheso.repositories.ProjectDescriptionRepository;
-
 import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
-import lombok.Data;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,8 @@ import java.io.Serializable;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "projectBean")

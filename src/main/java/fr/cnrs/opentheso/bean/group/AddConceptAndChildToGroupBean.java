@@ -16,14 +16,18 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "addConceptAndChildToGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptAndChildToGroupBean implements Serializable {

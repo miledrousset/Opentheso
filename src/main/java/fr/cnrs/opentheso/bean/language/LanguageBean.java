@@ -7,8 +7,9 @@ import java.util.ResourceBundle;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +17,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 
-@Data
+@Getter
+@Setter
 @Component("langueBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class LanguageBean implements Serializable {

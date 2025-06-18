@@ -16,14 +16,18 @@ import fr.cnrs.opentheso.services.NoteService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import jakarta.inject.Named;
 
 
-@Data
-@Named(value = "deeplTranslate")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "deeplTranslate")
 public class DeeplTranslate implements Serializable {
 
     private final NoteService noteService;
@@ -95,17 +99,13 @@ public class DeeplTranslate implements Serializable {
     }
 
     private String normalizeIdLang(String idLang){
-        switch (idLang) {
-            case "en-GB":
-                return "en";
-            case "en-US":
-                return "en";
-            case "pt-BR":
-                return "pt";
-            case "pt-PT":
-                return "pt";
-        }
-        return idLang;
+        return switch (idLang) {
+            case "en-GB" -> "en";
+            case "en-US" -> "en";
+            case "pt-BR" -> "pt";
+            case "pt-PT" -> "pt";
+            default -> idLang;
+        };
     }
 
     private String getLanguage(String idLang) {

@@ -8,17 +8,19 @@ import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 
-@Data
 @Slf4j
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "preferenceBean")

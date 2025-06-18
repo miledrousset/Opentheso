@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
@@ -32,7 +33,8 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Data
+@Getter
+@Setter
 @Named(value = "relatedBean")
 @SessionScoped
 @RequiredArgsConstructor

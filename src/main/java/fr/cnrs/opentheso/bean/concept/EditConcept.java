@@ -38,7 +38,9 @@ import java.util.Date;
 import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -50,8 +52,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "editConcept")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EditConcept implements Serializable {

@@ -39,14 +39,14 @@
 
                 <!-- Coller comme terme spécifique -->
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and
-                                        (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                                        (dragAndDrop.nodeConceptDrag.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}" icon="fas fa-paste"
                             update="containerIndex:rightTab messageIndex" />
 
                 <!-- Coller à la racine -->
-                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and (!dragAndDrop.nodeConceptDrag.concept.topConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
                             actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}"

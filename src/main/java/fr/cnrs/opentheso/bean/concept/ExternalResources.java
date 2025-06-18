@@ -19,13 +19,15 @@ import java.util.List;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
+@Getter
+@Setter
 @Named(value = "externalResources")
 @SessionScoped
 @RequiredArgsConstructor

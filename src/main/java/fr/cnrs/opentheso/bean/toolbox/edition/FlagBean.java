@@ -4,14 +4,16 @@ import fr.cnrs.opentheso.entites.LanguageIso639;
 import fr.cnrs.opentheso.repositories.LanguageRepository;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 import java.io.Serializable;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Named(value = "flagBean")
 @SessionScoped
 @RequiredArgsConstructor

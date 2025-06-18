@@ -7,17 +7,19 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Data;
 
 import java.io.IOException;
 import java.io.Serializable;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "viewEditorHomeBean")

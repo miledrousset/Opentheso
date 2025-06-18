@@ -8,7 +8,9 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import java.io.Serializable;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import org.apache.commons.lang3.StringUtils;
@@ -16,9 +18,11 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 @Slf4j
-@Data
-@Named(value = "restoreThesaurus")
+@Getter
+@Setter
 @RequestScoped
+@RequiredArgsConstructor
+@Named(value = "restoreThesaurus")
 public class RestoreThesaurus implements Serializable {
 
     @Value("${settings.workLanguage:fr}")

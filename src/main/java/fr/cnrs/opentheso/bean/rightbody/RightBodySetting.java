@@ -2,14 +2,15 @@ package fr.cnrs.opentheso.bean.rightbody;
 
 import jakarta.inject.Named;
 import java.io.Serializable;
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
 
-@Data
+@Getter
+@Setter
 @Named(value = "rightBodySetting")
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RightBodySetting implements Serializable {

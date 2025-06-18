@@ -4,9 +4,12 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @Named(value = "leftBodySetting")
 public class LeftBodySetting implements Serializable {

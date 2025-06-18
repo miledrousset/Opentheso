@@ -28,7 +28,9 @@ import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
@@ -37,9 +39,11 @@ import org.primefaces.model.StreamedContent;
 
 
 @Slf4j
-@Data
-@Named(value = "processCandidateBean")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "processCandidateBean")
 public class ProcessCandidateBean implements Serializable {
 
     private final Tree tree;

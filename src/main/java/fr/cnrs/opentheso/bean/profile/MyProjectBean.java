@@ -16,12 +16,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @SessionScoped
 @RequiredArgsConstructor

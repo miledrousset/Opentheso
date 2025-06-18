@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named(value = "broaderBean")

@@ -42,7 +42,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import lombok.Data;
@@ -59,7 +61,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
  *
  * @author miledrousset
  */
-@Data
+@Getter
+@Setter
 @Slf4j
 @SessionScoped
 @RequiredArgsConstructor

@@ -18,8 +18,9 @@ import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -27,8 +28,9 @@ import java.io.Serializable;
 import java.util.List;
 
 
-@Data
 @Slf4j
+@Getter
+@Setter
 @SessionScoped
 @RequiredArgsConstructor
 @Named("addConcept")

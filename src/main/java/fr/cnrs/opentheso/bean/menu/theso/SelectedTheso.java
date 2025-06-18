@@ -33,8 +33,9 @@ import java.util.ArrayList;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
@@ -52,7 +53,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 
 
 @Slf4j
-@Data
+@Getter
+@Setter
 @SessionScoped
 @Named(value = "selectedTheso")
 @RequiredArgsConstructor
