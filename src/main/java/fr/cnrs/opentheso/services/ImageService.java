@@ -72,17 +72,15 @@ public class ImageService {
     public ImageExterne addExternalImage(String idConcept, String idThesaurus, String imageName, String copyRight,
                                  String uri, String creator, int idUser) {
 
-        var image = ImageExterne.builder()
+        return imagesRepository.save(ImageExterne.builder()
                 .imageCreator(creator)
                 .idUser(idUser)
                 .idConcept(idConcept)
                 .idThesaurus(idThesaurus)
-                .imageName(imageName)
+                .imageName(StringUtils.isEmpty(imageName) ? "" : imageName)
                 .imageCopyright(copyRight)
                 .externalUri(uri.trim())
-                .build();
-
-        return imagesRepository.save(image);
+                .build());
     }
 
     @Transactional
