@@ -47,7 +47,7 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     @Modifying
     @Transactional
     @Query("DELETE FROM Alignement a WHERE a.internalIdThesaurus = :idThesaurus")
-    int deleteByThesaurus(@Param("idThesaurus") String idThesaurus);
+    void deleteByThesaurus(@Param("idThesaurus") String idThesaurus);
 
     @Modifying
     @Transactional
@@ -58,7 +58,7 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     @Transactional
     @Modifying
     @Query("DELETE FROM Alignement a WHERE a.internalIdConcept = :idConcept AND a.internalIdThesaurus = :idThesaurus")
-    int deleteByConceptAndThesaurus(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
+    void deleteByConceptAndThesaurus(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
     @Query("""
         SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END
@@ -103,11 +103,11 @@ public interface AlignementRepository extends JpaRepository<Alignement, Integer>
     @Query(value = """
         SELECT internal_id_concept, uri_target
         FROM alignement
-        WHERE internal_id_thesaurus = :idTheso
+        WHERE internal_id_thesaurus = :idThesaurus
         AND alignement_id_type = 1
         AND (uri_target ILIKE '%ontome.net/ontology%' OR uri_target ILIKE '%ontome.net/class%')
     """, nativeQuery = true)
-    List<NodeIdValueProjection> findAllLinkedConceptsWithOntome(@Param("idTheso") String idTheso);
+    List<NodeIdValueProjection> findAllLinkedConceptsWithOntome(@Param("idThesaurus") String idThesaurus);
 
     @Modifying
     @Transactional

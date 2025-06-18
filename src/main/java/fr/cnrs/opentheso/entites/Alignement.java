@@ -75,7 +75,7 @@ public class Alignement {
     private AlignementType alignementType;
 
     @ManyToOne
-    @JoinColumn(name = "id_alignement_source", nullable = false)
+    @JoinColumn(name = "id_alignement_source")
     @NotFound(action = NotFoundAction.IGNORE)
     private AlignementSource alignementSource;
 }

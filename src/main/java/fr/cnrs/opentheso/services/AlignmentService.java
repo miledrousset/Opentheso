@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.entites.Alignement;
+import fr.cnrs.opentheso.entites.AlignementSource;
 import fr.cnrs.opentheso.entites.AlignementType;
 import fr.cnrs.opentheso.models.NodeAlignmentProjection;
 import fr.cnrs.opentheso.models.NodeIdValueProjection;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -79,7 +81,7 @@ public class AlignmentService {
     }
 
     public boolean addNewAlignment(int author, String conceptTarget, String thesaurusTarget, String uriTarget,
-                                   int idTypeAlignment, String idConcept, String idThesaurus, int id_alignement_source) {
+                                   int idTypeAlignment, String idConcept, String idThesaurus, int idAlignementSource) {
 
         thesaurusTarget = StringUtils.convertString(thesaurusTarget);
 
@@ -104,11 +106,7 @@ public class AlignmentService {
             }
 
             log.info("Rechercher de la source d'alignement");
-            var alignementSource = alignementSourceRepository.findById(id_alignement_source);
-            if (alignementSource.isEmpty()) {
-                log.error("Aucune source d'alignement n'est trouvé avec l'id {}", id_alignement_source);
-                return false;
-            }
+            Optional<AlignementSource> alignementSource = idAlignementSource > 0 ? alignementSourceRepository.findById(idAlignementSource) : Optional.empty();
 
             log.info("Formatage des données target");
             conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(conceptTarget);
@@ -124,7 +122,7 @@ public class AlignmentService {
                     .alignementType(alignementType.get())
                     .internalIdConcept(idConcept)
                     .internalIdThesaurus(idThesaurus)
-                    .alignementSource(alignementSource.get())
+                    .alignementSource(alignementSource.orElse(null))
                     .created(new Date())
                     .modified(new Date())
                     .build());
@@ -135,8 +133,7 @@ public class AlignmentService {
 
     public boolean updateAlignement(AlignementElement alignementElement, String idThesaurus, String idConcept) {
 
-        var alignement = alignementRepository.findByInternalIdThesaurusAndInternalIdConceptAndId(idThesaurus, idConcept,
-                alignementElement.getIdAlignment());
+        var alignement = alignementRepository.findById(alignementElement.getIdAlignment());
         if (alignement.isEmpty()) {
             log.error("Aucun alignement n'est trouvé avec l'id {}", alignementElement.getIdAlignment());
             return false;

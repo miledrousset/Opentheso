@@ -166,7 +166,7 @@ public class AlignmentManualBean implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
-    public void addManualAlignement(CandidatBean candidatBean, boolean isFromConceptView){
+    public void addManualAlignement(CandidatBean candidatBean, String idConcept, boolean isFromConceptView){
 
         if(StringUtils.isEmpty(manualAlignmentUri)){
             MessageUtils.showInformationMessage("Veuillez saisir une valeur  !");
@@ -178,11 +178,11 @@ public class AlignmentManualBean implements Serializable {
             return;            
         }
 
-        var idConcept = candidatBean.getCandidatSelected().getIdConcepte();
+        idConcept = StringUtils.isEmpty(idConcept) ? candidatBean.getCandidatSelected().getIdConcepte() : idConcept;
         if(!alignmentService.addNewAlignment(currentUser.getNodeUser().getIdUser(), "", manualAlignmentSource,
                 manualAlignmentUri, manualAlignmentType, idConcept, selectedTheso.getCurrentIdTheso(), 0)) {
 
-            MessageUtils.showInformationMessage("Erreur de modification !");
+            MessageUtils.showErrorMessage("Erreur de modification !");
             return;            
         }
 
