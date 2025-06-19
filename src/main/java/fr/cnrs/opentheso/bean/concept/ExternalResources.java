@@ -86,7 +86,7 @@ public class ExternalResources implements Serializable {
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        MessageUtils.showInformationMessage("Image ajoutée avec succès");
+        MessageUtils.showInformationMessage("Ressource ajoutée avec succès");
         reset();
 
         PrimeFaces.current().ajax().update("messageIndex");
@@ -121,7 +121,7 @@ public class ExternalResources implements Serializable {
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        MessageUtils.showErrorMessage("URL de l'image modifiée avec succès");
+        MessageUtils.showInformationMessage("Ressource modifiée avec succès");
         reset();
 
         PrimeFaces.current().ajax().update("messageIndex");
@@ -152,7 +152,7 @@ public class ExternalResources implements Serializable {
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        MessageUtils.showErrorMessage("Image supprimée avec succès");
+        MessageUtils.showInformationMessage("Ressource supprimée avec succès");
         reset();
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }

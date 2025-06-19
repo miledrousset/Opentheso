@@ -322,8 +322,13 @@ public class NodeFullConceptMapper {
 
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            concept.setCreated(formatter.parse(nodeFullConcept.getCreated()));
-            concept.setModified(formatter.parse(nodeFullConcept.getModified()));
+            if (nodeFullConcept.getCreated() != null && !nodeFullConcept.getCreated().isEmpty()) {
+                concept.setCreated(formatter.parse(nodeFullConcept.getCreated()));
+            }
+
+            if (nodeFullConcept.getModified() != null  && !nodeFullConcept.getModified().isEmpty()) {
+                concept.setModified(formatter.parse(nodeFullConcept.getModified()));
+            }
         } catch (Exception e) {
             log.error("Erreur pendant la conversation des dates du concept");
         }
@@ -358,8 +363,13 @@ public class NodeFullConceptMapper {
         term.setIdThesaurus(idThesaurus);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            term.setCreated(formatter.parse(nodeFullConcept.getCreated()));
-            term.setModified(formatter.parse(nodeFullConcept.getModified()));
+            if (nodeFullConcept.getCreated() != null) {
+                term.setCreated(formatter.parse(nodeFullConcept.getCreated()));
+            }
+
+            if (nodeFullConcept.getModified() != null) {
+                term.setModified(formatter.parse(nodeFullConcept.getModified()));
+            }
         } catch (Exception e) {
             log.error("Erreur pendant la conversation des dates du term");
         }
