@@ -1,12 +1,12 @@
 package fr.cnrs.opentheso.bean.importexport;
 
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
@@ -34,6 +34,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -55,7 +57,6 @@ import org.primefaces.model.StreamedContent;
 @Named(value = "exportFileBean")
 public class ExportFileBean implements Serializable {
 
-    private final RoleOnThesaurusBean roleOnThesoBean;
     private final ViewExportBean viewExportBean;
     private final CandidatBean candidatBean;
     private final SelectedTheso selectedTheso;
@@ -69,6 +70,7 @@ public class ExportFileBean implements Serializable {
     private final FacetService facetService;
     private final Tree tree;
     private final ConceptService conceptService;
+    private final ConceptView conceptView;
 
     // progressBar
     private int sizeOfTheso;
@@ -983,65 +985,60 @@ public class ExportFileBean implements Serializable {
     /**
      * Cette fonction permet d'exporter un concept en SKOS en temps réel dans la
      * page principale
-     *
-     * @param idConcept
-     * @param idTheso
      * @param type
      * @return
      */
-    public StreamedContent conceptToFile(String idConcept, String idTheso, String type) {
+    public StreamedContent conceptToFile(String type) {
 
         RDFFormat format = null;
-        String extention = "";
-
-        switch (type.toLowerCase()) {
-            case "skos":
+        String extention = switch (type.toLowerCase()) {
+            case "skos" -> {
                 format = RDFFormat.RDFXML;
-                extention = ".rdf";
-                break;
-            case "jsonld":
+                yield ".rdf";
+            }
+            case "jsonld" -> {
                 format = RDFFormat.JSONLD;
-                extention = ".json";
-                break;
-            case "turtle":
+                yield ".json";
+            }
+            case "turtle" -> {
                 format = RDFFormat.TURTLE;
-                extention = ".ttl";
-                break;
-            case "json":
+                yield ".ttl";
+            }
+            case "json" -> {
                 format = RDFFormat.RDFJSON;
-                extention = ".json";
-                break;
-        }
+                yield ".json";
+            }
+            default -> "";
+        };
 
-        if (roleOnThesoBean.getNodePreference() == null) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Absence des préférences !");
-            FacesContext.getCurrentInstance().addMessage(null, message);
+        var preferences = preferenceService.getThesaurusPreferences(conceptView.getNodeConcept().getConcept().getIdThesaurus());
+        if (preferences == null) {
+            MessageUtils.showErrorMessage("Absence des préférences !");
             return null;
         }
-        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getCheminSite())) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
-            FacesContext.getCurrentInstance().addMessage(null, message);
+        if (StringUtils.isEmpty(preferences.getCheminSite())) {
+            MessageUtils.showErrorMessage("Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
             return null;
         }   
-        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getOriginalUri())) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
-            FacesContext.getCurrentInstance().addMessage(null, message);
+        if (StringUtils.isEmpty(preferences.getOriginalUri())) {
+            MessageUtils.showErrorMessage("Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
             return null;
         }
 
         var skosXmlDocument = new SKOSXmlDocument();
-        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
-        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
+        exportRdf4jHelperNew.setInfos(preferences);
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(conceptView.getNodeConcept().getConcept().getIdThesaurus(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(), false));
         
         WriteRdf4j writeRdf4j = new WriteRdf4j(skosXmlDocument);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, format);
-        StreamedContent file = DefaultStreamedContent.builder()
+        return DefaultStreamedContent.builder()
                 .contentType("application/xml")
-                .name(idTheso + "_" + idConcept + "_" + extention)
+                .name(conceptView.getNodeConcept().getConcept().getIdThesaurus()
+                        + "_" + conceptView.getNodeConcept().getConcept().getIdConcept() + "_" + extention)
                 .stream(() -> new ByteArrayInputStream(out.toByteArray()))
                 .build();
-        return file;
     }
 }

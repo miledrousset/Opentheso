@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.GroupService;
@@ -39,7 +38,6 @@ public class ViewExportBean implements Serializable {
 
     private final ThesaurusService thesaurusService;
     private final SelectedTheso selectedTheso;
-    private final ExportFileBean downloadBean;
     private final LanguageBean languageBean;
     private final PreferenceService preferenceService;
     private final GroupService groupService;
@@ -136,9 +134,6 @@ public class ViewExportBean implements Serializable {
 
         exportFormat = Arrays.asList("rdf", "json", "jsonLd", "turtle");
         selectedExportFormat = "rdf";
-
-        downloadBean.setProgressBar(0);
-        downloadBean.setProgressStep(0);
 
         selectedGroup = "all";
     }
