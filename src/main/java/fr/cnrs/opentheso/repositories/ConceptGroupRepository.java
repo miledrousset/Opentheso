@@ -82,6 +82,11 @@ public interface ConceptGroupRepository extends JpaRepository<ConceptGroup, Inte
 
     @Modifying
     @Transactional
+    @Query(value = "UPDATE concept_group SET modified = now() WHERE idGroup = :idGroup AND idThesaurus = :idThesaurus", nativeQuery = true)
+    void updateModifiedDate(String idGroup, String idThesaurus);
+
+    @Modifying
+    @Transactional
     @Query("UPDATE ConceptGroup cg SET cg.notation = '' WHERE cg.notation ilike 'null'")
     void cleanNotation();
 

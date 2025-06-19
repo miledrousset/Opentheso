@@ -441,7 +441,7 @@ public class GroupService {
         var conceptGroupLabel = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idThesaurus, idGroup, idLang);
         if (conceptGroupLabel.isEmpty()) {
             log.error("Aucun concept group n'est trouvé avec l'id Group {}", idGroup);
-            return true;
+            return false;
         }
 
         log.info("Mise à jour du nom du group dans la base de données");
@@ -453,21 +453,13 @@ public class GroupService {
         updateModifiedDate(idGroup, idThesaurus);
 
         log.info("Fin de la mise à jour du nom du group id {}", idGroup);
-        return false;
+        return true;
     }
 
     public void updateModifiedDate(String idGroup, String idThesaurus) {
 
         log.info("Mise à jour de la date de modification du group id {}", idGroup);
-        var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup.toLowerCase(), idThesaurus);
-        if (conceptGroup.isEmpty()) {
-            log.error("Aucun concept group n'est trouvé avec l'id Group {}", idGroup);
-            return;
-        }
-
-        conceptGroup.get().setModified(new Date());
-        conceptGroupRepository.save(conceptGroup.get());
-        log.info("Mise à jour de la date de modification du group id {} terminée", idGroup);
+        conceptGroupRepository.updateModifiedDate(idGroup.toLowerCase(), idThesaurus);
     }
 
     public List<NodeGroup> getListGroupOfConcept(String idThesaurus, String idConcept, String idLang) {

@@ -134,15 +134,9 @@ public class ModifyGroupBean implements Serializable {
             MessageUtils.showErrorMessage("Un group existe déjà avec ce nom !");
             return;
         }
-        if(groupService.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
-            if (groupService.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
-                    currentUser.getNodeUser().getIdUser())) {
-                MessageUtils.showErrorMessage("Erreur lors de la modification du label !");
-                return;
-            }
-        } else {
-            groupService.addGroupTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), titleGroup);
-        }
+
+        groupService.renameGroup(titleGroup, selectedTheso.getCurrentLang(), idGroup, selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser());
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
