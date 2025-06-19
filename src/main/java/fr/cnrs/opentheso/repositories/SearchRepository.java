@@ -3,6 +3,8 @@ package fr.cnrs.opentheso.repositories;
 import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.ConceptIdOnly;
 import fr.cnrs.opentheso.models.NodeAutoCompletionProjection;
+import fr.cnrs.opentheso.models.NodeSearchMiniAltProjection;
+import fr.cnrs.opentheso.models.NodeSearchMiniProjection;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -833,11 +835,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
                                    @Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
-        SELECT DISTINCT ON (pt.id_concept) 
-            pt.id_concept AS idConcept,
-            t.id_term AS idTerm,
-            t.lexical_value AS prefLabel,
-            c.status AS status
+        SELECT DISTINCT ON (pt.id_concept) pt.id_concept AS idConcept, t.id_term AS idTerm,t.lexical_value AS prefLabel, c.status AS status
         FROM term t
         INNER JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
         INNER JOIN concept c ON pt.id_concept = c.id_concept AND pt.id_thesaurus = c.id_thesaurus
@@ -851,46 +849,33 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             OR (:langSensitive = false AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2)
           )
           AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
-        ORDER BY 
-          similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) DESC
+        ORDER BY pt.id_concept, similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) DESC
         LIMIT 50
-        """, nativeQuery = true)
-    List<NodeSearchMini> searchPreferredTermsFullText(
-            @Param("value") String value,
-            @Param("idLang") String idLang,
-            @Param("idThesaurus") String idThesaurus,
-            @Param("isPrivate") boolean isPrivate,
-            @Param("langSensitive") boolean langSensitive);
+    """, nativeQuery = true)
+    List<NodeSearchMiniProjection> searchPreferredTermsFullText(@Param("value") String value, @Param("idLang") String idLang,
+                                                                @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate,
+                                                                @Param("langSensitive") boolean langSensitive);
 
     @Query(value = """
-        SELECT DISTINCT ON (pt.id_concept) 
-            pt.id_concept AS idConcept,
-            t.id_term AS idTerm,
-            t.lexical_value AS prefLabel,
-            npt.lexical_value AS altLabelValue,
-            c.status AS status
+        SELECT DISTINCT ON (pt.id_concept) pt.id_concept AS idConcept, t.id_term AS idTerm, t.lexical_value AS prefLabel, npt.lexical_value AS altLabelValue, c.status AS status
         FROM term t
-        INNER JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
-        INNER JOIN concept c ON pt.id_concept = c.id_concept AND pt.id_thesaurus = c.id_thesaurus
-        INNER JOIN non_preferred_term npt ON npt.id_term = pt.id_term 
-            AND npt.id_thesaurus = pt.id_thesaurus AND t.lang = npt.lang
-        LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
-        LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
+            INNER JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
+            INNER JOIN concept c ON pt.id_concept = c.id_concept AND pt.id_thesaurus = c.id_thesaurus
+            INNER JOIN non_preferred_term npt ON npt.id_term = pt.id_term AND npt.id_thesaurus = pt.id_thesaurus AND t.lang = npt.lang
+            LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
+            LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
         WHERE c.status != 'CA'
           AND npt.id_thesaurus = :idThesaurus
           AND (:idLang IS NULL OR npt.lang = :idLang)
           AND ((:langSensitive = true AND unaccent(lower(npt.lexical_value)) LIKE CONCAT('%', unaccent(lower(:value)), '%'))
             OR (:langSensitive = false AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2))
           AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
-        ORDER BY similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) DESC
+        ORDER BY pt.id_concept, similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) DESC
         LIMIT 50
-        """, nativeQuery = true)
-    List<NodeSearchMini> searchAltTermsFullText(
-            @Param("value") String value,
-            @Param("idLang") String idLang,
-            @Param("idThesaurus") String idThesaurus,
-            @Param("isPrivate") boolean isPrivate,
-            @Param("langSensitive") boolean langSensitive);
+    """, nativeQuery = true)
+    List<NodeSearchMiniAltProjection> searchAltTermsFullText(@Param("value") String value, @Param("idLang") String idLang,
+                                                             @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate,
+                                                             @Param("langSensitive") boolean langSensitive);
 
     @Query(value = "SELECT new fr.cnrs.opentheso.models.search.NodeSearchMini("
             + "pt.idConcept, t.idTerm, t.lexicalValue, c.status) "

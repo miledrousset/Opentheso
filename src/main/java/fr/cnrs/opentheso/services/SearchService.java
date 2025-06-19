@@ -2,6 +2,8 @@ package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.models.ConceptIdOnly;
 import fr.cnrs.opentheso.models.NodeAutoCompletionProjection;
+import fr.cnrs.opentheso.models.NodeSearchMiniAltProjection;
+import fr.cnrs.opentheso.models.NodeSearchMiniProjection;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -256,11 +258,10 @@ public class SearchService {
 
         List<NodeSearchMini> results = new ArrayList<>();
 
-        List<NodeSearchMini> preferredResults = searchRepository.searchPreferredTermsFullText(
-                value, idLang, idThesaurus, isPrivate, langSensitive
-        );
-
-        for (NodeSearchMini node : preferredResults) {
+        var preferredResults = searchRepository.searchPreferredTermsFullText(value, idLang, idThesaurus, isPrivate, langSensitive);
+        for (NodeSearchMiniProjection projection : preferredResults) {
+            var node = new NodeSearchMini(projection.getIdConcept(),projection.getIdTerm(),
+                    projection.getPrefLabel(), projection.getStatus());
             node.setConcept(true);
             if (value.trim().equalsIgnoreCase(node.getPrefLabel())) {
                 results.add(0, node);
@@ -269,12 +270,16 @@ public class SearchService {
             }
         }
 
-        List<NodeSearchMini> altResults = searchRepository.searchAltTermsFullText(
-                value, idLang, idThesaurus, isPrivate, langSensitive
-        );
-
-        for (NodeSearchMini node : altResults) {
+        var altResults = searchRepository.searchAltTermsFullText(value, idLang, idThesaurus, isPrivate, langSensitive);
+        for (NodeSearchMiniAltProjection projection : altResults) {
+            var node = new NodeSearchMini();
+            node.setIdConcept(projection.getIdConcept());
+            node.setIdTerm(projection.getIdTerm());
+            node.setPrefLabel(projection.getPrefLabel());
+            node.setAltLabelValue(projection.getAltLabelValue());
+            node.setDeprecated("DEP".equalsIgnoreCase(projection.getStatus()));
             node.setAltLabel(true);
+
             if (value.trim().equalsIgnoreCase(node.getAltLabelValue())) {
                 if (results.isEmpty()) {
                     results.add(0, node);
@@ -286,37 +291,6 @@ public class SearchService {
             } else {
                 results.add(node);
             }
-        }
-
-        return results;
-    }
-
-    public List<NodeSearchMini> searchFullTextElastic(String value, String idLang, String idThesaurus) {
-        List<NodeSearchMini> results = new ArrayList<>();
-
-        // Préférés
-        var preferredTerms = searchRepository.searchPreferredTermsLike2(value, idLang, idThesaurus);
-        for (Object[] row : preferredTerms) {
-            var node = new NodeSearchMini();
-            node.setIdConcept((String) row[0]);
-            node.setPrefLabel((String) row[1]);
-            node.setIdTerm((String) row[2]);
-            node.setConcept(true);
-            if ("DEP".equalsIgnoreCase((String) row[3])) node.setDeprecated(true);
-            results.add(node);
-        }
-
-        // Synonymes
-        var synonyms = searchRepository.searchNonPreferredTermsLike(value, idLang, idThesaurus);
-        for (Object[] row : synonyms) {
-            var node = new NodeSearchMini();
-            node.setIdConcept((String) row[0]);
-            node.setIdTerm((String) row[1]);
-            node.setAltLabelValue((String) row[2]);
-            node.setPrefLabel((String) row[3]);
-            node.setAltLabel(true);
-            if ("DEP".equalsIgnoreCase((String) row[4])) node.setDeprecated(true);
-            results.add(node);
         }
 
         return results;

@@ -128,27 +128,18 @@ public class SearchBean implements Serializable {
 
     public List<NodeSearchMini> completTermFullText(String value) {
 
-        selectedItem = false;
-
-        if (listResultAutoComplete == null) {
-            listResultAutoComplete = new ArrayList<>();
-        } else {
-            listResultAutoComplete.clear();
-        }
-
         if (selectedTheso == null) {
-            return listResultAutoComplete;
+            return List.of();
         }
+
+        selectedItem = false;
+        listResultAutoComplete = new ArrayList<>();
 
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getSelectedLang() != null) {
-            String idLang;
-            if (selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
-                idLang = null;
-            } else {
-                idLang = selectedTheso.getSelectedLang();
-            }
 
+            var idLang = "all".equalsIgnoreCase(selectedTheso.getSelectedLang()) ? null : selectedTheso.getSelectedLang();
             var isCollectionPrivate = ObjectUtils.isEmpty(currentUser.getNodeUser());
+
             if (exactMatch) {
                 listResultAutoComplete = searchService.searchExactMatch(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
@@ -159,17 +150,15 @@ public class SearchBean implements Serializable {
 
             if (withId) {
                 listResultAutoComplete = searchService.searchByAllId(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
-            }                
-                         
+            }
+
             if (!withId && !withNote && !indexMatch && !exactMatch) {
                 listResultAutoComplete = searchService.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
         }
+
         searchValue = value;
-        if (listResultAutoComplete == null) {
-            listResultAutoComplete = new ArrayList<>();
-        }
-        return listResultAutoComplete;
+        return listResultAutoComplete == null ? Collections.emptyList() : listResultAutoComplete;
     }
 
     public void onSelect() throws IOException {
