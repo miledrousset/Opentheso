@@ -69,8 +69,12 @@ public class ResourceService {
         concept.setIdentifier(conceptDetails.get().getIdentifier());
         concept.setPermanentId(conceptDetails.get().getPermalinkid());
         concept.setNotation(conceptDetails.get().getNotation());
-        concept.setCreated(String.valueOf(conceptDetails.get().getCreated()));
-        concept.setModified(String.valueOf(conceptDetails.get().getModified()));
+        concept.setCreated(conceptDetails.get().getCreated() != null
+                ? String.valueOf(conceptDetails.get().getCreated())
+                : null);
+        concept.setModified(conceptDetails.get().getModified() != null
+                ? String.valueOf(conceptDetails.get().getModified())
+                : null);
         concept.setCreatorName(conceptDetails.get().getCreator());
         concept.setContributorName(getContributors(conceptDetails.get().getContributor()));
 

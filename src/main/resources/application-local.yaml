@@ -25,14 +25,14 @@ spring:
         registration:
           keycloak:
             client-id: opentheso
-            client-secret: 
+            client-secret:
             provider: keycloak
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
             scope: openid, profile, email
         provider:
           keycloak:
-            issuer-uri: 
+            issuer-uri:
 
   servlet:
     multipart:
