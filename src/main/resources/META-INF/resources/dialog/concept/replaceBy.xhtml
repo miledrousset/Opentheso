@@ -56,10 +56,7 @@
                                  update="messageIndex"
                                  ajax="true" process="@form"
                                  class="btn btn-primary" oncomplete="PF('replaceBy').hide();"
-                                 actionListener="#{editConcept.addReplacedBy(
-                                                   conceptView.nodeConcept.concept.idConcept,
-                                                   selectedTheso.currentIdTheso,
-                                                   currentUser.nodeUser.idUser)}"
+                                 actionListener="#{editConcept.addReplacedBy()}"
                                  style="color: white;"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

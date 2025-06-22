@@ -1397,6 +1397,7 @@ public class ConceptService {
                 .idConcept2(idConceptReplaceBy)
                 .idThesaurus(idThesaurus)
                 .idUser(idUser)
+                .modified(new Date())
                 .build());
     }
 

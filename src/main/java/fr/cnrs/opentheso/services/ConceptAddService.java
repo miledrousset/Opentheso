@@ -325,7 +325,7 @@ public class ConceptAddService {
             return nodeIdValues;
         }
 
-        if (!preferences.isUseArk()) {
+        if (!preferences.isUseArk() && !preferences.isUseArkLocal()) {
             MessageUtils.showErrorMessage("Veuillez activer Ark dans les préférences !!");
             log.error("Il faut activer Ark pour le thésaurus id {}", idThesaurus);
             return nodeIdValues;

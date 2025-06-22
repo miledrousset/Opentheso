@@ -724,7 +724,7 @@ public class AlignmentBean implements Serializable {
     }
 
     /**
-     * lance la recherche des alignements pour le concept sélectionné avec la source sélectionnée
+     * Lance la recherche des alignements pour le concept sélectionné avec la source sélectionnée
      */
     public void searchAlignments(AlignmentManualBean alignmentManualBean) {
 
@@ -812,11 +812,9 @@ public class AlignmentBean implements Serializable {
             }
         }
 
-        if (listAlignValues != null) {
-            if (listAlignValues.isEmpty()) {
-                alignmentManualBean.reset();
-                alignmentManualBean.setManualAlignmentSource(selectedAlignementSource.getSource());
-            }
+        if (listAlignValues != null && listAlignValues.isEmpty() && alignmentManualBean != null) {
+            alignmentManualBean.reset();
+            alignmentManualBean.setManualAlignmentSource(selectedAlignementSource.getSource());
         }
     }
 

@@ -35,11 +35,11 @@ public interface UserGroupLabelRepository extends JpaRepository<UserGroupLabel, 
     Optional<UserGroupLabel> findByLabelLike(String label);
 
     @Query(value = """
-        SELECT DISTINCT ugl.id_group AS id, ugl.label_group AS label
+        SELECT DISTINCT ugl.id_group AS id, ugl.label_group AS label, LOWER(ugl.label_group) AS sort_label
         FROM user_role_group urg
         JOIN user_group_label ugl ON urg.id_group = ugl.id_group
         WHERE urg.id_user = :idUser
-        ORDER BY LOWER(ugl.label_group)
+        ORDER BY sort_label
     """, nativeQuery = true)
     List<Object[]> findProjectsByUserIdNative(@Param("idUser") int userId);
 

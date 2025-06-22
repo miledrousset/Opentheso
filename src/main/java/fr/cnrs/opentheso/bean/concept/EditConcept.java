@@ -84,7 +84,7 @@ public class EditConcept implements Serializable {
     private final SearchService searchService;
 
     private String prefLabel, source, notation, selectedConceptType;
-    private boolean applyToBranch, reciprocalRelationship, isCreated, duplicate, forDelete, inProgress, isReplacedByRTrelation;
+    private boolean applyToBranch, reciprocalRelationship, isCreated, duplicate, forDelete, inProgress, replacedByRTRelation;
     private NodeSearchMini searchSelected;
     private List<NodeIdValue> nodeIdValues, nodeReplaceBy;
     private NodeConceptType nodeConceptTypeToDelete, nodeConceptTypeToAdd;
@@ -112,7 +112,7 @@ public class EditConcept implements Serializable {
         prefLabel = label;
         notation = "";
         forDelete = false;
-        isReplacedByRTrelation = false;
+        replacedByRTRelation = false;
         inProgress = false;
         nodeIdValues = null;
         nodeConceptTypeToDelete = null;
@@ -426,7 +426,7 @@ public class EditConcept implements Serializable {
             MessageUtils.showErrorMessage("le concept n'a pas été approuvé !");
             return;
         }
-        if (isReplacedByRTrelation) {
+        if (replacedByRTRelation) {
             if (conceptView.getNodeConcept().getReplacedBy() != null && !conceptView.getNodeConcept().getReplacedBy().isEmpty()) {
                 for (NodeIdValue nodeIdValue : nodeReplaceBy) {
                     relationService.addRelationRT(idConcept, idTheso, nodeIdValue.getId(), idUser);
@@ -462,25 +462,28 @@ public class EditConcept implements Serializable {
         MessageUtils.showInformationMessage("le concept n'est plus obsolète maintenant");
     }
 
-    public void addReplacedBy(String idConceptDeprecated, String idTheso, int idUser) {
+    public void addReplacedBy() {
         
         if ( searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
             MessageUtils.showInformationMessage("Pas de concept sélectionné !");
             return;
         }
 
-        conceptService.addReplacedBy(idConceptDeprecated, idTheso, searchSelected.getIdConcept(), idUser);
+        conceptService.addReplacedBy(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(),
+                searchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
 
-        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConceptDeprecated, idUser);
+        conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CONTRIBUTOR)
                 .value(currentUser.getNodeUser().getName())
-                .idConcept(idConceptDeprecated)
+                .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idThesaurus(selectedTheso.getCurrentIdTheso())
                 .build());
 
-        conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang(), currentUser);
+        conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
 
         MessageUtils.showInformationMessage("Relation ajoutée avec succès");
         PrimeFaces.current().ajax().update("containerIndex:rightTab:idReplaceBy containerIndex:rightTab:idDeprecatedLabel");
@@ -761,5 +764,9 @@ public class EditConcept implements Serializable {
         } else {
             MessageUtils.showErrorMessage("La génération de Handle a réussi !!");
         }
+    }
+
+    public boolean isReplaced() {
+        return replacedByRTRelation;
     }
 }

@@ -133,18 +133,14 @@ public class PathService {
         
         ArrayList<List<NodePath>> pathLabel1 = new ArrayList<>();
         boolean isStartNewPath;
-        String label;
-        
         for (List<String> path : paths) {
             isStartNewPath = true;
             List<NodePath> nodePaths = new ArrayList<>();
             for (String idConcept : path) {
                 NodePath nodePath = new NodePath();
                 nodePath.setIdConcept(idConcept);
-                label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
-                if(label.isEmpty())
-                    label = "("+ idConcept+")";
-                nodePath.setTitle(label);
+                var label = termService.getLexicalValueOfConcept(idConcept, idTheso, idLang);
+                nodePath.setTitle(StringUtils.isEmpty(label) ? "("+ idConcept+")" : label);
                 nodePath.setStartOfPath(isStartNewPath);
                 nodePaths.add(nodePath);
                 isStartNewPath = false;
