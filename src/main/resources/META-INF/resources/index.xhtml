@@ -7,12 +7,12 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
 
             <!--- Ne surtout pas enlever cette action, les Uris qui arrivent de l'extérieur ne marchent plus -->
-            <f:viewAction action="#{selectedTheso.preRenderView()}"/>
+            <f:viewAction action="#{selectedThesaurus.preRenderView()}"/>
         </f:metadata>
     </f:view>
 

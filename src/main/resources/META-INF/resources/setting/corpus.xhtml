@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -54,7 +54,7 @@
                                 <div class="row" style="padding-left: 20px; margin-top: 20px; margin-left: 10px; font-size: 16px">
                                     <div class="col-12">
                                         <h:outputText value="#{langueBean.getMsg('setting.manageCorpusFor')}  " />
-                                        <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
+                                        <h:outputText value="#{selectedThesaurus.thesoName} (#{selectedThesaurus.currentIdTheso})" style="color: #f47b2a" />
                                     </div>
                                 </div>
 

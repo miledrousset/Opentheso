@@ -21,39 +21,39 @@
         </button>
 
         <!-- Nom du thésaurus -->
-        <h:panelGroup rendered="#{selectedTheso.isFromUrl()}">
+        <h:panelGroup rendered="#{selectedThesaurus.isFromUrl()}">
             <p:commandButton icon="pi pi-arrow-circle-left" style="margin-right: 15px"
-                             actionListener="#{selectedTheso.setFromUrl(false)}" process="@this" ajax="true"
+                             actionListener="#{selectedThesaurus.setFromUrl(false)}" process="@this" ajax="true"
                              onclick="changeUrl();" update="wrapper"/>
 
-            <h:outputLabel value="#{selectedTheso.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
+            <h:outputLabel value="#{selectedThesaurus.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{!selectedTheso.isFromUrl()}">
             <!-- liste des projets -->
-            <p:selectOneMenu value="#{selectedTheso.projectIdSelected}" filter="true" filterMatchMode="contains"
+            <p:selectOneMenu value="#{selectedThesaurus.projectIdSelected}" filter="true" filterMatchMode="contains"
                              style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px;
                          background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
-                <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
+                <p:ajax event="valueChange" listener="#{selectedThesaurus.setSelectedProject()}" update="thesoSelect containerIndex" />
                 <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
                 <f:selectItems value="#{currentUser.userPermissions.listProjects}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
             </p:selectOneMenu>
 
             <!-- liste des thésaurus -->
-            <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
+            <p:selectOneMenu id="thesoSelect" value="#{selectedThesaurus.selectedIdTheso}" style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
                          color: #FFF !important;"
                              filter="true" filterMatchMode="contains">
-                <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
+                <p:ajax event="valueChange" listener="#{selectedThesaurus.setSelectedTheso()}" />
                 <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
                 <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
             </p:selectOneMenu>
 
-            <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
+            <p:commandLink action="#{selectedThesaurus.reloadSelectedTheso()}" style="margin-left: 15px;">
                 <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
             </p:commandLink>
         </h:panelGroup>
 
-        <p:commandLink rendered="#{selectedTheso.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
+        <p:commandLink rendered="#{selectedThesaurus.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
                                    and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
                        actionListener="#{editThesaurusBean.init(selectedTheso.currentIdTheso)}"

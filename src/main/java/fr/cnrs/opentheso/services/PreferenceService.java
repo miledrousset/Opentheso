@@ -30,7 +30,11 @@ public class PreferenceService {
                 .prefixArk("crt")
                 .urlApiHandle("https://handle.mom.fr:8000/api/handles/")
                 .uriArk("https://ark.mom.fr/ark:/")
+                .cheminSite("http://mondomaine.fr/")
                 .preferredName(idThesaurus)
+                .autoExpandTree(true)
+                .webservices(true)
+                .breadcrumb(true)
                 .build());
     }
 

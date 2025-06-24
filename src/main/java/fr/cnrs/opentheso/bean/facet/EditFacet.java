@@ -357,10 +357,6 @@ public class EditFacet implements Serializable {
         initDataAfterAction();
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-        tree.expandTreeToPath2(facetSelected.getIdConceptParent(), selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getSelectedLang(), facetSelected.getIdFacet());
-
-        PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
         MessageUtils.showInformationMessage("Facette mise à jour avec succès !");
     }
 

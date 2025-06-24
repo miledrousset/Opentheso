@@ -8,7 +8,7 @@
         <div style="width: 75%; text-align: right;">
             <p:commandButton icon="fas fa-refresh" styleClass="rounded-button ui-button-flat"
                              ajax="true" process="@form" title="#{langueBean.getMsg('tree.relaod')}"
-                             action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
+                             action="#{selectedThesaurus.reloadGroups()}" update="containerIndex menuBar"
                              style="color: #f47b2a;"
             />
             <!-- ajout des collections et sous collections -->
@@ -36,14 +36,14 @@
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                             actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
-                            action="#{selectedTheso.reloadGroups()}"
+                            action="#{selectedThesaurus.reloadGroups()}"
                             process="@this"
                             disabled="#{!treeGroups.sortByNotation}"
                             update="containerIndex menuBar" icon="fas fa-sort-alpha-down"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
                             actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true" process="@this"
-                            action="#{selectedTheso.reloadGroups()}"
+                            action="#{selectedThesaurus.reloadGroups()}"
                             disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
                             update="containerIndex menuBar" />
 

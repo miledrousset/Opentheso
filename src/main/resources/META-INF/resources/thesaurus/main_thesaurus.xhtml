@@ -11,8 +11,8 @@
                 <div style="width: 100%; text-align: right;">
                     <p:column style="text-align: right">
                         <h:panelGroup rendered="#{currentUser.hasRoleAsSuperAdmin}">
-                            <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000;">
-                                <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
+                            <p:selectOneMenu value="#{selectedThesaurus.optionThesoSelected}" style="color: #000;">
+                                <p:ajax event="valueChange" listener="#{selectedThesaurus.setSelectedOptionTheso()}" update="containerIndex" />
                                 <f:selectItem itemLabel="Actions ..." itemValue="Option1"/>
                                 <f:selectItem itemLabel="#{langueBean.getMsg('index.modifyHomepage')}" itemValue="Option2"/>
                                 <f:selectItem itemLabel="Code Google Analytics" itemValue="Option3"/>

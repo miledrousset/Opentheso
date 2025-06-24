@@ -123,13 +123,13 @@
                                            class="collapse-item" actionListener="#{menuBean.redirectToFlagPage()}"
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('toolbox.manageFlags')}</p:commandLink>
 
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}"
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.thesaurusWorkshop')}</p:commandLink>
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('menu.service')}</p:commandLink>
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('statistique.statistic')}</p:commandLink>
                         </div>
@@ -139,7 +139,7 @@
             <!-- Fin boite à outils -->
 
             <!-- Debut setting -->
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedThesaurus.currentIdTheso != null)
                                       and (currentUser.hasRoleAsAdmin)}" >
                 <li class="nav-item">
                     <a id="settingButton1" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
@@ -185,13 +185,8 @@
                     </span>
                 </li>
                 <hr class="sidebar-divider"/>
-            </h:panelGroup>            
-            
-            
-            
+            </h:panelGroup>
         </h:panelGroup>
-
-
 
         <div class="text-center d-none d-md-inline" style="height: 100%; width: 100%; position: relative; ">
             <div style="position: absolute; bottom: 0; left: 0; align-content: center;
@@ -199,6 +194,5 @@
                 <img src="#{request.contextPath}/resources/img/logo1.png" style="width:50px;" />
             </div>
         </div>
-
     </ul>
 </ui:composition>

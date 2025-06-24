@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -97,7 +97,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.thesaurus.name')} :"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+                                            <h:outputText style="float: left;" value="#{selectedThesaurus.thesoName} (#{selectedThesaurus.currentIdTheso})"/>
                                         </div>
                                     </div>
 

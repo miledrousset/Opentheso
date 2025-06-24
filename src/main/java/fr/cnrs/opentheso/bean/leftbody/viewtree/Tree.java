@@ -147,7 +147,7 @@ public class Tree implements Serializable {
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
-                    nodeConceptTree.getTitle(),
+                    StringUtils.isEmpty(nodeConceptTree.getTitle()) ? "("+nodeConceptTree.getIdConcept()+")" : nodeConceptTree.getTitle(),
                     nodeConceptTree.getNotation(),
                     false,//isgroup
                     false,//isSubGroup

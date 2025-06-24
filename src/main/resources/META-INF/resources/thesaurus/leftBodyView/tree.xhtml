@@ -60,15 +60,15 @@
                                 oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />                    
                     
                     <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
+                                actionListener="#{selectedThesaurus.setSortByNotation(false)}" ajax="true"
+                                action="#{selectedThesaurus.reloadSelectedTheso()}"
                                 process="@this" disabled="#{!selectedTheso.sortByNotation}"
                                 update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
 
                     <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
-                                disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
+                                actionListener="#{selectedThesaurus.setSortByNotation(true)}" ajax="true"
+                                action="#{selectedThesaurus.reloadSelectedTheso()}"
+                                disabled="#{selectedThesaurus.sortByNotation}" icon="fas fa-sort-numeric-down"
                                 process="@this" update="containerIndex:formLeftTab" />
 
                 </p:menu>

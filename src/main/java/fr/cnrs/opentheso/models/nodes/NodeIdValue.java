@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 
@@ -33,6 +34,8 @@ public class NodeIdValue implements Comparable<NodeIdValue>, Serializable {
     private String notation;
 
     private Integer nbrConcepts;
+
+    private Date creationDate;
 
     @JsonIgnore
     @ToString.Exclude

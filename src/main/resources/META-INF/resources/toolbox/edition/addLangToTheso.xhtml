@@ -24,7 +24,7 @@
                     <h:outputText value="#{langueBean.getMsg('editTheso.langToAdd')}:"/>
                 </div>
                 <div class="col-7">
-                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable()}">
+                    <h:panelGroup rendered="#{selectedThesaurus.isNetworkAvailable()}">
                         <p:selectOneMenu value="#{editThesaurusBean.selectedLang}" styleClass="selectOneMenu_custom"
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "

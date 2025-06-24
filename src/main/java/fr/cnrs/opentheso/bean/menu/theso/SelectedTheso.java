@@ -56,8 +56,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Getter
 @Setter
 @SessionScoped
-@Named(value = "selectedTheso")
 @RequiredArgsConstructor
+@Named(value = "selectedThesaurus")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SelectedTheso implements Serializable {
 

@@ -60,9 +60,9 @@
                 </tr>
             </table>
             <h:form id="formId">
-                <h:inputHidden id="id_theso" value="#{selectedTheso.currentIdTheso}" />
+                <h:inputHidden id="id_theso" value="#{selectedThesaurus.currentIdTheso}" />
                 <h:inputHidden id="id_concept" value="#{tree.idConceptSelected}" />
-                <h:inputHidden id="langue" value="#{selectedTheso.currentLang}" />
+                <h:inputHidden id="langue" value="#{selectedThesaurus.currentLang}" />
                 <h:inputHidden id="base_url" value="#{connect.localUri}" />
                 <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
             </h:form>

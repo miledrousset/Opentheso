@@ -145,13 +145,13 @@
                                 <div class="row no-gutters" >
                                     
                                     <div style="width: 30%; z-index: 100" >
-                                        <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}"
+                                        <p:selectOneMenu id="languageSelect" value="#{selectedThesaurus.selectedLang}"
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
                                                          style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
                                                          padding-top: 2px; width: 100%; padding-left: 5px;">
-                                            <p:ajax event="valueChange" listener="#{selectedTheso.changeLang()}"
+                                            <p:ajax event="valueChange" listener="#{selectedThesaurus.changeLang()}"
                                                     update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp resultSearchBar"/>
-                                            <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
+                                            <f:selectItems value="#{selectedThesaurus.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>
                                     </div>
@@ -200,7 +200,6 @@
                                         </p:autoComplete>
                                     </div>
                                     <div style="width: 15%; text-align: right; z-index: 100; position: relative; display: inline-block;">
-
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
                                                        ajax="true" process="@this" style="display: inline-block"
                                                        update="resultSearchBar messageIndex">
@@ -243,14 +242,14 @@
         }
     </script>
 
-        <div id="choixPanelDiv" class="col-lg-auto researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: visible">
-            <h:panelGroup id="choixPanel" style="background-color: #ECF8F1; padding-left: 20px; padding-right: 20px; z-index: 1;
+    <div id="choixPanelDiv" class="col-lg-auto researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: visible">
+        <h:panelGroup id="choixPanel" style="background-color: #ECF8F1; padding-left: 20px; padding-right: 20px; z-index: 1;
                           padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px; margin-top: -28px;">
-                <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
+            <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
                                          style="color: #143a1e; background-color: transparent; font-size: 12px">
-                    <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
-                    <p:tooltip for="select1" value="#{langueBean.getMsg('search.tooltip_startWith')}" showDelay="1000" position="bottom"/>
-                </p:selectBooleanCheckbox>
+                <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
+                <p:tooltip for="select1" value="#{langueBean.getMsg('search.tooltip_startWith')}" showDelay="1000" position="bottom"/>
+            </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox id="select2" itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
                                          style="color: #143a1e; background-color: transparent; font-size: 12px;">
@@ -270,15 +269,14 @@
                     <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>
                 </p:selectBooleanCheckbox>
 
-                <p:selectCheckboxMenu rendered="#{selectedTheso.currentIdTheso == null}" id="select5"
+                <p:selectCheckboxMenu rendered="#{selectedThesaurus.currentIdTheso == null}" id="select5"
                                       value="#{roleOnThesaurus.selectedThesaurusForSearch}" label="#{langueBean.getMsg('search.filterTheso')}"
                                       style="color: #143a1e; font-size: 0.8rem;"
                                       panelStyle="width: 15rem; font-size: 0.5rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnThesaurus.listThesaurus}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
-                <p:menuButton rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null}"
-                              id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
+                <p:menuButton id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                     <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}"
                                 update="resultSearchBar messageIndex containerIndex:contentConcept"
@@ -306,11 +304,7 @@
                 </p:menuButton>
                 <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
             </h:panelGroup>
-        </div>
-
-
-
+    </div>
     <h:form id="formSearch">
-
     </h:form>
 </ui:fragment>

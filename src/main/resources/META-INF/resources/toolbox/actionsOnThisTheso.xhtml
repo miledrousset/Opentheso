@@ -11,7 +11,7 @@
                           value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
                           style="font-size: 14px;"/>   
             <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}"
-                          value=": #{selectedTheso.thesoName}"  
+                          value=": #{selectedThesaurus.thesoName}"
                           style="font-size: 14px; color: #F47B2A;"/>              
         </div>
     </div>

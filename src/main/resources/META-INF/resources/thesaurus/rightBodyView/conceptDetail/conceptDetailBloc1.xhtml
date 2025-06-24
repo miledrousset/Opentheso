@@ -61,7 +61,7 @@
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeFullConcept.identifier,
                                                    selectedTheso.currentIdTheso, conceptView.nodeFullConcept.prefLabel.idLang)}"
-                                         actionListener="#{selectedTheso.actionFromConceptToOn()}" update="containerIndex"
+                                         actionListener="#{selectedThesaurus.actionFromConceptToOn()}" update="containerIndex"
                                          style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" />
                     </div>
                 </div>
@@ -373,7 +373,7 @@
             </div>     
 
             <!-- ligne Corpus liés --> 
-            <h:panelGroup id="corpusView" rendered="#{selectedTheso.haveActiveCorpus}">
+            <h:panelGroup id="corpusView" rendered="#{selectedThesaurus.haveActiveCorpus}">
                 <div class="list-group-item list-group-item-action" style="padding-top: 5px; margin-bottom: -5px">
                     <div class="row" style="vertical-align: central; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">

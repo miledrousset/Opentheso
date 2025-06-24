@@ -31,10 +31,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import java.io.Serializable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -174,38 +177,40 @@ public class RoleOnThesaurusBean implements Serializable {
         if (authorizedThesaurusAsAdmin == null) {
             return;
         }
-        if(nodeListThesaurusAsAdmin == null)
-            nodeListThesaurusAsAdmin = new ArrayList<>();
-        else
-            nodeListThesaurusAsAdmin.clear();
+        nodeListThesaurusAsAdmin = new ArrayList<>();
         HashMap<String, String> authorizedThesaurusAsAdminHM = new LinkedHashMap<>();
         
         // si c'est superAdmin, on prend tous les thésaurus
         if(currentUser.getNodeUser().isSuperAdmin()){
-            for (NodeIdValue listTheso1 : currentUser.getUserPermissions().getListThesaurus()) {
-                var thesaurus = thesaurusService.getThesaurusById(listTheso1.getId());
+            for (NodeIdValue listThesaurus : currentUser.getUserPermissions().getListThesaurus()) {
+                var thesaurus = thesaurusService.getThesaurusById(listThesaurus.getId());
                 NodeIdValue nodeIdValue = new NodeIdValue();
-                nodeIdValue.setId(listTheso1.getId());
-                nodeIdValue.setValue(listTheso1.getValue());
+                nodeIdValue.setId(listThesaurus.getId());
+                nodeIdValue.setValue(listThesaurus.getValue());
                 nodeIdValue.setStatus(thesaurus.getIsPrivate());
+                nodeIdValue.setCreationDate(thesaurus.getCreated());
                 nodeListThesaurusAsAdmin.add(nodeIdValue);
             }
         } else { // sinon, on prend les thésaurus où l'utilisateur a un role Admin 
-            for (NodeProjectThesoRole nodeProjectsWithThesosRole : currentUser.getUserPermissions().getNodeProjectsWithThesosRoles()) {
-                for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
+            for (NodeProjectThesoRole nodeProjectsWithThesaurusRole : currentUser.getUserPermissions().getNodeProjectsWithThesosRoles()) {
+                for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesaurusRole.getNodeThesoRoles()) {
                     if(nodeThesoRole.getIdRole() == 2 || nodeThesoRole.getIdRole() == 1) {
                         var thesaurus = thesaurusService.getThesaurusById(nodeThesoRole.getIdTheso());
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(nodeThesoRole.getIdTheso());
                         nodeIdValue.setValue(nodeThesoRole.getThesoName());
                         nodeIdValue.setStatus(thesaurus.getIsPrivate());
+                        nodeIdValue.setCreationDate(thesaurus.getCreated());
                         nodeListThesaurusAsAdmin.add(nodeIdValue);
                     }
                 }
             }
         }
 
-        this.listThesaurusAsAdmin = authorizedThesaurusAsAdminHM;
+        listThesaurusAsAdmin = authorizedThesaurusAsAdminHM;
+        nodeListThesaurusAsAdmin = nodeListThesaurusAsAdmin.stream()
+                .sorted(Comparator.comparing(NodeIdValue::getCreationDate, Comparator.nullsLast(Comparator.reverseOrder())))
+                .collect(Collectors.toList());
     }    
             
             

@@ -34,9 +34,9 @@
                 <div class="col-11" style="margin-left: -10px;">
                     <div class="row">
                         <div class="col-6" style="margin-top: 3px">
-                            <h:outputText value="#{selectedTheso.thesoName}: " style="font-size: 13px; font-weight: bold"/>
+                            <h:outputText value="#{selectedThesaurus.thesoName}: " style="font-size: 13px; font-weight: bold"/>
                             <h:outputText value=" #{viewEditorThesaurusHomeBean.getTotalConceptOfThesaurus(selectedTheso.getCurrentIdTheso())}"
-                                          title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
+                                          title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedThesaurus.thesoName}"
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
                             <h:outputText value=" Concepts" style="font-size: 13px; color: #858796"/>
                             
@@ -62,12 +62,12 @@
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                 <p:link
                                         href="#{not empty selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference) ? selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference) : '#'}"
-                                        value="#{selectedTheso.getUriOfTheso(roleOnThesaurus.nodePreference)}"
+                                        value="#{selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference)}"
                                         style="color: #164A78; font-size: 13px;color: #F47B2A;" />
                             </h:panelGroup>
                             <h:panelGroup rendered="#{!roleOnThesaurus.nodePreference.originalUriIsArk}">
-                                <p:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
-                                        value="#{request.serverName}#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                                <p:link href="#{request.contextPath}/?idt=#{selectedThesaurus.currentIdTheso}"
+                                        value="#{request.serverName}#{request.contextPath}/?idt=#{selectedThesaurus.currentIdTheso}"
                                         style="font-size: 13px; color: #F47B2A;" >
                                     <i class="pi pi-link" style="color: #43B572;" />
                                 </p:link>
