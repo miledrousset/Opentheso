@@ -580,7 +580,8 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
 
 .sidebar.toggled {
     overflow: visible;
-    width: 4.5rem !important;
+    width: 3rem !important;
+    align-items: center;
 }
 
 .sidebar.toggled .nav-item .nav-link {
