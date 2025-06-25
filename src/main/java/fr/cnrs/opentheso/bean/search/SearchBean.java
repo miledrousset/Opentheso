@@ -13,12 +13,13 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-
-import java.io.IOException;
-
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.services.ThesaurusService;
+
+import java.io.IOException;
+
+import fr.cnrs.opentheso.utils.MessageUtils;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -26,18 +27,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Getter
-@Setter
 @Named(value = "searchBean")
 @SessionScoped
 @RequiredArgsConstructor
@@ -73,7 +68,7 @@ public class SearchBean implements Serializable {
     private boolean indexMatch;
     private boolean withNote;
     private boolean withId;
-    private boolean isSearchInSpecificTheso;
+    private boolean isSearchInSpecificThesaurus;
 
 
     public void clear() {
@@ -204,19 +199,14 @@ public class SearchBean implements Serializable {
      * recherche de la valeur saisie en respectant les filtres
      */
     public void applySearch() {
-        if (nodeConceptSearchs == null) {
-            nodeConceptSearchs = new ArrayList<>();
-        } else {
-            nodeConceptSearchs.clear();
-        }
+
+        nodeConceptSearchs = new ArrayList<>();
 
         if (roleOnThesoBean.getSelectedThesaurusForSearch() == null || roleOnThesoBean.getSelectedThesaurusForSearch().isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut choisir au moins un thésaurus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showErrorMessage("Il faut choisir au moins un thésaurus !");
             return;
         }
-        isSearchInSpecificTheso = (selectedTheso.getCurrentIdTheso() != null
+        isSearchInSpecificThesaurus = (selectedTheso.getCurrentIdTheso() != null
                 && !selectedTheso.getCurrentIdTheso().isEmpty()) || roleOnThesoBean.getSelectedThesaurusForSearch().size() <= 1;
 
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
@@ -247,8 +237,7 @@ public class SearchBean implements Serializable {
 
             PrimeFaces.current().executeScript("showResultSearchBar();");
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
         }
 
         rightBodySetting.setIndex("0");
@@ -346,9 +335,7 @@ public class SearchBean implements Serializable {
 
     public void afficherResultatRecherche() {
         if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showErrorMessage(languageBean.getMsg("search.doSearchBefore") + " !");
         } else {
             PrimeFaces.current().executeScript("showResultSearchBar();");
         }
@@ -388,8 +375,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche Poly-hiéarchie : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche Poly-hiéarchie : Aucun résultat trouvée !");
             return;
         }
 
@@ -430,8 +416,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de concepts dépréciés : Pas de résultat !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche de concepts dépréciés : Pas de résultat !");
             return;
         }
 
@@ -467,8 +452,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche multi-groupes : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche multi-groupes : Aucun résultat trouvée !");
             return;
         }
 
@@ -504,8 +488,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche sans-groupes : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche sans-groupes : Aucun résultat trouvée !");
             return;
         }
 
@@ -542,8 +525,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche doublons : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche doublons : Aucun résultat trouvée !");
             return;
         }
 
@@ -586,8 +568,7 @@ public class SearchBean implements Serializable {
                 selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche relations interdites : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche relations interdites : Aucun résultat trouvée !");
             return;
         }
 
@@ -623,5 +604,77 @@ public class SearchBean implements Serializable {
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
+    }
+
+    public NodeSearchMini getSearchSelected() {
+        return searchSelected;
+    }
+
+    public void setSearchSelected(NodeSearchMini searchSelected) {
+        this.searchSelected = searchSelected;
+    }
+
+    public List<NodeConceptSearch> getNodeConceptSearchs() {
+        return nodeConceptSearchs;
+    }
+
+    public void setNodeConceptSearchs(ArrayList<NodeConceptSearch> nodeConceptSearchs) {
+        this.nodeConceptSearchs = nodeConceptSearchs;
+    }
+
+    public String getSearchValue() {
+        return searchValue;
+    }
+
+    public void setSearchValue(String searchValue) {
+        this.searchValue = searchValue;
+    }
+
+    public boolean isIsSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setIsSelectedItem(boolean selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public boolean isExactMatch() {
+        return exactMatch;
+    }
+
+    public void setExactMatch(boolean exactMatch) {
+        this.exactMatch = exactMatch;
+    }
+
+    public boolean isWithNote() {
+        return withNote;
+    }
+
+    public void setWithNote(boolean withNote) {
+        this.withNote = withNote;
+    }
+
+    public boolean isWithId() {
+        return withId;
+    }
+
+    public void setWithId(boolean withId) {
+        this.withId = withId;
+    }
+
+    public boolean isIndexMatch() {
+        return indexMatch;
+    }
+
+    public void setIndexMatch(boolean indexMatch) {
+        this.indexMatch = indexMatch;
+    }
+
+    public boolean isIsSearchInSpecificTheso() {
+        return isSearchInSpecificThesaurus;
+    }
+
+    public void setIsSearchInSpecificTheso(boolean isSearchInSpecificThesaurus) {
+        this.isSearchInSpecificThesaurus = isSearchInSpecificThesaurus;
     }
 }

@@ -57,7 +57,6 @@ public class ThesaurusEditService {
 
         var dcElements = thesaurusDcTermRepository.findAllByIdThesaurus(idThesaurus);
         if (CollectionUtils.isEmpty(dcElements)) {
-            log.error("Aucune méta donnée trouvée pour le thésaurus id {}", idThesaurus);
             return List.of();
         }
 

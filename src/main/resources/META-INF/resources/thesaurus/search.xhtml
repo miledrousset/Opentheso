@@ -130,7 +130,7 @@
         body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item .ui-chkbox {
             margin-right: 0.1rem;
         }
-        
+
     </style>
 
     <div class="container" style="margin-top: -25px; z-index: 9;">
@@ -143,7 +143,7 @@
                         <div class="row" >
                             <div class="col-12">
                                 <div class="row no-gutters" >
-                                    
+
                                     <div style="width: 30%; z-index: 100" >
                                         <p:selectOneMenu id="languageSelect" value="#{selectedThesaurus.selectedLang}"
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
@@ -202,7 +202,7 @@
                                     <div style="width: 15%; text-align: right; z-index: 100; position: relative; display: inline-block;">
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
                                                        ajax="true" process="@this" style="display: inline-block"
-                                                       update="resultSearchBar messageIndex">
+                                                       update="resultSearchBar">
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>
                                     </div>
@@ -246,64 +246,65 @@
         <h:panelGroup id="choixPanel" style="background-color: #ECF8F1; padding-left: 20px; padding-right: 20px; z-index: 1;
                           padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px; margin-top: -28px;">
             <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
-                                         style="color: #143a1e; background-color: transparent; font-size: 12px">
+                                     style="color: #143a1e; background-color: transparent; font-size: 12px">
                 <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
                 <p:tooltip for="select1" value="#{langueBean.getMsg('search.tooltip_startWith')}" showDelay="1000" position="bottom"/>
             </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox id="select2" itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
-                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
-                    <p:ajax listener="#{searchBean.activateExactMatch()}" update="choixPanel"/>
-                    <p:tooltip for="select2" value="#{langueBean.getMsg('search.search_exact_word')}" showDelay="1000" position="bottom"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox id="select2" itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
+                                     style="color: #143a1e; background-color: transparent; font-size: 12px;">
+                <p:ajax listener="#{searchBean.activateExactMatch()}" update="choixPanel"/>
+                <p:tooltip for="select2" value="#{langueBean.getMsg('search.search_exact_word')}" showDelay="1000" position="bottom"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox id="select3" itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
-                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
-                    <p:ajax listener="#{searchBean.activateWithNote()}" update="choixPanel"/>
-                    <p:tooltip for="select3" value="#{langueBean.getMsg('search.search_only_note')}" showDelay="1000" position="bottom"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox id="select3" itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
+                                     style="color: #143a1e; background-color: transparent; font-size: 12px;">
+                <p:ajax listener="#{searchBean.activateWithNote()}" update="choixPanel"/>
+                <p:tooltip for="select3" value="#{langueBean.getMsg('search.search_only_note')}" showDelay="1000" position="bottom"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox id="select4" itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
-                    <p:ajax listener="#{searchBean.activateWithId()}"  update="choixPanel"/>
-                    <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox id="select4" itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
+                                     style="color: #143a1e; background-color: transparent; font-size: 12px;">
+                <p:ajax listener="#{searchBean.activateWithId()}"  update="choixPanel"/>
+                <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectCheckboxMenu rendered="#{selectedThesaurus.currentIdTheso == null}" id="select5"
-                                      value="#{roleOnThesaurus.selectedThesaurusForSearch}" label="#{langueBean.getMsg('search.filterTheso')}"
-                                      style="color: #143a1e; font-size: 0.8rem;"
-                                      panelStyle="width: 15rem; font-size: 0.5rem" scrollHeight="250" >
-                    <f:selectItems value="#{roleOnThesaurus.listThesaurus}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
-                </p:selectCheckboxMenu>
+            <p:selectCheckboxMenu rendered="#{selectedThesaurus.currentIdTheso == null}" id="select5"
+                                  value="#{roleOnThesaurus.selectedThesaurusForSearch}" label="#{langueBean.getMsg('search.filterTheso')}"
+                                  style="color: #143a1e; font-size: 0.8rem;"
+                                  panelStyle="width: 15rem; font-size: 0.5rem" scrollHeight="250" >
+                <f:selectItems value="#{roleOnThesaurus.listThesaurus}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
+            </p:selectCheckboxMenu>
 
-                <p:menuButton id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
+            <p:menuButton rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null}"
+                          id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
-                    <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}"
-                                update="resultSearchBar messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>
+                <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}"
+                            update="resultSearchBar messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>
 
-                    <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}"
-                                update="resultSearchBar containerIndex:choixPanel messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
+                <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}"
+                            update="resultSearchBar containerIndex:choixPanel messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
 
-                    <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}"
-                                update="resultSearchBar  messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
+                <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}"
+                            update="resultSearchBar  messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
 
-                    <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}"
-                                update="resultSearchBar messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_withoutGroups')}"/>
+                <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}"
+                            update="resultSearchBar messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_withoutGroups')}"/>
 
-                    <p:menuitem value="#{langueBean.getMsg('search.duplicates')}" action="#{searchBean.searchConceptDuplicated()}"
-                                update="resultSearchBar messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_duplicates')}"/>
+                <p:menuitem value="#{langueBean.getMsg('search.duplicates')}" action="#{searchBean.searchConceptDuplicated()}"
+                            update="resultSearchBar messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_duplicates')}"/>
 
-                    <p:menuitem value="#{langueBean.getMsg('search.forbiddenRelationships')}" action="#{searchBean.searchConceptWithRTandBT()}"
-                                update="resultSearchBar messageIndex containerIndex:contentConcept"
-                                title="#{langueBean.getMsg('search.tooltip_forbiddenRrelationships')}"/>
-                </p:menuButton>
-                <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
-            </h:panelGroup>
+                <p:menuitem value="#{langueBean.getMsg('search.forbiddenRelationships')}" action="#{searchBean.searchConceptWithRTandBT()}"
+                            update="resultSearchBar messageIndex containerIndex:contentConcept"
+                            title="#{langueBean.getMsg('search.tooltip_forbiddenRrelationships')}"/>
+            </p:menuButton>
+            <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
+        </h:panelGroup>
     </div>
     <h:form id="formSearch">
     </h:form>

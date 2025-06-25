@@ -509,10 +509,11 @@ public class SearchService {
     }
 
     public List<String> searchIdConceptFromNotes(String value, String idLang, String idThesaurus) {
+
         String processed = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         processed = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(processed);
 
-        String[] words = processed.trim().split("\\s+");
+        var words = processed.trim().split("\\s+");
         if (words.length == 0) return List.of();
 
         StringBuilder fragments = new StringBuilder();
@@ -521,8 +522,8 @@ public class SearchService {
             fragments.append("f_unaccent(lower(n.lexicalvalue)) LIKE '%").append(words[i]).append("%'");
         }
 
-        List<String> idsFromTerms = searchRepository.searchConceptIdsFromTermNotes(idThesaurus, idLang, fragments.toString());
-        List<String> idsFromConcepts = searchRepository.searchConceptIdsFromConceptNotes(idThesaurus, idLang, fragments.toString());
+        var idsFromTerms = searchRepository.searchConceptIdsFromTermNotes(idThesaurus, idLang, fragments.toString());
+        var idsFromConcepts = searchRepository.searchConceptIdsFromConceptNotes(idThesaurus, idLang, fragments.toString());
 
         Set<String> result = new LinkedHashSet<>();
         result.addAll(idsFromTerms);
