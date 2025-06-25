@@ -74,7 +74,7 @@
                             actionListener="#{copyAndPasteBetweenThesaurus.onStartCopy()}"
                             icon="fas fa-regular fa-copy" update="containerIndex:rightTab messageIndex" />
 
-                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedTheso.currentIdTheso) }"
+                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedThesaurus.currentIdTheso) }"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
                             actionListener="#{copyAndPasteBetweenThesaurus.validatePaste()}" icon="fas fa-paste"
                             action="#{copyAndPasteBetweenThesaurus.setIsDropToRoot(false)}"
@@ -90,7 +90,7 @@
 
                 <p:menuitem  rendered="#{(roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                              value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
-                             action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
+                             action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedThesaurus.currentIdTheso)}"
                              icon="fas fa-truck-moving"
                              oncomplete="PF('moveToAnotherTheso').show();"
                              update="containerIndex:idMoveToAnotherTheso containerIndex:moveToAnotherThesoForm"/>
@@ -194,13 +194,13 @@
                     </h:panelGroup>
 
                     <p:commandLink rendered="#{subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                                   value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                    subPath.idConcept, selectedTheso.currentLang, currentUser)}"
+                                   value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
+                                    subPath.idConcept, selectedThesaurus.currentLang, currentUser)}"
                                    update="containerIndex" process="@form" ajax="true" />
 
                         <h:panelGroup rendered="#{!substatus.last}" >
                             <p:commandLink rendered="#{!subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang, currentUser)}"
+                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso, subPath.idConcept, selectedThesaurus.currentLang, currentUser)}"
                                            update="containerIndex" process="@form" ajax="true"/>                          
                             <h:outputText rendered="#{!substatus.last}" value=" > " style="font-size: 13px; font-weight: bold"/>                        
                         </h:panelGroup>

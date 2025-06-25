@@ -95,13 +95,13 @@
                                     <p:commandLink rendered="#{concept.value == ''}"
                                                    value="(#{concept.id})"
                                                    style="color: #601e18;" styleClass="textOpentheso"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, concept.id, conceptView.selectedLang, currentUser)}"
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso, concept.id, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formRightTab indexTitle"/>
 
                                     <p:commandLink rendered="#{concept.value != ''}"
                                                    value="#{concept.value}"
                                                    style="color: #601e18;" styleClass="textOpentheso"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, concept.id, conceptView.selectedLang, currentUser)}"
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso, concept.id, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formRightTab indexTitle"/>
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                                 </ui:repeat>
@@ -147,7 +147,7 @@
                                     <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
                                         <p:commandLink value="[#{trad.lang}] #{trad.lexicalValue}"
                                                        style="color: #43B572;" styleClass="textOpentheso"
-                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,  conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
+                                                       action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,  conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
                                         <br/>
                                     </ui:repeat>

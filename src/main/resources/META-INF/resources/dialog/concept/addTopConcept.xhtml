@@ -66,7 +66,7 @@
                                  icon="pi pi-check" styleClass="ui-button-success" 
                                  ajax="true" process="@form"
                                  oncomplete="PF('addTopConcept').show();"
-                                 actionListener="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{newConcept.addTopConcept(selectedThesaurus.currentLang, 'D', selectedThesaurus.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -276,7 +276,7 @@
                 <f:selectItems value="#{roleOnThesaurus.listThesaurus}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
             </p:selectCheckboxMenu>
 
-            <p:menuButton rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null}"
+            <p:menuButton rendered="#{currentUser.nodeUser != null and selectedThesaurus.currentIdTheso != null}"
                           id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                 <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}"

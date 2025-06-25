@@ -106,7 +106,7 @@
                     <p:column width="5" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">
                         <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
                                          update="idConfirmDelete" process="@this" ajax="true" 
-                                         actionListener="#{deleteThesaurusBean.confirmDelete(thesaurus, selectedTheso.currentIdTheso)}"
+                                         actionListener="#{deleteThesaurusBean.confirmDelete(thesaurus, selectedThesaurus.currentIdTheso)}"
                                          oncomplete="PF('confirmDelete').show();" />
                     </p:column>
 

@@ -39,7 +39,7 @@
             
 
             <!-- Debut Candidat -->
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null and selectedTheso.currentIdTheso != null) and
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null and selectedThesaurus.currentIdTheso != null) and
                                       (currentUser.hasRoleAsContributor)}" >
                 <li class="nav-item">
                     <span class="nav-link">
@@ -123,13 +123,13 @@
                                            class="collapse-item" actionListener="#{menuBean.redirectToFlagPage()}"
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('toolbox.manageFlags')}</p:commandLink>
 
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}"
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.thesaurusWorkshop')}</p:commandLink>
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('menu.service')}</p:commandLink>
-                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                            <p:commandLink rendered="#{selectedThesaurus.currentIdTheso != null}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('statistique.statistic')}</p:commandLink>
                         </div>
@@ -139,7 +139,7 @@
             <!-- Fin boite à outils -->
 
             <!-- Debut setting -->
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedThesaurus.currentIdTheso != null)
                                       and (currentUser.hasRoleAsAdmin)}" >
                 <li class="nav-item">
                     <a id="settingButton1" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"

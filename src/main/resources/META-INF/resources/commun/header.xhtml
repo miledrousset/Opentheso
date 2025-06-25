@@ -29,7 +29,7 @@
             <h:outputLabel value="#{selectedThesaurus.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{!selectedTheso.isFromUrl()}">
+        <h:panelGroup rendered="#{!selectedThesaurus.isFromUrl()}">
             <!-- liste des projets -->
             <p:selectOneMenu value="#{selectedThesaurus.projectIdSelected}" filter="true" filterMatchMode="contains"
                              style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px;
@@ -53,16 +53,16 @@
             </p:commandLink>
         </h:panelGroup>
 
-        <p:commandLink rendered="#{selectedThesaurus.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
+        <p:commandLink rendered="#{selectedThesaurus.selectedIdTheso != null and selectedThesaurus.selectedIdTheso != '' and currentUser.nodeUser != null
                                    and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
-                       actionListener="#{editThesaurusBean.init(selectedTheso.currentIdTheso)}"
+                       actionListener="#{editThesaurusBean.init(selectedThesaurus.currentIdTheso)}"
                        action="#{viewEditionBean.setViewModifyTheso(true)}">
             <i class="fa fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedTheso.isFromUrl()}">
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedThesaurus.isFromUrl()}">
             <i class="fa fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>

@@ -51,7 +51,7 @@
                                 update="containerIndex messageIndex" icon="far fa-window-close" />
 
                     <p:menuitem disabled="false" styleClass="buttonIconOrange"
-                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedTheso.currentIdTheso) }"
+                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedThesaurus.currentIdTheso) }"
                                 value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!"
                                 actionListener="#{copyAndPasteBetweenThesaurus.validatePaste()}"
                                 action="#{copyAndPasteBetweenThesaurus.setIsDropToRoot(true)}"
@@ -62,7 +62,7 @@
                     <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                                 actionListener="#{selectedThesaurus.setSortByNotation(false)}" ajax="true"
                                 action="#{selectedThesaurus.reloadSelectedTheso()}"
-                                process="@this" disabled="#{!selectedTheso.sortByNotation}"
+                                process="@this" disabled="#{!selectedThesaurus.sortByNotation}"
                                 update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
 
                     <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
