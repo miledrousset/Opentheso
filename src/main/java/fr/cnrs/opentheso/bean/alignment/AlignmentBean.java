@@ -420,6 +420,9 @@ public class AlignmentBean implements Serializable {
 
     public void openEditAlignementWindow(AlignementElement alignement) {
         alignementSources = alignementSourceService.getAlignementSources(selectedTheso.getCurrentIdTheso());
+        if (CollectionUtils.isNotEmpty(alignementSources)) {
+            selectedAlignement = alignementSources.get(0).getSource();
+        }
         selectConceptForAlignment(alignement.getIdConceptOrig());
         PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
