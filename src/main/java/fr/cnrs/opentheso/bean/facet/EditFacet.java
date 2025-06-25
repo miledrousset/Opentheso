@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultTreeNode;
 
 
 @Getter
@@ -357,6 +358,8 @@ public class EditFacet implements Serializable {
         initDataAfterAction();
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        tree.selectThisFacet(facetSelected.getIdFacet());
+
         MessageUtils.showInformationMessage("Facette mise à jour avec succès !");
     }
 

@@ -177,12 +177,7 @@ public class SearchBean implements Serializable {
         } else {
             idConcept = searchSelected.getIdConcept();
 
-            if (nodeConceptSearchs == null) {
-                nodeConceptSearchs = new ArrayList<>();
-            } else {
-                nodeConceptSearchs.clear();
-            }
-
+            nodeConceptSearchs = new ArrayList<>();
             nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
             setViewsSearch();
             if (nodeConceptSearchs.size() == 1) {
