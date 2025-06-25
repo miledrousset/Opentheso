@@ -330,6 +330,10 @@ public class ConceptAddService {
             log.error("Il faut activer Ark pour le thésaurus id {}", idThesaurus);
             return nodeIdValues;
         }
+        if (preferences.isUseArkLocal()) {
+            arkService.generateArkIdLocal(idThesaurus, idConcepts);
+            return null;
+        }
 
         var arkHelper2 = new ArkHelper2(preferences);
         if (!arkHelper2.login()) {
