@@ -1570,7 +1570,7 @@ public class AlignmentBean implements Serializable {
     }
 
     public long getTotalAlignements() {
-        return allignementsList.size() - new HashSet<>(allignementsList).size();
+        return CollectionUtils.isNotEmpty(allignementsList) ? (allignementsList.size() - new HashSet<>(allignementsList).size()) : 0;
     }
 
     public void actionChoix() {
