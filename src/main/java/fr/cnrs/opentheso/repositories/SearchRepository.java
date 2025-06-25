@@ -452,36 +452,52 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     List<Object[]> searchSynonymsExact(@Param("value") String value, @Param("lang") String lang, @Param("thesaurusId") String thesaurusId);
 
     @Query(value = """
-    SELECT DISTINCT pt.id_concept\s
+    SELECT DISTINCT pt.id_concept
     FROM note n
     JOIN preferred_term pt ON pt.id_term = n.id_term AND pt.id_thesaurus = n.id_thesaurus
     JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
     WHERE c.status != 'CA'
-    AND n.id_thesaurus = :idThesaurus
-    AND (:idLang IS NULL OR n.lang = :idLang)
-    AND (""" +
-            "  :#{#fragments} ) " +
-            """
-            LIMIT 50
-            """, nativeQuery = true)
-    List<String> searchConceptIdsFromTermNotes(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang,
-                                               @Param("fragments") String fragments);
+      AND n.id_thesaurus = :idThesaurus
+      AND (:idLang IS NULL OR n.lang = :idLang)
+      AND (
+          (:w1 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w1)
+          AND (:w2 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w2)
+          AND (:w3 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w3)
+          AND (:w4 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w4)
+      )
+    LIMIT 50
+    """, nativeQuery = true)
+    List<String> searchConceptIdsFromTermNotes(
+            @Param("idThesaurus") String idThesaurus,
+            @Param("idLang") String idLang,
+            @Param("w1") String w1,
+            @Param("w2") String w2,
+            @Param("w3") String w3,
+            @Param("w4") String w4);
 
     @Query(value = """
-    SELECT DISTINCT pt.id_concept 
+    SELECT DISTINCT pt.id_concept
     FROM note n
     JOIN preferred_term pt ON pt.id_concept = n.id_concept AND pt.id_thesaurus = n.id_thesaurus
     JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
     WHERE c.status != 'CA'
-    AND n.id_thesaurus = :idThesaurus
-    AND (:idLang IS NULL OR n.lang = :idLang)
-    AND (""" +
-            "  :#{#fragments} ) " +
-            """
-            LIMIT 50
-            """, nativeQuery = true)
-    List<String> searchConceptIdsFromConceptNotes(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang,
-                                                  @Param("fragments") String fragments);
+      AND n.id_thesaurus = :idThesaurus
+      AND (:idLang IS NULL OR n.lang = :idLang)
+      AND (
+          (:w1 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w1)
+          AND (:w2 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w2)
+          AND (:w3 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w3)
+          AND (:w4 IS NULL OR f_unaccent(lower(n.lexicalvalue)) LIKE :w4)
+      )
+    LIMIT 50
+    """, nativeQuery = true)
+    List<String> searchConceptIdsFromConceptNotes(
+            @Param("idThesaurus") String idThesaurus,
+            @Param("idLang") String idLang,
+            @Param("w1") String w1,
+            @Param("w2") String w2,
+            @Param("w3") String w3,
+            @Param("w4") String w4);
 
     @Query(value = """
         SELECT DISTINCT c.id_concept

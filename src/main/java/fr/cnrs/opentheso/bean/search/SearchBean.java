@@ -500,23 +500,21 @@ public class SearchBean implements Serializable {
      * permet de retourner la liste des concepts qui sont en doublons
      */
     public void searchConceptDuplicated() throws IOException {
-        if (nodeConceptSearchs == null) {
-            nodeConceptSearchs = new ArrayList<>();
-        } else {
-            nodeConceptSearchs.clear();
-        }
 
-        List<String> nodeSearchLabels = searchService.searchConceptDuplicated( selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        nodeConceptSearchs = new ArrayList<>();
+        var nodeSearchLabels = searchService.searchConceptDuplicated( selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
-        for (String label : nodeSearchLabels) {
-            nodeConceptSearchs.add(conceptService.getConceptForSearchFromLabel(label, selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang()));
+        for (var label : nodeSearchLabels) {
+            var element = conceptService.getConceptForSearchFromLabel(label, selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang());
+            if (element != null) {
+                nodeConceptSearchs.add(element);
+            }
         }
-        if (!nodeConceptSearchs.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
             Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
-        }
-        if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+
             if (nodeConceptSearchs.size() == 1) {
                 selectedItem = true;
                 setViewsConcept();

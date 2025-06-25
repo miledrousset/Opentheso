@@ -509,21 +509,20 @@ public class SearchService {
     }
 
     public List<String> searchIdConceptFromNotes(String value, String idLang, String idThesaurus) {
+        if (value == null || value.isBlank()) return List.of();
 
         String processed = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         processed = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(processed);
 
         var words = processed.trim().split("\\s+");
-        if (words.length == 0) return List.of();
 
-        StringBuilder fragments = new StringBuilder();
-        for (int i = 0; i < words.length; i++) {
-            if (i > 0) fragments.append(" AND ");
-            fragments.append("f_unaccent(lower(n.lexicalvalue)) LIKE '%").append(words[i]).append("%'");
-        }
+        String w1 = words.length > 0 ? "%" + words[0] + "%" : "";
+        String w2 = words.length > 1 ? "%" + words[1] + "%" : "";
+        String w3 = words.length > 2 ? "%" + words[2] + "%" : "";
+        String w4 = words.length > 3 ? "%" + words[3] + "%" : "";
 
-        var idsFromTerms = searchRepository.searchConceptIdsFromTermNotes(idThesaurus, idLang, fragments.toString());
-        var idsFromConcepts = searchRepository.searchConceptIdsFromConceptNotes(idThesaurus, idLang, fragments.toString());
+        var idsFromTerms = searchRepository.searchConceptIdsFromTermNotes(idThesaurus, idLang, w1, w2, w3, w4);
+        var idsFromConcepts = searchRepository.searchConceptIdsFromConceptNotes(idThesaurus, idLang, w1, w2, w3, w4);
 
         Set<String> result = new LinkedHashSet<>();
         result.addAll(idsFromTerms);

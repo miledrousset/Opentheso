@@ -44,7 +44,7 @@ public class NodeIdValue implements Comparable<NodeIdValue>, Serializable {
 
     @Override
     public int compareTo(NodeIdValue o) {
-        return value != null ? 1 : value.compareTo(o.value);
+        return value != null ? value.compareTo(o.value) : 1;
     }
 
     public NodeIdValue(String id, String value) {
