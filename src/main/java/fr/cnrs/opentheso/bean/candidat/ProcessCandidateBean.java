@@ -106,8 +106,9 @@ public class ProcessCandidateBean implements Serializable {
         // envoie de mail au créateur du candidat si l'option mail est activée
         var nodeUser = userService.getUser(selectedCandidate.getCreatedById());
 
-        if(nodeUser != null && nodeUser.isAlertMail())
-            sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
+        if(nodeUser != null && nodeUser.isAlertMail()) {
+            new Thread(() -> sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate)).start();
+        }
         
         generateArk(roleOnThesaurus.getNodePreference(), selectedCandidate);
 

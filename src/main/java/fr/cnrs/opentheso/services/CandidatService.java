@@ -110,34 +110,9 @@ public class CandidatService {
             candidatDto.setAlignments(alignmentService.getAllAlignmentOfConcept(candidatDto.getIdConcepte(), idThesaurus));
         });
         return candidatList;
-    }    
-    
-    /**
-     * Permet de chercher des candidats
-     */
-    public List<CandidatDto> searchCandidats(String value, String idThesaurus, String lang, int etat, String statut) {
-
-        List<CandidatDto> temps = searchCandidatsByValue(value, idThesaurus, lang, etat, statut);
-        temps.forEach(candidatDto -> {
-
-            var candidatStatus = candidatStatusRepository.findAllByIdConceptAndIdThesaurus(candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
-            candidatStatus.ifPresent(status -> candidatDto.setStatut(status.getStatus().getValue()));
-
-            var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
-            candidatDto.setNbrParticipant(CollectionUtils.isEmpty(candidatMessages) ? 0 : candidatMessages.size());
-
-            candidatDto.setNbrDemande(propositionService.getPropositionByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus).size());
-
-            var candidatVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel());
-            candidatDto.setNbrVote(CollectionUtils.isEmpty(candidatVotes) ? 0 : candidatVotes.size());
-
-            var noteVotes = candidatVoteRepository.findAllByIdConceptAndIdThesaurusAndTypeVote(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel());
-            candidatDto.setNbrNoteVote(CollectionUtils.isEmpty(noteVotes) ? 0 : noteVotes.size());
-        });
-        return temps;
     }
 
-    public String saveNewCondidat(Concept concept) throws SQLException {
+    public String saveNewCandidat(Concept concept) throws SQLException {
 
         var idNewCandidat = conceptAddService.addConceptInTable(concept, concept.getIdUser());
         var status = statusRepository.findById(1);
@@ -368,7 +343,7 @@ public class CandidatService {
                 concept.setStatus("CA");
 
                 try {
-                    idNewConcept = saveNewCondidat(concept);
+                    idNewConcept = saveNewCandidat(concept);
                 } catch (SQLException e) {
                     messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
                 }
@@ -685,7 +660,7 @@ public class CandidatService {
                 .date(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()))
                 .build());
 
-        sendNotificationMail(candidatSelected);
+        new Thread(() -> sendNotificationMail(candidatSelected)).start();
     }
 
     private void sendNotificationMail(CandidatDto candidatSelected) {
@@ -776,7 +751,7 @@ public class CandidatService {
             return;
         }
 
-        var idNewConcept = saveNewCondidat(Concept.builder()
+        var idNewConcept = saveNewCandidat(Concept.builder()
                 .idConcept(candidatSelected.getIdConcepte())
                 .idThesaurus(idThesaurus)
                 .topConcept(false)

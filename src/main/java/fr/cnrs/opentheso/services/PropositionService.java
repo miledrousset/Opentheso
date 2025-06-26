@@ -254,19 +254,11 @@ public class PropositionService {
     }
 
     public void sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
-        if (currentUser.getNodeUser() != null) {
-            if(!currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)) {
-                mailBean.sendMail(emailDestination, subject, contentFile);
-                return;
-            }
-            if (currentUser.getNodeUser().isAlertMail()) {
-                mailBean.sendMail(emailDestination, subject, contentFile);
-                return;
-            } else {
-                return;
-            }
+        if (currentUser.getNodeUser() != null
+                && !currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)
+                && currentUser.getNodeUser().isAlertMail()) {
+            new Thread(() -> mailBean.sendMail(emailDestination, subject, contentFile)).start();
         }
-        mailBean.sendMail(emailDestination, subject, contentFile);
     }
 
     public void refuserProposition(PropositionDao propositionSelected, String commentaireAdmin) {
