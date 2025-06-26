@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.models;
 
+import java.util.Date;
+
 public interface SkosFacetProjection {
 
     String getId_facet();
@@ -13,7 +15,7 @@ public interface SkosFacetProjection {
     String getSecopenote();
     String getNote();
     String getHistorynote();
-    String getCreated();
-    String getModified();
+    Date getCreated();
+    Date getModified();
     String getId_concept_parent();
 }

@@ -46,8 +46,8 @@ public class ExportService {
             }
 
             resource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
-            resource.addDate(p.getCreated(), SKOSProperty.CREATED);
-            resource.addDate(p.getModified(), SKOSProperty.MODIFIED);
+            resource.addDate(p.getCreated().toString(), SKOSProperty.CREATED);
+            resource.addDate(p.getModified().toString(), SKOSProperty.MODIFIED);
 
             addDoc(p.getDefinition(), resource, SKOSProperty.DEFINITION);
             addDoc(p.getNote(), resource, SKOSProperty.NOTE);

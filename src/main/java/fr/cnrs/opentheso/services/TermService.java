@@ -354,8 +354,10 @@ public class TermService {
                         .lexicalValue("")
                         .lang(idLang)
                         .idThesaurus(idThesaurus)
-                        .created((Date) row[0])
-                        .modified((Date) row[1])
+                        .created(org.apache.commons.lang3.StringUtils.isEmpty((String) row[0])
+                                ? null : Date.from(Instant.parse((String) row[0])))
+                        .modified(org.apache.commons.lang3.StringUtils.isEmpty((String) row[1])
+                                ? null : Date.from(Instant.parse((String) row[1])))
                         .status((String) row[2])
                         .build();
             }
