@@ -74,7 +74,7 @@
         <ui:include src="conceptDetail/conceptDetailBloc6.xhtml" />
 
         <!--  -->
-        <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.suggestion}" >
+        <h:panelGroup rendered="#{roleOnThesaurus.isPropositionAuthorized()}" >
             <div class="col-12" style="text-align: right; padding-top: 20px">
                 <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
                                  actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept, currentUser)}"

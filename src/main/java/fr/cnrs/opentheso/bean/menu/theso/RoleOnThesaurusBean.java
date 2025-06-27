@@ -31,7 +31,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import java.io.Serializable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -53,6 +52,7 @@ public class RoleOnThesaurusBean implements Serializable {
 
     private final UserService userService;
     private final LanguageBean languageBean;
+    private final SelectedTheso selectedTheso;
     private final ConceptService conceptService;
     private final ThesaurusService thesaurusService;
     private final PreferenceService preferenceService;
@@ -394,5 +394,11 @@ public class RoleOnThesaurusBean implements Serializable {
     
     public boolean alignementVisible(CurrentUser currentUser) {
         return currentUser.getNodeUser() != null && (isManagerOnThisThesaurus || isAdminOnThisThesaurus || currentUser.getNodeUser().isSuperAdmin());
+    }
+
+    public boolean isPropositionAuthorized() {
+
+        var preference = preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
+        return preference != null && preference.isSuggestion();
     }
 }
