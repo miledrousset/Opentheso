@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
@@ -205,17 +206,16 @@ public class SearchBean implements Serializable {
                 && !selectedTheso.getCurrentIdTheso().isEmpty()) || roleOnThesoBean.getSelectedThesaurusForSearch().size() <= 1;
 
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
-        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
-            for (String idTheso : roleOnThesoBean.getSelectedThesaurusForSearch()) {
-                nodeConceptSearchs.addAll(searchInThesaurus(idTheso, searchLangOfTheso(roleOnThesoBean.getListThesaurus(), idTheso))); // languageBean.getIdLangue());
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            for (String idThesaurus : roleOnThesoBean.getSelectedThesaurusForSearch()) {
+                nodeConceptSearchs.addAll(searchInThesaurus(idThesaurus, searchLangOfTheso(roleOnThesoBean.getListThesaurus(), idThesaurus)));
             }
         } else {
             String idLang = null;
-            if (!selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
+            if (!"all".equalsIgnoreCase(selectedTheso.getSelectedLang())) {
                 idLang = selectedTheso.getSelectedLang();
             }
-            List<NodeConceptSearch> concepts = searchInThesaurus(selectedTheso.getCurrentIdTheso(), idLang);// languageBean.getIdLangue());
-            nodeConceptSearchs.addAll(concepts);
+            nodeConceptSearchs.addAll(searchInThesaurus(selectedTheso.getCurrentIdTheso(), idLang));
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
@@ -224,7 +224,6 @@ public class SearchBean implements Serializable {
                         nodeConceptSearchs.get(0).getCurrentLang(), currentUser);
                 selectedItem = true;
                 setViewsConcept();
-
             } else {
                 setViewsSearch();
                 selectedItem = false;
@@ -257,17 +256,15 @@ public class SearchBean implements Serializable {
 
     private List<NodeConceptSearch> searchInThesaurus(String idTheso, String idLang) {
 
-        List<String> nodeSearchsId;
         List<NodeConceptSearch> concepts = new ArrayList<>();
-        String thesaurusLabel = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
-        NodeConceptSearch nodeConceptSearch;
+        var thesaurusLabel = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         if(searchValue == null)
             searchValue = "";
 
         if (withId) {
-            nodeSearchsId = searchService.searchForIds(searchValue, idTheso);
+            var nodeSearchsId = searchService.searchForIds(searchValue, idTheso);
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -276,10 +273,9 @@ public class SearchBean implements Serializable {
         }
 
         if (withNote) {
-            nodeSearchsId = searchService.searchIdConceptFromNotes(searchValue, idLang, idTheso);
-
+            var nodeSearchsId = searchService.searchIdConceptFromNotes(searchValue, idLang, idTheso);
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -291,9 +287,8 @@ public class SearchBean implements Serializable {
 
         if (exactMatch) {
             var nodeSearchMinis = searchService.searchExactMatch(searchValue, idLang, idTheso, isCollectionPrivate);
-
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -304,7 +299,7 @@ public class SearchBean implements Serializable {
         if (indexMatch || searchValue.isEmpty()) {
             var nodeSearchMinis = searchService.searchStartWith(searchValue, idLang, idTheso, isCollectionPrivate);
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -318,7 +313,7 @@ public class SearchBean implements Serializable {
             var listIds = searchService.searchFullTextElasticId(searchValue, idLang, idTheso);
 
             for (String idConcept : listIds) {
-                nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }

@@ -193,27 +193,36 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     List<Object[]> searchNonPreferredTermsLike(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
-        SELECT DISTINCT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status
-        FROM term
-        JOIN preferred_term ON preferred_term.id_term = term.id_term
-        JOIN concept ON concept.id_concept = preferred_term.id_concept
-        WHERE concept.id_thesaurus = :idThesaurus
-          AND term.id_thesaurus = :idThesaurus
-          AND term.lang = :idLang
-          AND concept.status != 'CA'
-          AND (
-            unaccent(lower(term.lexical_value)) LIKE unaccent(lower(CONCAT(:val, '%')))
-            OR unaccent(lower(term.lexical_value)) LIKE unaccent(lower(CONCAT('% ', :val, '%')))
-          )
-        ORDER BY
-          CASE
+    SELECT DISTINCT 
+        preferred_term.id_concept, 
+        term.lexical_value, 
+        term.id_term, 
+        concept.status,
+        CASE
             WHEN unaccent(lower(term.lexical_value)) ILIKE :val THEN 1
             WHEN unaccent(lower(term.lexical_value)) ILIKE CONCAT(:val, ' %') THEN 2
-          END,
-          unaccent(lower(term.lexical_value))
-        LIMIT 50
-        """, nativeQuery = true)
-    List<Object[]> searchStartWithPreferred(@Param("val") String val, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
+            ELSE 3
+        END AS sort_priority,
+        unaccent(lower(term.lexical_value)) AS norm_value
+    FROM term
+    JOIN preferred_term ON preferred_term.id_term = term.id_term
+    JOIN concept ON concept.id_concept = preferred_term.id_concept
+    WHERE concept.id_thesaurus = :idThesaurus
+      AND term.id_thesaurus = :idThesaurus
+      AND term.lang = :idLang
+      AND concept.status != 'CA'
+      AND (
+        unaccent(lower(term.lexical_value)) LIKE unaccent(lower(CONCAT(:val, '%')))
+        OR unaccent(lower(term.lexical_value)) LIKE unaccent(lower(CONCAT('% ', :val, '%')))
+      )
+    ORDER BY sort_priority, norm_value
+    LIMIT 50
+    """, nativeQuery = true)
+    List<Object[]> searchStartWithPreferred(
+            @Param("val") String val,
+            @Param("idLang") String idLang,
+            @Param("idThesaurus") String idThesaurus);
+
 
     @Query(value = """
         SELECT preferred_term.id_concept, term.id_term, non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status
@@ -647,14 +656,11 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             "AND c.idThesaurus = :idThesaurus")
     List<String> searchNotationId(@Param("notation") String notation, @Param("idThesaurus") String idThesaurus);
 
-    @Query("SELECT c.idConcept FROM Concept c " +
+    @Query("SELECT c.idConcept " +
+            "FROM Concept c " +
             "WHERE c.idThesaurus = :idThesaurus " +
-            "AND c.status != 'CA' " +
-            "AND (" +
-            "LOWER(c.idConcept) = LOWER(:value) OR " +
-            "LOWER(c.idArk) = LOWER(:value) OR " +
-            "LOWER(c.idHandle) = LOWER(:value) OR " +
-            "LOWER(c.notation) = LOWER(:value))")
+            "  AND c.status != 'CA' " +
+            "  AND lower(:value) IN (LOWER(c.idConcept), LOWER(c.idArk), LOWER(c.idHandle), LOWER(c.notation))")
     List<String> searchForIds(@Param("value") String value, @Param("idThesaurus") String idThesaurus);
 
     @Query(value = "SELECT concept.id_concept FROM concept " +
@@ -694,35 +700,34 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     boolean isConceptHaveRTandBT(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
-        SELECT DISTINCT pt.idConcept AS idConcept
-        FROM Term t
-        JOIN PreferredTerm pt ON pt.idTerm = t.idTerm AND pt.idThesaurus = t.idThesaurus
-        JOIN Concept c ON c.idConcept = pt.idConcept AND c.idThesaurus = pt.idThesaurus
-        WHERE c.idThesaurus = :idThesaurus
-        AND (:idLang IS NULL OR t.lang = :idLang)
-        AND similarity(unaccent(lower(t.lexicalValue)), unaccent(lower(:value))) > 0.2
-        AND c.status != 'CA'
-        ORDER BY similarity(unaccent(lower(t.lexicalValue)), unaccent(lower(:value))) DESC
-        LIMIT 50
-        """, nativeQuery = true)
-    List<ConceptIdOnly> searchPreferredTermsFullTextId(@Param("value") String value,
-                                                       @Param("idLang") String idLang,
-                                                       @Param("idThesaurus") String idThesaurus);
+        SELECT DISTINCT pt.id_concept AS idConcept, similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) AS score
+        FROM term t
+                JOIN preferred_term pt ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+                JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+        WHERE c.id_thesaurus = :idThesaurus
+          AND t.lang = :idLang
+          AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2
+          AND c.status != 'CA'
+        ORDER BY score DESC
+        LIMIT 50;
+    """, nativeQuery = true)
+    List<ConceptIdOnly> searchPreferredTermsFullTextId(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
 
     @Query(value = """
-        SELECT DISTINCT pt.idConcept AS idConcept
-        FROM NonPreferredTerm npt
-        JOIN PreferredTerm pt ON pt.idTerm = npt.idTerm AND pt.idThesaurus = npt.idThesaurus
-        JOIN Term t ON pt.idTerm = t.idTerm AND pt.idThesaurus = t.idThesaurus AND npt.lang = t.lang
-        JOIN Concept c ON c.idConcept = pt.idConcept AND c.idThesaurus = pt.idThesaurus
-        WHERE c.idThesaurus = :idThesaurus
-        AND (:idLang IS NULL OR npt.lang = :idLang)
-        AND similarity(unaccent(lower(npt.lexicalValue)), unaccent(lower(:value))) > 0.2
-        AND c.status != 'CA'
-        ORDER BY similarity(unaccent(lower(npt.lexicalValue)), unaccent(lower(:value))) DESC
+        SELECT DISTINCT pt.id_concept AS idConcept,
+               similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) AS score
+        FROM non_preferred_term npt
+        JOIN preferred_term pt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
+        JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus AND npt.lang = t.lang
+        JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+        WHERE c.id_thesaurus = :idThesaurus
+          AND (:idLang IS NULL OR npt.lang = :idLang)
+          AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2
+          AND c.status != 'CA'
+        ORDER BY score DESC
         LIMIT 50
-        """, nativeQuery = true)
+    """, nativeQuery = true)
     List<ConceptIdOnly> searchAltTermsFullTextId(@Param("value") String value,
                                                  @Param("idLang") String idLang,
                                                  @Param("idThesaurus") String idThesaurus);
