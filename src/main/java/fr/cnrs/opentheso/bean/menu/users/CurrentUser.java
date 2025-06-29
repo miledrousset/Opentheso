@@ -2,13 +2,16 @@ package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.User;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ProjectService;
 import fr.cnrs.opentheso.services.ThesaurusService;
@@ -41,6 +44,7 @@ import jakarta.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
@@ -58,6 +62,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentUser implements Serializable {
 
+    private final ConceptView conceptView;
+    private final GroupService groupService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -107,7 +113,6 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         nodeUser = null;
-        
 
         // initialisation des permissions
         resetPermissionsAfterLogout();
@@ -161,6 +166,17 @@ public class CurrentUser implements Serializable {
 
         treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         tree.loadConceptTree();
+
+        var groups = groupService.getListGroupOfConcept(selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentLang());
+        if (CollectionUtils.isNotEmpty(groups) && groups.stream().anyMatch(NodeGroup::isGroupPrivate)) {
+            indexSetting.setIsSelectedTheso(true);
+            indexSetting.setIsValueSelected(false);
+            indexSetting.setIsHomeSelected(true);
+            indexSetting.setIsThesoActive(true);
+            indexSetting.setProjectSelected(false);
+        }
+
 
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
