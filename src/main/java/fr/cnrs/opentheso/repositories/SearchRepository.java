@@ -32,16 +32,20 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
 
     // Recherche sur les termes non-préférés (avec concepts dépréciés)
     @Query(value = """
-        SELECT pt.id_concept as id, npt.lexical_value || ' ->' || t.lexical_value as value
-        FROM concept c
-        JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
-        JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
-        JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
-        WHERE c.status NOT IN ('CA', 'hidden')
-          AND npt.lang = :idLang
-          AND npt.id_thesaurus = :idThesaurus
-          AND f_unaccent(lower(npt.lexical_value)) LIKE %:value%
-        ORDER BY npt.lexical_value <-> :value
+        SELECT non_preferred_term.lexical_value as npt, term.lexical_value as pt, preferred_term.id_concept
+        FROM concept, preferred_term, non_preferred_term, term
+        WHERE preferred_term.id_concept = concept.id_concept 
+              AND preferred_term.id_thesaurus = concept.id_thesaurus 
+              AND non_preferred_term.id_term = preferred_term.id_term 
+              AND non_preferred_term.id_thesaurus = preferred_term.id_thesaurus 
+              AND term.id_term = preferred_term.id_term 
+              AND term.id_thesaurus = preferred_term.id_thesaurus 
+              AND term.lang = non_preferred_term.lang 
+              AND concept.status NOT IN ('CA', 'hidden') 
+              AND non_preferred_term.id_thesaurus = :idThesaurus 
+              AND non_preferred_term.lang = :idLang 
+              AND f_unaccent(lower(non_preferred_term.lexical_value)) LIKE %:value%
+        ORDER BY non_preferred_term.lexical_value <-> :value
         LIMIT 20
     """, nativeQuery = true)
     List<Object[]> searchAltLabels(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
