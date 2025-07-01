@@ -401,9 +401,6 @@
                                          actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                          update="containerIndex"/>
 
-
-
-
                         <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"

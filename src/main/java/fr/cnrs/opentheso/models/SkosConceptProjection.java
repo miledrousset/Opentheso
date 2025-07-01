@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.models;
 
+import java.util.Date;
+
 
 public interface SkosConceptProjection {
     String getUri();
@@ -28,8 +30,8 @@ public interface SkosConceptProjection {
     String getNarrowMatch();
     String getGpsData();
     String getMembre();
-    String getCreated();
-    String getModified();
+    Date getCreated();
+    Date getModified();
     String getImg();
     String getCreator();
     String getContributor();

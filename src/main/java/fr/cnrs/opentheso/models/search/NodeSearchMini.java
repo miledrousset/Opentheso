@@ -29,6 +29,7 @@ public class NodeSearchMini {
         this.altLabelValue = "";
         this.prefLabel = "";
         this.group = false;
+        this.deprecated = false;
     }
 
     public NodeSearchMini(String idFacet, String lexicalValue) {
@@ -37,6 +38,7 @@ public class NodeSearchMini {
         this.altLabelValue = "";
         this.prefLabel = lexicalValue;
         this.facet = false;
+        this.deprecated = false;
     }
 
     public NodeSearchMini(String idConcept, String idTerm, String lexicalValue, String status) {
@@ -45,6 +47,7 @@ public class NodeSearchMini {
         this.altLabelValue = "";
         this.prefLabel = lexicalValue;
         this.facet = false;
+        this.concept = true;
         this.deprecated = "DEP".equalsIgnoreCase(status);
     }
 
