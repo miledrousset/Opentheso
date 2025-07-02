@@ -67,10 +67,12 @@ public class SearchService {
         // Non-preferred terms
         var nonPreferred = searchRepository.searchAltLabels(processedValue, idLang, idTheso);
         for (Object[] row : nonPreferred) {
-            results.add(NodeIdValue.builder()
-                    .id((String) row[0])
-                    .value((String) row[1])
-                    .build());
+            if (results.stream().noneMatch(element -> ((String) row[1]).equalsIgnoreCase(element.getValue()))) {
+                results.add(NodeIdValue.builder()
+                        .id((String) row[0])
+                        .value((String) row[1])
+                        .build());
+            }
         }
 
         return results;
