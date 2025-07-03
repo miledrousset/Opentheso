@@ -912,9 +912,10 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             + "WHERE t.lang = :idLang AND c.idThesaurus = :idThesaurus "
             + "AND (c.idConcept = :identifier OR c.idArk = :identifier OR c.idHandle = :identifier OR c.notation = :identifier) "
             + "AND c.status != 'CA' "
-            + "GROUP BY pt.idConcept, t.idTerm, t.lexicalValue, c.status "
+            + "GROUP BY pt.idConcept, t.idTerm, t.lexicalValue, c.status, cg.isPrivate "
             + "HAVING (cg.isPrivate IS NULL OR cg.isPrivate = false)")
-    List<NodeSearchMini> searchConceptByAllIdPrivate(@Param("identifier") String identifier, @Param("idLang") String idLang,
+    List<NodeSearchMini> searchConceptByAllIdPrivate(@Param("identifier") String identifier,
+                                                     @Param("idLang") String idLang,
                                                      @Param("idThesaurus") String idThesaurus);
 
     @Query(value = "SELECT new fr.cnrs.opentheso.models.search.NodeSearchMini("

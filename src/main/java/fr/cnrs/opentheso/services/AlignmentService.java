@@ -75,9 +75,10 @@ public class AlignmentService {
 
     public boolean addNewAlignment(NodeAlignment nodeAlignment) {
 
+        var idAlignementSource = nodeAlignment.getId_source() == null ? -1 : nodeAlignment.getId_source();
         return addNewAlignment(nodeAlignment.getId_author(), nodeAlignment.getConcept_target(),
                 nodeAlignment.getThesaurus_target(), nodeAlignment.getUri_target(), nodeAlignment.getAlignement_id_type(),
-                nodeAlignment.getInternal_id_concept(), nodeAlignment.getInternal_id_thesaurus(), nodeAlignment.getId_source());
+                nodeAlignment.getInternal_id_concept(), nodeAlignment.getInternal_id_thesaurus(), idAlignementSource);
     }
 
     public boolean addNewAlignment(int author, String conceptTarget, String thesaurusTarget, String uriTarget,

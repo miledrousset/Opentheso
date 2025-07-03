@@ -170,14 +170,15 @@ public class ArkService {
         log.info("Mise à jour de l'id ark (nouvelle valeur {}) du concept id {}", idArk, idConcept);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {} dans le thésaurs id {}", idConcept, idThesaurus);
-            return true;
+            log.info("Aucun concept n'est trouvé avec l'id {} dans le thesaurus id {}", idConcept, idThesaurus);
+            return false;
         }
 
         concept.get().setIdArk(idArk);
+        concept.get().setNotation(concept.get().getNotation() == null ? "" : concept.get().getNotation());
         conceptRepository.save(concept.get());
         log.info("Mise à jou de l'id Ark dans le concept id {} est terminée", idConcept);
-        return false;
+        return true;
     }
 
     public boolean updateUriArk(String idThesaurus, List<String> idConcepts) {
