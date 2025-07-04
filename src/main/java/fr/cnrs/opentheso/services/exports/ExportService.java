@@ -235,13 +235,12 @@ public class ExportService {
                 }
             }
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
             if (ObjectUtils.isNotEmpty(p.getCreated())) {
-                sKOSResource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.CREATED);
+                sKOSResource.addDate(p.getCreated().toString(), SKOSProperty.CREATED);
             }
 
             if (ObjectUtils.isNotEmpty(p.getModified())) {
-                sKOSResource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.MODIFIED);
+                sKOSResource.addDate(p.getCreated().toString(), SKOSProperty.MODIFIED);
             }
 
             result.add(sKOSResource);
