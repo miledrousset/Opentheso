@@ -55,7 +55,7 @@ public interface ResourceRepository extends JpaRepository<Concept, Integer> {
                                              @Param("idLang") String idLang, @Param("offset") int offset, @Param("step") int step);
 
     @Query(value = """
-        SELECT * FROM opentheso_get_concept(:idTheso, :idConcept, :idLang, :offset, :step)
+        SELECT * FROM opentheso_get_concept(:idTheso, :idConcept, :idLang, :offset, :step, :isPrivate)
         AS x(uri text, resourcetype varchar, localuri text, identifier varchar, permalinkid varchar,
              preflabel varchar, altlabel varchar, hidenlabel varchar, preflabel_trad varchar,
              altlabel_trad varchar, hiddenlabel_trad varchar, definition text, example text,
@@ -67,5 +67,6 @@ public interface ResourceRepository extends JpaRepository<Concept, Integer> {
              facets text, externalresources text, concepttype text)
     """, nativeQuery = true)
     Optional<FullConceptProjection> getFullConcept(@Param("idTheso") String idTheso, @Param("idConcept") String idConcept,
-                                                   @Param("idLang") String idLang, @Param("offset") int offset, @Param("step") int step);
+                                                   @Param("idLang") String idLang, @Param("offset") int offset,
+                                                   @Param("step") int step, @Param("isPrivate") boolean isPrivate);
 }

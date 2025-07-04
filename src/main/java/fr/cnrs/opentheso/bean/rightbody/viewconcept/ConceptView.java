@@ -92,6 +92,8 @@ public class ConceptView implements Serializable {
 
     private int step, countOfBranch, offset;
     private String mapScripte = "";
+    private String idConceptSelected = "";
+    private String idLangSelected = "";
     private boolean haveNext, haveCorpus, searchedForCorpus, toggleSwitchAltLabelLang, toggleSwitchNotesLang;
     private NodeConcept nodeConcept;
     private NodeFullConcept nodeFullConcept;
@@ -209,7 +211,8 @@ public class ConceptView implements Serializable {
         if (StringUtils.isEmpty(idLang)) {
             idLang = languageBean.getIdLangue();
         }
-        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step + 1);
+        boolean isPrivate = currentUser.getNodeUser() != null;
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step + 1, isPrivate);
         if(nodeFullConcept == null) return;
 
         logConcept();
@@ -366,7 +369,11 @@ public class ConceptView implements Serializable {
         selectedLang = idLang;
         offset = 0;
 
-        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step+1);
+        this.idConceptSelected = idConcept;
+        this.idLangSelected = idLang;
+
+        boolean isPrivate = currentUser.getNodeUser() != null;
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step+1, isPrivate);
         if(nodeFullConcept == null) return;
         logConcept();
 

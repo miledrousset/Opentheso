@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
@@ -38,6 +39,7 @@ public class GraphD3jsHelper {
     private final GroupService groupService;
     private final ConceptService conceptService;
     private final ConceptAddService conceptAddService;
+    private final CurrentUser currentUser;
 
     private NodeGraphD3js nodeGraphD3js;
     private Preferences nodePreference;
@@ -72,7 +74,8 @@ public class GraphD3jsHelper {
         }
         
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1);
+            boolean isPrivate = currentUser.getNodeUser() != null;
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1, isPrivate);
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
@@ -101,7 +104,8 @@ public class GraphD3jsHelper {
             listIdConcept = listIdConcept.subList(0, 2000);
         }        
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1 );
+            boolean isPrivate = currentUser.getNodeUser() != null;
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1, isPrivate);
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }

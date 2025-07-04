@@ -135,8 +135,8 @@ public class ConceptService {
     private final ThesaurusRepository thesaurusRepository;
 
 
-    public NodeFullConcept getConcept(String idConcept, String idThesaurus, String idLang, int offset, int step) {
-        return resourceService.getFullConcept(idThesaurus, idConcept, idLang, offset, step);
+    public NodeFullConcept getConcept(String idConcept, String idThesaurus, String idLang, int offset, int step, boolean isPrivate) {
+        return resourceService.getFullConcept(idThesaurus, idConcept, idLang, offset, step, isPrivate);
     }
 
     public void updateConcept(Concept concept) {

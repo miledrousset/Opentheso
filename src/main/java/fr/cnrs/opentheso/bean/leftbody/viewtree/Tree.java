@@ -459,15 +459,8 @@ public class Tree implements Serializable {
             if (rightBodySetting.getIndex().equalsIgnoreCase("2")) {
                 indexSetting.setIsValueSelected(true);
 
-                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                        conceptBean.getNodeFullConcept().getIdentifier(),
-                        conceptBean.getSelectedLang());
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeFullConcept().getIdentifier(), conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-
-            /*    for (AlignementElement element : alignmentBean.getAllignementsList()) {
-                    element.setValide(isURLAvailable(element.getTargetUri()));
-                }*/
-
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
@@ -481,8 +474,8 @@ public class Tree implements Serializable {
             editFacet.initEditFacet(((TreeNodeData) node.getData()).getNodeId(), idTheso, idLang);
         }
 
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
     }
 

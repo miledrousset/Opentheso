@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
+import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.ProjectService;
@@ -64,6 +65,7 @@ public class CurrentUser implements Serializable {
 
     private final ConceptView conceptView;
     private final GroupService groupService;
+    private final ConceptService conceptService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
@@ -177,6 +179,9 @@ public class CurrentUser implements Serializable {
             indexSetting.setProjectSelected(false);
         }
 
+        conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
+                selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, false));
+
 
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
@@ -273,6 +278,9 @@ public class CurrentUser implements Serializable {
 
         treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         tree.loadConceptTree();
+
+        conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
+                selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, true));
 
         PrimeFaces.current().executeScript("PF('login').hide();");
 

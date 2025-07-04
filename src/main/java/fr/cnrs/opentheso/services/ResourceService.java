@@ -47,10 +47,10 @@ public class ResourceService {
         }
     }
 
-    public NodeFullConcept getFullConcept(String idThesaurus, String idConcept, String idLang, int offset, int step) {
+    public NodeFullConcept getFullConcept(String idThesaurus, String idConcept, String idLang, int offset, int step, boolean isPrivate) {
 
         log.info("Rechercher toutes les informations du concept {} avec la langue {}", idConcept, idLang);
-        var conceptDetails = resourceRepository.getFullConcept(idThesaurus, idConcept, idLang, offset, step);
+        var conceptDetails = resourceRepository.getFullConcept(idThesaurus, idConcept, idLang, offset, step, isPrivate);
 
         if (conceptDetails.isEmpty()) {
             log.error("Aucun concept n'est trouvé avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
