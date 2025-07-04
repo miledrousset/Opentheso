@@ -80,6 +80,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.application.FacesMessage;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -1258,6 +1259,7 @@ public class ImportFileBean implements Serializable {
         onComplete();
     }
 
+    @Transactional
     public void addCsvThesoToBDDV2() {
 
         if (conceptObjects == null || conceptObjects.isEmpty()) {
@@ -1309,8 +1311,7 @@ public class ImportFileBean implements Serializable {
             switch (conceptObject.getType().trim().toLowerCase()) {
                 case "skos:concept":
                     // ajout de concept
-                    if (csvImportHelper.addConceptV2(
-                            idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
+                    if (csvImportHelper.addConceptV2(idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
                         total++;
                     }
                     break;
@@ -1510,11 +1511,10 @@ public class ImportFileBean implements Serializable {
     /**
      * permet de récupérer les identifiants depuis le prefLabel
      *
-     * @param idTheso
-     * @param idUser
+     * @param idTheso   @
      * @return
      */
-    public StreamedContent compareListToTheso(String idTheso, int idUser) {
+    public StreamedContent compareListToTheso(String idTheso) {
 
         loadDone = false;
         progressStep = 0;
@@ -1586,7 +1586,6 @@ public class ImportFileBean implements Serializable {
                 }
             }
             nodeCompareThesos = nodeCompareThesosTemp;
-            log.error(csvImportHelper.getMessage());
             total = nodeCompareThesos.size();
             loadDone = false;
             importDone = true;
@@ -2718,6 +2717,7 @@ public class ImportFileBean implements Serializable {
      * @param idTheso
      * @param idUser
      */
+    @Transactional
     public void addListConceptsToTheso(String idTheso, int idUser) {
         if (conceptObjects == null || conceptObjects.isEmpty()) {
             warning = "pas de valeurs";
@@ -2788,8 +2788,7 @@ public class ImportFileBean implements Serializable {
                                 continue;
                             }
                         }
-                        if (csvImportHelper.addConceptV2(
-                                idTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
+                        if (csvImportHelper.addConceptV2(idTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
                             total++;
                         }
                         break;
@@ -3031,6 +3030,7 @@ public class ImportFileBean implements Serializable {
 
     }
 
+    @Transactional
     public void addSkosThesoToBDDV2() throws SQLException {
 
         //     long tempsDebut = System.currentTimeMillis();
@@ -3046,12 +3046,7 @@ public class ImportFileBean implements Serializable {
         }
 
 
-        importRdf4jHelper.setInfos(
-                formatDate,
-                currentUser.getNodeUser().getIdUser(),
-                idGroup,
-                selectedLang);
-
+        importRdf4jHelper.setInfos(formatDate, currentUser.getNodeUser().getIdUser(), idGroup, selectedLang);
         importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);
         importRdf4jHelper.setPrefixHandle(prefixHandle);
         importRdf4jHelper.setPrefixDoi(prefixDoi);

@@ -235,7 +235,7 @@ public class ExportService {
                 }
             }
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
             if (ObjectUtils.isNotEmpty(p.getCreated())) {
                 sKOSResource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.CREATED);
             }

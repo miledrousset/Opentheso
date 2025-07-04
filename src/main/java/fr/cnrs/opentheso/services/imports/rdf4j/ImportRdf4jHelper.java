@@ -77,6 +77,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -558,6 +559,7 @@ public class ImportRdf4jHelper {
         addConceptToBdd(acs, idTheso, isCandidatImport);
     }
 
+    @Transactional
     public void addConceptV2(SKOSResource conceptResource, String idTheso) {
         String idConcept;
         if (StringUtils.isEmpty(conceptResource.getIdentifier())) {
