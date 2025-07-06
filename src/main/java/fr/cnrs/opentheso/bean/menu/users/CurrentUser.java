@@ -194,6 +194,13 @@ public class CurrentUser implements Serializable {
         }
     }
 
+    public void setUser(User user) {
+        nodeUser = new NodeUser(user.getId(), user.getUsername(), user.getMail(), user.getActive(),
+                user.getAlertMail(), user.getIsSuperAdmin(), user.getPassToModify(),
+                user.getApiKey(), user.getKeyNeverExpire(), user.getKeyExpiresAt(),
+                user.getIsServiceAccount(), user.getKeyDescription());
+    }
+
     /**
      * Connect l'utilisateur si son compte en récupérant toutes les informations
      * lui concernant

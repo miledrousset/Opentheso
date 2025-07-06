@@ -1,6 +1,10 @@
 package fr.cnrs.opentheso.config;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,85 +17,66 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-    public SecurityConfig() {
-    }
+
+    private final CurrentUser currentUser;
+    private final UserRepository userRepository;
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .sessionManagement(session -> session
-                        .sessionFixation().none() // évite que la session soit perdue après login
-                )
+
+        return http
+                .sessionManagement(session -> session.sessionFixation().none())  // évite que la session soit perdue après login
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login","/logout", "/oauth2/**", "/javax.faces.resource/**", "/").permitAll()
-                        .anyRequest().permitAll() // tout est public
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(request -> request.getServletPath().endsWith(".xhtml"))
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
+                        .anyRequest().permitAll())  // tout est public
+                .csrf(csrf -> csrf.ignoringRequestMatchers(request -> request.getServletPath().endsWith(".xhtml")))
+                .oauth2Login(oauth2 -> oauth2.loginPage("/login")
                         .successHandler(authenticationSuccessHandler()) // <-- important
                         .failureHandler(authenticationFailureHandler()) // <-- important
-                        //.defaultSuccessUrl("/", true)
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userAuthoritiesMapper(this.userAuthoritiesMapper())
-                        )
-                );
-        return http.build();
+                        .userInfoEndpoint(userInfo -> userInfo.userAuthoritiesMapper(this.userAuthoritiesMapper())))
+                .build();
     }
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-            String email = oauthUser.getAttribute("email");
 
-            log.info("Authentification réussie. Email : {}", email);
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
-            ///******* //////
-            ///  ici, je n'arrive pas à récupérer le bean currentUser pour charger les données le l'utilisateur qui arrive de KeyCloak ///
-            /// ****** ////
-    /*        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            CurrentUser currentUser;
             if (attr != null) {
-                HttpSession session = attr.getRequest().getSession(false); // false pour ne pas créer de session si elle n'existe pas
+                var session = attr.getRequest().getSession(false); // false pour ne pas créer de session si elle n'existe pas
+                var oauthUser = (OAuth2User) authentication.getPrincipal();
+
+                String email = oauthUser.getAttribute("email");
+                log.info("Authentification réussie. Email : {}", email);
 
                 if (session != null) {
-                    // Le nom du bean @Named est "currentUser" par défaut
-                    currentUser = (CurrentUser) session.getAttribute("currentUser");
+                    if (StringUtils.isNotEmpty(email)) {
+                        var user = userRepository.findByMail(email);
+                        if (user.isPresent()) {
+                            log.info("Utilisateur trouvé dans la base Opentheso, chargement de la session ...");
+                            currentUser.setUser(user.get());
+                        } else {
+                            log.error("Utilisateur avec email : {} non trouvé", email);
+                        }
+                    }
                 }
             }
-            userRoleGroupService.findUserByEmail(email).ifPresentOrElse(localUser -> {
-                try {
-                  //  userSessionBridgeService.updateCurrentUserInSession(
-                   //         localUser.getMail(), true
-                   // );
-                } catch (Exception e) {
-                    log.error("Erreur lors de l'initialisation de currentUser", e);
-                    try {
-                        response.sendRedirect("/authFailure");
-                    } catch (IOException ioException) {
-                        throw new RuntimeException(ioException);
-                    }
-                    return;
-                }
-          //      log.info("Utilisateur {} transféré dans currentUser", localUser.getUsername());
-            }, () -> {
-                log.warn("Aucun utilisateur trouvé pour l’email : {}", email);
-            });
-
-     */
-
             response.sendRedirect("/");
         };
     }
@@ -120,7 +105,6 @@ public class SecurityConfig {
                     }
                 }
             }
-
             return mappedAuthorities;
         };
     }
