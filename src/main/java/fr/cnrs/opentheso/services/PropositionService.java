@@ -965,7 +965,6 @@ public class PropositionService {
         propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
-    @Transactional
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);

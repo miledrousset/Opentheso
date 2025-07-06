@@ -155,7 +155,7 @@ public class ThesaurusService {
 
         log.info("Vérifier si le thésaurus {} existe", idThesaurus);
         var thesaurus = thesaurusRepository.findById(idThesaurus);
-        log.error("Le thésaurus id {} est trouvé ? {}", idThesaurus, thesaurus.isPresent());
+        log.info("Le thésaurus id {} est trouvé ? {}", idThesaurus, thesaurus.isPresent());
         return thesaurus.isPresent();
     }
 

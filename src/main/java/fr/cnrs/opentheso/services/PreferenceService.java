@@ -133,7 +133,6 @@ public class PreferenceService {
         return true;
     }
 
-    @Transactional
     public void deletePreferenceThesaurus(String idThesaurus) {
 
         log.info("Suppression des préférences du thésaurus id {}", idThesaurus);

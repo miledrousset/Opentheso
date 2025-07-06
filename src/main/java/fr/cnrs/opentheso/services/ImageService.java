@@ -83,7 +83,6 @@ public class ImageService {
                 .build());
     }
 
-    @Transactional
     public void deleteImagesByThesaurus(String idThesaurus) {
 
         log.info("Suppression de toutes les images présentes dans le thésaurus id {}", idThesaurus);

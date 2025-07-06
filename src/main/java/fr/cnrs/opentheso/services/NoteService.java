@@ -90,7 +90,6 @@ public class NoteService {
                 .build());
     }
 
-    @Transactional
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression des notes de thesaurus: " + idThesaurus);

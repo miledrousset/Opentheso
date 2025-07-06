@@ -227,7 +227,6 @@ public class ConceptService {
         conceptRepository.setTopConceptTag(status, idConcept, idThesaurus);
     }
 
-    @Transactional
     public void deleteByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les concepts présents dans le thésaurus id {}", idThesaurus);

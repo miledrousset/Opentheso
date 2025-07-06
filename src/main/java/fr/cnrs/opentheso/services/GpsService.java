@@ -70,7 +70,6 @@ public class GpsService {
         gpsRepository.deleteById(gps.getId());
     }
 
-    @Transactional
     public void deleteGpsByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les GPS présents dans le thésaurus id {}", idThesaurus);

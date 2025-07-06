@@ -59,7 +59,6 @@ public class RelationService {
         return hierarchicalRelationshipRepository.save(hierarchicalRelationship);
     }
 
-    @Transactional
     public void deleteAllByThesaurus(String idThesaurus) {
 
         log.info("Suppression des relation des concepts présents dans le thésaurus id {}", idThesaurus);

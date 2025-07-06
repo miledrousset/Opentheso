@@ -16,11 +16,13 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author miledrousset
  */
+@Slf4j
 @Getter
 @Setter
 @SessionScoped
@@ -71,12 +73,17 @@ public class DeleteThesaurusBean implements Serializable {
         }
 
         thesaurusService.deleteDroitByThesaurus(idThesaurusToDelete);
-        
-        // suppression complète du thésaurus
-        if(!thesaurusService.deleteThesaurus(idThesaurusToDelete)){
-            MessageUtils.showErrorMessage("Erreur pendant la suppression !!!");
-            return;
+
+        try {
+            // suppression complète du thésaurus
+            if(!thesaurusService.deleteThesaurus(idThesaurusToDelete)){
+                MessageUtils.showErrorMessage("Erreur pendant la suppression !!!");
+                return;
+            }
+        } catch (Exception exception) {
+            log.info("Erreur de suppression : " + exception.getMessage());
         }
+
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
         if(idThesaurusToDelete.equalsIgnoreCase(currentIdThesaurus)) {
             selectedTheso.setSelectedIdTheso("");

@@ -230,7 +230,6 @@ public class TermService {
         nonPreferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
     }
 
-    @Transactional
     public void deleteAllTermsInThesaurus(String idThesaurus) {
 
         log.info("Suppression des relations Term_Concept");

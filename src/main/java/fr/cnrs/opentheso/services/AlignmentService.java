@@ -303,7 +303,6 @@ public class AlignmentService {
         return formatAlignements(alignements, idThesaurus);
     }
 
-    @Transactional
     public void deleteAllAlignmentsByThesaurus(String idThesaurus) {
 
         log.info("Suppression de tous les alignements présents dans le thésaurus {}", idThesaurus);
