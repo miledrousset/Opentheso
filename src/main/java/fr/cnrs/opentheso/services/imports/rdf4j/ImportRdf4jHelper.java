@@ -67,121 +67,66 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-/**
- *
- * @author Quincy
- */
 @Data
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ImportRdf4jHelper {
 
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private AlignmentService alignmentService;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private ExternalResourcesRepository externalResourcesRepository;
-
-    @Autowired
-    private ThesaurusDcTermRepository thesaurusDcTermRepository;
-
-    @Autowired
-    private RelationService relationService;
-
-    @Autowired
-    private UserGroupThesaurusRepository userGroupThesaurusRepository;
-
-    @Autowired
-    private GpsService gpsService;
-
-    @Autowired
-    private StatusRepository statusRepository;
-
-    @Autowired
-    private RelationGroupService relationGroupService;
+    private final DataSource dataSource;
+    private final AlignmentService alignmentService;
+    private final ImageService imageService;
+    private final PreferenceService preferenceService;
+    private final ExternalResourcesRepository externalResourcesRepository;
+    private final ThesaurusDcTermRepository thesaurusDcTermRepository;
+    private final RelationService relationService;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final GpsService gpsService;
+    private final StatusRepository statusRepository;
+    private final RelationGroupService relationGroupService;
+    private final CandidatStatusRepository candidatStatusRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final TermService termService;
+    private final GroupService groupService;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
+    private final NoteService noteService;
+    private final FacetService facetService;
+    private final ConceptAddService conceptAddService;
 
 
-    private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
-    private String langueSource;
-    private String formatDate;
-    private int idUser;
-    private int idGroupUser;
-    private ArrayList<String> idLangsFound;
-
-    //    private boolean useArk;
-    private String selectedIdentifier;
-    private String prefixHandle;
-    private String prefixDoi;
-
+    private List<String> idGroups = new ArrayList<>();
+    private int idUser, idGroupUser;
+    private List<String> idLangsFound = new ArrayList<>(), hasTopConcceptList = new ArrayList<>();;
+    private String langueSource, formatDate, selectedIdentifier, prefixHandle, prefixDoi;
     private Preferences nodePreference;
-    private StringBuilder message;
-
-    HashMap<String, String> memberHashMap = new HashMap<>();
-    HashMap<String, String> groupSubGroup = new HashMap<>(); // pour garder en mémoire les relations de types (member) pour détecter ce qui est groupe ou concept 
-
-    ArrayList<String> hasTopConcceptList = new ArrayList<>();
-
+    private StringBuilder message = new StringBuilder();
+    private HashMap<String, String> memberHashMap = new HashMap<>();
+    private HashMap<String, String> groupSubGroup = new HashMap<>(); // pour garder en mémoire les relations de types (member) pour détecter ce qui est groupe ou concept
     private SKOSXmlDocument skosXmlDocument;
-
     boolean isFirst = true;
-    @Autowired
-    private CandidatStatusRepository candidatStatusRepository;
-    @Autowired
-    private NonPreferredTermService nonPreferredTermService;
-    @Autowired
-    private TermService termService;
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private ThesaurusService thesaurusService;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private NoteService noteService;
-    @Autowired
-    private FacetService facetService;
-    @Autowired
-    private ConceptAddService conceptAddService;
 
-    public ImportRdf4jHelper() {
-        idGroups = new ArrayList<>();
-        message = new StringBuilder();
-        idLangsFound = new ArrayList<>();
-        isFirst = true;
-    }
 
     /**
      * initialisation des paramètres d'import
-     *
-     * @param formatDate
-     * @param idGroupUser
-     * @param idUser
-     * @param langueSource
-     * @return
      */
     public boolean setInfos(String formatDate, int idUser, int idGroupUser, String langueSource) {
         this.formatDate = formatDate;
@@ -193,9 +138,6 @@ public class ImportRdf4jHelper {
 
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
-     *
-     * @return
-     * @throws java.sql.SQLException
      */
     public String addThesaurus() throws SQLException {
 
@@ -458,7 +400,12 @@ public class ImportRdf4jHelper {
                 }
             }
 
-            groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            try {
+                groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+                groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            }
 
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {

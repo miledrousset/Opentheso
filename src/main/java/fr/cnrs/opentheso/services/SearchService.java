@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.models.terms.NodeElement;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.repositories.SearchRepository;
 
+import jakarta.persistence.EntityManager;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +46,7 @@ public class SearchService {
     private final GroupService groupService;
     private final NoteService noteService;
     private final TermService termService;
-    private final DataSource dataSource;
+    private final EntityManager entityManager;
 
     public List<NodeIdValue> searchAutoCompletionForRelationIdValue(String value, String idLang, String idTheso) {
 
@@ -515,58 +514,29 @@ public class SearchService {
         return results;
     }
 
-    public List<String> searchIdConceptFromNotes(String value, String idLang, String idThesaurus) {
+    public List<String> searchIdConceptFromNotes(String rawValue, String lang, String thesaurusId) {
 
-        var tabIdConcepts = new ArrayList<String>();
-
-        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        var value = fr.cnrs.opentheso.utils.StringUtils.convertString(rawValue);
         value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
-        var multiValues = "";
+        var likeClause = "";
         var values = value.trim().split(" ");
         for (String value1 : values) {
-            multiValues += " and (f_unaccent(lower(note.lexicalvalue)) like '%" + value1 + "%')";
+            likeClause += "and (f_unaccent(lower(note.lexicalvalue)) like '%" + value1 + "%') ";
         }
 
-        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
-            // notes de type terme
-            var query = "SELECT distinct preferred_term.id_concept"
-                    + " FROM note, preferred_term, concept WHERE"
-                    + " concept.id_concept = preferred_term.id_concept"
-                    + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                    + " and"
-                    + " preferred_term.id_term = note.id_term"
-                    + " and"
-                    + " preferred_term.id_thesaurus = note.id_thesaurus"
-                    + multiValues
-                    + " and note.id_thesaurus = '" + idThesaurus + "'"
-                    + (StringUtils.isEmpty(idLang) ? "" :  "and note.lang ='" + idLang + "'")
-                    + " and concept.status != 'CA' limit 50";
-
-            var resultSet = stmt.executeQuery(query);
-            while (resultSet.next()) {
-                tabIdConcepts.add(resultSet.getString("id_concept"));
-            }
-            // notes des concepts
-            resultSet = stmt.executeQuery("SELECT distinct preferred_term.id_concept"
-                    + " FROM note, preferred_term, concept WHERE"
-                    + " concept.id_concept = preferred_term.id_concept"
-                    + " and concept.id_thesaurus = preferred_term.id_thesaurus"
-                    + " and"
-                    + " preferred_term.id_concept = note.id_concept"
-                    + " and"
-                    + " preferred_term.id_thesaurus = note.id_thesaurus"
-                    + multiValues
-                    + " and note.id_thesaurus = '" + idThesaurus + "'"
-                    + (StringUtils.isEmpty(idLang) ? "" :  "and note.lang ='" + idLang + "'")
-                    + " and concept.status != 'CA' limit 50");
-            while (resultSet.next()) {
-                tabIdConcepts.add(resultSet.getString("id_concept"));
-            }
-        } catch (SQLException ex) {
-            log.error("Erreur pendant la recherche par note avec la valeur : " + value);
-        }
-        return tabIdConcepts;
+        return entityManager.createNativeQuery("SELECT DISTINCT preferred_term.id_concept "
+                + "FROM note, preferred_term, concept "
+                + "WHERE concept.id_concept = preferred_term.id_concept "
+                + "AND concept.id_thesaurus = preferred_term.id_thesaurus "
+                + "AND preferred_term.id_thesaurus = note.id_thesaurus "
+                + "AND preferred_term.id_concept = note.identifier "
+                + likeClause
+                + "AND note.id_thesaurus = '"+ thesaurusId +"' "
+                + "AND note.lang = '" + lang + "' "
+                + "AND concept.status != 'CA' "
+                + "LIMIT 50;")
+                .getResultList();
     }
 
     public List<String> searchAutoCompletionWSForWidget(String value, String idLang, String[] idGroups, String idTheso) {

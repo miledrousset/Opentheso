@@ -445,7 +445,6 @@ public class ThesaurusService {
         return true;
     }
 
-    @Transactional
     public boolean deleteThesaurus(String idThesaurus) {
 
         log.info("Suppression du thésaurus id {}", idThesaurus);

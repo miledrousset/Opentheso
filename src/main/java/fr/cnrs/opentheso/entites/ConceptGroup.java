@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -26,6 +27,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@IdClass(ConceptGroupId.class)
 @Table(name = "concept_group")
 @EntityListeners(AuditingEntityListener.class)
 public class ConceptGroup implements Serializable {
@@ -35,6 +37,10 @@ public class ConceptGroup implements Serializable {
     @Id
     @Column(name = "idgroup", nullable = false)
     private String idGroup;
+
+    @Id
+    @Column(name = "idthesaurus")
+    private String idThesaurus;
 
     @Column(name = "id_ark", nullable = false)
     private String idArk;
@@ -66,8 +72,5 @@ public class ConceptGroup implements Serializable {
 
     @Column(name = "private", nullable = false)
     private boolean isPrivate;
-
-    @Column(name = "idthesaurus")
-    private String idThesaurus;
 
 }

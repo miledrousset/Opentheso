@@ -55,16 +55,27 @@ public class GroupService {
     public void insertGroup(String idGroup, String idThesaurus, String idArk, String typeCode, String notation, Date created, Date modified) {
 
         log.info("Ajout d'un nouveau group (MT, domaine etc..) avec le libellé dans le cas d'un import avec idGroup existant");
-        conceptGroupRepository.save(ConceptGroup.builder()
-                .idGroup(idGroup.toLowerCase())
-                .idArk(StringUtils.isEmpty(idArk) ? "" : idArk)
-                .idThesaurus(idThesaurus)
-                .idTypeCode(typeCode)
-                .notation(notation)
-                .idHandle("")
-                .created(created)
-                .modified(modified)
-                .build());
+        var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
+        if (conceptGroup.isEmpty()) {
+            conceptGroupRepository.save(ConceptGroup.builder()
+                    .id(Integer.parseInt(idGroup.substring(1)))
+                    .idGroup(idGroup.toLowerCase())
+                    .idArk(StringUtils.isEmpty(idArk) ? "" : idArk)
+                    .idThesaurus(idThesaurus)
+                    .idTypeCode(typeCode)
+                    .notation(notation)
+                    .idHandle("")
+                    .idDoi("")
+                    .created(created == null ? new Date() : created)
+                    .modified(modified == null ? new Date() : modified)
+                    .build());
+        } else {
+            conceptGroup.get().setIdArk(StringUtils.isEmpty(idArk) ? "" : idArk);
+            conceptGroup.get().setIdTypeCode(typeCode);
+            conceptGroup.get().setNotation(notation);
+            conceptGroup.get().setModified(new Date());
+            conceptGroupRepository.save(conceptGroup.get());
+        }
     }
 
     public boolean addConceptGroupConcept(String idGroup, String idConcept, String idThesaurus) {

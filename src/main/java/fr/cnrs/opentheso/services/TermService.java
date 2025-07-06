@@ -249,7 +249,6 @@ public class TermService {
         termHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
-    @Transactional
     public void updateThesaurusId(String newIdThesaurus, String oldIdThesaurus) {
 
         log.info("Suppression des relations Term_Concept");

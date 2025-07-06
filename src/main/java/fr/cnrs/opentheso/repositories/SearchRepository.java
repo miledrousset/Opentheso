@@ -115,7 +115,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
           AND f_unaccent(lower(npt.lexical_value)) LIKE %:value%
         ORDER BY npt.lexical_value <-> :value
         LIMIT 20
-   \s""", nativeQuery = true)
+    """, nativeQuery = true)
     List<Object[]> searchAltCustomRelations(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
