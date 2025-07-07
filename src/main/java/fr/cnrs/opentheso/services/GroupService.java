@@ -57,8 +57,9 @@ public class GroupService {
         log.info("Ajout d'un nouveau group (MT, domaine etc..) avec le libellé dans le cas d'un import avec idGroup existant");
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
+
             conceptGroupRepository.save(ConceptGroup.builder()
-                    .id(Integer.parseInt(idGroup.substring(1)))
+                    .id(conceptGroupRepository.getNextConceptGroupSequence().intValue())
                     .idGroup(idGroup.toLowerCase())
                     .idArk(StringUtils.isEmpty(idArk) ? "" : idArk)
                     .idThesaurus(idThesaurus)

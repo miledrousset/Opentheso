@@ -226,6 +226,7 @@ public class ImportRdf4jHelper {
     private void setPreferences(String idTheso, String uri) {
 
         if (nodePreference == null) {
+            langueSource = StringUtils.isEmpty(langueSource) ? "fr" : langueSource;
             preferenceService.initPreferences(idTheso, langueSource);
             nodePreference = preferenceService.getThesaurusPreferences(idTheso);
             nodePreference.setCheminSite(uri);
