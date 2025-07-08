@@ -47,6 +47,7 @@ public interface UserGroupThesaurusRepository extends JpaRepository<UserGroupThe
         JOIN Thesaurus t ON t.idThesaurus = ugt.idThesaurus
         WHERE ugt.idGroup = :idGroup
         AND (:isPrivate = TRUE OR t.isPrivate = FALSE)
+        ORDER BY t.created DESC
     """)
     List<String> findThesaurusIdsByGroupAndVisibility(@Param("idGroup") int idGroup, @Param("isPrivate") boolean isPrivate);
 

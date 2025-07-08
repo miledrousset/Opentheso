@@ -339,7 +339,7 @@ public class CurrentUser implements Serializable {
                 nodeProjectThesoRoles.add(nodeProjectThesoRole);
             }
             userPermissions.setNodeProjectsWithThesosRoles(nodeProjectThesoRoles);
-            setListThesoForUser();
+            setListThesaurusForUser();
         }        
     }
     
@@ -362,9 +362,9 @@ public class CurrentUser implements Serializable {
         userPermissions.setProjectOfselectedThesoName("");
     }
     
-    private void setListThesoForUser(){
+    private void setListThesaurusForUser(){
         boolean resetTheso = true;
-        ArrayList<NodeIdValue> thesos = new ArrayList<>();
+        List<NodeIdValue> thesaurusList = new ArrayList<>();
         for (NodeProjectThesoRole nodeProjectsWithThesosRole : userPermissions.getNodeProjectsWithThesosRoles()) {
             if(userPermissions.getSelectedProject() == -1) {
                 for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
@@ -376,7 +376,7 @@ public class CurrentUser implements Serializable {
                             resetTheso = false;
                         }
                     }
-                    thesos.add(nodeIdValue);
+                    thesaurusList.add(nodeIdValue);
                 } 
             }  else {          
                 if(userPermissions.getSelectedProject() == nodeProjectsWithThesosRole.getIdProject()) {
@@ -389,13 +389,13 @@ public class CurrentUser implements Serializable {
                                 resetTheso = false;
                             }
                         }
-                        thesos.add(nodeIdValue);
+                        thesaurusList.add(nodeIdValue);
                     } 
                 }
             }
         }
 
-        userPermissions.setListThesaurus(thesos);
+        userPermissions.setListThesaurus(thesaurusList);
         if(resetTheso) {
             resetUserPermissionsForThisThesaurus();
             resetUserPermissionsForThisProject();

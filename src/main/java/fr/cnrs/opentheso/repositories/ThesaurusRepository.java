@@ -15,7 +15,10 @@ import java.util.Optional;
 
 public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
 
-    List<Thesaurus> findAllByIsPrivateFalse();
+    List<Thesaurus> findAllByIsPrivateFalseOrderByCreatedDesc();
+
+    @Query(value = "SELECT * FROM thesaurus ORDER BY created DESC", nativeQuery = true)
+    List<Thesaurus> findAllOrderByCreatedDesc();
 
     @Query(value = "SELECT id_thesaurus FROM thesaurus WHERE REPLACE(id_ark, '-', '') = REPLACE(:arkId, '-', '') LIMIT 1", nativeQuery = true)
     Optional<String> findIdThesaurusByArkId(@Param("arkId") String arkId);

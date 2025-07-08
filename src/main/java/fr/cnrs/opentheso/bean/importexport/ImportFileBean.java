@@ -3077,10 +3077,6 @@ public class ImportFileBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                 "Le thesaurus " + idTheso + " est correctement ajouté !", "import réussi"));
         PrimeFaces.current().ajax().update("messageIndex");
-
-        /*    long tempsFin = System.currentTimeMillis();
-        double seconds = (tempsFin - tempsDebut) / 1000F;
-        System.out.println("Nouvelle méthode : Opération effectuée en: " + seconds + " secondes.");*/
     }
 
     /**

@@ -162,7 +162,7 @@ public class ThesaurusService {
     public List<String> getAllIdOfThesaurus(boolean withPrivateThesaurus) {
 
         log.info("Recherche des id des thésaurus (avec les thésaurus privées : {})", withPrivateThesaurus);
-        var thesaurus = withPrivateThesaurus ? thesaurusRepository.findAll() : thesaurusRepository.findAllByIsPrivateFalse();
+        var thesaurus = withPrivateThesaurus ? thesaurusRepository.findAllOrderByCreatedDesc() : thesaurusRepository.findAllByIsPrivateFalseOrderByCreatedDesc();
 
         if (CollectionUtils.isEmpty(thesaurus)) {
             log.info("Aucun thésaurus trouvé !");
