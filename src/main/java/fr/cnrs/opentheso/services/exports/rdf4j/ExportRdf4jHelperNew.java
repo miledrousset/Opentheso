@@ -489,17 +489,13 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
 
         //dates
-        String created = null;
-        String modified = null;
-        if(nodeGroupLabel.getCreated()!=null)
-            created = nodeGroupLabel.getCreated().toString();
-        if(nodeGroupLabel.getModified()!=null)
-            modified = nodeGroupLabel.getModified().toString();
-        if (created != null) {
-            sKOSResource.addDate(created, SKOSProperty.CREATED);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        if(nodeGroupLabel.getCreated()!=null) {
+            sKOSResource.addDate(dateFormat.format(nodeGroupLabel.getCreated()), SKOSProperty.CREATED);
         }
-        if (modified != null) {
-            sKOSResource.addDate(modified, SKOSProperty.MODIFIED);
+
+        if(nodeGroupLabel.getModified()!=null) {
+            sKOSResource.addDate(dateFormat.format(nodeGroupLabel.getModified()), SKOSProperty.MODIFIED);
         }
         
         for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {

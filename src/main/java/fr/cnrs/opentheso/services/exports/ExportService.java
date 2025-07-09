@@ -95,8 +95,10 @@ public class ExportService {
             }
 
             resource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
-            resource.addDate(p.getCreated().toString(), SKOSProperty.CREATED);
-            resource.addDate(p.getModified().toString(), SKOSProperty.MODIFIED);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            resource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.CREATED);
+            resource.addDate(dateFormat.format(p.getModified()), SKOSProperty.MODIFIED);
 
             addDoc(p.getDefinition(), resource, SKOSProperty.DEFINITION);
             addDoc(p.getNote(), resource, SKOSProperty.NOTE);
@@ -121,8 +123,6 @@ public class ExportService {
         List<SKOSResource> result = new ArrayList<>();
 
         for (SkosConceptProjection p : projections) {
-            SKOSResource resource = new SKOSResource();
-
             SKOSResource sKOSResource = new SKOSResource();
             sKOSResource.setProperty(SKOSProperty.CONCEPT);
             sKOSResource.setUri(p.getUri());
