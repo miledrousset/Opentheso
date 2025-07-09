@@ -60,8 +60,7 @@
 
                             <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                <p:link
-                                        href="#{not empty selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference) ? selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference) : '#'}"
+                                <p:link href="#{not empty selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference) ? selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference) : '#'}"
                                         value="#{selectedThesaurus.getUriOfTheso(roleOnThesaurus.nodePreference)}"
                                         style="color: #164A78; font-size: 13px;color: #F47B2A;" />
                             </h:panelGroup>
