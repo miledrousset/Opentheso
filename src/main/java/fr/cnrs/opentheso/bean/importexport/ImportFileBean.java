@@ -3031,9 +3031,8 @@ public class ImportFileBean implements Serializable {
     }
 
     @Transactional
-    public void addSkosThesoToBDDV2() throws SQLException {
+    public void addSkosThesaurusToBDDV2() throws SQLException {
 
-        //     long tempsDebut = System.currentTimeMillis();
         if (StringUtils.isEmpty(selectedLang)) {
             selectedLang = workLanguage;
         }
@@ -3044,7 +3043,6 @@ public class ImportFileBean implements Serializable {
         } else {
             idGroup = Integer.parseInt(selectedUserProject);
         }
-
 
         importRdf4jHelper.setInfos(formatDate, currentUser.getNodeUser().getIdUser(), idGroup, selectedLang);
         importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);

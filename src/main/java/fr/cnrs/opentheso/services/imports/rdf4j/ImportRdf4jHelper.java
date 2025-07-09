@@ -219,34 +219,37 @@ public class ImportRdf4jHelper {
         for (SKOSRelation relation : skosXmlDocument.getConceptScheme().getRelationsList()) {
             hasTopConcceptList.add(relation.getTargetUri());
         }
-        setPreferences(idTheso1, skosXmlDocument.getTitle());
+        initPreferencesThesaurus(idTheso1, skosXmlDocument.getTitle());
         return idTheso1;
     }
 
-    private void setPreferences(String idTheso, String uri) {
+    private void initPreferencesThesaurus(String idThesaurus, String uri) {
+        langueSource = StringUtils.isEmpty(langueSource) ? "fr" : langueSource;
+        preferenceService.initPreferences(idThesaurus, langueSource);
+        nodePreference = preferenceService.getThesaurusPreferences(idThesaurus);
+        nodePreference.setCheminSite(uri);
+        nodePreference.setPreferredName(idThesaurus);
+        nodePreference.setOriginalUri(uri);
+        if (selectedIdentifier.equalsIgnoreCase("ark")) {
+            nodePreference.setOriginalUriIsArk(true);
+        }
+        if (selectedIdentifier.equalsIgnoreCase("handle")) {
+            nodePreference.setOriginalUriIsHandle(true);
+        }
+        if (selectedIdentifier.equalsIgnoreCase("doi")) {
+            nodePreference.setOriginalUriIsDoi(true);
+        }
+        preferenceService.updateAllPreferenceUser(nodePreference);
+    }
+
+    private void setPreferences(String idThesaurus, String uri) {
 
         if (nodePreference == null) {
-            langueSource = StringUtils.isEmpty(langueSource) ? "fr" : langueSource;
-            preferenceService.initPreferences(idTheso, langueSource);
-            nodePreference = preferenceService.getThesaurusPreferences(idTheso);
-            nodePreference.setCheminSite(uri);
-            nodePreference.setPreferredName(idTheso);
-            nodePreference.setOriginalUri(uri);
-            if (selectedIdentifier.equalsIgnoreCase("ark")) {
-                nodePreference.setOriginalUriIsArk(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("handle")) {
-                nodePreference.setOriginalUriIsHandle(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("doi")) {
-                nodePreference.setOriginalUriIsDoi(true);
-            }
-            preferenceService.updateAllPreferenceUser(nodePreference);
-
+            initPreferencesThesaurus(idThesaurus, uri);
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setSourceLang(langueSource);
-            nodePreference.setPreferredName(idTheso);
+            nodePreference.setPreferredName(idThesaurus);
             nodePreference.setOriginalUri(uri);
             if (selectedIdentifier.equalsIgnoreCase("ark")) {
                 nodePreference.setOriginalUriIsArk(true);
@@ -257,7 +260,7 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
-            preferenceService.addPreference(nodePreference, idTheso);
+            preferenceService.addPreference(nodePreference, idThesaurus);
         }
     }
 
