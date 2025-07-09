@@ -28,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Slf4j
@@ -238,6 +235,12 @@ public class ThesaurusService {
 
         log.info("Changement de la visibilité du thésaurus id {} en {}", idThesaurus, isPrivateTheso);
         thesaurusRepository.updateVisibility(idThesaurus, isPrivateTheso);
+    }
+
+    public Boolean isPrivateThesaurus(String idThesaurus) {
+
+        log.info("Savoir si le thésaurus est privé id {}", idThesaurus);
+        return thesaurusRepository.isPrivateThesaurus(idThesaurus);
     }
 
     public List<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(String idThesaurus, String idLang) {

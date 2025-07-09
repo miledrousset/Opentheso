@@ -35,6 +35,10 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
             "ORDER BY LOWER(tl.title)")
     List<NodeUserGroupThesaurus> getAllThesaurusWithoutGroup(@Param("idLang") String idLang);
 
+    @Query(value = "SELECT t.private FROM thesaurus t WHERE t.id_thesaurus = :idThesaurus", nativeQuery = true)
+    Boolean isPrivateThesaurus(@Param("idThesaurus") String idThesaurus);
+
+
     @Modifying
     @Transactional
     @Query("UPDATE Thesaurus t SET t.isPrivate = :isPrivate WHERE t.idThesaurus = :idThesaurus")
