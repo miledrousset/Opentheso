@@ -49,7 +49,7 @@ public class NewThesaurusBean implements Serializable {
 
     public void init() {
         
-        allLangs = languageRepository.findAll();
+        allLangs = languageRepository.findAllOrderByCodePays();
         selectedLang = null;
         selectedProject = "";
         title = "";

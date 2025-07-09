@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.models.ConceptGroupProjection;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.models.statistiques.ConceptStatisticData;
 import fr.cnrs.opentheso.models.statistiques.GenericStatistiqueData;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptService;
@@ -39,6 +40,7 @@ public class StatistiqueService {
     private final ThesaurusService thesaurusService;
     private final ConceptStatusRepository conceptStatusRepository;
     private final AlignmentService alignmentService;
+    private final ConceptRepository conceptRepository;
 
 
     public List<GenericStatistiqueData> searchAllCollectionsByThesaurus(String idThesaurus, String idLang) {
@@ -175,6 +177,21 @@ public class StatistiqueService {
                     .toList();
         }
         return List.of();
+    }
+
+    public int getNbCpt(String idThesaurus) {
+
+        return conceptRepository.countConcepts(idThesaurus);
+    }
+
+    public int getNbCandidate(String idThesaurus) {
+
+        return conceptRepository.countCandidate(idThesaurus);
+    }
+
+    public int getNbOfDeprecatedConcepts(String idThesaurus) {
+
+        return conceptRepository.countConceptDeprecated(idThesaurus);
     }
 
 }

@@ -11,6 +11,11 @@ import java.util.Optional;
 
 public interface LanguageRepository extends JpaRepository<LanguageIso639, Integer> {
 
+    @Query(value = """
+        SELECT lang.* FROM languages_iso639 lang ORDER BY lang.iso639_1
+    """, nativeQuery = true)
+    List<LanguageIso639> findAllOrderByCodePays();
+
     Optional<LanguageIso639> findByIso6391(String iso6391);
 
     @Query(value = """

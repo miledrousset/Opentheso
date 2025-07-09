@@ -14,11 +14,13 @@ import fr.cnrs.opentheso.services.UserRoleGroupService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
 
+import jakarta.faces.application.FacesMessage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.Data;
@@ -211,8 +213,21 @@ public class RoleOnThesaurusBean implements Serializable {
         nodeListThesaurusAsAdmin = nodeListThesaurusAsAdmin.stream()
                 .sorted(Comparator.comparing(NodeIdValue::getCreationDate, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
-    }    
-            
+    }
+
+    public void showInfosOfThesaurus(String idThesaurus) {
+
+        var conceptsCount = statistiqueService.getNbCpt(idThesaurus);
+        var candidatesCount = statistiqueService.getNbCandidate(idThesaurus);
+        var deprecatedsCount = statistiqueService.getNbOfDeprecatedConcepts(idThesaurus);
+
+        var message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
+                languageBean.getMsg("candidat.total_concepts") + " = " + conceptsCount + "\n"
+                        + languageBean.getMsg("candidat.titre") + " = " + candidatesCount + "\n"
+                        + languageBean.getMsg("search.deprecated") + " = " + deprecatedsCount);
+
+        PrimeFaces.current().dialog().showMessageDynamic(message);
+    }
             
     // on ajoute les titres + id, sinon l'identifiant du thésauurus
     public void addAuthorizedThesoToHM() {

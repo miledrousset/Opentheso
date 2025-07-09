@@ -30,6 +30,21 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
 
     List<Concept> findAllByIdThesaurusAndTopConceptAndStatusNotLike(String idThesaurus, boolean isTopConcept, String status);
 
+    @Query(value = """
+        SELECT count(c.id_concept) FROM Concept c WHERE c.id_thesaurus = '" + idThesaurus + "' and c.status not in ('CA', 'DEP')
+    """, nativeQuery = true)
+    int countConcepts(@Param("idThesaurus") String idThesaurus);
+
+    @Query(value = """
+        SELECT count(c.id_concept) FROM Concept c WHERE c.id_thesaurus = '" + idThesaurus + "' and status = 'CA'
+    """, nativeQuery = true)
+    int countCandidate(@Param("idThesaurus") String idThesaurus);
+
+    @Query(value = """
+       SELECT count(c.id_concept) FROM Concept c WHERE c.id_thesaurus = '" + idThesaurus + "' and status = 'DEP'
+    """, nativeQuery = true)
+    int countConceptDeprecated(@Param("idThesaurus") String idThesaurus);
+
     @Modifying
     @Transactional
     @Query("UPDATE Concept c SET c.topConcept = :status WHERE c.idConcept = :idConcept AND c.idThesaurus = :idThesaurus")
