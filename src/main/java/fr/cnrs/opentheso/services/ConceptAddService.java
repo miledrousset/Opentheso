@@ -237,7 +237,7 @@ public class ConceptAddService {
             if (preferences.isUseArkLocal()) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 idConcepts.add(idConcept);
-                if (arkService.generateArkIdLocal(concept.getIdThesaurus(), idConcepts)) {
+                if (!arkService.generateArkIdLocal(concept.getIdThesaurus(), idConcepts)) {
                     MessageUtils.showErrorMessage("La création du Ark local a échouée");
                     log.error("La création du Ark local a échouée");
                 }

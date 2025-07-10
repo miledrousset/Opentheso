@@ -156,7 +156,7 @@ public class ProcessCandidateBean implements Serializable {
             if (nodePreference.isUseArkLocal()) {
                 List<String> idConcepts = new ArrayList<>();
                 idConcepts.add(selectedCandidateTemp.getIdConcepte());
-                if (arkService.generateArkIdLocal(selectedCandidateTemp.getIdThesaurus(), idConcepts)) {
+                if (!arkService.generateArkIdLocal(selectedCandidateTemp.getIdThesaurus(), idConcepts)) {
                     MessageUtils.showErrorMessage("La création du Ark local a échoué");
                     log.error("La création du Ark local a échoué");
                 }

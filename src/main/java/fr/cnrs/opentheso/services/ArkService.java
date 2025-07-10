@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -175,6 +176,7 @@ public class ArkService {
         }
 
         concept.get().setIdArk(idArk);
+        concept.get().setModified(new Date());
         concept.get().setNotation(concept.get().getNotation() == null ? "" : concept.get().getNotation());
         conceptRepository.save(concept.get());
         log.info("Mise à jou de l'id Ark dans le concept id {} est terminée", idConcept);
@@ -219,7 +221,7 @@ public class ArkService {
         log.info("Générer les idArk en local");
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preference == null || !preference.isUseArkLocal()) {
-            return true;
+            return false;
         }
 
         for (String idConcept : idConcepts) {
@@ -229,11 +231,11 @@ public class ArkService {
                 idArk = ToolsHelper.getNewId(preference.getSizeIdArkLocal(), preference.isUppercaseForArk(), true);
                 idArk = preference.getNaanArkLocal() + "/" + preference.getPrefixArkLocal() + idArk;
             }
-            if (updateArkIdOfConcept(idConcept, idThesaurus, idArk)) {
-                return true;
+            if (!updateArkIdOfConcept(idConcept, idThesaurus, idArk)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private Concept getConcept(String idConcept, String idThesaurus) {

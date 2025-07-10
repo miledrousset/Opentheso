@@ -537,6 +537,10 @@ public class EditConcept implements Serializable {
         ArrayList<String> idConcepts = new ArrayList<>();
         idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         generateArkIds(idConcepts);
+
+        conceptView.getConcept(conceptView.getNodeConcept().getConcept().getIdThesaurus(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
     }
 
     /**
@@ -551,6 +555,10 @@ public class EditConcept implements Serializable {
             return;
         }
         generateArkIds(idConcepts);
+
+        conceptView.getConcept(conceptView.getNodeConcept().getConcept().getIdThesaurus(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
     }
     
     /**
@@ -568,6 +576,10 @@ public class EditConcept implements Serializable {
         var idConcepts = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         nodeIdValues = generateArkIds(idConcepts);
+
+        conceptView.getConcept(conceptView.getNodeConcept().getConcept().getIdThesaurus(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
     }
 
     /**
@@ -616,6 +628,10 @@ public class EditConcept implements Serializable {
         } else {
             MessageUtils.showInformationMessage("L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
         }
+
+        conceptView.getConcept(conceptView.getNodeConcept().getConcept().getIdThesaurus(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(), currentUser);
     }    
 
     private List<NodeIdValue> generateArkIds(List<String> idConcepts) {
