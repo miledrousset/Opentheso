@@ -241,7 +241,7 @@ public class ExportService {
             }
 
             if (ObjectUtils.isNotEmpty(p.getModified())) {
-                sKOSResource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.MODIFIED);
+                sKOSResource.addDate(dateFormat.format(p.getModified()), SKOSProperty.MODIFIED);
             }
 
             result.add(sKOSResource);

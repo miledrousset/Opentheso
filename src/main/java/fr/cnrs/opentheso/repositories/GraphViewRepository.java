@@ -13,11 +13,13 @@ public interface GraphViewRepository extends JpaRepository<GraphView, Integer> {
     List<GraphView> findAllByIdUser(Integer idUser);
 
     @Query(value = """
-        SELECT gv.id, gv.name, gv.description, gvcb.top_concept_thesaurus_id, gvcb.top_concept_id
-        FROM graph_view gv
-        LEFT JOIN graph_view_exported_concept_branch gvcb ON gv.id = gvcb.graph_view_id
-        WHERE gv.id = :id
+    SELECT gv.id, gv.name, gv.description,
+           ec.top_concept_thesaurus_id, ec.top_concept_id
+    FROM public.graph_view gv
+    LEFT JOIN public.graph_view_exported_concept_branch ec
+           ON gv.id = ec.graph_view_id
+    WHERE gv.id = :id
     """, nativeQuery = true)
-    List<Object[]> findViewWithConceptsById(@Param("id") Integer id);
+    List<Object[]> findViewWithExportedConcepts(@Param("id") int id);
 
 }

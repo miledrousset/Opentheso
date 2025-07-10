@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.repositories.GraphViewRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,26 +54,25 @@ public class GraphService implements Serializable {
     }
 
     public GraphObject getView(String id) {
+        List<Object[]> rows = graphViewRepository.findViewWithExportedConcepts(Integer.parseInt(id));
 
-        var rows = graphViewRepository.findViewWithConceptsById(Integer.parseInt(id));
+        GraphObject view = null;
 
-        if (rows.isEmpty()) return null;
-
-        Object[] firstRow = rows.get(0);
-        Integer viewId = (Integer) firstRow[0];
-        String name = (String) firstRow[1];
-        String description = (String) firstRow[2];
-
-        List<ImmutablePair<String, String>> concepts = new ArrayList<>();
         for (Object[] row : rows) {
-            String IdThesaurus = (String) row[3];
-            String idConcept = (String) row[4];
-            if (IdThesaurus != null && idConcept != null) {
-                concepts.add(new ImmutablePair<>(IdThesaurus, idConcept));
+            if (view == null) {
+                Integer viewId = (Integer) row[0];
+                String name = (String) row[1];
+                String description = (String) row[2];
+                view = new GraphObject(viewId, name, description);
+            }
+            String thesaurusId = (String) row[3];
+            String conceptId = (String) row[4];
+            if (thesaurusId != null) {
+                view.getExportedData().add(new ImmutablePair<>(thesaurusId, conceptId));
             }
         }
 
-        return new GraphObject(viewId, name, description, concepts);
+        return view;
     }
 
     public void deleteView(String idView) {
