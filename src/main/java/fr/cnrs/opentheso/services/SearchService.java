@@ -101,7 +101,7 @@ public class SearchService {
 
         // Appel à la méthode nativeQuery pour les termes non-préférés (synonymes)
         List<Object[]> alt = includeDeprecated
-                ? searchRepository.searchAltLabels(value, idLang, idThesaurus)
+                ? searchRepository.searchAltLabelsWithDeprecated(value, idLang, idThesaurus)
                 : searchRepository.searchAltLabelsWithoutDeprecated(value, idLang, idThesaurus);
 
         for (Object[] row : alt) {

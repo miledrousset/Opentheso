@@ -50,6 +50,22 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     """, nativeQuery = true)
     List<Object[]> searchAltLabels(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
+    // Recherche sur les termes non-préférés (avec concepts dépréciés)
+    @Query(value = """
+        SELECT pt.id_concept as id, npt.lexical_value || ' ->' || t.lexical_value as value
+        FROM concept c
+        JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+        JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
+        JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+        WHERE c.status NOT IN ('CA', 'hidden')
+          AND npt.lang = :idLang
+          AND npt.id_thesaurus = :idThesaurus
+          AND f_unaccent(lower(npt.lexical_value)) LIKE %:value%
+        ORDER BY npt.lexical_value <-> :value
+        LIMIT 20
+    """, nativeQuery = true)
+    List<Object[]> searchAltLabelsWithDeprecated(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
+
     // Recherche sur les termes préférés (sans concepts dépréciés)
     @Query(value = """
         SELECT pt.id_concept as id, t.lexical_value as value
