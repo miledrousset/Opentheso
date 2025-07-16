@@ -73,32 +73,32 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring-webmvc.version}</version>
+            <version>2.10.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring-web.version}</version>
+            <version>6.1.21</version>
         </dependency>
 
         <dependency>
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
-            <version>${xmlunit-core.version}</version>
+            <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
+            <version>42.7.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
-            <version>${jsf-api.version}</version>
+            <version>2.2.20</version>
         </dependency>
 
         <dependency>
@@ -109,13 +109,13 @@
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
-            <version>${jsf-api.version}</version>
+            <version>2.2.20</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
-            <version>${tomcat-embed-jasper.version}</version>
+            <version>11.0.0-M22</version>
         </dependency>
 
     <!--    <dependency>
@@ -126,13 +126,13 @@
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
-            <version>${primefaces-extensions}</version>
+            <version>14.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>${cdi-api.version}</version>
+            <version>2.0.SP1</version>
         </dependency>
 
         <dependency>
@@ -143,25 +143,25 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <version>1.18.24</version>
         </dependency>
 
         <dependency>
             <groupId>com.deepl.api</groupId>
             <artifactId>deepl-java</artifactId>
-            <version>${deepl.version}</version>
+            <version>1.5.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
+            <version>4.1.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
+            <version>4.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -173,7 +173,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>${commons-compress.version}</version>
+            <version>1.27.1</version>
         </dependency>
 
         <dependency>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
+            <version>1</version>
         </dependency>
 
         <dependency>
@@ -196,128 +196,128 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-maven-plugin</artifactId>
-            <version>${liquibase.version}</version>
+            <version>4.29.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-commercial</artifactId>
-            <version>${liquibase.version}</version>
+            <version>4.29.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
+            <version>2.11.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
-            <version>${neo4j.version}</version>
+            <version>5.22.0</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${jakarta.ws.rs.version}</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom2</artifactId>
-            <version>${jdom2.version}</version>
+            <version>2.0.6.1</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
-            <version>${jakarta.json.version}</version>
+            <version>2.1.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>${commons-csv.version}</version>
+            <version>1.11.0</version>
         </dependency>
 
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>${mail.version}</version>
+            <version>1.4.7</version>
         </dependency>
 
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-            <version>${itextpdf.version}</version>
+            <version>5.5.13.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
+            <version>2.5.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
+            <version>4.5.14</version>
         </dependency>
 
         <dependency>
             <groupId>org.abego.treelayout</groupId>
             <artifactId>org.abego.treelayout.core</artifactId>
-            <version>${treelayout.version}</version>
+            <version>1.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>net.handle</groupId>
             <artifactId>handle-client</artifactId>
-            <version>${handle-client.version}</version>
+            <version>9.3.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-model</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-rdfxml</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-jsonld</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-turtle</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-rdfjson</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-queryresultio-sparqljson</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-repository-sparql</artifactId>
-            <version>${rdf4j.version}</version>
+            <version>5.0.1</version>
         </dependency>
 
 
@@ -343,31 +343,31 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>${jsoup.version}</version>
+            <version>1.18.1</version>
         </dependency>
 
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox.version}</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${openapi.version}</version>
+            <version>1.7.0</version>
         </dependency>
 
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>${commons-validator.version}</version>
+            <version>1.9.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-            <version>${jena-arq.version}</version>
+            <version>5.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>
@@ -379,37 +379,37 @@
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
-            <version>${javax.annotation-api.version}</version>
+            <version>4.29.0-RC1</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${protobuf.version}</version>
+            <version>4.29.0-RC1</version>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>leaflet</artifactId>
-            <version>${leaflet.version}</version>
+            <version>1.8.0</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.websocket</groupId>
             <artifactId>jakarta.websocket-api</artifactId>
-            <version>${websocket.version}</version>
+            <version>2.2.0</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
+            <version>2.16.1</version>
         </dependency>
 
         <dependency>
             <groupId>io.nayuki</groupId>
             <artifactId>qrcodegen</artifactId>
-            <version>${qrcodegen.version}</version>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
 
