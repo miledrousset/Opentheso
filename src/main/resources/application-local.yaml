@@ -17,22 +17,13 @@ server:
 primefaces:
   uploader: native
 
-spring:
-  # Connexion de KeyCloak
+app:
   security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: opentheso
-            client-secret:
-            provider: keycloak
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-            scope: openid, profile, email
-        provider:
-          keycloak:
-            issuer-uri:
+    keycloak-enabled: false  # ou false pour désactiver
+
+spring:
+  application:
+    name: opentheso
 
   servlet:
     multipart:
@@ -67,16 +58,16 @@ settings:
   workLanguage: fr
 
 certificats:
-  admpriv: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/admpriv.bin
-  cacerts2: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/cacerts2
-  key: /Users/miledrousset/NetBeansProjects22/Opentheso/src/main/resources/certificats/key.p12
+  admpriv: ./certificats/admpriv.bin
+  cacerts2: ./certificats/cacerts2
+  key: ./certificats/key.p12
 
 smpt:
   protocol: smtp
-  hostname: smtprelay.cnrs.fr
+  hostname: smtprelay.mondomaine.fr
   portNumber: 25
   authorization: false
-  mailFrom: opentheso@mom.fr
+  mailFrom: opentheso@mondomaine.fr
   transportMail: smtp
 
 neo4j:
@@ -90,7 +81,7 @@ ldap:
   security:
     authentication: simple
   server:
-    url: ldapr3.huma-num.fr
+    url: ldapr3.mondomaine.fr
   initial:
     context:
       factory: com.sun.jndi.ldap.LdapCtxFactory
