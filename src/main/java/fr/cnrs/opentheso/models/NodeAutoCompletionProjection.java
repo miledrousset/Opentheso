@@ -7,4 +7,6 @@ public interface NodeAutoCompletionProjection {
     String getIdHandle();
     String getLexicalValue();
     String getLang();
+    String getDefinition();
+    boolean isAltLabel();
 }

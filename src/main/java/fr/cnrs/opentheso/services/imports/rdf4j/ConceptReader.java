@@ -16,7 +16,6 @@ import org.eclipse.rdf4j.model.Value;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class ConceptReader {

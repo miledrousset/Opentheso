@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
 import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.ApiKeyService;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +45,7 @@ public class PropositionsController {
             return apiKeyService.errorResponse(keyState);
         }
 
-        var user = userService.getUserByApiKey(apiKey);
+        var user = userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
         propositionService.createProposition(proposition, user);
         return ResponseEntity.status(201).build();
     }

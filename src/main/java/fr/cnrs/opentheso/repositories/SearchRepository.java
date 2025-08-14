@@ -140,19 +140,16 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN concept_group_concept ON concept.id_concept = concept_group_concept.idconcept AND concept.id_thesaurus = concept_group_concept.idthesaurus
         JOIN preferred_term ON concept.id_concept = preferred_term.id_concept AND concept.id_thesaurus = preferred_term.id_thesaurus
         JOIN term ON preferred_term.id_term = term.id_term AND preferred_term.id_thesaurus = term.id_thesaurus
-        WHERE term.id_thesaurus = :idThesaurus
+        WHERE term.id_thesaurus = :idThesaurus 
           AND term.lang = :idLang
-          AND (
-            :tsQuery IS NOT NULL AND to_tsvector(:lang, term.lexical_value) @@ to_tsquery(:lang, :tsQuery)
-            OR
-            :likeQuery IS NOT NULL AND f_unaccent(lower(term.lexical_value)) LIKE :likeQuery
-          )
-          AND (:groups IS NULL OR LOWER(concept_group_concept.idgroup) IN (:groups))
+          AND ((:tsQuery IS NOT NULL AND to_tsvector(CAST(:lang AS regconfig), term.lexical_value) @@ to_tsquery(CAST(:lang AS regconfig), :tsQuery)) OR (:likeQuery IS NOT NULL AND f_unaccent(lower(term.lexical_value)) LIKE :likeQuery))
+          AND (:groupsEmpty = true OR concept_group_concept.idgroup = ANY(:groups))
         ORDER BY term.lexical_value
         LIMIT 100
     """, nativeQuery = true)
-    List<Object[]> searchConcepts(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang, @Param("tsQuery") String tsQuery,
-            @Param("likeQuery") String likeQuery, @Param("lang") String lang, @Param("groups") List<String> groups);
+    List<Object[]> searchConcepts(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang,
+            @Param("tsQuery") String tsQuery, @Param("likeQuery") String likeQuery, @Param("lang") String lang,
+            @Param("groups") String[] groups, @Param("groupsEmpty") boolean groupsEmpty);
 
     @Query(value = """
         SELECT DISTINCT c.id_concept
@@ -529,21 +526,24 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             @Param("w4") String w4);
 
     @Query(value = """
-        SELECT DISTINCT c.id_concept
-        FROM concept c
-        JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
-        JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
-        LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
-        WHERE c.id_thesaurus = :idThesaurus
-        AND c.status != 'CA'
-        AND unaccent(lower(t.lexical_value)) LIKE unaccent(lower(:value))
-        AND (:idLang IS NULL OR t.lang = :idLang)
-        AND (:hasGroups = false OR cgc.idgroup IN :idGroups)
-        ORDER BY 
-            CASE 
-                WHEN unaccent(lower(t.lexical_value)) = unaccent(lower(:value)) THEN 1 
-                ELSE 2 
-            END, t.lexical_value
+        SELECT id_concept
+        FROM (
+            SELECT\s
+                c.id_concept,
+                t.lexical_value,
+                unaccent(lower(t.lexical_value)) = unaccent(lower(:value)) AS is_exact_match
+            FROM concept c
+            JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+            JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+            LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
+            WHERE c.id_thesaurus = :idThesaurus
+              AND c.status != 'CA'
+              AND unaccent(lower(t.lexical_value)) LIKE unaccent(lower(:value))
+              AND (:idLang IS NULL OR t.lang = :idLang)
+              AND (:hasGroups = false OR cgc.idgroup IN :idGroups)
+        ) AS results
+        GROUP BY id_concept, lexical_value, is_exact_match
+        ORDER BY CASE WHEN is_exact_match THEN 1 ELSE 2 END, lexical_value
         LIMIT 100
         """, nativeQuery = true)
     List<String> searchPreferredConceptsForAutoCompletion(@Param("value") String value,

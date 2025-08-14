@@ -179,12 +179,7 @@ public class ConcepThesoSearchController {
         return groups;
     }
 
-    private String getDatas(
-                                   String idTheso, String idLang,
-                                   String [] groups,
-                                   String value,
-                                   String format, String filter,
-                                   String match) {
+    private String getDatas(String idTheso, String idLang, String [] groups, String value, String format, String filter, String match) {
 
         format = HeaderHelper.removeCharset(format);
         if (filter != null && filter.equalsIgnoreCase("notation:")) {

@@ -124,11 +124,6 @@
             <version>${tomcat-embed-jasper.version}</version>
         </dependency>
 
-    <!--    <dependency>
-            <groupId>org.primefaces.extensions</groupId>
-            <artifactId>all-themes</artifactId>
-            <version>${primefaces-themes.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>

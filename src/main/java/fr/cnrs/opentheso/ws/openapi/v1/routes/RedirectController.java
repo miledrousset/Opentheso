@@ -70,7 +70,6 @@ public class RedirectController {
                                                        HttpServletRequest request) throws URISyntaxException  {
         // Récupération de l'URL de la requête
         String requestUrl = request.getRequestURL().toString();
-        //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");
         String newUrl = requestUrl.replace("/openapi/v1/redirect/" +idThesaurus + "/" + idConcept, "/") + "?idc=" + idConcept + "&idt=" + idThesaurus;
         return ResponseEntity.status(307).location(new URI(newUrl)).build();
     }
@@ -89,10 +88,9 @@ public class RedirectController {
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> redirectToTheso(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
-                                                        HttpServletRequest request) throws URISyntaxException  {
+                                                  HttpServletRequest request) throws URISyntaxException  {
         // Récupération de l'URL de la requête
         String requestUrl = request.getRequestURL().toString();
-        //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");
         String newUrl = requestUrl.replace("/openapi/v1/redirect/" +idThesaurus, "/") + "?idt=" + idThesaurus;
         return ResponseEntity.status(307).location(new URI(newUrl)).build();
     }

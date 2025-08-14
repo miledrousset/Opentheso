@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
@@ -290,7 +292,7 @@ public class ResourceService {
     }
 
     private List<ConceptRelation> getRelations(String textBrut) {
-        List<ConceptRelation> conceptRelations = new ArrayList<>();
+        Set<ConceptRelation> conceptRelations = new HashSet<>();
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPARATOR);
             for (String tab : tabs) {
@@ -311,8 +313,9 @@ public class ResourceService {
             }
         }
         if (CollectionUtils.isNotEmpty(conceptRelations)) {
-            Collections.sort(conceptRelations);
-            return conceptRelations;
+            List<ConceptRelation> sortedList = new ArrayList<>(conceptRelations);
+            Collections.sort(sortedList);
+            return sortedList;
         }
         return null;
     }
@@ -428,7 +431,7 @@ public class ResourceService {
         }
 
         log.info("{} fils trouvés pour le concept '{}' du thésaurus '{}'", result.size(), idThesaurus, idLang);
-        var fils = result.stream()
+        return result.stream()
                 .map(element -> NodeConceptGraph.builder()
                         .idConcept(element.getIdconcept2())
                         .idThesaurus(idThesaurus)
@@ -443,13 +446,6 @@ public class ResourceService {
                         .images(StringUtils.isNotBlank(element.getImage()) ? getExternalResources(element.getImage()) : null)
                         .build())
                 .toList();
-
-        try {
-            fils.sort(Comparator.naturalOrder());
-        } catch (Exception e) {
-            fils.sort(Comparator.comparing(NodeConceptGraph::getPrefLabel, Comparator.nullsLast(String::compareToIgnoreCase)));
-        }
-        return fils;
     }
 
     public List<NodeConceptTree> getConceptsNTForTree(String idThesaurus, String idConceptBT, String idLang, boolean isSortByNotation, boolean isPrivate) {

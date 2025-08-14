@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.services;
 
 import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.utils.ToolsHelper;
 import java.time.LocalDate;
 
@@ -67,7 +68,7 @@ public class ApiKeyService {
 
         if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
 
-        var user = userRepository.findByApiKey(apiKey);
+        var user = userRepository.findByApiKey(MD5Password.getEncodedPassword(apiKey));
         if (user.isEmpty()) {
             log.error("Aucun utilisateur n'est trouvé avec l'apiKey {}", apiKey);
             return ApiKeyState.INVALID;

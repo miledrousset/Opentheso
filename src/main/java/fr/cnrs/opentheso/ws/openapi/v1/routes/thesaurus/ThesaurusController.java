@@ -36,7 +36,7 @@ public class ThesaurusController {
     private final ThesaurusService thesaurusService;
 
 
-    @GetMapping(produces = APPLICATION_JSON_UTF_8)
+    @GetMapping
     @Operation(summary = "Permet de récupérer tous les thesaurus publiques",
             description = "Ancienne version : `/api/info/list?theso=all`<br/>Récupère une liste de tous les thésaurus publiques ainsi que les langues dans lesquelles ils sont disponibles.",
             tags = {"Thesaurus"},
@@ -45,7 +45,7 @@ public class ThesaurusController {
                     @ApiResponse(responseCode = "404", description = "Thésaurus non trouvé")
             }
     )
-    public ResponseEntity<Object>  getListAllPublicTheso() {
+    public ResponseEntity<Object> getListAllPublicTheso() {
 
         var listPublicTheso = thesaurusService.getAllIdOfThesaurus(false);
 

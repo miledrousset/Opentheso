@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.services.ApiKeyService;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 
@@ -78,7 +79,7 @@ public class OpenApiController {
         builder.add("valid", true);
         builder.add("key", apiKey);
 
-        var user = userService.getUserByApiKey(apiKey);
+        var user = userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
         var userGroupId = userService.getUserGroupId(user.getId(), apiKey);
         var roleId = userService.getRoleOnThisThesaurus(user.getId(), userGroupId.orElse(0), "th2");
         builder.add("Roles", roleId);

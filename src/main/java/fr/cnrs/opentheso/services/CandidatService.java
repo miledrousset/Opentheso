@@ -418,6 +418,7 @@ public class CandidatService {
                         .status("D")
                         .source("candidat")
                         .creator(userId)
+                        .modified(new Date())
                         .build());
             }
         }
@@ -430,12 +431,19 @@ public class CandidatService {
         }
         conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()
                 .idConcept(idConcept)
-                .created(new Date())
-                .status("CA")
-                .conceptType("concept")
-                .creator(userId)
-                .topConcept(false)
                 .idThesaurus(thesaurus.get().getIdThesaurus())
+                .topConcept(false)
+                .gps(false)
+                .conceptType("concept")
+                .status("CA")
+                .idArk("")
+                .idHandle("")
+                .idDoi("")
+                .notation("")
+                .creator(userId)
+                .created(new Date())
+                .modified(new Date())
+                .contributor(userId)
                 .build());
 
         conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
@@ -475,6 +483,8 @@ public class CandidatService {
                         .lang(synonyme.getLang())
                         .idThesaurus(candidate.getThesoId())
                         .idTerm(idTerm)
+                        .created(new Date())
+                        .modified(new Date())
                         .build());
             }
         }

@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 import fr.cnrs.opentheso.services.CandidatService;
 import fr.cnrs.opentheso.services.ApiKeyService;
 import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,15 +40,12 @@ public class CandidatController {
     /**
      * Route qui permet d'ajouter un candidat à partir d'un JSON
      */
-    @PostMapping(consumes = jakarta.ws.rs.core.MediaType.APPLICATION_JSON,
-            produces = jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Permet d'ajouter un candidat",
+    @PostMapping
+    @Operation(summary = "Permet d'ajouter un candidat",
             description = "Permet d'ajouter un candidat à partir du JSON donné",
             tags = {"Concept Write"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON représentant le candidat à ajouter"),
-            security = { @SecurityRequirement(name = "API-KEY") }
-    )
+            security = { @SecurityRequirement(name = "API-KEY") })
     public ResponseEntity addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody Candidate candidate) {
 
         var keyState = apiKeyHelper.checkApiKey(apiKey);
@@ -56,7 +54,7 @@ public class CandidatController {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var user = userService.getUserByApiKey(apiKey);
+        var user = userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
 
         if (!candidatService.saveCandidat(candidate, user.getId())) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("");

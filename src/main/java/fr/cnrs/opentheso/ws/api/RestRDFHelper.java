@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.NoteService;
 import fr.cnrs.opentheso.services.PathService;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
@@ -26,70 +27,60 @@ import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.exports.ExportService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
-import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 
+import fr.cnrs.opentheso.utils.JsonHelper;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.faces.context.FacesContext;
-import jakarta.json.JsonArray;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class RestRDFHelper {
 
-    @Autowired
-    private TermRepository termRepository;
-
-    @Autowired
-    private ThesaurusService thesaurusService;
-
-    @Autowired
-    private ExportRdf4jHelperNew exportRdf4jHelperNew;
-
-    @Autowired
-    private PathService pathService;
-
-    @Autowired
-    private ExportService exportService;
-
-    @Autowired
-    private AlignmentService alignmentService;
-
-    @Autowired
-    private PreferenceService preferenceService;
-
-    @Autowired
-    private ResourceService resourceService;
-
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private TermService termService;
-    @Autowired
-    private ConceptService conceptService;
-    @Autowired
-    private ConceptAddService conceptAddService;
-    @Autowired
-    private SearchService searchService;
+    private final TermRepository termRepository;
+    private final ThesaurusService thesaurusService;
+    private final ExportRdf4jHelperNew exportRdf4jHelperNew;
+    private final PathService pathService;
+    private final ExportService exportService;
+    private final AlignmentService alignmentService;
+    private final PreferenceService preferenceService;
+    private final ResourceService resourceService;
+    private final GroupService groupService;
+    private final TermService termService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final SearchService searchService;
+    private final DataSource connection;
+    private final NoteService noteService;
 
 
     private enum Choix {
@@ -923,10 +914,10 @@ public class RestRDFHelper {
      * @param withNotes
      * @return
      */
+
     public String findAutocompleteConcepts(String idTheso, String lang, String[] groups, String value, boolean withNotes) {
 
-        String datas = findAutocompleteConcepts__(
-                value, idTheso, lang, groups, withNotes);
+        String datas = findAutocompleteConcepts__(value, idTheso, lang, groups, withNotes);
         if (datas == null) {
             return null;
         }
@@ -946,17 +937,17 @@ public class RestRDFHelper {
         if (value == null || idTheso == null) {
             return null;
         }
-        var nodePreference = preferenceService.getThesaurusPreferences(idTheso);
+        Preferences nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
 
         JsonHelper jsonHelper = new JsonHelper();
         String uri;
-        List<NodeAutoCompletion> nodeAutoCompletion;
+        ArrayList<NodeAutoCompletion> nodeAutoCompletion;
 
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchService.searchAutoCompletionWS(value, lang, groups, idTheso, withNotes);
+        nodeAutoCompletion = searchAutoCompletionWS(value, lang, groups, idTheso, withNotes);
 
         if (nodeAutoCompletion == null || nodeAutoCompletion.isEmpty()) {
             return null;
@@ -977,6 +968,110 @@ public class RestRDFHelper {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Permet de chercher les terms avec précision pour limiter le bruit avec filtre par langue et ou par groupe
+     * # MR
+     */
+    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(String value, String idLang, String[] idGroups, String idTheso, boolean withNotes) {
+        ArrayList<NodeAutoCompletion> nodeAutoCompletions = new ArrayList<>();
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
+
+        try (Connection conn = connection.getConnection()) {
+            searchConcepts(conn, value, idLang, idGroups, idTheso, withNotes, nodeAutoCompletions, false);
+            searchConcepts(conn, value, idLang, idGroups, idTheso, withNotes, nodeAutoCompletions, true);
+        } catch (SQLException ex) {
+
+        }
+
+        return nodeAutoCompletions;
+    }
+
+    private void searchConcepts(Connection conn, String value, String idLang, String[] idGroups, String idTheso, boolean withNotes, ArrayList<NodeAutoCompletion> nodeAutoCompletions, boolean isSynonym) throws SQLException {
+
+        String query = buildQuery(value, idLang, idGroups, idTheso, isSynonym);
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            int index = 1;
+            stmt.setString(index++, idTheso);
+
+            if (idLang != null && !idLang.isEmpty()) {
+                stmt.setString(index++, idLang);
+            }
+
+            if (idGroups != null) {
+                for (String idGroup : idGroups) {
+                    stmt.setString(index++, idGroup.toLowerCase());
+                }
+            }
+
+            String[] values = value.trim().split(" ");
+            for (String val : values) {
+                stmt.setString(index++, "%" + val + "%");
+            }
+
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                while (resultSet.next()) {
+                    NodeAutoCompletion node = new NodeAutoCompletion();
+                    node.setIdConcept(resultSet.getString("id_concept"));
+                    node.setIdArk(resultSet.getString("id_ark"));
+                    node.setIdHandle(resultSet.getString("id_handle"));
+                    node.setPrefLabel(resultSet.getString("lexical_value"));
+                    node.setAltLabel(isSynonym);
+
+                    if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                        nodeAutoCompletions.add(0, node);
+                    } else {
+                        nodeAutoCompletions.add(node);
+                    }
+
+                    if (withNotes) {
+                        var definition = noteService.getNoteByConceptAndThesaurusAndLangAndType(node.getIdConcept(), idTheso, resultSet.getString("lang"), "definition");
+                        if (CollectionUtils.isNotEmpty(definition)) {
+                            node.setDefinition(definition.get(0).getLexicalValue());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String buildQuery(String value, String idLang, String[] idGroups, String idTheso, boolean isSynonym) {
+        String tableName = isSynonym ? "non_preferred_term" : "term";
+        String tableAlias = isSynonym ? "npt" : "t";
+        String joinCondition = isSynonym ? "pt.id_term = npt.id_term" : "pt.id_term = t.id_term";
+
+        StringBuilder query = new StringBuilder("SELECT ")
+                .append(tableAlias).append(".lexical_value, ")
+                .append(tableAlias).append(".lang, c.id_concept, c.id_ark, c.id_handle ")
+                .append("FROM concept c ")
+                .append("JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus ")
+                .append("JOIN ").append(tableName).append(" ").append(tableAlias).append(" ON ").append(joinCondition)
+                .append(" AND pt.id_thesaurus = ").append(tableAlias).append(".id_thesaurus ")
+                .append("WHERE c.id_thesaurus = ? ")  // Ajout du filtre idTheso
+                .append("AND c.status NOT IN ('DEP', 'CA') ");
+
+        if (idLang != null && !idLang.isEmpty()) {
+            query.append("AND ").append(tableAlias).append(".lang = ? ");
+        }
+
+        if (idGroups != null && idGroups.length > 0) {
+            query.append("AND c.id_concept IN (SELECT idconcept FROM concept_group_concept WHERE idgroup IN (");
+            query.append(String.join(",", Collections.nCopies(idGroups.length, "?")));
+            query.append(")) ");
+        }
+
+        query.append("AND (");
+        StringJoiner likeConditions = new StringJoiner(" AND ");
+        for (String val : value.trim().split(" ")) {
+            likeConditions.add("f_unaccent(lower(" + tableAlias + ".lexical_value)) LIKE ?");
+        }
+        query.append(likeConditions.toString()).append(") ");
+
+        query.append("ORDER BY ").append(tableAlias).append(".lexical_value ASC LIMIT 100");
+
+        return query.toString();
     }
 
     /**

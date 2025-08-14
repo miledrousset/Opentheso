@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -38,16 +39,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         return http
-                .sessionManagement(session -> session.sessionFixation().none())  // évite que la session soit perdue après login
+                .sessionManagement(session -> session.sessionFixation().none())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login","/logout", "/oauth2/**", "/javax.faces.resource/**", "/").permitAll()
-                        .anyRequest().permitAll())  // tout est public
-                .csrf(csrf -> csrf.ignoringRequestMatchers(request -> request.getServletPath().endsWith(".xhtml")))
+                        .requestMatchers("/login", "/logout", "/oauth2/**",
+                                "/javax.faces.resource/**",
+                                "/openapi/v1/**")
+                        .permitAll()
+                        .anyRequest().permitAll())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                new AntPathRequestMatcher("/openapi/v1/**"),
+                                request -> request.getServletPath().endsWith(".xhtml")
+                        )
+                )
                 .oauth2Login(oauth2 -> oauth2.loginPage("/login")
-                        .successHandler(authenticationSuccessHandler()) // <-- important
-                        .failureHandler(authenticationFailureHandler()) // <-- important
+                        .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
                         .userInfoEndpoint(userInfo -> userInfo.userAuthoritiesMapper(this.userAuthoritiesMapper())))
                 .build();
     }
@@ -59,7 +67,7 @@ public class SecurityConfig {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
             if (attr != null) {
-                var session = attr.getRequest().getSession(false); // false pour ne pas créer de session si elle n'existe pas
+                var session = attr.getRequest().getSession(false);
                 var oauthUser = (OAuth2User) authentication.getPrincipal();
 
                 String email = oauthUser.getAttribute("email");

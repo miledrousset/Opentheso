@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/openapi/v1/users")
-@CrossOrigin(methods = { RequestMethod.GET })
+@CrossOrigin(methods = { RequestMethod.GET , RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "User", description = "Gestion des utilisateurs")
 public class UserController {
 
@@ -164,11 +164,33 @@ public class UserController {
         }
     }
 
+    @PutMapping("/api-key/{idUser}")
+    @Operation(summary = "Modifier un utilisateur")
+    public ResponseEntity generateApiKey(@RequestHeader(value = "API-KEY") String apiKey,
+                                         @PathVariable("idUser") Integer idUser) {
+
+        var userRequest = getUser(apiKey);
+        if (userRequest != null) {
+            var user = userRepository.findById(idUser);
+            if (!ObjectUtils.isEmpty(user)) {
+                var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
+                if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
+                }
+                user.get().setApiKey(apiKeyValue);
+                return ResponseEntity.status(HttpStatus.OK).body(user.get());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+        }
+    }
+
     private User getUser(String apiKey) {
         var keyState = apiKeyHelper.checkApiKey(apiKey);
         if (keyState != ApiKeyState.VALID){
             return null;
         }
-        return userService.getUserByApiKey(apiKey);
+        return userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
     }
 }

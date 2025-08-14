@@ -169,8 +169,15 @@ public class SearchService {
         String tsQuery = isArabic ? processed.replace(" ", " & ") : null;
         String likeQuery = isArabic ? null : "%" + processed.replace(" ", "%") + "%";
 
-        List<Object[]> rawResults = searchRepository.searchConcepts(
-                idTheso, idLang, tsQuery, likeQuery, idLang, groups.isEmpty() ? null : groups);
+        String[] groupsArray = groups.isEmpty() ? null : groups.toArray(new String[0]);
+        boolean groupsEmpty = (groupsArray == null);
+        String tsLangConfig = switch (idLang) {
+            case "fr" -> "french";
+            case "en" -> "english";
+            case "de" -> "german";
+            default -> "simple"; // fallback
+        };
+        List<Object[]> rawResults = searchRepository.searchConcepts(idTheso, idLang, tsQuery, likeQuery, tsLangConfig, groupsArray, groupsEmpty);
 
         for (Object[] row : rawResults) {
             String idConcept = (String) row[2];
@@ -550,13 +557,11 @@ public class SearchService {
         boolean hasGroups = !idGroupList.isEmpty();
 
         // 1. Recherche dans les termes préférés
-        List<String> conceptIds = searchRepository.searchPreferredConceptsForAutoCompletion(
-                value, idLang, idTheso, idGroupList, hasGroups);
+        List<String> conceptIds = searchRepository.searchPreferredConceptsForAutoCompletion(value, idLang, idTheso, idGroupList, hasGroups);
 
         // 2. Si aucun résultat, chercher dans les synonymes
         if (conceptIds.isEmpty()) {
-            conceptIds = searchRepository.searchAltConceptsForAutoCompletion(
-                    value, idLang, idTheso, idGroupList, hasGroups);
+            conceptIds = searchRepository.searchAltConceptsForAutoCompletion(value, idLang, idTheso, idGroupList, hasGroups);
         }
 
         return conceptIds;

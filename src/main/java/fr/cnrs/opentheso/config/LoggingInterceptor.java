@@ -27,10 +27,11 @@ public class LoggingInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
         /* permet de savoir si le thésaurus est privé, on interdit le téléchargement */
-        if (request.getRequestURL().toString().contains("openapi/v1/thesaurus")){ //|| request.getRequestURL().toString().contains("api/all/theso")) {
+        if (request.getRequestURL().toString().contains("openapi/v1/thesaurus/")){
             // reste à faire la condition pour le deuxième cas
-            Boolean isPrivate = thesaurusService.isPrivateThesaurus(request.getRequestURL().toString().split("openapi/v1/thesaurus/")[1]);
-            if(isPrivate == null || isPrivate == true) {
+            var str = request.getRequestURL().toString().split("openapi/v1/thesaurus/");
+            Boolean isPrivate = thesaurusService.isPrivateThesaurus(str[1].split("/")[0]);
+            if(isPrivate == null || isPrivate) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\": \"FORBIDDEN : the thesaurus is privated or not found\"}");
