@@ -18,28 +18,19 @@ primefaces:
   uploader: native
 
 # déconnexion de KeyCloak
-app:
-  keycloak:
-    realm: opentheso-local
-    server-url: http://localhost:8080
-    client-id: opentheso-client
-    post-logout-redirect-uri: http://localhost:8099/  # URL de redirection après déconnexion
+
 spring:
-  # Connexion de KeyCloak
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: opentheso-client
-            client-secret: i5q8WdlJgOrydXK9pNtWJFvPCQVuf53v
-            provider: keycloak
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-            scope: openid, profile, email
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/opentheso-local
+  graphql:
+    path: /graphql # Chemin de l'API GraphQL
+    graphiql:
+      enabled: true # Active l'interface graphiql pour tester les requêtes
+      path: /graphiql # Chemin de l'interface graphiql
+    schema:
+      printer:
+        enabled: false # Active l'impression du schéma au démarrage dans les logs
+  application:
+    name: opentheso
+
   servlet:
     multipart:
       enabled: true
@@ -64,14 +55,6 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/changelog/db.changelog.xml
-  graphql:
-    path: /graphql # Chemin de l'API GraphQL
-    graphiql:
-      enabled: true # Active l'interface graphiql pour tester les requêtes
-      path: /graphiql # Chemin de l'interface graphiql
-    schema:
-      printer:
-        enabled: false # Active l'impression du schéma au démarrage dans les logs
 
 settings:
   workLanguage: fr
@@ -83,10 +66,10 @@ certificats:
 
 smpt:
   protocol: smtp
-  hostname: smtprelay.cnrs.fr
+  hostname: smtprelay.mondomaine.fr
   portNumber: 25
   authorization: false
-  mailFrom: opentheso@mom.fr
+  mailFrom: opentheso@mondomaine.fr
   transportMail: smtp
 
 neo4j:
@@ -100,7 +83,7 @@ ldap:
   security:
     authentication: simple
   server:
-    url: ldapr3.huma-num.fr
+    url: ldapr3.mondomaine.fr
   initial:
     context:
       factory: com.sun.jndi.ldap.LdapCtxFactory

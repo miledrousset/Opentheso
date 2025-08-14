@@ -76,7 +76,7 @@
                 </p:link>
                 <p:tooltip value="OpenApi" for="linkOpenApi" />
 
-                <p:link id="linkGraphQL" href="#{request.contextPath}/graphiql" target="_blank" style="text-decoration: none;">
+                <p:link rendered="#{false}" id="linkGraphQL" href="#{request.contextPath}/graphiql" target="_blank" style="text-decoration: none;">
                     <img src="#{request.contextPath}/resources/img/graphql.png" style="height:20px; margin-right: 10px;" alt="Swagger QL"/>
                 </p:link>
                 <p:tooltip value="GraphQL" for="linkGraphQL" />
