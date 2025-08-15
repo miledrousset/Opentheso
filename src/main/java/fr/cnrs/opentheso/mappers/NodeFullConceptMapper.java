@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso;
+package fr.cnrs.opentheso.mappers;
 
 import fr.cnrs.opentheso.entites.ConceptGroup;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;

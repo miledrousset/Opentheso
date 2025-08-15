@@ -2972,11 +2972,7 @@ public class ImportFileBean implements Serializable {
             progress = 0;
             progressStep = 0;
             importInProgress = true;
-            importRdf4jHelper.setInfos(
-                    formatDate,
-                    currentUser.getNodeUser().getIdUser(),
-                    idGroup,
-                    workLanguage);
+            importRdf4jHelper.setInfos(formatDate, currentUser.getNodeUser().getIdUser(), idGroup, workLanguage);
 
             // pour récupérer les identifiants pérennes type Ark ou Handle
             importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);

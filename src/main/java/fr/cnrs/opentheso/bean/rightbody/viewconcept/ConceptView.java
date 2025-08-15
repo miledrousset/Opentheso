@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import fr.cnrs.opentheso.NodeFullConceptMapper;
+import fr.cnrs.opentheso.mappers.NodeFullConceptMapper;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
@@ -47,7 +47,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

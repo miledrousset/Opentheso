@@ -1773,13 +1773,15 @@ public class ImportRdf4jHelper {
     }
 
     private String getIdArkFromUri(String uri) {
-        // URI de type Ark
-        String id = "";
         if (uri.contains("ark:/")) {
-            id = uri.substring(uri.indexOf("ark:/") + 5, uri.length());
+            return uri.substring(uri.indexOf("ark:/") + 5, uri.length());
         }
-//      if(id == null) return getIdFromUri(uri);
-        return id;
+
+        int lastSlash = uri.trim().lastIndexOf('/');
+        if (lastSlash == -1) return "";
+        int secondLastSlash = uri.trim().lastIndexOf('/', lastSlash - 1);
+        if (secondLastSlash == -1) return uri.trim().substring(lastSlash + 1);
+        return uri.trim().substring(secondLastSlash + 1);
     }
 
     private String getIdHandleFromUri(String uri) {

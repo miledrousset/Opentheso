@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
-import fr.cnrs.opentheso.NarrowerResultProjection;
+import fr.cnrs.opentheso.models.NarrowerResultProjection;
 import fr.cnrs.opentheso.entites.Concept;
 import fr.cnrs.opentheso.models.FacetProjection;
 import fr.cnrs.opentheso.models.FullConceptProjection;
