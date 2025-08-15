@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 @Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+@ConditionalOnProperty(prefix = "app.security", name = "keycloak-enabled", havingValue = "true")
+public class SecurityConfigKeycloak {
 
     private final CurrentUser currentUser;
     private final UserRepository userRepository;
@@ -117,3 +118,5 @@ public class SecurityConfig {
         };
     }
 }
+
+

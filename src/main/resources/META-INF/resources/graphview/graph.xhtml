@@ -121,8 +121,7 @@
                                                                  style="margin-left: 0px;" ajax="true" process="@this"
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
                                                                  onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}', '#{graph_view.name}'); return false;" />
-
-                                                <script type="text/javascript">
+                                                <h:outputScript target="body">
                                                     function openInNewTab(url, name) {
                                                         if (url) {
                                                             const encodedName = encodeURIComponent(name); // Encodage sécurisé
@@ -131,7 +130,7 @@
                                                             alert('URL introuvable.');
                                                         }
                                                     }
-                                                </script>
+                                                </h:outputScript>
                                             </div>
 
                                             <div class="col-6" style="text-align: right">                                            
