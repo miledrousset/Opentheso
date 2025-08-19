@@ -18,6 +18,7 @@ import jakarta.faces.application.FacesMessage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -165,7 +166,8 @@ public class RoleOnThesaurusBean implements Serializable {
      * sinon, on nettoie l'interface et le thésaurus. 
      */
     public void redirectAndCleanThesaurus(SelectedTheso selectedTheso) throws IOException {
-        if(!authorizedThesaurus.contains(selectedTheso.getCurrentIdTheso())){
+        if(CollectionUtils.isEmpty(authorizedThesaurus) ||
+                CollectionUtils.isNotEmpty(authorizedThesaurus) && !authorizedThesaurus.contains(selectedTheso.getCurrentIdTheso())) {
             selectedTheso.setCurrentIdTheso(null);
             selectedTheso.setSelectedIdTheso(null);
             selectedTheso.setCurrentLang(null);
@@ -399,7 +401,8 @@ public class RoleOnThesaurusBean implements Serializable {
      */
     public void setAndClearThesoInAuthorizedList(SelectedTheso selectedTheso) throws IOException{
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
-        if(!authorizedThesaurus.contains(selectedTheso.getCurrentIdTheso())) {
+        if(CollectionUtils.isEmpty(authorizedThesaurus) ||
+                CollectionUtils.isNotEmpty(authorizedThesaurus) && !authorizedThesaurus.contains(selectedTheso.getCurrentIdTheso())) {
             selectedTheso.setSelectedIdTheso(null);
             selectedTheso.setSelectedLang(null);
             selectedTheso.setSelectedTheso();
