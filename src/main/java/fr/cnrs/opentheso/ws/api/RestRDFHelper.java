@@ -43,10 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1448,8 +1445,10 @@ public class RestRDFHelper {
                 jobLine.add("conceptId", idConcept);
                 jobLine.add("arkId", concept.getIdArk());
                 jobLine.add("handleId", concept.getIdHandle());
-                jobLine.add("notation", concept.getNotation());
-                jobLine.add("prefLabel", termService.getLexicalValueOfConcept(idConcept, idTheso, lang));
+                jobLine.add("notation", concept.getNotation() != null ? concept.getNotation() : "");
+                jobLine.add("prefLabel",
+                        Optional.ofNullable(termService.getLexicalValueOfConcept(idConcept, idTheso, lang))
+                                .orElse(""));
                 jsonArrayBuilderLine.add(jobLine.build());
             }
         } else {

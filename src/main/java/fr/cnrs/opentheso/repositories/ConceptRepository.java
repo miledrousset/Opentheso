@@ -307,8 +307,11 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
             "AND c.status <> 'CA'")
     List<String> findAllTopConceptIdsByThesaurus(@Param("idThesaurus") String idThesaurus);
 
-    @Query("SELECT c.idThesaurus FROM Concept c WHERE REPLACE(c.idArk, '-', '') = REPLACE(:arkId, '-', '')")
-    Optional<String> findIdThesaurusByArkId(@Param("arkId") String arkId);
+    @Query(
+            value = "SELECT c.id_thesaurus FROM concept c WHERE REPLACE(c.id_ark, '-', '') = REPLACE(:arkId, '-', '') LIMIT 1",
+            nativeQuery = true
+    )
+    String findIdThesaurusListByArkId(@Param("arkId") String arkId);
 
     @Query("""
         SELECT new fr.cnrs.opentheso.models.nodes.NodeTree(c.idConcept, t.lexicalValue)

@@ -404,8 +404,8 @@ public class TermService {
         log.info("Recherche du nom du concept avec l'id {}", idConcept);
         Optional<String> label = termRepository.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
         if (label.isEmpty()) {
-            log.error("Aucun nom n'est trouvé pour le concept avec l'id {}", idConcept);
-            return null;
+            log.info("Aucun nom n'est trouvé pour le concept avec l'id {}", idConcept);
+            return "";
         }
 
         log.info("Le nom du concept dont l'id {} est {}", idConcept, label.get());

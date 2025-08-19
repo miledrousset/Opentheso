@@ -148,7 +148,8 @@ public class Tree implements Serializable {
             data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
                     StringUtils.isEmpty(nodeConceptTree.getTitle()) ? "("+nodeConceptTree.getIdConcept()+")" : nodeConceptTree.getTitle(),
-                    nodeConceptTree.getNotation(),
+                    selectedTheso.isSortByNotation() ? nodeConceptTree.getNotation() : null,
+                    //nodeConceptTree.getNotation(),
                     false,//isgroup
                     false,//isSubGroup
                     false,//isConcept

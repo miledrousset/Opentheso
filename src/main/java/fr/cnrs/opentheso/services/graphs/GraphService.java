@@ -104,7 +104,7 @@ public class GraphService implements Serializable {
     public void addDataToView(int idView, ImmutablePair<String, String> tuple) {
 
         log.info("Ajout des données à la view id {}", idView);
-        var concept = tuple.right == null ? null : "'" + tuple.right + "'";
+        var concept = tuple.right == null ? null : tuple.right;
         graphViewExportedConceptBranchRepository.save(GraphViewExportedConceptBranch.builder()
                         .graphViewId(idView)
                         .topConceptId(concept)

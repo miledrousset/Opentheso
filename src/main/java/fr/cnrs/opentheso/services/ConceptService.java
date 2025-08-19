@@ -71,12 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1275,7 +1270,7 @@ public class ConceptService {
     }
 
     public String getIdThesaurusFromArkId(String arkId) {
-        return conceptRepository.findIdThesaurusByArkId(arkId).orElse(null);
+        return conceptRepository.findIdThesaurusListByArkId(arkId);
     }
 
     public String getIdThesaurusFromHandleId(String handleId) {
