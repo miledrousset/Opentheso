@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.services;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.FacetProjection;
 import fr.cnrs.opentheso.models.NarrowerTreeProjection;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
@@ -37,6 +38,7 @@ public class ResourceService {
     private final static String SUB_SEPARATOR = "@@";
 
     private final ResourceRepository resourceRepository;
+    private final CurrentUser currentUser;
 
 
     public List<String> getConceptsTT(String idTheso, String idBT) {
@@ -510,7 +512,8 @@ public class ResourceService {
         log.info("Chargement des NT pour le concept '{}', thésaurus '{}', langue '{}', offset={}, step={}",
                 idConcept, idTheso, idLang, offset, step);
 
-        var result = resourceRepository.getNextNT(idTheso, idConcept, idLang, offset, step);
+        boolean isPrivate = currentUser.getNodeUser() != null;
+        var result = resourceRepository.getNextNT(idTheso, idConcept, idLang, offset, step, isPrivate);
         if (!result.isEmpty() && result.get(0).getNarrower() != null) {
             return getRelations(result.get(0).getNarrower());
         }

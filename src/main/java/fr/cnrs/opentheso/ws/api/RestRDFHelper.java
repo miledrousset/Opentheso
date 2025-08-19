@@ -500,8 +500,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -525,9 +524,12 @@ public class RestRDFHelper {
         }
         exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
-        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false));
+        var concept = exportRdf4jHelperNew.exportConceptV2(idTheso, idConcept, false);
+        if (concept == null) {
+            return null;
+        }
+        skosXmlDocument.addconcept(concept);
         return new WriteRdf4j(skosXmlDocument);
-
     }
 
     public String getIdConceptFromDate(String idThesaurus, String fromDate, String format) {

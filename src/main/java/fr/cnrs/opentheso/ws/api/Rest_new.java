@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.services.ConceptService;
 import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.services.ThesaurusService;
-import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
@@ -24,6 +23,8 @@ import jakarta.json.Json;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -48,22 +49,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "Ancienne API", description = "Anciennes requêtes API REST")
 public class Rest_new {
 
-    @Autowired
-    private TermRepository termRepository;
-
-    @Autowired
-    private D3jsHelper d3jsHelper;
-    
-    @Autowired
-    private RestRDFHelper restRDFHelper;
-
-    @Autowired
-    private GroupService groupService;
+    private final TermRepository termRepository;
+    private final D3jsHelper d3jsHelper;
+    private final RestRDFHelper restRDFHelper;
+    private final GroupService groupService;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
 
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
@@ -75,12 +72,6 @@ public class Rest_new {
             "turtle", CustomMediaType.APPLICATION_TURTLE,
             "json", JSON_FORMAT
     );
-    @Autowired
-    private ThesaurusService thesaurusService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ConceptService conceptService;
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -241,9 +232,13 @@ public class Rest_new {
     @GetMapping(value = "/{idTheso}.{idConcept}", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
     public ResponseEntity<Object> getJsonFromIdConcept__(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
 
+        var data = restRDFHelper.exportConceptFromId(idConcept, idTheso, CustomMediaType.APPLICATION_RDF_UTF_8);
+        if (data == null) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
+        }
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
-                .body(restRDFHelper.exportConceptFromId(idConcept, idTheso, CustomMediaType.APPLICATION_RDF_UTF_8));
+                .body(data);
     }
 
     //Produire du Json

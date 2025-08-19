@@ -49,10 +49,11 @@ public interface ResourceRepository extends JpaRepository<Concept, Integer> {
     List<FacetProjection> getFacetsOfConcept(@Param("idTheso") String idTheso, @Param("idBT") String idBT, @Param("idLang") String idLang);
 
     @Query(value = """
-        SELECT * FROM opentheso_get_next_nt(:idTheso, :idConcept, :idLang, :offset, :step)
+        SELECT * FROM opentheso_get_next_nt(:idTheso, :idConcept, :idLang, :offset, :step, :isPrivate)
     """, nativeQuery = true)
     List<NarrowerResultProjection> getNextNT(@Param("idTheso") String idTheso, @Param("idConcept") String idConcept,
-                                             @Param("idLang") String idLang, @Param("offset") int offset, @Param("step") int step);
+                                             @Param("idLang") String idLang, @Param("offset") int offset,
+                                             @Param("step") int step, @Param("isPrivate") boolean isPrivate);
 
     @Query(value = """
         SELECT * FROM opentheso_get_concept(:idTheso, :idConcept, :idLang, :offset, :step, :isPrivate)
