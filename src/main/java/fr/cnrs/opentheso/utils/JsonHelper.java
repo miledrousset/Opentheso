@@ -33,7 +33,7 @@ public class JsonHelper {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("identifier", identifier);
         builder.add("uri", uri);
-        builder.add("label", value);
+        builder.add("label", value != null ? value : "");
         jab.add(builder);
     }
         
@@ -41,9 +41,9 @@ public class JsonHelper {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("identifier", identifier);
         builder.add("uri", uri);
-        builder.add("label", value);
+        builder.add("label", value != null ? value : "");
         builder.add("isAltLabel", isAltLabel);
-        builder.add("definition", definition);        
+        builder.add("definition", definition != null ? definition : "");
         jab.add(builder);
     }
 

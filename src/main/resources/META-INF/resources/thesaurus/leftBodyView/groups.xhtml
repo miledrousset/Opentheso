@@ -19,7 +19,7 @@
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="true"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
-                            oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
+                            oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup containerIndex:addGroupForm" />
 
                 <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="true"
                             value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
