@@ -57,6 +57,14 @@ public class AddGroupBean implements Serializable {
         definition = "";
         listGroupType = groupTypeService.getAllGroupType();
         selectedGroupType = CollectionUtils.isNotEmpty(listGroupType) ? "C" : null;
+        if (!listGroupType.isEmpty()) {
+            for (SelectItem group : listGroupType) {
+                if ("Collection".equals(group.getLabel())) {
+                    setSelectedGroupType(group.getLabel());
+                    break;
+                }
+            }
+        }
     }
     
     public void addGroup() {

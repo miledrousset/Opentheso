@@ -133,6 +133,7 @@ public class ImportRdf4jHelper {
         this.idUser = idUser;
         this.idGroupUser = idGroupUser;
         this.langueSource = langueSource;
+        this.isFirst = true;
         return true;
     }
 
@@ -227,9 +228,7 @@ public class ImportRdf4jHelper {
         langueSource = StringUtils.isEmpty(langueSource) ? "fr" : langueSource;
         preferenceService.initPreferences(idThesaurus, langueSource);
         nodePreference = preferenceService.getThesaurusPreferences(idThesaurus);
-        nodePreference.setCheminSite(uri);
         nodePreference.setPreferredName(idThesaurus);
-        nodePreference.setOriginalUri(uri);
         if (selectedIdentifier.equalsIgnoreCase("ark")) {
             nodePreference.setOriginalUriIsArk(true);
         }
@@ -269,12 +268,10 @@ public class ImportRdf4jHelper {
         if (nodePreference == null) {
             return;
         }
-        if (nodePreference.getCheminSite().isEmpty() && nodePreference.getPreferredName().isEmpty() && nodePreference.getOriginalUri().isEmpty()) {
-            nodePreference.setCheminSite(uri);
-            nodePreference.setPreferredName(idTheso);
-            nodePreference.setOriginalUri(uri);
-            preferenceService.updateAllPreferenceUser(nodePreference);
-        }
+        nodePreference.setCheminSite(uri+"/");
+        nodePreference.setPreferredName(idTheso);
+        nodePreference.setOriginalUri(uri);
+        preferenceService.updateAllPreferenceUser(nodePreference);
     }
 
     public void addFacets(ArrayList<SKOSResource> facetResources, String idTheso) {

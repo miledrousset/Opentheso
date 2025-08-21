@@ -20,7 +20,7 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
     @Query(value = "SELECT * FROM thesaurus ORDER BY created DESC", nativeQuery = true)
     List<Thesaurus> findAllOrderByCreatedDesc();
 
-    @Query(value = "SELECT id_thesaurus FROM thesaurus WHERE REPLACE(id_ark, '-', '') = REPLACE(:arkId, '-', '') LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT id_thesaurus FROM concept WHERE REPLACE(id_ark, '-', '') = REPLACE(:arkId, '-', '') LIMIT 1", nativeQuery = true)
     Optional<String> findIdThesaurusByArkId(@Param("arkId") String arkId);
 
     @Query(value = "SELECT nextval('thesaurus_id_seq')", nativeQuery = true)
