@@ -553,21 +553,19 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
                                                           @Param("hasGroups") boolean hasGroups);
 
     @Query(value = """
-        SELECT DISTINCT c.id_concept
+        SELECT DISTINCT ON (c.id_concept) c.id_concept
         FROM concept c
         JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
         JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
         LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
         WHERE c.id_thesaurus = :idThesaurus
-        AND c.status != 'CA'
-        AND unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(:value))
-        AND (:idLang IS NULL OR npt.lang = :idLang)
-        AND (:hasGroups = false OR cgc.idgroup IN :idGroups)
-        ORDER BY 
-            CASE 
-                WHEN unaccent(lower(npt.lexical_value)) = unaccent(lower(:value)) THEN 1 
-                ELSE 2 
-            END, npt.lexical_value
+          AND c.status != 'CA'
+          AND unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(:value))
+          AND (:idLang IS NULL OR npt.lang = :idLang)
+          AND (:hasGroups = false OR cgc.idgroup IN :idGroups)
+        ORDER BY c.id_concept,
+            CASE WHEN unaccent(lower(npt.lexical_value)) = unaccent(lower(:value)) THEN 1 ELSE 2 END,
+            npt.lexical_value
         LIMIT 100
         """, nativeQuery = true)
     List<String> searchAltConceptsForAutoCompletion(@Param("value") String value,

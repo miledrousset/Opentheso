@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class NodeUserGroupThesaurus {
     private int idGroup;
     private String groupName;
     private boolean privateTheso;
+    private Date created;
 }

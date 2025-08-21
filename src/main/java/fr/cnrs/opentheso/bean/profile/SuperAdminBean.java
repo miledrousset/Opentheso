@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.services.UserService;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,6 @@ public class SuperAdminBean implements Serializable {
                 : selectedTheso.getCurrentLang();
 
         allThesaurusProject = projectService.getAllThesaurusProjects(idLang);
+        allThesaurusProject.sort(Comparator.comparing(NodeUserGroupThesaurus::getCreated).reversed());
     }
 }

@@ -21,6 +21,7 @@ import jakarta.faces.model.SelectItem;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
@@ -54,11 +55,8 @@ public class AddGroupBean implements Serializable {
         titleGroup = "";
         notation = "";
         definition = "";
-        selectedGroupType = null;
         listGroupType = groupTypeService.getAllGroupType();
-        if (!listGroupType.isEmpty()) {
-            selectedGroupType = listGroupType.get(0).getLabel();
-        }
+        selectedGroupType = CollectionUtils.isNotEmpty(listGroupType) ? "C" : null;
     }
     
     public void addGroup() {

@@ -27,7 +27,7 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
     Long getNextThesaurusSequenceValue();
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(" +
-            "t.idThesaurus, tl.title, -1, '', t.isPrivate) " +
+            "t.idThesaurus, tl.title, -1, '', t.isPrivate, t.created) " +
             "FROM ThesaurusLabel tl " +
             "JOIN Thesaurus t ON tl.idThesaurus = t.idThesaurus " +
             "WHERE tl.lang = :idLang " +

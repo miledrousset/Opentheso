@@ -27,7 +27,7 @@ public interface UserGroupThesaurusRepository extends JpaRepository<UserGroupThe
     @Transactional
     void deleteByIdThesaurus(String thesaurusId);
 
-    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(ugt.idThesaurus, tl.title, ugt.idGroup, ugl.label, t.isPrivate) " +
+    @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(ugt.idThesaurus, tl.title, ugt.idGroup, ugl.label, t.isPrivate, t.created) " +
             "FROM UserGroupThesaurus ugt " +
             "JOIN Thesaurus t ON ugt.idThesaurus = t.idThesaurus " +
             "JOIN ThesaurusLabel tl ON ugt.idThesaurus = tl.idThesaurus " +
