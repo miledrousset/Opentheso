@@ -28,8 +28,8 @@ import fr.cnrs.opentheso.services.exports.ExportService;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
-
 import fr.cnrs.opentheso.utils.JsonHelper;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -221,15 +221,12 @@ public class RestRDFHelper {
         }
     }
 
-    public String getInfosOfConcept(
-            String idTheso,
-            String idConcept,
-            String idLang) {
+    public String getInfosOfConcept(String idTheso, String idConcept, String idLang) {
+
         if (idTheso == null || idConcept == null || idLang == null) {
             return null;
         }
-        String datas = getInfosOfConcept__(
-                idTheso, idConcept, idLang);
+        String datas = getInfosOfConcept__(idTheso, idConcept, idLang);
         if (datas == null) {
             return null;
         }
@@ -340,8 +337,7 @@ public class RestRDFHelper {
         if (idTheso == null || idConcept == null || idLang == null) {
             return null;
         }
-        String datas = getNarrower__(
-                idTheso, idConcept, idLang);
+        String datas = getNarrower__(idTheso, idConcept, idLang);
         if (datas == null) {
             return null;
         }
@@ -386,8 +382,7 @@ public class RestRDFHelper {
         if (idTheso == null || idLang == null) {
             return null;
         }
-        String datas = getTopTerms__(
-                idTheso, idLang);
+        String datas = getTopTerms__(idTheso, idLang);
         if (datas == null) {
             return null;
         }
@@ -548,8 +543,7 @@ public class RestRDFHelper {
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = new WriteRdf4j(skosXmlDocument);
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -570,8 +564,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -617,8 +610,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -660,8 +652,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -699,8 +690,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -783,8 +773,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -843,14 +832,12 @@ public class RestRDFHelper {
     public String findNotation(String idTheso, String value, String format) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
-        WriteRdf4j writeRdf4j = findNotation__(
-                value, idTheso);
+        WriteRdf4j writeRdf4j = findNotation__(value, idTheso);
         if (writeRdf4j == null) {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1205,8 +1192,7 @@ public class RestRDFHelper {
             return messageEmptyRdfXml();
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1265,8 +1251,7 @@ public class RestRDFHelper {
             return messageEmptyRdfXml();
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1318,8 +1303,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1496,21 +1480,19 @@ public class RestRDFHelper {
      */
     public String getTheso(String idTheso, String format) {
 
-        RDFFormat rDFFormat = getRDFFormat(format);
-        WriteRdf4j writeRdf4j = null;
         try {
-            writeRdf4j = getTheso2__(idTheso);
+            RDFFormat rDFFormat = getRDFFormat(format);
+            WriteRdf4j writeRdf4j = getTheso2__(idTheso);
+            if (writeRdf4j == null) {
+                return null;
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+            return out.toString();
         } catch (Exception ex) {
             Logger.getLogger(RestRDFHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (writeRdf4j == null) {
             return null;
         }
-
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
-        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
-        return out.toString();
     }
 
     /**
@@ -1596,8 +1578,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1610,8 +1591,7 @@ public class RestRDFHelper {
      * @param format
      * @return
      */
-    public String exportGroup(
-            String idArk, String format) {
+    public String exportGroup(String idArk, String format) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = getGroupFromArk(idArk);
@@ -1619,8 +1599,7 @@ public class RestRDFHelper {
             return null;
         }
 
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, rDFFormat);
         return out.toString();
     }
@@ -1629,7 +1608,6 @@ public class RestRDFHelper {
 
         String idTheso = groupService.getIdThesaurusFromArkId(idArk);
         String idGroup = groupService.getIdGroupFromArkId(idArk, idTheso);
-
 
         if (idGroup == null || idTheso == null) {
             return null;
@@ -1645,8 +1623,7 @@ public class RestRDFHelper {
         return new WriteRdf4j(skosXmlDocument);
     }
 
-    private WriteRdf4j getGroupFromId(
-            String idTheso, String idGroup) {
+    private WriteRdf4j getGroupFromId(String idTheso, String idGroup) {
         if (idGroup == null || idTheso == null) {
             return null;
         }
@@ -1657,7 +1634,11 @@ public class RestRDFHelper {
         }
         exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
-        skosXmlDocument.addGroup(exportRdf4jHelperNew.addSingleGroupV2(idTheso, idGroup));
+        var group = exportRdf4jHelperNew.addSingleGroupV2(idTheso, idGroup);
+        if (group == null) {
+            return null;
+        }
+        skosXmlDocument.addGroup(group);
         return new WriteRdf4j(skosXmlDocument);
     }
 
@@ -1740,8 +1721,7 @@ public class RestRDFHelper {
 
         // si on ne trouve pas ni Handle, ni Ark
         if (nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "/?idc=" + idConcept
-                    + "&idt=" + idTheso;
+            uri = nodePreference.getOriginalUri() + "/?idc=" + idConcept + "&idt=" + idTheso;
             return uri;
         }
         return idConcept;

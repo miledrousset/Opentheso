@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.ws.api;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/group")
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "Group", description = "Contient les actions en lien avec les groupes.")
 public class RestGroup {
 
-    @Autowired
-    private RestRDFHelper restRDFHelper;
+    private final RestRDFHelper restRDFHelper;
 
     /*
      * recherche par Id Ark
