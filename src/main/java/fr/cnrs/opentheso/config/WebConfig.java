@@ -29,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .allowedOrigins("*") // autoriser toutes les origines
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(false); // si tu n’utilises pas de cookies/sessions
+                        .allowCredentials(false);
             }
         };
     }

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-    List<User> findAllByUsernameLike(String username);
+    List<User> findAllByUsernameLikeIgnoreCase(String username);
 
     Optional<User> findAllByUsername(String username);
 
