@@ -311,7 +311,7 @@ public class CsvImportHelper {
         return true;
     }
 
-    public boolean addConceptV2(String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser) {
+    public boolean addConceptV2(String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser, String formatDate) {
 
         // Membres ou appartenance aux groupes
         if (!addMembers(idTheso, conceptObject)) {
@@ -567,9 +567,6 @@ public class CsvImportHelper {
             }
         }
 
-        String dcterms = null;
-        
-        String sql = "";
         try {
             conceptRepository.addNewConcept(
                     idTheso,
@@ -583,19 +580,19 @@ public class CsvImportHelper {
                     idHandle,
                     idDoi,
                     (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'"),
-                    (relations == null ? null : "'" + relations + "'") ,
-                    (customRelations == null ? null : "'" + customRelations + "'"),
+                    relations,
+                    customRelations,
                     (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'"),
                     (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'"),
                     (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'"),
-                    (images == null ? null : "'" + images + "'"),
-                    (replacedBy == null ? null : "'" + replacedBy + "'"),
+                    images,
+                    replacedBy,
                     gps != null,
-                    (gps == null ? null : "'" + gps + "'"),
-                    (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'"),
-                    (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'"),
-                    (dcterms == null ? null : "'" + dcterms + "'")
-            );
+                    gps,
+                    null,//(conceptObject.getCreated()== null ? null : new SimpleDateFormat(formatDate).parse(conceptObject.getCreated())),
+                    null,//(conceptObject.getModified()== null ? null : new SimpleDateFormat(formatDate).parse(conceptObject.getModified())),
+                    null);
+
         } catch (Exception e) {
             log.error("Erreur lors de l'appel à opentheso_add_new_concept pour le concept {} : {}", conceptObject.getIdConcept(), e.getMessage(), e);
             message += "Erreur concept : " + prefTerm + " (" + conceptObject.getIdConcept() + ")\n";

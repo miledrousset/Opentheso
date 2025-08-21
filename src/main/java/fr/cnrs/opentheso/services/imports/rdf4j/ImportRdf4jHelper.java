@@ -38,6 +38,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
 import fr.cnrs.opentheso.services.AlignmentService;
 import fr.cnrs.opentheso.services.ConceptAddService;
 import fr.cnrs.opentheso.services.ConceptService;
@@ -111,6 +112,7 @@ public class ImportRdf4jHelper {
     private final NoteService noteService;
     private final FacetService facetService;
     private final ConceptAddService conceptAddService;
+    private final ConceptRepository conceptRepository;
 
 
     private List<String> idGroups = new ArrayList<>();
@@ -751,7 +753,7 @@ public class ImportRdf4jHelper {
             }
         }
 
-        String notationConcept = null;
+        String notationConcept = "";
         if (CollectionUtils.isNotEmpty(conceptResource.getNotationList())) {
             for (SKOSNotation notation : conceptResource.getNotationList()) {
                 notationConcept = notation.getNotation();
@@ -836,41 +838,30 @@ public class ImportRdf4jHelper {
             gps = gps.substring(SEPERATEUR.length());
         }
 
-        String sql = "";
-        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
-                    + "'" + idConcept + "', "
-                    + idUser + ", "
-                    + "'" + conceptStatus + "', "
-                    + "'concept', "
-                    + (notationConcept == null ? null : "'" + notationConcept + "'") + ""
-                    + ", "
-                    + (idArk == null ? "''" : "'" + idArk + "'") + ", "
-                    + isTopConcept + ", "
-                    + "'" + idHandle + "', "
-                    + "'" + idDoi + "', "
-                    + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (relations == null ? null : "'" + relations + "'") + ", "
-                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "
-                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
-                    + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
-                    + (images == null ? null : "'" + images + "'") + ", "
-                    + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
-                    + (gps != null) + ", "
-                    + (gps == null ? null : "'" + gps + "'") + ", "
-                    //+ "'" + created + "', "
-                    + (created == null ? null : "'" + created + "'") + ", "
-                    //+ "'" + modified + "'"
-                    + (modified == null ? null : "'" + modified + "'") + ", "
-                    + (dcterms == null ? null : "'" + dcterms + "'")
-                    + ")";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.out.println("SQL : " + sql);
-            System.out.println(e.getMessage());
-            System.out.println("--------------------------------");
-        }
+        conceptRepository.addNewConcept(
+                idTheso,
+                idConcept,
+                idUser,
+                conceptStatus,
+                "concept",
+                notationConcept,
+                idArk,
+                isTopConcept,
+                idHandle,
+                idDoi,
+                prefTerm != null ? prefTerm.replaceAll("'", "''") : null,
+                relations,
+                customRelations,
+                notes != null ? notes.replaceAll("'", "''") : null,
+                nonPrefTerm != null ? nonPrefTerm.replaceAll("'", "''") : null,
+                alignements != null ? alignements.replaceAll("'", "''") : null,
+                images,
+                isReplacedBy,
+                gps != null,
+                gps,
+                created,
+                modified,
+                dcterms);
 
         addExternalResources(idTheso, idConcept, conceptResource.getDcRelations());
     }

@@ -97,16 +97,8 @@ public class ConcepThesoSearchController {
 
     private ResponseEntity searchFilter(String idTheso, String acceptHeader, String q, String lang, String groupsString, String match, String filter) {
 
-        String datas;
-        String[] groups = null;
-
-        if (lang == null) {
-            lang = "";
-        }
-
-        if (groupsString != null) {
-            groups = groupsString.split(",");
-        }
+        String[] groups = groupsString != null ? groupsString.split(",") : null;
+        lang = lang == null ? "" : lang;
 
         if (match != null && !match.equalsIgnoreCase("exact") && !match.equalsIgnoreCase("exactone")) {
             match = null;
@@ -114,7 +106,7 @@ public class ConcepThesoSearchController {
 
         var selectedMediaType = getMediaTypeFromRequest(acceptHeader);
 
-        datas = getDatas(idTheso, lang, groups, q, acceptHeader, filter, match);
+        var datas = getDatas(idTheso, lang, groups, q, acceptHeader, filter, match);
         return ResponseEntity.ok().contentType(selectedMediaType).body(datas);
     }
 

@@ -767,8 +767,7 @@ public class RestRDFHelper {
     public String findConcepts(String idTheso, String lang, String [] groups, String value, String format, String match) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
-        WriteRdf4j writeRdf4j = findConcepts__(
-                value, idTheso, lang, groups, match);
+        WriteRdf4j writeRdf4j = findConcepts__(value, idTheso, lang, groups, match);
         if (writeRdf4j == null) {
             return null;
         }
