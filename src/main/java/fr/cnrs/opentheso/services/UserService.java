@@ -451,7 +451,7 @@ public class UserService {
 
     public List<User> getUserByUserNameLike(String userName) {
 
-        var userList = userRepository.findAllByUsernameLike(userName);
+        var userList = userRepository.findAllByUsernameLikeIgnoreCase(userName);
         if (CollectionUtils.isEmpty(userList)) {
             log.info("Aucun utilisateur n'est trouvé avec l'userName {}", userName);
             return null;
