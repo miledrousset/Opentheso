@@ -868,7 +868,7 @@ public class ConceptService {
         nodeConceptExport.setNodeAlignmentsList(alignmentService.getAllAlignmentsOfConcept(idConcept, idThesaurus));
 
         //récupération des traductions
-        nodeConceptExport.setNodeTermTraductions(termService.getTraductionByConcept(idConcept, idThesaurus));
+        nodeConceptExport.setNodeTermTraductions(termService.getTraductionByConcept(idThesaurus, idConcept));
 
         //récupération des Non Prefered Term
         nodeConceptExport.setNodeEM(nonPreferredTermService.getAllNonPreferredTerms(idConcept, idThesaurus));
