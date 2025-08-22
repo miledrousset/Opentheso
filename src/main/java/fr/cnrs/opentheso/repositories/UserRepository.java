@@ -13,8 +13,6 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-    List<User> findAllByUsernameLikeIgnoreCase(String username);
-
     Optional<User> findAllByUsername(String username);
 
     Optional<User> findByApiKey(String apiKey);
@@ -42,4 +40,10 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
         WHERE LOWER(u.mail) LIKE LOWER(CONCAT('%', :mail, '%')) AND LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))
     """)
     List<User> searchByMailAndUsername(@Param("mail") String mail, @Param("username") String username);
+
+    @Query("""
+        SELECT u FROM User u
+        WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))
+    """)
+    List<User> findAllByUsernameLikeIgnoreCase(@Param("username") String username);
 }
