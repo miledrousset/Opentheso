@@ -137,7 +137,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            var childs = resourceService.getListNT(nodeGroup.getId(), idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(idTheso, nodeGroup.getId(), idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -161,7 +161,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            var childs = resourceService.getListNT(nodeNT.getIdConcept(), idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(idTheso, nodeNT.getIdConcept() , idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
