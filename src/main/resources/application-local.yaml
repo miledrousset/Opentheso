@@ -20,6 +20,13 @@ primefaces:
 app:
   security:
     keycloak-enabled: false  # ou false pour désactiver
+  neo4j:
+    enabled: false
+
+management:
+  health:
+    neo4j:
+      enabled: false
 
 spring:
   application:

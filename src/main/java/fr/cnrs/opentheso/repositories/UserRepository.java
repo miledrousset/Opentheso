@@ -19,7 +19,8 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 
     Optional<User> findByMail(String mail);
 
-    Optional<User> findByUsernameAndPassword(String username, String password);
+    @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username) AND u.password = :password")
+    Optional<User> findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupUser(u.id, u.username, -1, '', 0, '') " +
             "FROM User u " +

@@ -44,6 +44,9 @@ import org.neo4j.driver.QueryConfig;
 @RequiredArgsConstructor
 public class DataGraphView {
 
+    @Value("${app.neo4j.enabled:false}")
+    private boolean neo4jEnabled;
+
     @Value("${neo4j.serverName}")
     private String serverNameNeo4j;
 
@@ -176,7 +179,11 @@ public class DataGraphView {
     }
 
     public void exportToNeo4J(String viewId) {
-        
+        if (!neo4jEnabled) {
+            MessageUtils.showWarnMessage("Export Neo4J désactivé (app.neo4j.enabled=false)");
+            return;
+        }
+
         var properties = getPrefOfNeo4j();
         var view = graphService.getView(viewId);
         if (view == null) {
