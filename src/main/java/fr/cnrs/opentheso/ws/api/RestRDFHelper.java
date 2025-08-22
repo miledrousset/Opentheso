@@ -786,9 +786,7 @@ public class RestRDFHelper {
      * @param groups
      * @return
      */
-    private WriteRdf4j findConcepts__(
-            
-            String value, String idTheso, String lang,  String [] groups, String match) {
+    private WriteRdf4j findConcepts__(String value, String idTheso, String lang,  String [] groups, String match) {
 
         if (value == null || idTheso == null) {
             return null;
