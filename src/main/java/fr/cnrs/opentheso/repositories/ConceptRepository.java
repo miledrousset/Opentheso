@@ -336,5 +336,5 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     void addNewConcept(String idTheso, String idConcept, Integer idUser, String status, String conceptType, String notation,
             String arkId, Boolean isTopConcept, String handle, String doi, String prefLabels, String relations,
             String customRelations, String notes, String nonPrefLabels, String alignments, String images, String replacedBy,
-            Boolean hasGps, String gps, String created, String modified, String dcterms);
+            Boolean hasGps, String gps, Date created, Date modified, String dcterms);
 }

@@ -132,7 +132,7 @@
                             </ui:repeat>
 
                             <p:commandLink value="..." rendered="#{conceptView.haveNext}"
-                                           action="#{conceptView.getNextNT(selectedThesaurus.selectedIdTheso, conceptView.selectedLang)}"
+                                           action="#{conceptView.getNextNT()}"
                                            update="containerIndex:rightTab:idConceptNarrower"
                                            style="color: #FF7979" styleClass="textOpentheso">
                                 <i class="fa-solid fa-forward" style=" color:#f47b2a; font-size: 14px;" />

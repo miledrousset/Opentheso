@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import fr.cnrs.opentheso.mappers.NodeFullConceptMapper;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
@@ -88,6 +89,7 @@ public class ConceptView implements Serializable {
     private final FacetService facetService;
     private final ConceptTypeService conceptTypeService;
     private final NodeFullConceptMapper nodeFullConceptMapper;
+    private final SelectedTheso selectedThesaurus;
 
     private int step, countOfBranch, offset;
     private String mapScripte = "";
@@ -503,12 +505,17 @@ public class ConceptView implements Serializable {
             nodeCustomRelationReciprocals = null;
     }
 
-    public void getNextNT(String idThesaurus, String idLang) {
+    public void getNextNT() {
+
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            var conceptRelations = resourceService.getListNT(idThesaurus,
-                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), idLang, offset, step + 1);
-            if (conceptRelations != null && !conceptRelations.isEmpty()) {
-                nodeFullConcept.getNarrowers().addAll(conceptRelations);
+            var conceptRelations = resourceService.getListNT(selectedThesaurus.getSelectedIdTheso(),
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), selectedLang, offset, step + 1);
+            if (CollectionUtils.isNotEmpty(conceptRelations)) {
+                for (ConceptRelation conceptRelation : conceptRelations) {
+                    if (!nodeFullConcept.getNarrowers().contains(conceptRelation)) {
+                        nodeFullConcept.getNarrowers().add(conceptRelation);
+                    }
+                }
                 setOffset();
                 return;
             }

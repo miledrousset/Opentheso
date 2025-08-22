@@ -403,6 +403,9 @@ public class ExportRdf4jHelperNew {
     public SKOSResource addSingleGroupV2(String idThesaurus, String idGroup) {
 
         NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(idGroup, idThesaurus);
+        if (nodeGroupLabel == null) {
+            return null;
+        }
         SKOSResource sKOSResource = new SKOSResource();
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);

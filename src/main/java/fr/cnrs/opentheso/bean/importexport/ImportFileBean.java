@@ -1311,7 +1311,7 @@ public class ImportFileBean implements Serializable {
             switch (conceptObject.getType().trim().toLowerCase()) {
                 case "skos:concept":
                     // ajout de concept
-                    if (csvImportHelper.addConceptV2(idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
+                    if (csvImportHelper.addConceptV2(idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser(), formatDate)) {
                         total++;
                     }
                     break;
@@ -2718,7 +2718,7 @@ public class ImportFileBean implements Serializable {
      * @param idUser
      */
     @Transactional
-    public void addListConceptsToTheso(String idTheso, int idUser) {
+    public void addListConceptsToTheso(String idTheso) {
         if (conceptObjects == null || conceptObjects.isEmpty()) {
             warning = "pas de valeurs";
             return;
@@ -2788,7 +2788,7 @@ public class ImportFileBean implements Serializable {
                                 continue;
                             }
                         }
-                        if (csvImportHelper.addConceptV2(idTheso, conceptObject, currentUser.getNodeUser().getIdUser())) {
+                        if (csvImportHelper.addConceptV2(idTheso, conceptObject, currentUser.getNodeUser().getIdUser(), "yyyy-MM-dd")) {
                             total++;
                         }
                         break;
