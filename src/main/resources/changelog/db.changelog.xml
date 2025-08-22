@@ -161,4 +161,5 @@
     <include file="/changelog/v25.05/25-05_03.sql"/>
     <include file="/changelog/v25.08/25-08_01.sql"/>
     <include file="/changelog/v25.05/25-08_19.sql"/>
+    <include file="/changelog/v25.08/25-08_22.sql"/>
 </databaseChangeLog>
