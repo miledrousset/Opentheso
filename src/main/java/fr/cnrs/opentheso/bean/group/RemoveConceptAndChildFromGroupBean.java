@@ -62,6 +62,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         MessageUtils.showInformationMessage("La branche a bien été enlevée de la collection");
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
+        nodeGroups = conceptView.getNodeConcept().getNodeConceptGroup();
 
         log.info("Initialisation de l'interface");
         init();
