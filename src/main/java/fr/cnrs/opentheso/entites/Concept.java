@@ -78,6 +78,5 @@ public class Concept implements Serializable {
     private String conceptType = "concept";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 }
