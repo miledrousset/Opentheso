@@ -65,7 +65,7 @@ public class ResourceService {
         concept.setUri(conceptDetails.get().getUri());
         concept.setResourceType(SKOSProperty.CONCEPT);
         concept.setConceptType(conceptDetails.get().getConcepttype());
-        concept.setResourceStatus(switch (conceptDetails.get().getResourcetype()) {
+        concept.setResourceStatus(switch (conceptDetails.get().getResourcetype().toUpperCase()) {
             case "DEP" -> SKOSProperty.DEPRECATED;
             case "CA" -> SKOSProperty.CANDIDATE;
             default -> SKOSProperty.CONCEPT;
