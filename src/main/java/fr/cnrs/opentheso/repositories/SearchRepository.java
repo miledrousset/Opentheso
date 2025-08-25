@@ -72,7 +72,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         FROM concept c
         JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
         JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
-        WHERE c.status NOT IN ('CA', 'DEP', 'hidden')
+        WHERE c.status NOT IN ('CA', 'DEP', 'dep', 'hidden')
           AND t.lang = :idLang
           AND t.id_thesaurus = :idThesaurus
           AND f_unaccent(lower(t.lexical_value)) LIKE %:value%
@@ -88,7 +88,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
         JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
         JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
-        WHERE c.status NOT IN ('CA', 'DEP', 'hidden')
+        WHERE c.status NOT IN ('CA', 'DEP', 'dep', 'hidden')
           AND npt.lang = :idLang
           AND npt.id_thesaurus = :idThesaurus
           AND f_unaccent(lower(npt.lexical_value)) LIKE %:value%
@@ -158,7 +158,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
         JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
         WHERE c.id_thesaurus = :idThesaurus
-          AND c.status NOT IN ('CA', 'DEP')
+          AND c.status NOT IN ('CA', 'DEP', 'dep')
           AND (:idLang IS NULL OR t.lang = :idLang)
           AND unaccent(lower(t.lexical_value)) = unaccent(lower(:value))
           AND (:idGroups IS NULL OR LOWER(cgc.idgroup) IN (:idGroups))
@@ -171,7 +171,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
         JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept AND c.id_thesaurus = cgc.idthesaurus
         WHERE c.id_thesaurus = :idThesaurus
-          AND c.status NOT IN ('CA', 'DEP')
+          AND c.status NOT IN ('CA', 'DEP', 'dep')
           AND (:idLang IS NULL OR npt.lang = :idLang)
           AND unaccent(lower(npt.lexical_value)) = unaccent(lower(:value))
           AND (:idGroups IS NULL OR LOWER(cgc.idgroup) IN (:idGroups))
@@ -611,7 +611,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
         JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
         WHERE c.id_thesaurus = :idThesaurus
-          AND c.status NOT IN ('DEP', 'CA')
+          AND c.status NOT IN ('DEP', 'dep, ''CA')
           AND (:idLang IS NULL OR t.lang = :idLang)
           AND (
             :idGroups IS NULL OR c.id_concept IN (
@@ -638,7 +638,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
         JOIN preferred_term pt ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
         JOIN non_preferred_term npt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
         WHERE c.id_thesaurus = :idThesaurus
-          AND c.status NOT IN ('DEP', 'CA')
+          AND c.status NOT IN ('DEP', 'dep', 'CA')
           AND (:idLang IS NULL OR npt.lang = :idLang)
           AND (:idGroups IS NULL OR c.id_concept IN (SELECT idconcept FROM concept_group_concept WHERE idgroup IN (:idGroups)))
           AND (" + ":conditions" + ")
@@ -697,7 +697,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     List<String> searchAllPolyHierarchy(@Param("idThesaurus") String idThesaurus);
 
     @Query(value = "SELECT id_concept FROM concept " +
-            "WHERE status = 'DEP' AND id_thesaurus = :idThesaurus " +
+            "WHERE LOWER(status) = LOWER('dep') AND id_thesaurus = :idThesaurus " +
             "LIMIT 200", nativeQuery = true)
     List<String> searchAllDeprecatedConcepts(@Param("idThesaurus") String idThesaurus);
 

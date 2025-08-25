@@ -220,6 +220,7 @@ public class ThesaurusService {
         log.info("Le nouveau id du thésaurus est {}", idThesaurus);
 
         var thesaurus = thesaurusRepository.save(Thesaurus.builder()
+                .id((int)thesaurusSeq)
                 .idThesaurus(idThesaurus)
                 .idArk("")
                 .isPrivate(false)

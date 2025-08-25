@@ -1033,7 +1033,7 @@ public class RestRDFHelper {
                 .append("JOIN ").append(tableName).append(" ").append(tableAlias).append(" ON ").append(joinCondition)
                 .append(" AND pt.id_thesaurus = ").append(tableAlias).append(".id_thesaurus ")
                 .append("WHERE c.id_thesaurus = ? ")  // Ajout du filtre idTheso
-                .append("AND c.status NOT IN ('DEP', 'CA') ");
+                .append("AND c.status NOT IN ('DEP', 'dep', 'CA') ");
 
         if (idLang != null && !idLang.isEmpty()) {
             query.append("AND ").append(tableAlias).append(".lang = ? ");
