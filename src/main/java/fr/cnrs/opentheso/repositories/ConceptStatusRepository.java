@@ -12,7 +12,7 @@ import java.util.List;
 public interface ConceptStatusRepository extends JpaRepository<Concept, Integer> {
 
     @Query(value = """
-        SELECT COUNT(id_concept) FROM concept WHERE id_thesaurus = :idThesaurus AND status NOT IN ('CA', 'DEP')
+        SELECT COUNT(id_concept) FROM concept WHERE id_thesaurus = :idThesaurus AND status NOT IN ('CA', 'DEP', 'dep')
     """, nativeQuery = true)
     int countValidConceptsByThesaurus(@Param("idThesaurus") String idThesaurus);
 

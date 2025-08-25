@@ -31,7 +31,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     List<Concept> findAllByIdThesaurusAndTopConceptAndStatusNotLike(String idThesaurus, boolean isTopConcept, String status);
 
     @Query(value = """
-        SELECT count(c.id_concept) FROM concept c WHERE c.id_thesaurus = :idThesaurus AND c.status not in ('CA', 'DEP')
+        SELECT count(c.id_concept) FROM concept c WHERE c.id_thesaurus = :idThesaurus AND c.status not in ('CA', 'DEP', 'dep')
     """, nativeQuery = true)
     int countConcepts(@Param("idThesaurus") String idThesaurus);
 
@@ -41,7 +41,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     int countCandidate(@Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
-       SELECT count(c.id_concept) FROM concept c WHERE c.id_thesaurus = :idThesaurus AND status = 'DEP'
+       SELECT count(c.id_concept) FROM concept c WHERE c.id_thesaurus = :idThesaurus AND LOWER(status) = LOWER('dep')
     """, nativeQuery = true)
     int countConceptDeprecated(@Param("idThesaurus") String idThesaurus);
 
@@ -127,7 +127,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
         WHERE non_preferred_term.id_thesaurus = :idTheso
         AND non_preferred_term.lang = :idLang
         AND LOWER(non_preferred_term.lexical_value) = LOWER(:label)
-        AND concept.status != 'DEP'
+        AND LOWER(concept.status) != LOWER('dep')
         LIMIT 1
     """, nativeQuery = true)
     Optional<String> findConceptIdFromAltLabel(@Param("idTheso") String idTheso, @Param("label") String label, @Param("idLang") String idLang);
@@ -140,7 +140,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
         WHERE t.id_thesaurus = :idTheso
         AND t.lang = :idLang
         AND LOWER(t.lexical_value) = LOWER(:label)
-        AND c.status NOT IN ('DEP', 'CA')
+        AND c.status NOT IN ('DEP', 'dep', 'CA')
         LIMIT 1
     """, nativeQuery = true)
     Optional<String> findConceptIdFromLabel(@Param("idTheso") String idTheso, @Param("label") String label, @Param("idLang") String idLang);
@@ -216,7 +216,7 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
             JOIN users u ON c.contributor = u.id_user
         WHERE c.id_thesaurus = :idThesaurus
             AND t.lang = :idLang
-             AND c.status = 'DEP'
+            AND LOWER(c.status) = LOWER('dep')
         ORDER BY unaccent(lower(t.lexical_value))
     """, nativeQuery = true)
     List<NodeDeprecatedProjection> findAllDeprecatedConcepts(@Param("idThesaurus") String idThesaurus, @Param("idLang") String idLang);

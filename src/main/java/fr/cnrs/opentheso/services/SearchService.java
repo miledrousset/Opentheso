@@ -688,7 +688,7 @@ public class SearchService {
 
         return baseSelect
                 + " and term.id_thesaurus = '" + idTheso + "'"
-                + " and concept.status not in ('CA', 'DEP') "
+                + " and concept.status not in ('CA', 'DEP', 'dep') "
                 + multiValuesPT
                 + " order by CASE unaccent(lower(lexical_value)) WHEN '" + value + "' THEN 1 END, lexical_value "
                 + " limit 100";
@@ -724,7 +724,7 @@ public class SearchService {
 
         return baseSelect
                 + " and term.id_thesaurus = '" + idTheso + "'"
-                + " and concept.status not in ('CA', 'DEP') "
+                + " and concept.status not in ('CA', 'DEP', 'dep') "
                 + multiValuesPT
                 + " order by CASE unaccent(lower(lexical_value)) WHEN '" + value + "' THEN 1 END, lexical_value "
                 + (StringUtils.isEmpty(value) ? " limit 5000" : " limit 100");
