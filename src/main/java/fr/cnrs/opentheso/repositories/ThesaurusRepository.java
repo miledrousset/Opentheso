@@ -24,7 +24,7 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
     Optional<String> findIdThesaurusByArkId(@Param("arkId") String arkId);
 
     @Query(value = "SELECT nextval('thesaurus_id_seq')", nativeQuery = true)
-    Long getNextThesaurusSequenceValue();
+    long getNextThesaurusSequenceValue();
 
     @Query("SELECT new fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus(" +
             "t.idThesaurus, tl.title, -1, '', t.isPrivate, t.created) " +

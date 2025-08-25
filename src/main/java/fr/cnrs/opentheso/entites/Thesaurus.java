@@ -1,12 +1,6 @@
 package fr.cnrs.opentheso.entites;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +21,9 @@ import java.util.Date;
 @Table(name = "thesaurus")
 @EntityListeners(AuditingEntityListener.class)
 public class Thesaurus {
+
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
     @Id
     @Column(name = "id_thesaurus", nullable = false)
