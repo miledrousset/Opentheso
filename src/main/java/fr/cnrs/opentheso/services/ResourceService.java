@@ -479,9 +479,9 @@ public class ResourceService {
         log.info("Recherche des facets présent dans le concept {} (lang = {}) définit dans le thésaurus {}", idConceptBT, idLang, idThesaurus);
         List<FacetProjection> facets = resourceRepository.getFacetsOfConcept(idThesaurus, idConceptBT, idLang);
         if (CollectionUtils.isEmpty(facets)) {
-            log.info("Aucune facets n'est trouvée pour le concept '{}' (lang='{}')", idThesaurus, idLang);
+            log.debug("Aucune facets n'est trouvée pour le concept '{}' (lang='{}')", idThesaurus, idLang);
         } else {
-            log.info("{} facets trouvées pour le concept '{}' (lang='{}')", facets.size(), idThesaurus, idLang);
+            log.debug("{} facets trouvées pour le concept '{}' (lang='{}')", facets.size(), idThesaurus, idLang);
             for (FacetProjection f : facets) {
                 NodeConceptTree node = new NodeConceptTree();
                 node.setIdConcept(f.getIdFacet());
