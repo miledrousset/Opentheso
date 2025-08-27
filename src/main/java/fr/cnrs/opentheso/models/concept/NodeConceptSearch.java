@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.models.concept;
 
+import java.util.ArrayList;
 import java.util.List;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -39,20 +40,14 @@ public class NodeConceptSearch implements Comparable {
     public void clear(){
         idConcept = null;
         prefLabel = null;
-        if(nodeTermTraductions != null)
-            nodeTermTraductions.clear();
-        if(nodeBT != null)
-            nodeBT.clear();        
-        if(nodeNT != null)
-            nodeNT.clear();    
-        if(nodeRT != null)
-            nodeRT.clear(); 
-        if(nodeEM != null)
-            nodeEM.clear(); 
-        if(nodeConceptGroup != null)
-            nodeConceptGroup.clear();
-        if(dupplicateWithIds != null)
-            dupplicateWithIds.clear();
+
+        nodeTermTraductions = new ArrayList<>();
+        nodeBT = new ArrayList<>();
+        nodeNT = new ArrayList<>();
+        nodeRT = new ArrayList<>();
+        nodeEM = new ArrayList<>();
+        nodeConceptGroup = new ArrayList<>();
+        dupplicateWithIds = new ArrayList<>();
     }
 
     @Override

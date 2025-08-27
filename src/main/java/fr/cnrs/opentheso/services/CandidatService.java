@@ -272,7 +272,8 @@ public class CandidatService {
             candidatStatusRepository.save(candidatStatus.get());
 
             conceptRepository.setStatus("D", candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
-            conceptRepository.setTopConceptTag(candidatDto.getTermesGenerique().isEmpty(), candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
+            conceptRepository.setTopConceptTag(CollectionUtils.isEmpty(candidatDto.getTermesGenerique()),
+                    candidatDto.getIdConcepte(), candidatDto.getIdThesaurus());
 
             return false;
         }

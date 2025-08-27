@@ -213,7 +213,7 @@ public class ProcessCandidateBean implements Serializable {
             
             generateArk(nodePreference, selectedCandidate1);
             var nodeUser = userService.getUser(selectedCandidate1.getCreatedById());
-            if(nodeUser.isAlertMail()) sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
+            if(nodeUser != null && nodeUser.isAlertMail()) sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
 
         MessageUtils.showInformationMessage("Candidats insérés avec succès");

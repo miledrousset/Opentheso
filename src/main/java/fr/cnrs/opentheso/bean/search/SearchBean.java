@@ -110,15 +110,8 @@ public class SearchBean implements Serializable {
     }
 
     public void reset() {
-        if (nodeConceptSearchs != null) {
-            for (NodeConceptSearch nodeConceptSearch : nodeConceptSearchs) {
-                nodeConceptSearch.clear();
-            }
-            nodeConceptSearchs = null;
-        }
-        if (listResultAutoComplete != null) {
-            listResultAutoComplete.clear();
-        }
+        nodeConceptSearchs = new ArrayList<>();
+        listResultAutoComplete = new ArrayList<>();
         searchSelected = null;
     }
 
