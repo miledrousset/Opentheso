@@ -65,19 +65,19 @@ public class PreferenceBean implements Serializable {
 
         switch (selectedServer) {
             case "ark":
-                preferences.setUseArk(true);
+                preferences.setUseArk(preferences.isUseArk());
                 preferences.setUseArkLocal(false);
                 preferences.setUseHandle(false);
                 break;
             case "arklocal":
                 preferences.setUseArk(false);
-                preferences.setUseArkLocal(true);
+                preferences.setUseArkLocal(preferences.isUseArkLocal());
                 preferences.setUseHandle(false);
                 break;
             case "handle":
                 preferences.setUseArk(false);
                 preferences.setUseArkLocal(false);
-                preferences.setUseHandle(true);
+                preferences.setUseHandle(preferences.isUseHandle());
         }
         preferenceService.setIdentifierFlags(selectedTheso.getCurrentIdTheso(), preferences.isUseArk(), preferences.isUseArkLocal(), preferences.isUseHandle());
     }
