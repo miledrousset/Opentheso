@@ -84,31 +84,41 @@ public class ExportService {
         List<SKOSResource> result = new ArrayList<>();
 
         for (SkosFacetProjection p : projections) {
-            SKOSResource resource = new SKOSResource(getUriForFacette(p.getId_facet(), idThesaurus, originalUri), SKOSProperty.FACET);
-            resource.setIdentifier(p.getId_facet());
-            resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
+            if (CollectionUtils.isNotEmpty(result)) {
+                for (SKOSResource skosResource : result) {
+                    var uri = getUriForFacette(p.getId_facet(), idThesaurus, originalUri);
+                    if (uri.equalsIgnoreCase(skosResource.getUri())) {
+                        skosResource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
+                        break;
+                    }
+                }
+            } else {
+                var resource = new SKOSResource(getUriForFacette(p.getId_facet(), idThesaurus, originalUri), SKOSProperty.FACET);
+                resource.setIdentifier(p.getId_facet());
+                resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
 
-            List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idThesaurus);
-            for (String idConcept : members) {
-                NodeUri nodeUri = conceptService.getNodeUriOfConcept(idConcept, idThesaurus);
-                resource.addRelation(nodeUri.getIdConcept(), buildUri(nodeUri, idThesaurus, idConcept, originalUri, nodePreference), SKOSProperty.MEMBER);
+                List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idThesaurus);
+                for (String idConcept : members) {
+                    NodeUri nodeUri = conceptService.getNodeUriOfConcept(idConcept, idThesaurus);
+                    resource.addRelation(nodeUri.getIdConcept(), buildUri(nodeUri, idThesaurus, idConcept, originalUri, nodePreference), SKOSProperty.MEMBER);
+                }
+
+                resource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+                resource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.CREATED);
+                resource.addDate(dateFormat.format(p.getModified()), SKOSProperty.MODIFIED);
+
+                addDoc(p.getDefinition(), resource, SKOSProperty.DEFINITION);
+                addDoc(p.getNote(), resource, SKOSProperty.NOTE);
+                addDoc(p.getEditorialnote(), resource, SKOSProperty.EDITORIAL_NOTE);
+                addDoc(p.getSecopenote(), resource, SKOSProperty.SCOPE_NOTE);
+                addDoc(p.getHistorynote(), resource, SKOSProperty.HISTORY_NOTE);
+                addDoc(p.getExample(), resource, SKOSProperty.EXAMPLE);
+                addDoc(p.getChangenote(), resource, SKOSProperty.CHANGE_NOTE);
+
+                result.add(resource);
             }
-
-            resource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-            resource.addDate(dateFormat.format(p.getCreated()), SKOSProperty.CREATED);
-            resource.addDate(dateFormat.format(p.getModified()), SKOSProperty.MODIFIED);
-
-            addDoc(p.getDefinition(), resource, SKOSProperty.DEFINITION);
-            addDoc(p.getNote(), resource, SKOSProperty.NOTE);
-            addDoc(p.getEditorialnote(), resource, SKOSProperty.EDITORIAL_NOTE);
-            addDoc(p.getSecopenote(), resource, SKOSProperty.SCOPE_NOTE);
-            addDoc(p.getHistorynote(), resource, SKOSProperty.HISTORY_NOTE);
-            addDoc(p.getExample(), resource, SKOSProperty.EXAMPLE);
-            addDoc(p.getChangenote(), resource, SKOSProperty.CHANGE_NOTE);
-
-            result.add(resource);
         }
         return result;
     }

@@ -73,13 +73,6 @@ public interface ConceptRepository extends JpaRepository<Concept, Integer> {
     @Query(value = "SELECT nextval('concept__id_seq')", nativeQuery = true)
     Long getNextConceptNumericId();
 
-    @Query(value = """
-        SELECT created, modified, status\s
-        FROM concept\s
-        WHERE id_concept = :idConcept AND id_thesaurus = :idThesaurus
-   \s""", nativeQuery = true)
-    Optional<Object[]> getConceptMetadata(@Param("idConcept") String idConcept, @Param("idThesaurus") String idThesaurus);
-
     @Modifying
     @Transactional
     @Query("UPDATE Concept c SET c.notation = '' WHERE c.notation ilike 'null'")

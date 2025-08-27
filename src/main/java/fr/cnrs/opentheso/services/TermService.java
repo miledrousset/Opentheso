@@ -342,21 +342,19 @@ public class TermService {
                         .build();
             }
         } else {
-            Optional<Object[]> conceptMeta = conceptRepository.getConceptMetadata(idConcept, idThesaurus); // à créer
 
-            if (conceptMeta.isPresent()) {
-                Object[] row = conceptMeta.get();
+            var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus); // à créer
+
+            if (concept.isPresent()) {
                 return Term.builder()
                         .idTerm("")
                         .idConcept(idConcept)
                         .lexicalValue("")
                         .lang(idLang)
                         .idThesaurus(idThesaurus)
-                        .created(org.apache.commons.lang3.StringUtils.isEmpty((String) row[0])
-                                ? null : Date.from(Instant.parse((String) row[0])))
-                        .modified(org.apache.commons.lang3.StringUtils.isEmpty((String) row[1])
-                                ? null : Date.from(Instant.parse((String) row[1])))
-                        .status((String) row[2])
+                        .created(concept.get().getCreated())
+                        .modified(concept.get().getModified())
+                        .status(concept.get().getStatus())
                         .build();
             }
         }
