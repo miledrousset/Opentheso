@@ -10,9 +10,7 @@
                                          value="#{candidatBean.myCandidatsSelected3}">
                     <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyRejectCandidats()}" />
                 </p:selectBooleanCheckbox>
-                
-                <h:outputText value="#{candidatBean.getCountOfRejectedCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; margin-left: 50px; " />                  
-                
+                <h:outputText value="#{candidatBean.getCountOfRejectedCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; margin-left: 50px; " />
             </p:toolbarGroup>
             <p:toolbarGroup align="right">
                 <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>

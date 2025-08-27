@@ -329,6 +329,12 @@
             <artifactId>spring-boot-starter-graphql</artifactId>
         </dependency>
 
+        <!-- GraphQL Tools : Fournit des outils pour mapper facilement les objets Java à des schémas GraphQL (via fichiers .graphqls). -->
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+            <version>22.1</version> <!-- Vérifiez la dernière version compatible -->
+        </dependency>
 
 
 

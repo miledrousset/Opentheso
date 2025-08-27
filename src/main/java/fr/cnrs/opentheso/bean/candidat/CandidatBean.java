@@ -54,6 +54,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -159,11 +160,7 @@ public class CandidatBean implements Serializable {
 
     public void getRejectCandidatByThesoAndLangue() {
         tabViewIndexSelected = 2;
-        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            rejetCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
-        } else {
-            rejetCadidat.clear();
-        }
+        rejetCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
     }
 
     public void getAcceptedCandidatByThesoAndLangue() {
@@ -233,15 +230,39 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyCandidats() {
+        tabViewIndexSelected = 0;
         if (myCandidatsSelected1) {
             candidatList = candidatList.stream()
                     .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .toList();
         } else {
-            getAllCandidatsByThesoAndLangue();
+            candidatList = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 1);
         }
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+
+        searchValue1 = "";
+        listSelected = false;
+        selectedCandidates = List.of();
+        myCandidatsSelected1 = false;
+        candidatList = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 1);
+
+        searchValue2 = "";
+        myCandidatsSelected2 = false;
+        acceptedCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 2);
+
+        searchValue3 = "";
+        myCandidatsSelected3 = false;
+        rejetCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
+
+        switch(event.getTab().getTitle()) {
+            case "Concepts rejetés" -> tabViewIndexSelected = 2;
+            case "Concepts insérés" -> tabViewIndexSelected = 1;
+            default -> tabViewIndexSelected = 0;
+        }
     }
 
     private void loadCandidatsList() {
@@ -263,23 +284,24 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyRejectCandidats() {
+        tabViewIndexSelected = 2;
         if (myCandidatsSelected3) {
             rejetCadidat = rejetCadidat.stream()
-                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
+                    .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .toList();
         } else {
-            getRejectCandidatByThesoAndLangue();
+            rejetCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
         }
         MessageUtils.showInformationMessage(new StringBuffer().append(rejetCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
     public void searchRejectCandByTermeAndAuteur() {
+
+        rejetCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
         if (!StringUtils.isEmpty(searchValue3)) {
             rejetCadidat = rejetCadidat.stream().filter(candidat -> candidatCheck(candidat, searchValue3))
                     .toList();
-        } else {
-            getRejectCandidatByThesoAndLangue();
         }
         tabViewIndexSelected = 2;
         MessageUtils.showInformationMessage(new StringBuffer().append(rejetCadidat.size()).append(" ")
@@ -287,12 +309,13 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyAcceptedCandidats() {
+        tabViewIndexSelected = 1;
         if (myCandidatsSelected2) {
             acceptedCadidat = acceptedCadidat.stream()
-                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
+                    .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .toList();
         } else {
-            getAcceptedCandidatByThesoAndLangue();
+            acceptedCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 2);
         }
 
         MessageUtils.showInformationMessage(new StringBuffer().append(acceptedCadidat.size()).append(" ")
@@ -300,12 +323,11 @@ public class CandidatBean implements Serializable {
     }
 
     public void searchAcceptedCandByTermeAndAuteur() {
+        acceptedCadidat = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 2);
         if (!StringUtils.isEmpty(searchValue2)) {
             acceptedCadidat = acceptedCadidat.stream()
                     .filter(candidat -> candidatCheck(candidat, searchValue2))
                     .toList();
-        } else {
-            getAcceptedCandidatByThesoAndLangue();
         }
 
         tabViewIndexSelected = 1;
@@ -319,12 +341,14 @@ public class CandidatBean implements Serializable {
     }
 
     public void searchByTermeAndAuteur() {
+
+        candidatList = candidatService.getCandidatsByStatus(selectedTheso.getSelectedIdTheso(), getIdLang(), 1);
         if (!StringUtils.isEmpty(searchValue1)) {
-            candidatList = candidatList.stream()
-                    .filter(candidat -> candidatCheck(candidat, searchValue1))
-                    .toList();
-        } else {
-            loadCandidatsList();
+            if (CollectionUtils.isNotEmpty(candidatList)) {
+                candidatList = candidatList.stream()
+                        .filter(candidat -> candidatCheck(candidat, searchValue1))
+                        .toList();
+            }
         }
         tabViewIndexSelected = 0;
         MessageUtils.showInformationMessage(new StringBuffer().append(candidatList.size()).append(" ")
