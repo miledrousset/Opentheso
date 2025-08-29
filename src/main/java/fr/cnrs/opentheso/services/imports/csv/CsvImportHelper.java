@@ -579,12 +579,12 @@ public class CsvImportHelper {
                     isTopConcept,
                     idHandle,
                     idDoi,
-                    (prefTerm == null ? null : prefTerm.replaceAll("'", "''")),
+                    (prefTerm == null ? null : prefTerm),
                     relations,
                     customRelations,
-                    (notes == null ? null : notes.replaceAll("'", "''")),
-                    (nonPrefTerm == null ? null : nonPrefTerm.replaceAll("'", "''")),
-                    (alignements == null ? null : alignements.replaceAll("'", "''")),
+                    (notes == null ? null : notes),
+                    (nonPrefTerm == null ? null : nonPrefTerm),
+                    (alignements == null ? null : alignements),
                     images,
                     replacedBy,
                     gps != null,
@@ -744,9 +744,9 @@ public class CsvImportHelper {
         String notes = getNotes(conceptObject);
         try {
             conceptFacetRepository.addFacet(idFacet, idUser, idTheso, idConceptParent,
-                    labels.replaceAll("'", "''"),
+                    labels,
                     membres,
-                    (notes == null ? null : notes.replaceAll("'", "''")));
+                    (notes == null ? null : notes));
         } catch (Exception e) {
             log.error("Erreur lors de l'appel à opentheso_add_facet : {}", e.getMessage(), e);
             System.out.println("Erreur SQL lors de l'ajout de la facette : " + idFacet);
