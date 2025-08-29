@@ -3,10 +3,9 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idRenameTraductionGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_translation')} _collection" widgetVar="renameTraductionGroup" 
+    <p:dialog id="idRenameTraductionGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_translation')}" widgetVar="renameTraductionGroup"
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="renameTraductionGroupForm" >
-
 
             <div class="row" style="font-size: 14px;">
                 <div class="col-12" style="margin-top: 3px">
@@ -32,18 +31,14 @@
                     </div>
                 </div>
             </ui:repeat>
-            
-            <p:spacer height="10px"/>
-            <div class="row">
-                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                    <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                        <p:autoUpdate/>
-                    </p:messages>
-                </div>
-            </div>  
+
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('renameTraductionGroup').hide();" update="containerIndex:idRenameTraductionGroup"/>       
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                 style="margin-right: 10px"
+                                 ajax="true" process="@form"
+                                 oncomplete="PF('renameTraductionGroup').hide();"
+                                 update="containerIndex:idRenameTraductionGroup"/>
+
             </div>            
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -84,15 +84,17 @@ public class ExportService {
         List<SKOSResource> result = new ArrayList<>();
 
         for (SkosFacetProjection p : projections) {
-            if (CollectionUtils.isNotEmpty(result)) {
-                for (SKOSResource skosResource : result) {
-                    var uri = getUriForFacette(p.getId_facet(), idThesaurus, originalUri);
-                    if (uri.equalsIgnoreCase(skosResource.getUri())) {
-                        skosResource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
-                        break;
-                    }
+            boolean isExist = false;
+            for (SKOSResource skosResource : result) {
+                var uri = getUriForFacette(p.getId_facet(), idThesaurus, originalUri);
+                if (uri.equalsIgnoreCase(skosResource.getUri())) {
+                    skosResource.addLabel(p.getLexicalvalue(), p.getLang(), SKOSProperty.PREF_LABEL);
+                    isExist = true;
+                    break;
                 }
-            } else {
+            }
+
+            if (!isExist) {
                 var resource = new SKOSResource(getUriForFacette(p.getId_facet(), idThesaurus, originalUri), SKOSProperty.FACET);
                 resource.setIdentifier(p.getId_facet());
                 resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
@@ -153,6 +155,8 @@ public class ExportService {
             if (StringUtils.isNotEmpty(p.getBroader())) {
                 sKOSResource.getRelationsList().add(new SKOSRelation(idThesaurus, getUriThesoFromId(idThesaurus, originalUri, nodePreference),
                         SKOSProperty.TOP_CONCEPT_OF));
+            } else {
+                System.out.println("WWWW");
             }
 
             addRelationsGiven(p.getRelated(), sKOSResource);

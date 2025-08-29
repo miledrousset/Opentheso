@@ -98,26 +98,25 @@ public class TraductionGroupBean implements Serializable {
     public void updateTraduction(NodeGroupTraductions nodeGroupTraductions, int idUser) {
 
         if (nodeGroupTraductions == null || nodeGroupTraductions.getTitle().isEmpty()) {
-            MessageUtils.showErrorMessage(" veuillez saisir une valeur !");
+            MessageUtils.showErrorMessage("Veuillez saisir une valeur !");
             return;
         }
 
         if (groupService.isDomainExist(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(), selectedTheso.getCurrentIdTheso())) {
-            MessageUtils.showErrorMessage(" Ce nom existe déjà dans cette langue !");
+            MessageUtils.showErrorMessage("Ce nom existe déjà dans cette langue !");
             return;
         }
 
-        if (groupService.renameGroup(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(),
+        if (!groupService.renameGroup(nodeGroupTraductions.getTitle(), nodeGroupTraductions.getIdLang(),
                 groupView.getNodeGroup().getConceptGroup().getIdGroup(), selectedTheso.getCurrentIdTheso(), idUser)) {
-            MessageUtils.showErrorMessage(" Erreur d'ajout de traduction !");
+            MessageUtils.showErrorMessage("Erreur pendant la modification de la traduction !");
             return;
         }
 
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),
-                groupView.getNodeGroup().getConceptGroup().getIdGroup(),
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(), groupView.getNodeGroup().getConceptGroup().getIdGroup(),
                 groupView.getNodeGroup().getIdLang());
 
-        MessageUtils.showInformationMessage(" traduction modifiée avec succès !");
+        MessageUtils.showInformationMessage("Traduction modifiée avec succès !");
         reset();
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
