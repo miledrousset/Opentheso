@@ -284,9 +284,17 @@ public class CsvWriteHelper {
         //narrowerId
         record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.NARROWER));
         //broader
-        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER));
-        //broaderId 
-        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER));
+        var broader = getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER);
+        if (StringUtils.isEmpty(broader)) {
+            broader = getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.TOP_CONCEPT_OF);
+        }
+        record.add(broader);
+        //broaderId
+        var broaderId = getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER);
+        if (StringUtils.isEmpty(broaderId)) {
+            broaderId = getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.TOP_CONCEPT_OF);
+        }
+        record.add(broaderId);
         //related
         record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.RELATED));
         //relatedId 

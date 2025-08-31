@@ -155,8 +155,6 @@ public class ExportService {
             if (StringUtils.isNotEmpty(p.getBroader())) {
                 sKOSResource.getRelationsList().add(new SKOSRelation(idThesaurus, getUriThesoFromId(idThesaurus, originalUri, nodePreference),
                         SKOSProperty.TOP_CONCEPT_OF));
-            } else {
-                System.out.println("WWWW");
             }
 
             addRelationsGiven(p.getRelated(), sKOSResource);
