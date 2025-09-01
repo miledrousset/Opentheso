@@ -704,12 +704,12 @@ public class CsvImportHelper {
         }
     }
 
-    
     public void addFacets(CsvReadHelper.ConceptObject conceptObject, String idTheso) {
-        String idFacet = conceptObject.getIdConcept();
-        if (idFacet == null) {
+
+        if (conceptObject.getIdConcept() == null) {
             return;
         }
+
         if (conceptObject.getPrefLabels().isEmpty()) {
             return;
         }
@@ -726,7 +726,6 @@ public class CsvImportHelper {
             }
         }
 
-
         String membres = null;
         if (CollectionUtils.isNotEmpty(conceptObject.getMembers())) {
             membres = "";
@@ -738,20 +737,10 @@ public class CsvImportHelper {
                 }
             }
         }
-        
-        //Notes
-        //-- 'value@typeCode@lang@id_term'
-        String notes = getNotes(conceptObject);
-        try {
-            conceptFacetRepository.addFacet(idFacet, idUser, idTheso, idConceptParent,
-                    labels,
-                    membres,
-                    (notes == null ? null : notes));
-        } catch (Exception e) {
-            log.error("Erreur lors de l'appel à opentheso_add_facet : {}", e.getMessage(), e);
-            System.out.println("Erreur SQL lors de l'ajout de la facette : " + idFacet);
-        }
 
+        var notes = getNotes(conceptObject);
+
+        conceptFacetRepository.addFacet(conceptObject.getIdConcept(), idUser, idTheso, idConceptParent, labels, membres, notes);
     }    
     
     private boolean addPrefLabel(String idTheso, CsvReadHelper.ConceptObject conceptObject) {

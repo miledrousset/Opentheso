@@ -49,6 +49,7 @@ import fr.cnrs.opentheso.services.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -65,6 +66,7 @@ import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -1262,46 +1264,28 @@ public class ImportFileBean implements Serializable {
     @Transactional
     public void addCsvThesoToBDDV2() {
 
-        if (conceptObjects == null || conceptObjects.isEmpty()) {
-            return;
-        }
-
-        if (importInProgress) {
+        if (CollectionUtils.isEmpty(conceptObjects) || importInProgress) {
             return;
         }
 
         // préparer le projet pour le thésaurus
-        int idProject;
-        if (selectedUserProject == null || selectedUserProject.isEmpty()) {
-            idProject = -1;
-        } else {
-            idProject = Integer.parseInt(selectedUserProject);
-        }
+        int idProject = StringUtils.isEmpty(selectedUserProject) ? -1 : Integer.parseInt(selectedUserProject);
 
         // préparer la langue source
-        if (selectedLang == null || selectedLang.isEmpty()) {
+        if (StringUtils.isEmpty(selectedLang)) {
             selectedLang = workLanguage;
         }
 
         // création du thésaurus
-        String idNewTheso = csvImportHelper.createThesaurus(thesaurusName, selectedLang,
-                idProject, currentUser.getNodeUser());
-        if (idNewTheso == null || idNewTheso.isEmpty()) {
+        var idNewTheso = csvImportHelper.createThesaurus(thesaurusName, selectedLang, idProject, currentUser.getNodeUser());
+        if (StringUtils.isEmpty(idNewTheso)) {
             return;
         }
 
         csvImportHelper.addLangsToThesaurus(langs, idNewTheso);
 
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
-        var nodePreference = roleOnThesoBean.getNodePreference();
-
-        if (nodePreference == null) {
-            preferenceService.initPreferences(idNewTheso, selectedLang);
-        } else {
-            nodePreference.setPreferredName(thesaurusName);
-            nodePreference.setSourceLang(selectedLang);
-            preferenceService.addPreference(nodePreference, idNewTheso);
-        }
+        preferenceService.initPreferences(idNewTheso, selectedLang);
         csvImportHelper.setNodePreference(preferenceService.getThesaurusPreferences(idNewTheso));
         csvImportHelper.setFormatDate(formatDate);
 
@@ -1318,18 +1302,14 @@ public class ImportFileBean implements Serializable {
                 case "skos:collection":
                     // ajout de groupe
                     csvImportHelper.addGroup(idNewTheso, conceptObject);
-
                     // ajout des liens pour les sous groupes
                     for (String subGroup : conceptObject.getSubGroups()) {
                         relationGroupService.addSubGroup(conceptObject.getIdConcept(), subGroup, idNewTheso);
                     }
                     break;
-
                 case "skos-thes:thesaurusarray":
                     // ajout dde facettes
                     csvImportHelper.addFacets(conceptObject, idNewTheso);
-                    break;
-                default:
                     break;
             }
         }
@@ -1337,16 +1317,11 @@ public class ImportFileBean implements Serializable {
         roleOnThesoBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
         viewEditionBean.init();
 
-        if (!StringUtils.isEmpty(csvImportHelper.getMessage())) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                    csvImportHelper.getMessage(), "Total importé : " + total));
+        if (StringUtils.isNotEmpty(csvImportHelper.getMessage())) {
+            MessageUtils.showWarnMessage(csvImportHelper.getMessage() + ", Total importé : " + total);
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "Total importé : " + total + "; Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
+            MessageUtils.showInformationMessage("Total importé : " + total + "; Le thesaurus " + idNewTheso + " est correctement ajouté !");
         }
-        PrimeFaces.current().ajax().update("messageIndex");
-
-        //    System.gc();
     }
 
     /**
