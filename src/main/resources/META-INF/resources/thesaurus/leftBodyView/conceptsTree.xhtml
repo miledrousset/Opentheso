@@ -28,19 +28,21 @@
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 13px"/>
         </p:treeNode>
 
-        <p:treeNode type="group" expandedIcon="fa fa-folder-open fa_custom_open" collapsedIcon="fa fa-folder fa_custom_collapse" >
+        <p:treeNode type="group" expandedIcon="fa fa-folder-open fa_custom_open"
+                    collapsedIcon="fa fa-folder fa_custom_collapse">
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 13px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 13px"/>
         </p:treeNode>
 
-        <p:treeNode type="subGroup" expandedIcon="fa fa-folder-open fa_custom_open" collapsedIcon="fa fa-folder fa_custom_collapse" >
+        <p:treeNode type="subGroup" expandedIcon="fa fa-folder-open fa_custom_open"
+                    collapsedIcon="fa fa-folder fa_custom_collapse">
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 13px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 13px"/>
         </p:treeNode>
 
         <p:treeNode type="file" icon="pi pi-file-o pi_custom_file" >
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 13px; color: blue"/>
-            <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}"  style="font-size: 13px"/>
+            <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 13px"/>
         </p:treeNode>
     </p:tree>
 </ui:fragment>

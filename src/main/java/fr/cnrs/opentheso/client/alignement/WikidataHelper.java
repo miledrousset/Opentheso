@@ -11,6 +11,11 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import java.util.ArrayList;
@@ -62,36 +67,75 @@ public class WikidataHelper {
         }
 
         ArrayList<NodeAlignment> listeAlign = null;
-        
+
         try {
-            lexicalValue = URLEncoder.encode(lexicalValue, "UTF-8");
-            lexicalValue = lexicalValue.replaceAll(" ", "%20");
-            query = query.replaceAll("##value##", lexicalValue);
-            query = query.replaceAll("##lang##", lang);            
-            URL url = new URL(query);
+            // Encodage du terme
+            String encodedValue = URLEncoder.encode(lexicalValue, StandardCharsets.UTF_8);
 
-            var cons = (HttpsURLConnection) url.openConnection();
-            cons.setRequestMethod("GET");
-            cons.setRequestProperty("Accept", "application/json");
+            // Remplacement dans la query
+            String finalQuery = query
+                    .replace("##value##", encodedValue)
+                    .replace("##lang##", lang);
 
-            if (cons.getResponseCode() != 200){
-                if (cons.getResponseCode() != 202) {
-                    return null;
-                }
+            // Création du client
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Requête GET
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(finalQuery))
+                    .header("Accept", "application/json")
+                    .header("User-Agent", "Opentheso/1.0") // important !
+                    .GET()
+                    .build();
+
+            // Envoi + récupération de la réponse
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200 || response.statusCode() == 202) {
+                String json = response.body();
+                listeAlign = getValuesFromJson(json, idC, idTheso, source);
+            } else {
+                System.err.println("Erreur HTTP : " + response.statusCode());
+                return null;
             }
 
-            var br = new BufferedReader(new InputStreamReader((cons.getInputStream())));
-            String output;
-            String xmlRecord = "";
-            while ((output = br.readLine()) != null) {
-                xmlRecord += output;
-            }
-            cons.disconnect();
-            br.close();
-            listeAlign = getValuesFromJson(xmlRecord, idC, idTheso, source);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return listeAlign;        
+        return listeAlign;
+
+
+//        try {
+//            lexicalValue = URLEncoder.encode(lexicalValue, "UTF-8");
+//            lexicalValue = lexicalValue.replaceAll(" ", "%20");
+//            query = query.replaceAll("##value##", lexicalValue);
+//            query = query.replaceAll("##lang##", lang);
+//            query = query + "&origin=*";
+//            URL url = new URL(query);
+//
+//            var cons = (HttpsURLConnection) url.openConnection();
+//            cons.setRequestMethod("GET");
+//            cons.setRequestProperty("Accept", "application/json");
+//
+//            if (cons.getResponseCode() != 200){
+//                if (cons.getResponseCode() != 202) {
+//                    return null;
+//                }
+//            }
+//
+//            var br = new BufferedReader(new InputStreamReader((cons.getInputStream())));
+//            String output;
+//            String xmlRecord = "";
+//            while ((output = br.readLine()) != null) {
+//                xmlRecord += output;
+//            }
+//            cons.disconnect();
+//            br.close();
+//            listeAlign = getValuesFromJson(xmlRecord, idC, idTheso, source);
+//        } catch (Exception e) {}
+//
+//        return listeAlign;
      }
     
     private ArrayList<NodeAlignment> getValuesFromJson(String jsonValue, String idConcept, String idTheso, String source){

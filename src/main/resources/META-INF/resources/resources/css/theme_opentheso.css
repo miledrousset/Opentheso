@@ -11335,18 +11335,22 @@ body.sidebar-toggled footer.sticky-footer {
 
 
 /*Tree  */
-.fa_custom_open {
-    color: #169b6b  !important;
+/* Dossier ouvert */
+.fa.fa-folder-open.fa_custom_open {
+    color: #169b6b !important;
     font-size: 0.8rem !important;
 }
-.fa_custom_collapse {
-    color:  #164A78 !important;
-    font-size: 0.8rem !important;    
+
+/* Dossier fermé */
+.fa.fa-folder.fa_custom_collapse {
+    color: #164A78 !important;
+    font-size: 0.8rem !important;
 }
 
-.fa_custom_file{
+/* Fichier */
+.fa.fa-file.fa_custom_file {
     color: #164A78 !important;
-    font-size: 0.8rem !important;    
+    font-size: 0.8rem !important;
 }
 
 
