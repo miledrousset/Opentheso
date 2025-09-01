@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -783,6 +784,10 @@ public class CandidatBean implements Serializable {
         } else {
             relationService.addHierarchicalRelation(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso(),
                     "BT",traductionSelected.getId());
+
+            relationService.addHierarchicalRelation(traductionSelected.getId(), selectedTheso.getCurrentIdTheso(),
+                    "NT", candidatSelected.getIdConcepte());
+
             candidatSelected.setTermesGenerique(relationService.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
             MessageUtils.showInformationMessage("Term générique ajoutée avec succès !");
