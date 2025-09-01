@@ -131,6 +131,7 @@ public class ConceptService {
 
 
     public NodeFullConcept getConcept(String idConcept, String idThesaurus, String idLang, int offset, int step, boolean isPrivate) {
+        if(StringUtils.isEmpty(idThesaurus) || StringUtils.isEmpty(idConcept)) return null;
         return resourceService.getFullConcept(idThesaurus, idConcept, idLang, offset, step, isPrivate);
     }
 
