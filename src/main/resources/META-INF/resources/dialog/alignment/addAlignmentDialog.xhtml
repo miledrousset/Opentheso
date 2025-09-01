@@ -33,14 +33,14 @@
                     <div class="col-5" style="margin-top: 3px">
                         <p:selectOneMenu value="#{alignmentBean.selectedAlignement}" style="width: 100%; background: white; border-color: #43B572"
                                          title="#{alignmentBean.alertWikidata}">
-                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                    
+                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>
                             <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update=":containerIndex:searchAlignementForm messageIndex"/>
-                        </p:selectOneMenu> 
+                        </p:selectOneMenu>
                     </div>
 
                     <div class="col-1">
                         <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
-                                         ajax="true" process="@this"
+                                         ajax="true" process="@form"
                                          actionListener="#{alignmentBean.searchAlignments(alignmentManualBean)}"
                                          style="color: #f47b2a; margin-left: 5px"
                                          update=":containerIndex:searchAlignementForm messageIndex" />
