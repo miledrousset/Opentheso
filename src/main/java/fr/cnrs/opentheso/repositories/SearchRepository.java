@@ -916,7 +916,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
                                                              @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate,
                                                              @Param("langSensitive") boolean langSensitive);
 
-    @Query(value = "SELECT new fr.cnrs.opentheso.models.search.NodeSearchMini("
+    @Query(value = "SELECT DISTINCT new fr.cnrs.opentheso.models.search.NodeSearchMini("
             + "pt.idConcept, t.idTerm, t.lexicalValue, c.status) "
             + "FROM Term t "
             + "JOIN PreferredTerm pt ON pt.idTerm = t.idTerm AND pt.idThesaurus = t.idThesaurus "
