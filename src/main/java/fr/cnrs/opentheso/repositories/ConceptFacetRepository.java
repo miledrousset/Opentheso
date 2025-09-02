@@ -66,4 +66,11 @@ public interface ConceptFacetRepository extends JpaRepository<ConceptFacet, Inte
 
     @Procedure(procedureName = "opentheso_add_facet")
     void addFacet(String idFacet, Integer idUser, String idTheso, String idConceptParent, String labels, String members, String notes);
+
+    @Modifying
+    @Transactional
+    @Query(value = "CALL opentheso_add_facet(:idFacet, :idUser, :idTheso, :idConceptParent, :labels, :membres, :notes)", nativeQuery = true)
+    void addFacet(@Param("idFacet") String idFacet, @Param("idUser") int idUser, @Param("idTheso") String idTheso,
+                  @Param("idConceptParent") String idConceptParent, @Param("labels") String labels,
+                  @Param("membres") String membres, @Param("notes") String notes);
 }
