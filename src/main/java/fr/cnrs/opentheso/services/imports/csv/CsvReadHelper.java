@@ -1247,13 +1247,24 @@ public class CsvReadHelper {
      */
     private ConceptObject getSuperOrdinate(ConceptObject conceptObject, CSVRecord record) {
         String value;
-        try {
-            value = record.get("iso-thes:superOrdinate");
-            if (StringUtils.isNotEmpty(value)) {
-                conceptObject.superOrdinate = getId(value.trim());
+        if (record.isMapped("superOrdinateId")) {
+            try {
+                value = record.get("superOrdinateId");
+                if (StringUtils.isNotEmpty(value)) {
+                    conceptObject.superOrdinate = value.trim();
+                }
+            } catch (Exception e) {
+                //System.err.println("");
             }
-        } catch (Exception e) {
-            //System.err.println("");
+        } else {
+            try {
+                value = record.get("iso-thes:superOrdinate");
+                if (StringUtils.isNotEmpty(value)) {
+                    conceptObject.superOrdinate = getId(value.trim());
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }
         }
 
         return conceptObject;
