@@ -5,13 +5,13 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <div style="margin: 20px; color: #000">
-        
+
         <style>
             body .ui-accordion .ui-accordion-header>.ui-icon.ui-icon-triangle-1-e {
                 font-size: 12px;
             }
-        </style>        
-        
+        </style>
+
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsAdmin) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 offset-xl-10 offset-lg-9 offset-md-9 offset-sm-8" style="text-align: right">

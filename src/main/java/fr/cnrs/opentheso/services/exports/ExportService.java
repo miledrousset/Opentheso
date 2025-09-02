@@ -97,7 +97,7 @@ public class ExportService {
             if (!isExist) {
                 var resource = new SKOSResource(getUriForFacette(p.getId_facet(), idThesaurus, originalUri), SKOSProperty.FACET);
                 resource.setIdentifier(p.getId_facet());
-                resource.addRelation(p.getId_facet(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
+                resource.addRelation(p.getId_concept_parent(), p.getUri_value(), SKOSProperty.SUPER_ORDINATE);
 
                 List<String> members = facetService.getAllMembersOfFacet(p.getId_facet(), idThesaurus);
                 for (String idConcept : members) {

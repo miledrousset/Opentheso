@@ -138,7 +138,8 @@ public class CsvWriteHelper {
                 
                 // pour les Facettes qui appartiennent au concept 
                 header.add("iso-thes:superOrdinate");            
-                
+                header.add("superOrdinateId");
+
                 // pour signaler que le concept est déprécié
                 header.add("owl:deprecated");
                 // pour signaler que le concept est remplacé par un autre concept
@@ -332,8 +333,10 @@ public class CsvWriteHelper {
         record.add(getSubGroup(skosResource.getRelationsList()));        
         
         // iso-thes:superOrdinate pour référencer les Facettes du Concept
-        record.add(getFacettesOfConcept(skosResource.getRelationsList()));           
-        
+        record.add(getFacettesOfConceptParent(skosResource.getRelationsList()));
+
+        record.add(getFacettesOfConceptParentId(skosResource.getRelationsList()));
+
         // owl:deprecated pour les concepts dépréciés
         if(skosResource.getStatus() == SKOSProperty.DEPRECATED)
             record.add("true");
@@ -403,13 +406,19 @@ public class CsvWriteHelper {
                 .collect(Collectors.joining(delim_multi_datas));
     }                
     
-    private String getFacettesOfConcept(ArrayList<SKOSRelation> sKOSRelations) {
+    private String getFacettesOfConceptParent(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
                 .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUPER_ORDINATE))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
-    }    
-    
+    }
+    private String getFacettesOfConceptParentId(ArrayList<SKOSRelation> sKOSRelations) {
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUPER_ORDINATE))
+                .map(sKOSRelation -> sKOSRelation.getLocalIdentifier())
+                .collect(Collectors.joining(delim_multi_datas));
+    }
+
     private String getSubGroup(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
                 .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUBGROUP))
