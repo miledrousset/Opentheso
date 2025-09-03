@@ -66,7 +66,7 @@ public class SearchBean implements Serializable {
 
     // filter search
     private boolean exactMatch;
-    private boolean indexMatch;
+    private boolean indexMatch = true;
     private boolean withNote;
     private boolean withId;
     private boolean isSearchInSpecificThesaurus;
