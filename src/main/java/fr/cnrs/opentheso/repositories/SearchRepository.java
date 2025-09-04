@@ -828,7 +828,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
                     LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
                     LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
                 WHERE c.id_thesaurus = :idThesaurus
-                  AND t.lang = :idLang
+                  AND (:idLang IS NULL OR t.lang = :idLang)
                   AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2
                   AND c.status != 'CA'
                   AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
@@ -848,7 +848,7 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
             LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
         WHERE c.id_thesaurus = :idThesaurus
-            AND (:idLang IS NULL OR npt.lang = :idLang)
+            AND (:idLang IS NULL OR t.lang = :idLang)
             AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2
             AND c.status != 'CA'
             AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
