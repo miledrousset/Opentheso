@@ -908,19 +908,19 @@ public class SearchService {
         return searchRepository.isConceptHaveRTandBT(idConcept, idTheso);
     }
 
-    public List<String> searchFullTextElasticId(String value, String idLang, String idThesaurus) {
+    public List<String> searchFullTextElasticId(String value, String idLang, String idThesaurus, boolean isPrivate) {
         if (StringUtils.isEmpty(value)) return Collections.emptyList();
 
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         Set<String> conceptIds = new LinkedHashSet<>();
 
-        var preferred = searchRepository.searchPreferredTermsFullTextId(value, idLang, idThesaurus);
+        var preferred = searchRepository.searchPreferredTermsFullTextId(value, idLang, idThesaurus, isPrivate);
         for (ConceptIdOnly item : preferred) {
             conceptIds.add(item.getIdConcept());
         }
 
-        var alternates = searchRepository.searchAltTermsFullTextId(value, idLang, idThesaurus);
+        var alternates = searchRepository.searchAltTermsFullTextId(value, idLang, idThesaurus, isPrivate);
         for (ConceptIdOnly item : alternates) {
             conceptIds.add(item.getIdConcept());
         }

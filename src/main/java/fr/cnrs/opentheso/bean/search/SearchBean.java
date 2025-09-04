@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -142,12 +143,41 @@ public class SearchBean implements Serializable {
             }
 
             if (!withId && !withNote && !indexMatch && !exactMatch) {
-                listResultAutoComplete = searchService.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
+                //RollBack
+                //listResultAutoComplete = searchService.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
+                var isPrivate = currentUser.getNodeUser() == null;
+                var listIds = searchService.searchFullTextElasticId(value, idLang, selectedTheso.getCurrentIdTheso(), isPrivate);
+                var thesaurusLabel = thesaurusService.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), idLang);
+
+                if (CollectionUtils.isNotEmpty(listIds)) {
+                    listResultAutoComplete.addAll(listIds.stream()
+                            .map(element -> {
+                                var nodeConceptSearch = conceptService.getConceptForSearch(element, selectedTheso.getCurrentIdTheso(), idLang);
+                                if (nodeConceptSearch != null) {
+                                    nodeConceptSearch.setThesoName(thesaurusLabel);
+                                }
+                                return toNodeSearchMini(nodeConceptSearch);
+                            })
+                            .filter(Objects::nonNull)
+                            .toList());
+                }
             }
         }
 
         searchValue = value;
         return listResultAutoComplete == null ? Collections.emptyList() : listResultAutoComplete;
+    }
+
+    private NodeSearchMini toNodeSearchMini(NodeConceptSearch nodeConceptSearch) {
+        if (nodeConceptSearch == null) {
+            return null;
+        }
+        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+        nodeSearchMini.setIdConcept(nodeConceptSearch.getIdConcept());
+        nodeSearchMini.setPrefLabel(nodeConceptSearch.getPrefLabel());
+        nodeSearchMini.setDeprecated(nodeConceptSearch.isDeprecated());
+        nodeSearchMini.setConcept(true);
+        return nodeSearchMini;
     }
 
     public void onSelect() throws IOException {
@@ -249,6 +279,7 @@ public class SearchBean implements Serializable {
 
     private List<NodeConceptSearch> searchInThesaurus(String idTheso, String idLang) {
 
+        var isPrivate = currentUser.getNodeUser() == null;
         List<NodeConceptSearch> concepts = new ArrayList<>();
         var thesaurusLabel = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         if(searchValue == null)
@@ -302,8 +333,7 @@ public class SearchBean implements Serializable {
         }
 
         if (!withId && !withNote && !exactMatch && !indexMatch) {
-            
-            var listIds = searchService.searchFullTextElasticId(searchValue, idLang, idTheso);
+            var listIds = searchService.searchFullTextElasticId(searchValue, idLang, idTheso, isPrivate);
 
             for (String idConcept : listIds) {
                 var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);

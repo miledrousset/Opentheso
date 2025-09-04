@@ -48,7 +48,7 @@ public class GraphQLController {
             }
             listIds = searchService.searchAutoCompletionWSForWidget(value, idLang, stringArray, idTheso);
         } else {
-            listIds = searchService.searchFullTextElasticId(value, idLang, idTheso);
+            listIds = searchService.searchFullTextElasticId(value, idLang, idTheso, false);
         }
         List<NodeFullConcept> nodeFullConcepts = new ArrayList<>();
         for (String idConcept : listIds) {

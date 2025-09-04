@@ -823,35 +823,41 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
     @Query(value = """
                 SELECT DISTINCT pt.id_concept AS idConcept, similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) AS score
                 FROM term t
-                        JOIN preferred_term pt ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
-                        JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+                    JOIN preferred_term pt ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus
+                    JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+                    LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
+                    LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
                 WHERE c.id_thesaurus = :idThesaurus
                   AND t.lang = :idLang
                   AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2
                   AND c.status != 'CA'
+                  AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
                 ORDER BY score DESC
                 LIMIT 50;
             """, nativeQuery = true)
-    List<ConceptIdOnly> searchPreferredTermsFullTextId(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
+    List<ConceptIdOnly> searchPreferredTermsFullTextId(@Param("value") String value, @Param("idLang") String idLang,
+                                                       @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate);
 
 
     @Query(value = """
-                SELECT DISTINCT pt.id_concept AS idConcept,
-                       similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) AS score
-                FROM non_preferred_term npt
-                JOIN preferred_term pt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
-                JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus AND npt.lang = t.lang
-                JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
-                WHERE c.id_thesaurus = :idThesaurus
-                  AND (:idLang IS NULL OR npt.lang = :idLang)
-                  AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2
-                  AND c.status != 'CA'
-                ORDER BY score DESC
-                LIMIT 50
-            """, nativeQuery = true)
-    List<ConceptIdOnly> searchAltTermsFullTextId(@Param("value") String value,
-                                                 @Param("idLang") String idLang,
-                                                 @Param("idThesaurus") String idThesaurus);
+        SELECT DISTINCT pt.id_concept AS idConcept, similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) AS score
+        FROM non_preferred_term npt
+            JOIN preferred_term pt ON pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus
+            JOIN term t ON pt.id_term = t.id_term AND pt.id_thesaurus = t.id_thesaurus AND npt.lang = t.lang
+            JOIN concept c ON c.id_concept = pt.id_concept AND c.id_thesaurus = pt.id_thesaurus
+            LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
+            LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
+        WHERE c.id_thesaurus = :idThesaurus
+            AND (:idLang IS NULL OR npt.lang = :idLang)
+            AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2
+            AND c.status != 'CA'
+            AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
+        ORDER BY score DESC
+        LIMIT 50
+    """, nativeQuery = true)
+    List<ConceptIdOnly> searchAltTermsFullTextId(@Param("value") String value, @Param("idLang") String idLang,
+                                                 @Param("idThesaurus") String idThesaurus,
+                                                 @Param("isPrivate") boolean isPrivate);
 
     // Recherche exacte prefixe sur les termes préférés
     @Query("SELECT new fr.cnrs.opentheso.models.nodes.NodeIdValue(pt.idConcept, t.lexicalValue) " +
