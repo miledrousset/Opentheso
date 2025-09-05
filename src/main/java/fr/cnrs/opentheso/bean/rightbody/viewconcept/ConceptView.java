@@ -124,7 +124,7 @@ public class ConceptView implements Serializable {
         clearNotes();
 
         offset = 0;
-        step = 20;
+        step = 40;
         haveNext = false;
 
         nodeCorpuses = null;
