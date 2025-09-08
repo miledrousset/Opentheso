@@ -1084,12 +1084,13 @@ public class CsvImportHelper {
         }
 
         var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idTheso, nodeReplaceValueByValue.getIdConcept());
-        if (preferredTerm.isEmpty()) {
-            return false;
+        if(termService.isTermExistInLangAndThesaurus(preferredTerm.get().getIdTerm(),idTheso, nodeReplaceValueByValue.getIdLang())) {
+            termService.updateTermTraduction(nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(),
+                    nodeReplaceValueByValue.getIdLang(), idTheso, idUser1);
+        } else {
+            termService.addTermTraduction(nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(),
+                    nodeReplaceValueByValue.getIdLang(), idTheso, idUser1);
         }
-
-        termService.updateTermTraduction(nodeReplaceValueByValue.getNewValue(), preferredTerm.get().getIdTerm(),
-                nodeReplaceValueByValue.getIdLang(), idTheso, idUser1);
         return true;
     }
 

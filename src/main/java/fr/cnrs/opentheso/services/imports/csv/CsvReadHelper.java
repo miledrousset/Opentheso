@@ -766,12 +766,8 @@ public class CsvReadHelper {
                 return null;
             }
             value = record.get("skos:preflabel@"+ idLang);
-            if(value != null && !value.isEmpty()) {
-                nodeReplaceValueByValue.setOldValue(value);
-                return nodeReplaceValueByValue;
-            } else {
-                return null;
-            }
+            nodeReplaceValueByValue.setOldValue(value);
+            return nodeReplaceValueByValue;
         } catch (Exception e) {
             //System.err.println("");
         }      
@@ -792,9 +788,7 @@ public class CsvReadHelper {
             }
             try {
                 value = record.get("skos:altlabel@"+ idLang);
-                if(value != null && !value.isEmpty()) {
-                    nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                nodeReplaceValueByValue.setOldValue(value);
             } catch (Exception e) {
             }
             return nodeReplaceValueByValue;
@@ -818,9 +812,7 @@ public class CsvReadHelper {
             }
             try { 
                 value = record.get("skos:definition@"+ idLang);
-                if(value != null && !value.isEmpty()) {
-                    nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                nodeReplaceValueByValue.setOldValue(value);
             } catch (Exception e) {
             }                
             return nodeReplaceValueByValue;

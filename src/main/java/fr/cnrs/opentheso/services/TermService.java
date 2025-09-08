@@ -126,6 +126,37 @@ public class TermService {
         }
     }
 
+    public void addTermTraduction(String label, String idTerm, String idLang, String idTheso, int idUser) {
+        label = StringUtils.convertString(label);
+        log.info("Ajout d'un nouveau term traduction {}", label);
+
+        var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                .idTerm(idTerm)
+                .lexicalValue(label)
+                .lang(idLang)
+                .idThesaurus(idTheso)
+                .source("")
+                .status("")
+                .contributor(idUser)
+                .creator(idUser)
+                .created(new Date())
+                .modified(new Date())
+                .build());
+
+        log.info("Ajout d'une trace de création d'un nouveau term {}", label);
+        termHistoriqueRepository.save(TermHistorique.builder()
+                .idTerm(termSaved.getIdTerm())
+                .lexicalValue(termSaved.getLexicalValue())
+                .lang(termSaved.getLang())
+                .idThesaurus(termSaved.getIdThesaurus())
+                .source(termSaved.getSource())
+                .status(termSaved.getStatus())
+                .idUser(idUser)
+                .modified(LocalDateTime.now())
+                .action("New")
+                .build());
+    }
+
     public void addTerms(NodeTerm nodeTerm, int idUser) {
 
         if (CollectionUtils.isEmpty(nodeTerm.getNodeTermTraduction())) {
