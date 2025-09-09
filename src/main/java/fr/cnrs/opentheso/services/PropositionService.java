@@ -82,7 +82,7 @@ public class PropositionService {
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire, String thesaurusName) {
 
-        log.info("Début de l'envoi de la proposition");
+        log.debug("Début de l'envoi de la proposition");
         if (propositionModificationRepository.findPropositionByEmailConceptLang(email, proposition.getConceptID(),
                 selectedTheso.getCurrentLang()) != null) {
 
@@ -102,7 +102,7 @@ public class PropositionService {
                 .date(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()))
                 .build();
 
-        log.info("Recherche du nom du thésaurus à partir de son id {} et la langue {}",
+        log.debug("Recherche du nom du thésaurus à partir de son id {} et la langue {}",
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         try {
@@ -116,13 +116,13 @@ public class PropositionService {
                     + "&idt=" + propositionModification.getIdTheso() + "\">" + proposition.getNomConcept().getLexicalValue() + "</a>). <br/><br/> Cordialement,<br/>"
                     + "L'équipe " + thesaurusName + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
-            log.info("Envoi de l'émail...");
+            log.debug("Envoi de l'émail...");
             sendEmail(propositionModification.getEmail(), subject, contentFile);
         } catch (Exception ex) {
             MessageUtils.showWarnMessage("Erreur détectée pendant l'envoie du mail de notification! \nVotre proposition a été enregistrée !");
         }
 
-        log.info("Enregistrement de la proposition dans la base");
+        log.debug("Enregistrement de la proposition dans la base");
         var propositionSaved = propositionModificationRepository.save(propositionModification);
 
         if (StringUtils.isNotEmpty(proposition.getNomConceptProp())) {
@@ -137,14 +137,14 @@ public class PropositionService {
         }
 
         if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
-            log.info("Enregistrement des synonymes présent dans la proposition");
+            log.debug("Enregistrement des synonymes présent dans la proposition");
             for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
                 saveSynonyms(propositionSaved.getId(), synonymProp);
             }
         }
 
         if (!CollectionUtils.isEmpty(proposition.getTraductionsProp())) {
-            log.info("Enregistrement des traductions présents dans la proposition");
+            log.debug("Enregistrement des traductions présents dans la proposition");
             for (var traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd() || traductionProp.isToUpdate() || traductionProp.isToRemove()) {
                     var propositionDetail = new PropositionModificationDetail();
@@ -171,37 +171,37 @@ public class PropositionService {
         }
 
         if (proposition.getNote() != null) {
-            log.info("Enregistrement des notes présents dans la proposition");
+            log.debug("Enregistrement des notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getNote(), PropositionCategoryEnum.NOTE.name());
         }
 
         if (proposition.getChangeNote() != null) {
-            log.info("Enregistrement des changes notes présents dans la proposition");
+            log.debug("Enregistrement des changes notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getChangeNote(), PropositionCategoryEnum.CHANGE_NOTE.name());
         }
 
         if (proposition.getDefinition() != null) {
-            log.info("Enregistrement des définitions présents dans la proposition");
+            log.debug("Enregistrement des définitions présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getDefinition(), PropositionCategoryEnum.DEFINITION.name());
         }
 
         if (proposition.getEditorialNote() != null) {
-            log.info("Enregistrement des editorials notes présents dans la proposition");
+            log.debug("Enregistrement des editorials notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getEditorialNote(), PropositionCategoryEnum.EDITORIAL_NOTE.name());
         }
 
         if (proposition.getExample() != null) {
-            log.info("Enregistrement des examples présents dans la proposition");
+            log.debug("Enregistrement des examples présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getExample(), PropositionCategoryEnum.EXAMPLE.name());
         }
 
         if (proposition.getHistoryNote() != null) {
-            log.info("Enregistrement des histories notes présents dans la proposition");
+            log.debug("Enregistrement des histories notes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getHistoryNote(), PropositionCategoryEnum.HISTORY.name());
         }
 
         if (proposition.getScopeNote() != null) {
-            log.info("Enregistrement des scopes présents dans la proposition");
+            log.debug("Enregistrement des scopes présents dans la proposition");
             noteManagement(propositionSaved.getId(), proposition.getScopeNote(), PropositionCategoryEnum.SCOPE.name());
         }
 
@@ -244,7 +244,7 @@ public class PropositionService {
 
     public int searchNbrNewProposition() {
 
-        log.info("Recherche du nombre des nouvelles propositions");
+        log.debug("Recherche du nombre des nouvelles propositions");
         if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso()))
             return 0;
 
@@ -331,10 +331,10 @@ public class PropositionService {
                             .hidden(synonymPropBean.isHiden())
                             .status(synonymPropBean.isHiden() ? "Hidden" : "USE")
                             .build();
-                    log.info("Enregistrement du synonyme");
+                    log.debug("Enregistrement du synonyme");
                     nonPreferredTermService.addNonPreferredTerm(term, currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToRemove()) {
-                    log.info("Suppression du non preferred term '{}'", synonymPropBean.getLexicalValue());
+                    log.debug("Suppression du non preferred term '{}'", synonymPropBean.getLexicalValue());
                     nonPreferredTermService.deleteNonPreferredTerm(synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
                             synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToUpdate()) {
@@ -523,10 +523,10 @@ public class PropositionService {
 
     public List<fr.cnrs.opentheso.entites.Proposition> getPropositionByConceptAndThesaurus(String idThesaurus, String idConcept) {
 
-        log.info("Recherche des propositions pour le concept id {} ({})", idConcept, idThesaurus);
+        log.debug("Recherche des propositions pour le concept id {} ({})", idConcept, idThesaurus);
         var propositions = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(idThesaurus, idConcept);
         if (CollectionUtils.isEmpty(propositions)) {
-            log.info("Aucune proposition n'est trouvée pour le concept id {}", idConcept);
+            log.debug("Aucune proposition n'est trouvée pour le concept id {}", idConcept);
             return List.of();
         }
         return propositions;
@@ -961,13 +961,13 @@ public class PropositionService {
 
     public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Mise à jour du thésaurus id pour les propositions présentes dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour du thésaurus id pour les propositions présentes dans le thésaurus id {}", oldIdThesaurus);
         propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     public void deleteByThesaurus(String idThesaurus) {
 
-        log.info("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);
         propositionModificationDetailRepository.deleteByIdThesaurus(idThesaurus);
         propositionModificationRepository.deleteAllByIdTheso(idThesaurus);
         propositionRepository.deleteAllByIdThesaurus(idThesaurus);

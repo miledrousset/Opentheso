@@ -46,7 +46,7 @@ public class MyAccountBean implements Serializable {
 
     public void loadDataPage(){
 
-        log.info("Chargement des données nécessaire au fonctionnement de l'écran utilisateur");
+        log.debug("Chargement des données nécessaire au fonctionnement de l'écran utilisateur");
         nodeUser = userService.getUser(currentUser.getNodeUser().getIdUser());
         displayedKey = StringUtils.isEmpty(nodeUser.getApiKey()) ? null : new String(new char[64]).replace("\0", "*");
         passWord1 = null;

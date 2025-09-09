@@ -72,13 +72,13 @@ public class GpsService {
 
     public void deleteGpsByThesaurus(String idThesaurus) {
 
-        log.info("Suppression de tous les GPS présents dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les GPS présents dans le thésaurus id {}", idThesaurus);
         gpsRepository.deleteByIdTheso(idThesaurus);
     }
 
     public void updateThesaurusId(String oldThesaurusId, String newThesaurusId) {
 
-        log.info("Mise à jour du thésaurus id pour les GPS dont l'id du thésaurus est {}", oldThesaurusId);
+        log.debug("Mise à jour du thésaurus id pour les GPS dont l'id du thésaurus est {}", oldThesaurusId);
         gpsRepository.updateThesaurusId(newThesaurusId, oldThesaurusId);
     }
 

@@ -23,16 +23,16 @@ public class HandleConceptService {
 
     public boolean updateHandleIdOfConcept(String idConcept, String idThesaurus, String idHandle) {
 
-        log.info("Mise à jour de la valeur de l'id handle (nouvelle valeur {}) du concept id {}", idHandle, idConcept);
+        log.debug("Mise à jour de la valeur de l'id handle (nouvelle valeur {}) du concept id {}", idHandle, idConcept);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {} dans le thésaurs id {}", idConcept, idThesaurus);
+            log.debug("Aucun concept n'est trouvé avec l'id {} dans le thésaurs id {}", idConcept, idThesaurus);
             return true;
         }
 
         concept.get().setIdHandle(idHandle);
         conceptRepository.save(concept.get());
-        log.info("Mise à jour de la valeur de l'id handle pour le concept id {} est terminée", idConcept);
+        log.debug("Mise à jour de la valeur de l'id handle pour le concept id {} est terminée", idConcept);
         return true;
     }
 
@@ -141,7 +141,7 @@ public class HandleConceptService {
 
     public boolean addIdHandle(String idConcept, String idThesaurus) {
 
-        log.info("Ajout d'un nouveau idHandle pour le concept (id : {})", idConcept);
+        log.debug("Ajout d'un nouveau idHandle pour le concept (id : {})", idConcept);
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preference == null || !preference.isUseArkLocal()) {
             return true;

@@ -54,7 +54,7 @@ public class GroupService {
 
     public void insertGroup(String idGroup, String idThesaurus, String idArk, String typeCode, String notation, Date created, Date modified) {
 
-        log.info("Ajout d'un nouveau group (MT, domaine etc..) avec le libellé dans le cas d'un import avec idGroup existant");
+        log.debug("Ajout d'un nouveau group (MT, domaine etc..) avec le libellé dans le cas d'un import avec idGroup existant");
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
 
@@ -81,7 +81,7 @@ public class GroupService {
 
     public boolean addConceptGroupConcept(String idGroup, String idConcept, String idThesaurus) {
 
-        log.info("Enregistrement d'un nouveau group de concept");
+        log.debug("Enregistrement d'un nouveau group de concept");
         conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
                 .idGroup(idGroup)
                 .idThesaurus(idThesaurus)
@@ -92,7 +92,7 @@ public class GroupService {
 
     public NodeGroupLabel getNodeGroupLabel(String idConceptGroup, String idThesaurus) {
 
-        log.info("Recherche des détails du group {}", idConceptGroup);
+        log.debug("Recherche des détails du group {}", idConceptGroup);
 
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idConceptGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
@@ -100,7 +100,7 @@ public class GroupService {
             return null;
         }
 
-        log.info("Création du model du group {}", idConceptGroup);
+        log.debug("Création du model du group {}", idConceptGroup);
         return NodeGroupLabel.builder()
                 .idGroup(idConceptGroup)
                 .idThesaurus(idThesaurus)
@@ -115,19 +115,19 @@ public class GroupService {
 
     public void saveUserGroupThesaurus(UserGroupThesaurus userGroupThesaurus) {
 
-        log.info("Enregistrement du nouveau user group Thesaurus");
+        log.debug("Enregistrement du nouveau user group Thesaurus");
         userGroupThesaurusRepository.save(userGroupThesaurus);
     }
 
     public void deleteRelationConceptGroupConcept(String idGroup, String idConcept, String idThesaurus) {
 
-        log.info("Suppression de la relation entre le concept id {} et le group id {}", idConcept, idGroup);
+        log.debug("Suppression de la relation entre le concept id {} et le group id {}", idConcept, idGroup);
         conceptGroupConceptRepository.deleteByIdGroupAndIdConceptAndIdThesaurus(idGroup, idConcept, idThesaurus);
     }
 
     public boolean removeAllConceptsFromThisGroup(String idGroup, String idThesaurus) {
 
-        log.info("Suppression du lien entre le group {} et les conceptes rattachés à ce dernier", idGroup);
+        log.debug("Suppression du lien entre le group {} et les conceptes rattachés à ce dernier", idGroup);
         conceptGroupConceptRepository.deleteAllByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         return true;
     }
@@ -152,7 +152,7 @@ public class GroupService {
     public boolean deleteConceptsHavingRelationShipWithDeletedGroup(String idThesaurus) {
 
         try {
-            log.info("Suppression des concepts qui ont une relation vers une collection supprimée");
+            log.debug("Suppression des concepts qui ont une relation vers une collection supprimée");
             var orphanLinks = conceptGroupConceptRepository.findGroupConceptLinksWithMissingConcepts(idThesaurus);
             for (var row : orphanLinks) {
                 String idGroup = (String) row[0];
@@ -167,23 +167,23 @@ public class GroupService {
 
     public void setGroupVisibility(String idGroup, String idThesaurus, boolean isPrivate) {
 
-        log.info("Changement de la visibilité du group {} en {}", idGroup, isPrivate);
+        log.debug("Changement de la visibilité du group {} en {}", idGroup, isPrivate);
         conceptGroupRepository.updateVisibility(idGroup, idThesaurus, isPrivate);
     }
 
     public List<NodeIdValue> searchGroup(String idThesaurus, String idLang, String text) {
 
-        log.info("Recherche la liste des groups pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
+        log.debug("Recherche la liste des groups pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
                 text, idThesaurus, idLang);
 
         text = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
         var results = conceptGroupLabelRepository.searchGroups(idThesaurus, idLang, text);
         if (CollectionUtils.isEmpty(results)) {
-            log.info("Aucun group trouvé avec la valeur {} dans le thésaurus {} (langue : {})", text, idThesaurus, idLang);
+            log.debug("Aucun group trouvé avec la valeur {} dans le thésaurus {} (langue : {})", text, idThesaurus, idLang);
             return List.of();
         }
 
-        log.info("{} groups trouvés pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
+        log.debug("{} groups trouvés pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
                 results.size(), text, idThesaurus, idLang);
         return results.stream()
                 .map(element -> NodeIdValue.builder()
@@ -195,16 +195,16 @@ public class GroupService {
 
     public List<NodeAutoCompletion> getAutoCompletionGroup(String idThesaurus, String idLang, String text) {
 
-        log.info("Recherche la liste des groups pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
+        log.debug("Recherche la liste des groups pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
                 text, idThesaurus, idLang);
         var cleanedText = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
         var results = conceptGroupLabelRepository.getGroupAutoCompletions(idThesaurus, idLang, cleanedText);
         if (CollectionUtils.isEmpty(results)) {
-            log.info("Aucun group trouvé avec la valeur {} dans le thésaurus {} (langue : {})", text, idThesaurus, idLang);
+            log.debug("Aucun group trouvé avec la valeur {} dans le thésaurus {} (langue : {})", text, idThesaurus, idLang);
             return List.of();
         }
 
-        log.info("{} groups trouvés pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
+        log.debug("{} groups trouvés pour l'autocomplétion avec la valeur {} dans le thésaurus {} (langue : {})",
                 results.size(), text, idThesaurus, idLang);
         return results.stream()
                 .map(element -> NodeAutoCompletion.builder()
@@ -220,11 +220,11 @@ public class GroupService {
 
         var groupLabels = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroup(idThesaurus, idGroup);
         if (CollectionUtils.isEmpty(groupLabels)) {
-            log.info("Aucune traduction n'existe pour le group {}", idGroup);
+            log.debug("Aucune traduction n'existe pour le group {}", idGroup);
             return List.of();
         }
 
-        log.info("{} traductions est trouvées pour le group {}", groupLabels.size(), idGroup);
+        log.debug("{} traductions est trouvées pour le group {}", groupLabels.size(), idGroup);
         return groupLabels.stream().map(element ->
             NodeGroupTraductions.builder()
                     .idLang(element.getLang())
@@ -237,7 +237,7 @@ public class GroupService {
 
     private void generateArkIdLocal(String idThesaurus, String idGroup) {
 
-        log.info("Génération de l'id Ark local pour le group");
+        log.debug("Génération de l'id Ark local pour le group");
 
         var preferenceThesaurus = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preferenceThesaurus == null) {
@@ -258,7 +258,7 @@ public class GroupService {
 
         var idArk = conceptGroup.get().getIdArk();
         if(StringUtils.isEmpty(idArk)) {
-            log.info("Aucune valeur n'est présente pour 'idArk'");
+            log.debug("Aucune valeur n'est présente pour 'idArk'");
             idArk = ToolsHelper.getNewId(preferenceThesaurus.getSizeIdArkLocal(), preferenceThesaurus.isUppercaseForArk(), true);
             idArk = preferenceThesaurus.getNaanArkLocal() + "/" + preferenceThesaurus.getPrefixArkLocal() + idArk;
         }
@@ -268,18 +268,18 @@ public class GroupService {
     @Transactional
     public String addGroup(NodeGroup nodeConceptGroup, int idUser) {
 
-        log.info("Enregistrement d'un nouveau group !");
+        log.debug("Enregistrement d'un nouveau group !");
 
         var newId = getNewIdGroup();
         var idSequenceConcept = newId.intValue();
         var idGroup = "g" + newId;
-        log.info("Le nouveau id group est {}", idGroup);
+        log.debug("Le nouveau id group est {}", idGroup);
 
         if (nodeConceptGroup.getConceptGroup().getNotation() == null) {
             nodeConceptGroup.getConceptGroup().setNotation("");
         }
 
-        log.info("Insertion du nouveau group dans la base de données");
+        log.debug("Insertion du nouveau group dans la base de données");
         conceptGroupRepository.save(ConceptGroup.builder()
                 .id(idSequenceConcept)
                 .idGroup(idGroup)
@@ -293,7 +293,7 @@ public class GroupService {
                 .modified(new Date())
                 .build());
 
-        log.info("Ajout de la traduction du group {}", idGroup);
+        log.debug("Ajout de la traduction du group {}", idGroup);
         conceptGroupLabelRepository.save(ConceptGroupLabel.builder()
                 .idGroup(idGroup)
                 .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeConceptGroup.getLexicalValue()))
@@ -310,7 +310,7 @@ public class GroupService {
         if (thesaurusPreferences != null) {
             if (thesaurusPreferences.isUseArk()) {
 
-                log.info("Création de l'identifiant Ark pour le group {}", idGroup);
+                log.debug("Création de l'identifiant Ark pour le group {}", idGroup);
                 var nodeMetaData = new NodeMetaData();
                 nodeMetaData.setCreator("");
                 nodeMetaData.setTitle(nodeConceptGroup.getLexicalValue());
@@ -318,7 +318,7 @@ public class GroupService {
                 addIdArk__(idGroup, nodeConceptGroup.getConceptGroup().getIdThesaurus(), nodeMetaData, thesaurusPreferences);
             }
 
-            log.info("Création de l'identifiant Handle pour le group {}", idGroup);
+            log.debug("Création de l'identifiant Handle pour le group {}", idGroup);
             if (thesaurusPreferences.isUseHandle()) {
                 addIdHandle(idGroup, nodeConceptGroup.getConceptGroup().getIdThesaurus(), thesaurusPreferences);
             }
@@ -329,7 +329,7 @@ public class GroupService {
 
     private void addIdArk__(String idGroup, String idThesaurus, NodeMetaData nodeMetaData, Preferences thesaurusPreferences) {
 
-        log.info("Début de la création de l'identifiant Ark pour le group {}", idGroup);
+        log.debug("Début de la création de l'identifiant Ark pour le group {}", idGroup);
         var arkHelper2 = new ArkHelper2(thesaurusPreferences);
         if (!arkHelper2.login()) {
             return;
@@ -352,16 +352,16 @@ public class GroupService {
 
     private boolean updateArkIdOfGroup(String idGroup, String idThesaurus, String idArk) {
 
-        log.info("Mise jour de l'id Ark pour le concept Group {}", idGroup);
+        log.debug("Mise jour de l'id Ark pour le concept Group {}", idGroup);
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
-            log.info("Aucun group n'est trouvé avec id {} et thésaurus id {}", idGroup, idThesaurus);
+            log.debug("Aucun group n'est trouvé avec id {} et thésaurus id {}", idGroup, idThesaurus);
             return false;
         }
 
         conceptGroup.get().setIdArk(idArk);
         conceptGroupRepository.save(conceptGroup.get());
-        log.info("Fin de la mise jour d'id Ark pour le concept Group {}", idGroup);
+        log.debug("Fin de la mise jour d'id Ark pour le concept Group {}", idGroup);
         return true;
     }
 
@@ -377,15 +377,15 @@ public class GroupService {
 
     private boolean updateHandleIdOfGroup(String idGroup, String idThesaurus, String idHandle) {
 
-        log.info("Mise à jour du handle pour le group {}", idGroup);
+        log.debug("Mise à jour du handle pour le group {}", idGroup);
         var group = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (group.isEmpty()) {
-            log.info("Aucun group n'est trouvé avec id {}", idGroup);
+            log.debug("Aucun group n'est trouvé avec id {}", idGroup);
             return false;
         }
 
         group.get().setIdHandle(idHandle);
-        log.info("Mise à jour du handle du group {} est terminée", idGroup);
+        log.debug("Mise à jour du handle du group {} est terminée", idGroup);
         return true;
     }
 
@@ -399,23 +399,23 @@ public class GroupService {
 
     public List<String> getListIdGroupOfConcept(String idThesaurus, String idConcept) {
 
-        log.info("Recherche de la liste des groups présents dans le thésaurus {} et concept {}", idThesaurus, idConcept);
+        log.debug("Recherche de la liste des groups présents dans le thésaurus {} et concept {}", idThesaurus, idConcept);
         var groups = conceptGroupConceptRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
         if (CollectionUtils.isEmpty(groups)) {
-            log.info("Aucun group n'est trouvé pour l'id thésaurus {} and id concept {}", idThesaurus, idConcept);
+            log.debug("Aucun group n'est trouvé pour l'id thésaurus {} and id concept {}", idThesaurus, idConcept);
         }
 
-        log.info("{} groups trouvés", groups.size());
+        log.debug("{} groups trouvés", groups.size());
         return groups.stream().map(ConceptGroupConcept::getIdGroup).toList();
     }
 
     public List<NodeGroup> getListConceptGroup(String idThesaurus, String idLang) {
 
-        log.info("Recherche de la liste des groups présents dans thésaurus {}", idThesaurus);
+        log.debug("Recherche de la liste des groups présents dans thésaurus {}", idThesaurus);
         var idGroups = getGroupsByThesaurus(idThesaurus);
 
         return idGroups.stream().map(idGroup -> {
-            log.info("Recherche des informations sur le group {}", idGroup);
+            log.debug("Recherche des informations sur le group {}", idGroup);
             return getThisConceptGroup(idGroup, idThesaurus, idLang);
         }).toList();
     }
@@ -424,17 +424,17 @@ public class GroupService {
 
         var groups = conceptGroupRepository.findAllByIdThesaurus(idThesaurus);
         if (CollectionUtils.isEmpty(groups)) {
-            log.info("Aucun group n'est disponible dans le thésaurus id {}", idThesaurus);
+            log.debug("Aucun group n'est disponible dans le thésaurus id {}", idThesaurus);
             return new ArrayList<>();
         }
 
-        log.info("{} groups trouvés pour le thésaurus id {}", groups.size(), idThesaurus);
+        log.debug("{} groups trouvés pour le thésaurus id {}", groups.size(), idThesaurus);
         return groups.stream().map(ConceptGroup::getIdGroup).toList();
     }
 
     public boolean deleteGroupTraduction(String idGroup, String idThesaurus, String idLang) {
 
-        log.info("Suppression de la traduction du group id {}", idGroup);
+        log.debug("Suppression de la traduction du group id {}", idGroup);
         var conceptGroupLabel = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idThesaurus, idGroup, idLang);
         if (conceptGroupLabel.isEmpty()) {
             log.error("Aucun concept group n'est trouvé avec l'id Group {}", idGroup);
@@ -442,21 +442,21 @@ public class GroupService {
         }
 
         conceptGroupLabelRepository.deleteAllByIdGroupAndIdThesaurusAndLang(idGroup, idThesaurus, idLang);
-        log.info("Fin de la suppression de la traduction du group id {}", idGroup);
+        log.debug("Fin de la suppression de la traduction du group id {}", idGroup);
         return true;
     }
 
     @Transactional
     public boolean renameGroup(String label, String idLang, String idGroup, String idThesaurus, int idUser) {
 
-        log.info("Mise à jour du nom du group id {}", idGroup);
+        log.debug("Mise à jour du nom du group id {}", idGroup);
         var conceptGroupLabel = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idThesaurus, idGroup, idLang);
         if (conceptGroupLabel.isEmpty()) {
             log.error("Aucun concept group n'est trouvé avec l'id Group {}", idGroup);
             return false;
         }
 
-        log.info("Mise à jour du nom du group dans la base de données");
+        log.debug("Mise à jour du nom du group dans la base de données");
         conceptGroupLabel.get(0).setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label));
         conceptGroupLabel.get(0).setModified(new Date());
         conceptGroupLabelRepository.save(conceptGroupLabel.get(0));
@@ -464,13 +464,13 @@ public class GroupService {
         addGroupTraductionHistoriqueRollBack(idGroup, idThesaurus, idLang, label, idUser);
         updateModifiedDate(idGroup, idThesaurus);
 
-        log.info("Fin de la mise à jour du nom du group id {}", idGroup);
+        log.debug("Fin de la mise à jour du nom du group id {}", idGroup);
         return true;
     }
 
     public void updateModifiedDate(String idGroup, String idThesaurus) {
 
-        log.info("Mise à jour de la date de modification du group id {}", idGroup);
+        log.debug("Mise à jour de la date de modification du group id {}", idGroup);
         conceptGroupRepository.updateModifiedDate(idGroup.toLowerCase(), idThesaurus);
     }
 
@@ -478,10 +478,10 @@ public class GroupService {
 
         var groups = conceptGroupConceptRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
         if (groups.isEmpty()) {
-            log.info("Aucun group n'est trouvé pour le concept id {}", idConcept);
+            log.debug("Aucun group n'est trouvé pour le concept id {}", idConcept);
         }
 
-        log.info("{} groups trouvés pour le concept id {}", groups.size(), idConcept);
+        log.debug("{} groups trouvés pour le concept id {}", groups.size(), idConcept);
         return groups.stream()
                 .map(element -> getThisConceptGroup(element.getIdGroup(), idThesaurus, idLang))
                 .toList();
@@ -490,14 +490,14 @@ public class GroupService {
 
     public NodeGroup getThisConceptGroup(String idGroup, String idThesaurus, String idLang) {
 
-        log.info("Rechercher du group id {}", idGroup);
+        log.debug("Rechercher du group id {}", idGroup);
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
             log.error("Aucun group n'est trouvé pour l'id Group {}", idGroup);
             return null;
         }
 
-        log.info("Rechercher du label du group id {} avec la langue {}", idGroup, idLang);
+        log.debug("Rechercher du label du group id {} avec la langue {}", idGroup, idLang);
         var conceptGroupDetail = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idThesaurus,
                 conceptGroup.get().getIdGroup(), idLang);
 
@@ -513,21 +513,21 @@ public class GroupService {
 
     public boolean isIdGroupExiste(String idGroup, String idThesaurus) {
 
-        log.info("Vérification de l'existance d'un group {} rattaché au thésaurus id {}", idGroup, idThesaurus);
+        log.debug("Vérification de l'existance d'un group {} rattaché au thésaurus id {}", idGroup, idThesaurus);
         var group = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         return group.isPresent();
     }
 
     public boolean isHaveTraduction(String idGroup, String idThesaurus, String idLang) {
 
-        log.info("Vérification de l'existance du group {} avec la langue {}", idGroup, idLang);
+        log.debug("Vérification de l'existance du group {} avec la langue {}", idGroup, idLang);
         var conceptGroup = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLang(idGroup, idThesaurus, idLang);
         return CollectionUtils.isNotEmpty(conceptGroup);
     }
 
     private void addGroupTraductionHistoriqueRollBack(String idGroup, String idThesaurus, String idLang, String value, int idUser) {
 
-        log.info("Enregistrement d'une nouvelle historique pour la table ConceptGroupLabel");
+        log.debug("Enregistrement d'une nouvelle historique pour la table ConceptGroupLabel");
         conceptGroupLabelHistoriqueRepository.save(ConceptGroupLabelHistorique.builder()
                 .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(value))
                 .lang(idLang)
@@ -540,7 +540,7 @@ public class GroupService {
 
     public boolean isMoveToDescending(String idGroup, String toIdGroup, String idThesaurus){
 
-        log.info("Vérification si le group à déplacer ({}) est vers un descendant ({}) -> c'est interdit", idGroup, toIdGroup);
+        log.debug("Vérification si le group à déplacer ({}) est vers un descendant ({}) -> c'est interdit", idGroup, toIdGroup);
         var idGroupDescending = getAllGroupDescending(idGroup, idThesaurus);
         return idGroupDescending.contains(toIdGroup);
     }
@@ -550,7 +550,7 @@ public class GroupService {
      */
     public List<String> getAllGroupDescending(String idGroup, String idThesaurus) {
 
-        log.info("Rechercher de la liste des Id Groups descendant du group id {} ", idGroup);
+        log.debug("Rechercher de la liste des Id Groups descendant du group id {} ", idGroup);
         return getDescendingId_(idGroup, idThesaurus, new ArrayList<>());
     }
 
@@ -571,29 +571,29 @@ public class GroupService {
 
     public boolean setNotationOfGroup(String notation, String idGroup, String idThesaurus) {
 
-        log.info("Modification de la notation du group id {} ", idGroup);
+        log.debug("Modification de la notation du group id {} ", idGroup);
         var group = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (group.isEmpty()) {
-            log.info("Aucun group n'existe dans la base avec l'id {}", idGroup);
+            log.debug("Aucun group n'existe dans la base avec l'id {}", idGroup);
             return false;
         }
 
         group.get().setNotation(notation);
         conceptGroupRepository.save(group.get());
-        log.info("Mise à jour de la notation terminé pour le group {}", idGroup);
+        log.debug("Mise à jour de la notation terminé pour le group {}", idGroup);
         return true;
     }
 
     public List<NodeGroupTraductions> getGroupTraduction(String idGroup, String idThesaurus, String idLang) {
 
-        log.info("Recherche de toutes les traductions du group id {} (sans celle qui est en cours)", idGroup);
+        log.debug("Recherche de toutes les traductions du group id {} (sans celle qui est en cours)", idGroup);
         var conceptGroupLabel = conceptGroupLabelRepository.findAllByIdThesaurusAndIdGroupAndLangNot(idThesaurus, idGroup, idLang);
         if (CollectionUtils.isEmpty(conceptGroupLabel)) {
-            log.info("Aucune traduction n'est trouvée pour le group {}", idGroup);
+            log.debug("Aucune traduction n'est trouvée pour le group {}", idGroup);
             return List.of();
         }
 
-        log.info("{} traductions trouvées pour le group {}", conceptGroupLabel.size(), idGroup);
+        log.debug("{} traductions trouvées pour le group {}", conceptGroupLabel.size(), idGroup);
         return conceptGroupLabel.stream()
                 .map(element -> NodeGroupTraductions.builder()
                         .idLang(element.getLang())
@@ -605,7 +605,7 @@ public class GroupService {
     @Transactional
     public boolean addIdArkGroup(String idThesaurus, String idGroup, String labelGroup) {
 
-        log.info("Génération de l'id Ark pour le group");
+        log.debug("Génération de l'id Ark pour le group");
 
         var preferenceThesaurus = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preferenceThesaurus == null) {
@@ -614,14 +614,14 @@ public class GroupService {
         }
 
         if (preferenceThesaurus.isUseArkLocal()) {
-            log.info("L'indicateur 'useArkLocal' pour le group {} est activé", idGroup);
+            log.debug("L'indicateur 'useArkLocal' pour le group {} est activé", idGroup);
             generateArkIdLocal(idThesaurus, idGroup);
             return true;
         }
 
         ArkHelper2 arkHelper2 = new ArkHelper2(preferenceThesaurus);
         if (!arkHelper2.login()) {
-            log.info("Erreur de connexion au serveur Ark !");
+            log.debug("Erreur de connexion au serveur Ark !");
             return false;
         }
 
@@ -655,10 +655,10 @@ public class GroupService {
 
     public NodeUri getThisGroupIds(String idGroup, String idThesaurus) {
 
-        log.info("Recherche des détails du group {}", idGroup);
+        log.debug("Recherche des détails du group {}", idGroup);
         var groups = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (groups.isEmpty()) {
-            log.info("Aucun group n'est trouvé avec l'id {}", idGroup);
+            log.debug("Aucun group n'est trouvé avec l'id {}", idGroup);
             return null;
         }
 
@@ -672,26 +672,26 @@ public class GroupService {
 
     public boolean isGroupHaveConcepts(String idGroup, String idThesaurus) {
 
-        log.info("Vérifier si le group id {} a des concepts", idGroup);
+        log.debug("Vérifier si le group id {} a des concepts", idGroup);
         var concepts = conceptGroupConceptRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
 
-        log.info("Le group {} contient des concepts : {}", idGroup, !CollectionUtils.isEmpty(concepts));
+        log.debug("Le group {} contient des concepts : {}", idGroup, !CollectionUtils.isEmpty(concepts));
         return !CollectionUtils.isEmpty(concepts);
     }
 
     public boolean isDomainExist(String title, String idThesaurus, String idLang) {
 
-        log.info("Vérifier si le group {} existe avec la langue {}", title, idLang);
+        log.debug("Vérifier si le group {} existe avec la langue {}", title, idLang);
 
         title = fr.cnrs.opentheso.utils.StringUtils.convertString(title);
         var group = conceptGroupLabelRepository.findByLexicalValueLikeAndLangAndIdThesaurus(title, idLang, idThesaurus);
-        log.info("Le group {} existe avec la langue {} ? {}", title, idLang, group.isPresent());
+        log.debug("Le group {} existe avec la langue {} ? {}", title, idLang, group.isPresent());
         return group.isPresent();
     }
 
     public List<NodeGroup> getListRootConceptGroup(String idThesaurus, String idLang, boolean isSortByNotation, boolean isPrivate) {
 
-        log.info("Rechercher la liste des domaines de premier niveau (MT, G, C, T)");
+        log.debug("Rechercher la liste des domaines de premier niveau (MT, G, C, T)");
         List<NodeGroup> nodeConceptGroupList = new ArrayList<>();
 
         var tabIdConceptGroup = getListIdOfRootGroup(idThesaurus, isPrivate);
@@ -724,26 +724,26 @@ public class GroupService {
 
     public List<String> getListIdOfRootGroup(String idThesaurus, boolean isPrivate) {
 
-        log.info("Recherche des groupes racines pour le thésaurus : {} (filtrage public = {})", idThesaurus, isPrivate);
+        log.debug("Recherche des groupes racines pour le thésaurus : {} (filtrage public = {})", idThesaurus, isPrivate);
         var results = isPrivate
                 ? conceptGroupRepository.findRootGroupsPublicOnly(idThesaurus)
                 : conceptGroupRepository.findRootGroups(idThesaurus);
 
         if (CollectionUtils.isEmpty(results)) {
-            log.info("Aucun group n'est trouvé dans le thésaurus id {}", idThesaurus);
+            log.debug("Aucun group n'est trouvé dans le thésaurus id {}", idThesaurus);
             return Collections.emptyList();
         }
 
-        log.info("Nombre de groupes racines trouvés : {}", results.size());
+        log.debug("Nombre de groupes racines trouvés : {}", results.size());
         return results;
     }
 
     public List<NodeGroup> getListChildsOfGroup(String idConceptGroup, String idThesaurus, String idLang, boolean isSortByNotation) {
 
-        log.info("Recherche des sous-groupes d'un Group (type G/C/MT/T)");
+        log.debug("Recherche des sous-groupes d'un Group (type G/C/MT/T)");
         var lisIdGroups = relationGroupService.getListGroupChildIdOfGroup(idConceptGroup, idThesaurus);
         if (CollectionUtils.isEmpty(lisIdGroups)) {
-            log.info("Aucun group n'est rattaché au group {}", idConceptGroup);
+            log.debug("Aucun group n'est rattaché au group {}", idConceptGroup);
             return null;
         }
 
@@ -751,7 +751,7 @@ public class GroupService {
         for (String idGroup : lisIdGroups) {
             var nodeConceptGroup = getThisConceptGroup(idGroup, idThesaurus, idLang);
             if (nodeConceptGroup == null) {
-                log.info("Aucun détail n'est trouvé pour le group id {}", idGroup);
+                log.debug("Aucun détail n'est trouvé pour le group id {}", idGroup);
                 continue;
             }
             nodeConceptGroup.setHaveChildren(relationGroupService.isHaveSubGroup(idThesaurus, idGroup));
@@ -771,33 +771,33 @@ public class GroupService {
 
     public String getIdGroupFromHandleId(String idHandle) {
 
-        log.info("Recherche de l'id group à partir de l'id handle {}", idHandle);
+        log.debug("Recherche de l'id group à partir de l'id handle {}", idHandle);
         var group = conceptGroupRepository.findByIdHandle(idHandle);
         if (group.isEmpty()) {
-            log.info("Aucun group n'est trouvé avec l'id Handle {}", idHandle);
+            log.debug("Aucun group n'est trouvé avec l'id Handle {}", idHandle);
             return null;
         }
 
-        log.info("L'id Group est {} contenant l'id handle {}", group.get().getIdGroup(), idHandle);
+        log.debug("L'id Group est {} contenant l'id handle {}", group.get().getIdGroup(), idHandle);
         return group.get().getIdGroup();
     }
 
     public String getIdGroupFromArkId(String idArk, String idThesaurus) {
 
-        log.info("Recherche de l'id group à partir de l'id ark {} et l'id thésaurus {}", idThesaurus, idThesaurus);
+        log.debug("Recherche de l'id group à partir de l'id ark {} et l'id thésaurus {}", idThesaurus, idThesaurus);
         var group = conceptGroupRepository.findAllByIdThesaurusAndIdArk(idThesaurus, idArk);
         if (group.isEmpty()) {
-            log.info("Aucun group n'est trouvé avec l'id ark {} et l'id thésaurus {}", idThesaurus, idThesaurus);
+            log.debug("Aucun group n'est trouvé avec l'id ark {} et l'id thésaurus {}", idThesaurus, idThesaurus);
             return null;
         }
 
-        log.info("L'id Group est {} contenant l'id ark {} et id thésaurus {}", group.get().getIdGroup(), idArk, idThesaurus);
+        log.debug("L'id Group est {} contenant l'id ark {} et id thésaurus {}", group.get().getIdGroup(), idArk, idThesaurus);
         return group.get().getIdGroup();
     }
 
     public void addGroupTraduction(fr.cnrs.opentheso.models.group.ConceptGroupLabel conceptGroupLabel, int idUser) {
 
-        log.info("Ajouter une nouvelle traduction à un group domaine");
+        log.debug("Ajouter une nouvelle traduction à un group domaine");
         conceptGroupLabel.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(conceptGroupLabel.getLexicalValue()));
         conceptGroupLabelRepository.save(ConceptGroupLabel.builder()
                 .lexicalValue(conceptGroupLabel.getLexicalValue())
@@ -808,7 +808,7 @@ public class GroupService {
                 .modified(new Date())
                 .build());
 
-        log.info("Ajouter une traduction de domaine en historique");
+        log.debug("Ajouter une traduction de domaine en historique");
         conceptGroupLabelHistoriqueRepository.save(ConceptGroupLabelHistorique.builder()
                 .lexicalValue(conceptGroupLabel.getLexicalValue())
                 .lang(conceptGroupLabel.getLang())
@@ -821,14 +821,14 @@ public class GroupService {
 
     public boolean deleteConceptsWithEmptyRelation(String idThesaurus) {
 
-        log.info("Supprimer l'appartenance des concepts avec des relations vide vers une collection");
+        log.debug("Supprimer l'appartenance des concepts avec des relations vide vers une collection");
         conceptGroupConceptRepository.deleteAllByIdThesaurusAndIdGroup(idThesaurus, "");
         return true;
     }
 
     public void addGroupTraduction(String idGroup, String idThesaurus, String idLang, String value) {
 
-        log.info("Ajouter un libellé pour un group (MT, domaine, etc..)");
+        log.debug("Ajouter un libellé pour un group (MT, domaine, etc..)");
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         conceptGroupLabelRepository.save(ConceptGroupLabel.builder()
                 .lexicalValue(value)
@@ -842,44 +842,44 @@ public class GroupService {
 
     public boolean isNotationExist(String notation, String idThesaurus) {
 
-        log.info("Rechercher si la notation {} existe dans le thésaurus id {}", notation, idThesaurus);
+        log.debug("Rechercher si la notation {} existe dans le thésaurus id {}", notation, idThesaurus);
         var groups = conceptGroupRepository.findByIdThesaurusAndNotation(idThesaurus, notation);
-        log.info("La notation {} existe existe dans le thésaurus id {} : {}", notation, idThesaurus, CollectionUtils.isNotEmpty(groups));
+        log.debug("La notation {} existe existe dans le thésaurus id {} : {}", notation, idThesaurus, CollectionUtils.isNotEmpty(groups));
         return CollectionUtils.isNotEmpty(groups);
     }
 
     public void deleteConceptGroupRollBack(String idGroup, String idThesaurus) {
 
-        log.info("Suppression du groupe id {} et ses traductions !", idGroup);
+        log.debug("Suppression du groupe id {} et ses traductions !", idGroup);
 
-        log.info("Suppression de toutes les traductions du groupe id {}", idGroup);
+        log.debug("Suppression de toutes les traductions du groupe id {}", idGroup);
         conceptGroupLabelRepository.deleteByIdThesaurusAndIdGroup(idThesaurus, idGroup);
 
-        log.info("Suppression du groupe id {}", idGroup);
+        log.debug("Suppression du groupe id {}", idGroup);
         conceptGroupRepository.deleteByIdThesaurusAndIdGroup(idThesaurus, idGroup);
 
-        log.info("Suppression de toutes les relations avec le groupe id {}", idGroup);
+        log.debug("Suppression de toutes les relations avec le groupe id {}", idGroup);
         relationGroupService.deleteRelationGroup(idThesaurus, idGroup);
     }
 
     public String getIdThesaurusFromArkId(String arkId) {
 
-        log.info("Recherche de l'idThesaurus pour l'arkId : {}", arkId);
+        log.debug("Recherche de l'idThesaurus pour l'arkId : {}", arkId);
         var idThesaurus = conceptGroupRepository.findThesaurusIdByArkId(arkId);
-        log.info("Thesaurus trouvé pour l'arkId {} : {}", arkId, idThesaurus);
+        log.debug("Thesaurus trouvé pour l'arkId {} : {}", arkId, idThesaurus);
         return idThesaurus;
     }
 
     public List<NodeUri> getListGroupOfConceptArk(String idThesaurus, String idConcept) {
 
-        log.info("Recherche des groupes liés au concept : {} dans le thésaurus {}", idConcept, idThesaurus);
+        log.debug("Recherche des groupes liés au concept : {} dans le thésaurus {}", idConcept, idThesaurus);
         var result = conceptGroupRepository.findGroupsOfConcept(idThesaurus, idConcept);
         if (CollectionUtils.isEmpty(result)) {
-            log.info("Aucun group n'est lié au concept : {} dans le thésaurus {}", idConcept, idThesaurus);
+            log.debug("Aucun group n'est lié au concept : {} dans le thésaurus {}", idConcept, idThesaurus);
             return Collections.emptyList();
         }
 
-        log.info("{} groups liés au concept : {} dans le thésaurus {}", result.size(), idConcept, idThesaurus);
+        log.debug("{} groups liés au concept : {} dans le thésaurus {}", result.size(), idConcept, idThesaurus);
         return result.stream().map(row ->
             NodeUri.builder()
                     .idConcept((String) row[0])
@@ -892,37 +892,37 @@ public class GroupService {
 
     public void cleanGroup() {
 
-        log.info("Nettoyage des valeurs des notations");
+        log.debug("Nettoyage des valeurs des notations");
         conceptGroupRepository.cleanNotation();
 
-        log.info("Nettoyage des valeurs des idTypeCode");
+        log.debug("Nettoyage des valeurs des idTypeCode");
         conceptGroupRepository.cleanIdTypeCode();
     }
 
     public void deleteAllGroupsByThesaurus(String idThesaurus) {
 
-        log.info("Suppression de tous les groups du thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les groups du thésaurus {}", idThesaurus);
         conceptGroupRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les traduction des groups du thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les traduction des groups du thésaurus {}", idThesaurus);
         conceptGroupLabelRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les labels des groups du thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les labels des groups du thésaurus {}", idThesaurus);
         conceptGroupLabelHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les relations entre les groups et les concepts du thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les relations entre les groups et les concepts du thésaurus {}", idThesaurus);
         conceptGroupConceptRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des relations entre les groups");
+        log.debug("Suppression des relations entre les groups");
         relationGroupService.deleteRelationGroupByThesaurus(idThesaurus);
 
-        log.info("Suppression des historiques des groups du thésaurus id {}", idThesaurus);
+        log.debug("Suppression des historiques des groups du thésaurus id {}", idThesaurus);
         conceptGroupHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String oldThesaurusID, String newThesaurusID) {
 
-        log.info("Mise à jour du thésaurus id pour les groups (du {} vers {})", oldThesaurusID, newThesaurusID);
+        log.debug("Mise à jour du thésaurus id pour les groups (du {} vers {})", oldThesaurusID, newThesaurusID);
         conceptGroupRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
         conceptGroupLabelRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
         conceptGroupLabelHistoriqueRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);
@@ -933,7 +933,7 @@ public class GroupService {
 
     public void deleteAllGroupOfConcept(String idConcept, String idThesaurus) {
 
-        log.info("Supprimer tous les groupes du concept id {}", idConcept);
+        log.debug("Supprimer tous les groupes du concept id {}", idConcept);
         conceptGroupConceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
     }
 
@@ -953,7 +953,7 @@ public class GroupService {
 
     public void addNewDomaine(String idGroup, String idThesaurus, String idConcept) {
 
-        log.info("Création d'un nouveau group");
+        log.debug("Création d'un nouveau group");
         conceptGroupConceptRepository.save(ConceptGroupConcept.builder()
                 .idGroup(idGroup)
                 .idConcept(idConcept)

@@ -72,13 +72,13 @@ public class SecurityConfigKeycloak {
                 var oauthUser = (OAuth2User) authentication.getPrincipal();
 
                 String email = oauthUser.getAttribute("email");
-                log.info("Authentification réussie. Email : {}", email);
+                log.debug("Authentification réussie. Email : {}", email);
 
                 if (session != null) {
                     if (StringUtils.isNotEmpty(email)) {
                         var user = userRepository.findByMail(email);
                         if (user.isPresent()) {
-                            log.info("Utilisateur trouvé dans la base Opentheso, chargement de la session ...");
+                            log.debug("Utilisateur trouvé dans la base Opentheso, chargement de la session ...");
                             currentUser.setUser(user.get());
                         } else {
                             log.error("Utilisateur avec email : {} non trouvé", email);

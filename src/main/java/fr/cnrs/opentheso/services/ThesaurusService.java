@@ -66,7 +66,7 @@ public class ThesaurusService {
 
     public Thesaurus getThesaurusById(String idThesaurus) {
 
-        log.info("Rechercher un thésaurus à partir de son id {}", idThesaurus);
+        log.debug("Rechercher un thésaurus à partir de son id {}", idThesaurus);
         var thesaurus = thesaurusRepository.findById(idThesaurus);
         if (thesaurus.isEmpty()) {
             log.error("Le thésaurus avec id {} n'existe pas dans la base de données", idThesaurus);
@@ -77,7 +77,7 @@ public class ThesaurusService {
 
     public List<String> getIsoLanguagesOfThesaurus(String idThesaurus) {
 
-        log.info("Recherche des langues ISO pour le thésaurus '{}'", idThesaurus);
+        log.debug("Recherche des langues ISO pour le thésaurus '{}'", idThesaurus);
         var langues = thesaurusLabelRepository.findDistinctLangByIdThesaurus(idThesaurus);
 
         if (CollectionUtils.isEmpty(langues)) {
@@ -85,20 +85,20 @@ public class ThesaurusService {
             return Collections.emptyList();
         }
 
-        log.info("{} langue(s) trouvée(s) pour le thésaurus '{}': {}", langues.size(), idThesaurus, langues);
+        log.debug("{} langue(s) trouvée(s) pour le thésaurus '{}': {}", langues.size(), idThesaurus, langues);
         return langues;
     }
 
     public List<NodeIdValue> getThesaurusOfProject(int idGroup, String idLang) {
 
-        log.info("Recherche de la liste des thésaurus définis dans le projet {} et avec la langue {}", idGroup, idLang);
+        log.debug("Recherche de la liste des thésaurus définis dans le projet {} et avec la langue {}", idGroup, idLang);
         var thesaurusList = userGroupThesaurusRepository.findAllByIdGroup(idGroup);
         if (CollectionUtils.isEmpty(thesaurusList)) {
-            log.info("Aucun thésaurus n'est trouvé dans le group {}", idGroup);
+            log.debug("Aucun thésaurus n'est trouvé dans le group {}", idGroup);
             return List.of();
         }
 
-        log.info("{} thésaurus trouvés dans le group {}", thesaurusList.size(), idGroup);
+        log.debug("{} thésaurus trouvés dans le group {}", thesaurusList.size(), idGroup);
         return thesaurusList.stream()
                 .map(thesaurus -> {
                     var idLangTemp = preferenceService.getWorkLanguageOfThesaurus(thesaurus.getIdThesaurus());
@@ -121,58 +121,58 @@ public class ThesaurusService {
 
     public void deleteThesaurusTraduction(String idThesaurus, String idLang) {
 
-        log.info("Suppression de la traduction en {} du thésaurus {}", idLang, idThesaurus);
+        log.debug("Suppression de la traduction en {} du thésaurus {}", idLang, idThesaurus);
         idThesaurus = fr.cnrs.opentheso.utils.StringUtils.convertString(idThesaurus);
         thesaurusLabelRepository.deleteByIdThesaurusAndLang(idThesaurus, idLang);
-        log.info("Suppression terminé de la traduction en {} du thésaurus {}", idLang, idThesaurus);
+        log.debug("Suppression terminé de la traduction en {} du thésaurus {}", idLang, idThesaurus);
     }
 
     public boolean isLanguageExistOfThesaurus(String idThesaurus, String idLang) {
 
-        log.info("Vérification si la traduction en langue {} est présente pour le thésaurus {}", idLang, idThesaurus);
+        log.debug("Vérification si la traduction en langue {} est présente pour le thésaurus {}", idLang, idThesaurus);
         var thesaurus = thesaurusLabelRepository.findByIdThesaurusAndLang(idThesaurus, idLang);
-        log.info("La traduction en langue {} est présente pour le thésaurus {} : {}", idLang, idThesaurus, thesaurus.isPresent());
+        log.debug("La traduction en langue {} est présente pour le thésaurus {} : {}", idLang, idThesaurus, thesaurus.isPresent());
         return thesaurus.isEmpty();
     }
 
     public List<String> getAllUsedLanguagesOfThesaurus(String idThesaurus) {
 
-        log.info("Rechercher les langues utilisées par les concepts du thésaurus {}", idThesaurus);
+        log.debug("Rechercher les langues utilisées par les concepts du thésaurus {}", idThesaurus);
         var terms = termService.searchDistinctLangInThesaurus(idThesaurus);
         if (CollectionUtils.isEmpty(terms)) {
-            log.info("Aucune langue n'est utilisé dans le thésaurus {}", idThesaurus);
+            log.debug("Aucune langue n'est utilisé dans le thésaurus {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} langues utilisées dans le thésaurus {}", terms.size(), idThesaurus);
+        log.debug("{} langues utilisées dans le thésaurus {}", terms.size(), idThesaurus);
         return terms;
     }
 
     public boolean isThesaurusExiste(String idThesaurus) {
 
-        log.info("Vérifier si le thésaurus {} existe", idThesaurus);
+        log.debug("Vérifier si le thésaurus {} existe", idThesaurus);
         var thesaurus = thesaurusRepository.findById(idThesaurus);
-        log.info("Le thésaurus id {} est trouvé ? {}", idThesaurus, thesaurus.isPresent());
+        log.debug("Le thésaurus id {} est trouvé ? {}", idThesaurus, thesaurus.isPresent());
         return thesaurus.isPresent();
     }
 
     public List<String> getAllIdOfThesaurus(boolean withPrivateThesaurus) {
 
-        log.info("Recherche des id des thésaurus (avec les thésaurus privées : {})", withPrivateThesaurus);
+        log.debug("Recherche des id des thésaurus (avec les thésaurus privées : {})", withPrivateThesaurus);
         var thesaurus = withPrivateThesaurus ? thesaurusRepository.findAllOrderByCreatedDesc() : thesaurusRepository.findAllByIsPrivateFalseOrderByCreatedDesc();
 
         if (CollectionUtils.isEmpty(thesaurus)) {
-            log.info("Aucun thésaurus trouvé !");
+            log.debug("Aucun thésaurus trouvé !");
             return List.of();
         }
 
-        log.info("{} thésaurus trouvés", thesaurus.size());
+        log.debug("{} thésaurus trouvés", thesaurus.size());
         return thesaurus.stream().map(Thesaurus::getIdThesaurus).toList();
     }
 
     public boolean updateIdArkOfThesaurus(String idThesaurus, String idArk) {
 
-        log.info("Mise à jour de l'idArk du thésaurus id {} avec la valeur {}", idThesaurus, idArk);
+        log.debug("Mise à jour de l'idArk du thésaurus id {} avec la valeur {}", idThesaurus, idArk);
         var thesaurus = thesaurusRepository.findById(idThesaurus);
         if (thesaurus.isEmpty()) {
             log.error("Le thésaurus avec id {} n'existe pas dans la base de données", idThesaurus);
@@ -181,13 +181,13 @@ public class ThesaurusService {
 
         thesaurus.get().setIdArk(idArk);
         thesaurusRepository.save(thesaurus.get());
-        log.info("Mise à jour thésaurus {} avec la nouvelle valeur d'idArk {}", idThesaurus, idArk);
+        log.debug("Mise à jour thésaurus {} avec la nouvelle valeur d'idArk {}", idThesaurus, idArk);
         return false;
     }
 
     public List<NodeIdValue> getAllThesaurus(boolean withPrivateThesaurus) {
 
-        log.info("Rechercher les thésaurus dans la langue source de chaque thésaurus");
+        log.debug("Rechercher les thésaurus dans la langue source de chaque thésaurus");
         var tabIdThesaurus = getAllIdOfThesaurus(withPrivateThesaurus);
         return tabIdThesaurus.stream().map(idThesaurus ->
             NodeIdValue.builder()
@@ -205,19 +205,19 @@ public class ThesaurusService {
             return "";
         }
 
-        log.info("Le titre du thésaurus (id = {}) est {}", idThesaurus, thesaurusLabel.get().getTitle());
+        log.debug("Le titre du thésaurus (id = {}) est {}", idThesaurus, thesaurusLabel.get().getTitle());
         return thesaurusLabel.get().getTitle();
     }
 
     public String addThesaurusRollBack() {
 
-        log.info("Création d'un nouveau thésaurus");
+        log.debug("Création d'un nouveau thésaurus");
         var thesaurusSeq = thesaurusRepository.getNextThesaurusSequenceValue();
         var idThesaurus = "th" + thesaurusSeq;
         while (isThesaurusExiste(idThesaurus)) {
             idThesaurus = "th" + ++thesaurusSeq;
         }
-        log.info("Le nouveau id du thésaurus est {}", idThesaurus);
+        log.debug("Le nouveau id du thésaurus est {}", idThesaurus);
 
         var thesaurus = thesaurusRepository.save(Thesaurus.builder()
                 .id((int)thesaurusSeq)
@@ -228,34 +228,34 @@ public class ThesaurusService {
                 .modified(new Date())
                 .build());
 
-        log.info("Enregistrement terminé du nouveau thésaurus {}", thesaurus.getIdThesaurus());
+        log.debug("Enregistrement terminé du nouveau thésaurus {}", thesaurus.getIdThesaurus());
         return thesaurus.getIdThesaurus();
     }
 
     public void setThesaurusVisibility(String idThesaurus, boolean isPrivateTheso) {
 
-        log.info("Changement de la visibilité du thésaurus id {} en {}", idThesaurus, isPrivateTheso);
+        log.debug("Changement de la visibilité du thésaurus id {} en {}", idThesaurus, isPrivateTheso);
         thesaurusRepository.updateVisibility(idThesaurus, isPrivateTheso);
     }
 
     public Boolean isPrivateThesaurus(String idThesaurus) {
 
-        log.info("Savoir si le thésaurus est privé id {}", idThesaurus);
+        log.debug("Savoir si le thésaurus est privé id {}", idThesaurus);
         return thesaurusRepository.isPrivateThesaurus(idThesaurus);
     }
 
     public List<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(String idThesaurus, String idLang) {
 
-        log.info("Recherche des langues utilisées dans le thésaurus '{}'", idThesaurus);
+        log.debug("Recherche des langues utilisées dans le thésaurus '{}'", idThesaurus);
         final var langue = StringUtils.isBlank(idLang) ? "fr" : idLang;
 
         var projections = thesaurusRepository.findAllUsedLanguagesOfThesaurus(idThesaurus);
         if (CollectionUtils.isEmpty(projections)) {
-            log.info("Aucune langue est utilisée par le thésaurus {}", idThesaurus);
+            log.debug("Aucune langue est utilisée par le thésaurus {}", idThesaurus);
             return Collections.emptyList();
         }
 
-        log.info("{} langue(s) utilisée(s) trouvée(s) pour le thésaurus '{}'", projections.size(), idThesaurus);
+        log.debug("{} langue(s) utilisée(s) trouvée(s) pour le thésaurus '{}'", projections.size(), idThesaurus);
         return projections.stream()
                 .map(element -> NodeLangTheso.builder()
                         .id(element.getId())
@@ -269,24 +269,24 @@ public class ThesaurusService {
 
     public String getIdThesaurusFromArkId(String arkId) {
 
-        log.info("Recherche de l'identifiant du thésaurus à partir d'Ark id {}", arkId);
+        log.debug("Recherche de l'identifiant du thésaurus à partir d'Ark id {}", arkId);
         var idThesaurus = thesaurusRepository.findIdThesaurusByArkId(arkId).orElse(null);
-        log.info("L'id du thésaurus est {}", idThesaurus);
+        log.debug("L'id du thésaurus est {}", idThesaurus);
         return idThesaurus;
     }
 
     public NodeThesaurus getNodeThesaurus(String idThesaurus) {
 
-        log.info("Recherche des détails du thésaurus id {}", idThesaurus);
+        log.debug("Recherche des détails du thésaurus id {}", idThesaurus);
 
-        log.info("Recherche di thésaurus id {}", idThesaurus);
+        log.debug("Recherche di thésaurus id {}", idThesaurus);
         var thesaurus = getThesaurusById(idThesaurus);
         if (thesaurus == null) {
             log.error("Aucun thésaurus n'est trouvé avec l'id {}", idThesaurus);
             return null;
         }
 
-        log.info("Recherche des langues utilisées par le thésaurus id {}", idThesaurus);
+        log.debug("Recherche des langues utilisées par le thésaurus id {}", idThesaurus);
         var listLangThesaurus = getLanguagesOfThesaurus(idThesaurus);
 
         return NodeThesaurus.builder()
@@ -298,9 +298,9 @@ public class ThesaurusService {
 
     private List<fr.cnrs.opentheso.models.thesaurus.Thesaurus> getTraductions(List<LanguageIso639> listLangThesaurus, String idThesaurus) {
 
-        log.info("Recherche des traductions du thésaurus id {}", idThesaurus);
+        log.debug("Recherche des traductions du thésaurus id {}", idThesaurus);
         if (CollectionUtils.isEmpty(listLangThesaurus)) {
-            log.info("Aucune traduction n'est disponible avec l'id {}", idThesaurus);
+            log.debug("Aucune traduction n'est disponible avec l'id {}", idThesaurus);
             return Collections.emptyList();
         } else {
             return listLangThesaurus.stream()
@@ -312,7 +312,7 @@ public class ThesaurusService {
 
     public fr.cnrs.opentheso.models.thesaurus.Thesaurus getByIdAndLang(String idThesaurus, String idLang) {
 
-        log.info("Recherche du thésaurus id {} avec la langue {}", idThesaurus, idLang);
+        log.debug("Recherche du thésaurus id {} avec la langue {}", idThesaurus, idLang);
         var thesaurus = thesaurusRepository.getThesaurusByIdAndLang(idThesaurus, StringUtils.trimToEmpty(idLang));
         if (thesaurus.isEmpty()) {
             log.error("Aucun thésaurus n'existe avec l'id {} et la langue {}", idThesaurus, idLang);
@@ -323,14 +323,14 @@ public class ThesaurusService {
 
     public List<LanguageIso639> getLanguagesOfThesaurus(String idThesaurus) {
 
-        log.info("Recherche des langues utilisées dans le thésaurus '{}'", idThesaurus);
+        log.debug("Recherche des langues utilisées dans le thésaurus '{}'", idThesaurus);
         var result = languageIso639Repository.findLanguagesByThesaurusId(idThesaurus);
         if (CollectionUtils.isEmpty(result)) {
             log.warn("Aucune langue trouvée pour le thésaurus '{}'", idThesaurus);
             return Collections.emptyList();
         }
 
-        log.info("{} langue(s) trouvée(s) pour le thésaurus '{}'", result.size(), idThesaurus);
+        log.debug("{} langue(s) trouvée(s) pour le thésaurus '{}'", result.size(), idThesaurus);
         return result.stream()
                 .map(element ->
                     LanguageIso639.builder()
@@ -347,7 +347,7 @@ public class ThesaurusService {
     public void addThesaurusTraductionRollBack(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
 
         var thesaurusToSave = addQuotes(thesaurus);
-        log.info("Création d'une nouvelle traduction pour le thésaurus {}", thesaurusToSave.getId_thesaurus());
+        log.debug("Création d'une nouvelle traduction pour le thésaurus {}", thesaurusToSave.getId_thesaurus());
         thesaurusLabelRepository.save(ThesaurusLabel.builder()
                 .idThesaurus(thesaurusToSave.getId_thesaurus())
                 .lang(thesaurusToSave.getLanguage().trim())
@@ -370,7 +370,7 @@ public class ThesaurusService {
 
     public void addThesaurusTraduction(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurusToSave) {
 
-        log.info("Ajout d'une traduction au thésaurus {}", thesaurusToSave.getId_thesaurus());
+        log.debug("Ajout d'une traduction au thésaurus {}", thesaurusToSave.getId_thesaurus());
         var thesaurus = addQuotes(thesaurusToSave);
         thesaurusLabelRepository.save(ThesaurusLabel.builder()
                 .idThesaurus(thesaurus.getId_thesaurus())
@@ -416,13 +416,13 @@ public class ThesaurusService {
         thesaurusLabel.get().setTitle(thesaurusToSave.getTitle());
         thesaurusLabel.get().setType(thesaurusToSave.getType());
         thesaurusLabelRepository.save(thesaurusLabel.get());
-        log.info("Mise à jour de la traduction terminée correctement");
+        log.debug("Mise à jour de la traduction terminée correctement");
         return true;
     }
 
     private fr.cnrs.opentheso.models.thesaurus.Thesaurus addQuotes(fr.cnrs.opentheso.models.thesaurus.Thesaurus thesaurus) {
 
-        log.info("Ajouter des cotes pour passer des données en JDBC");
+        log.debug("Ajouter des cotes pour passer des données en JDBC");
         thesaurus.setContributor(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getContributor()));
         thesaurus.setCoverage(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getCoverage()));
         thesaurus.setCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getCreator()));
@@ -441,7 +441,7 @@ public class ThesaurusService {
     @Transactional
     public boolean cleaningThesaurus(String idThesaurus) {
 
-        log.info("Nettoyer du thésaurus {} des espaces et des null", idThesaurus);
+        log.debug("Nettoyer du thésaurus {} des espaces et des null", idThesaurus);
         termService.deleteTerm("", idThesaurus);
         groupService.deleteConceptGroupRollBack("", idThesaurus);
         groupService.cleanGroup();
@@ -451,7 +451,7 @@ public class ThesaurusService {
 
     public boolean deleteThesaurus(String idThesaurus) {
 
-        log.info("Suppression du thésaurus id {}", idThesaurus);
+        log.debug("Suppression du thésaurus id {}", idThesaurus);
         if (!isThesaurusExiste(idThesaurus)) {
             log.error("Le thésaurus id {} n'existe pas", idThesaurus);
             return false;
@@ -499,7 +499,7 @@ public class ThesaurusService {
 
     public boolean changeIdOfThesaurus(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Changement de l'id du thésaurus du {} vers {}", oldIdThesaurus, newIdThesaurus);
+        log.debug("Changement de l'id du thésaurus du {} vers {}", oldIdThesaurus, newIdThesaurus);
         if (isThesaurusExiste(newIdThesaurus)) {
             log.error("Un thésaurus avec l'id {} existe déjà !", newIdThesaurus);
             return false;

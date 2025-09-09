@@ -29,7 +29,7 @@ public class ProjectService {
 
     public List<UserGroupLabel> getAllProjects() {
 
-        log.info("Recherche de tous les projets existant");
+        log.debug("Recherche de tous les projets existant");
         var projectList = userGroupLabelRepository.findAll();
         projectList.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
         return projectList;
@@ -50,7 +50,7 @@ public class ProjectService {
 
     public List<NodeUserGroupThesaurus> getAllThesaurusProjects(String idLang) {
 
-        log.info("Recherche de tous les projets thésaurus existant");
+        log.debug("Recherche de tous les projets thésaurus existant");
         List<NodeUserGroupThesaurus> allThesaurusProject = new ArrayList<>();
         allThesaurusProject.addAll(userGroupThesaurusRepository.getAllGroupTheso(idLang));
         allThesaurusProject.addAll(thesaurusRepository.getAllThesaurusWithoutGroup(idLang));
@@ -59,7 +59,7 @@ public class ProjectService {
 
     public UserGroupLabel getUserGroupLabelByLabel(String projectName) {
 
-        log.info("Recherche du userGroupLabelByLabel {}", projectName);
+        log.debug("Recherche du userGroupLabelByLabel {}", projectName);
         var userGroupLabel = userGroupLabelRepository.findByLabelLike(projectName);
         if (userGroupLabel.isEmpty()) {
             log.error("Aucun userGroupLabel n'existe avec le label {}", projectName);
@@ -70,13 +70,13 @@ public class ProjectService {
 
     public List<UserGroupLabel> getProjectByUser(int idUser, int idRole) {
 
-        log.info("Recherche des projets de l'utilisateur id {}", idUser);
+        log.debug("Recherche des projets de l'utilisateur id {}", idUser);
         return userGroupLabelRepository.findProjectsByRole(idUser, idRole);
     }
 
     public UserGroupLabel saveNewProject(UserGroupLabel userGroupLabel) {
 
-        log.info("Enregistrement d'un nouveau projet avec le nom {}", userGroupLabel.getLabel());
+        log.debug("Enregistrement d'un nouveau projet avec le nom {}", userGroupLabel.getLabel());
         return userGroupLabelRepository.save(userGroupLabel);
     }
 

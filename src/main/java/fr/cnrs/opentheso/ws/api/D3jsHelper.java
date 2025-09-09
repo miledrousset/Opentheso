@@ -96,7 +96,7 @@ public class D3jsHelper {
             childrens.add(getNode(nodeConceptGraph, idTheso, idLang, limit));
         }
         nodeDatas.setChildrens(childrens);
-    //    log.info("" + countNodes(nodeDatas));
+    //    log.debug("" + countNodes(nodeDatas));
         return nodeDatas;
     }
 

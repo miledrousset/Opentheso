@@ -62,7 +62,7 @@ public class TraductionBean implements Serializable {
 
     public void setTraductionsForEdit() {
 
-        log.info("Préparation de la liste des traductions disponibles");
+        log.debug("Préparation de la liste des traductions disponibles");
         reset();
 
         nodeTermTraductionsForEdit = new ArrayList<>();
@@ -80,7 +80,7 @@ public class TraductionBean implements Serializable {
 
         nodeLangsFiltered.addAll(nodeLangs);
 
-        log.info("Préparation de la liste des langues à ignorer");
+        log.debug("Préparation de la liste des langues à ignorer");
         List<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(conceptBean.getSelectedLang());
         if (CollectionUtils.isNotEmpty(conceptBean.getNodeConcept().getNodeTermTraductions())) {
@@ -170,7 +170,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        log.info("Ajout de la nouvelle traduction dans la base de données");
+        log.debug("Ajout de la nouvelle traduction dans la base de données");
         termService.addTermTraduction(fr.cnrs.opentheso.models.terms.Term.builder()
                 .idTerm(conceptBean.getNodeFullConcept().getPrefLabel().getIdTerm())
                 .lexicalValue(traductionValue)
@@ -194,11 +194,11 @@ public class TraductionBean implements Serializable {
 
     private void refreshConceptInformations(int idUser) {
 
-        log.info("Rafraîchissement des données du concept");
+        log.debug("Rafraîchissement des données du concept");
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        log.info("Mise à jour de la date de mise à jour du concept");
+        log.debug("Mise à jour de la date de mise à jour du concept");
         conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()
@@ -330,7 +330,7 @@ public class TraductionBean implements Serializable {
             var toModify = false;
             isModified = false;
 
-            log.info("Vérification si le terme {} a changé !", nodeTermTraduction.getLexicalValue());
+            log.debug("Vérification si le terme {} a changé !", nodeTermTraduction.getLexicalValue());
             for (NodeTermTraduction nodeTermTraductionOld : nodeTermTraductions) {
                 if (nodeTermTraduction.getLang().equalsIgnoreCase(nodeTermTraductionOld.getLang())) {
                     toModify = !nodeTermTraduction.getLexicalValue().equalsIgnoreCase(nodeTermTraductionOld.getLexicalValue());
@@ -343,7 +343,7 @@ public class TraductionBean implements Serializable {
                     continue;
                 }
 
-                log.info("Mise à jour du terme {} ({}) dans la base de donnée", nodeTermTraduction.getLexicalValue(), nodeTermTraduction.getLang());
+                log.debug("Mise à jour du terme {} ({}) dans la base de donnée", nodeTermTraduction.getLexicalValue(), nodeTermTraduction.getLang());
                 termService.updateTermTraduction(nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                         nodeTermTraduction.getLang(), selectedTheso.getCurrentIdTheso(), idUser);
                 isModified = true;
@@ -376,7 +376,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        log.info("Suppression de la traduction dans la base de données");
+        log.debug("Suppression de la traduction dans la base de données");
         termService.deleteTerm(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getTerm().getIdTerm(), nodeTermTraduction.getLang());
 
         refreshConceptInformations(idUser);
@@ -387,7 +387,7 @@ public class TraductionBean implements Serializable {
 
         PrimeFaces.current().ajax().update("containerIndex:rightTab:idDeleteTraduction");
         PrimeFaces.current().executeScript("PF('deleteTraduction').show();");
-        log.info("Suppression de la traduction du terme {} ({}) terminée",
+        log.debug("Suppression de la traduction du terme {} ({}) terminée",
                 conceptBean.getNodeConcept().getTerm().getIdTerm(), nodeTermTraduction.getLang());
     }
 

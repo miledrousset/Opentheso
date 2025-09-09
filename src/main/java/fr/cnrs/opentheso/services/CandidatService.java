@@ -93,7 +93,7 @@ public class CandidatService {
 
     public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int stat) {
 
-        log.info("Rechercher la liste des candidats dans le thésaurus {} avec le status {}", idThesaurus, stat);
+        log.debug("Rechercher la liste des candidats dans le thésaurus {} avec le status {}", idThesaurus, stat);
         var candidatList = getCandidatsByThesaurusAndStatus(idThesaurus, lang, stat);
         candidatList.forEach(candidatDto -> {
             var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatDto.getIdConcepte(), idThesaurus);
@@ -326,9 +326,9 @@ public class CandidatService {
         Term terme = new Term();
         
         for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
-            log.info("ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue");
+            log.debug("ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue");
             for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
-                log.info("Vérification de l'existance du terme (recherche dans prefLabels)");
+                log.debug("Vérification de l'existance du terme (recherche dans prefLabels)");
                 if (termService.existsPrefLabel(nodeTraduction.getTitle().trim(), nodeTraduction.getIdLang(), idTheso)){
                     messages.append("Candidat existe : ").append(nodeTraduction.getTitle());
                     exist = true;
@@ -531,62 +531,62 @@ public class CandidatService {
 
     public void deleteVoteByNoteId(int idNote, String idThesaurus, String idConcept) {
 
-        log.info("Suppression des votes par note id {}", idNote);
+        log.debug("Suppression des votes par note id {}", idNote);
         candidatVoteRepository.deleteAllByIdThesaurusAndIdConceptAndIdNote(idThesaurus, idConcept, String.valueOf(idNote));
     }
 
     public void deleteAllCandidatsByThesaurus(String idThesaurus) {
 
-        log.info("Suppression de tous les votes des candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les votes des candidats dans le thésaurus id {}", idThesaurus);
         candidatVoteRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les status des candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les status des candidats dans le thésaurus id {}", idThesaurus);
         candidatStatusRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les messages des candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les messages des candidats dans le thésaurus id {}", idThesaurus);
         candidatMessageRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des concept candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression des concept candidats dans le thésaurus id {}", idThesaurus);
         conceptCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des concepts terms des candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression des concepts terms des candidats dans le thésaurus id {}", idThesaurus);
         conceptTermCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des terms des candidats dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression des terms des candidats dans le thésaurus id {}", idThesaurus);
         termCandidatRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Mise à jour de l'id thésaurus dans le module candidat du {} vers {}", oldIdThesaurus, newIdThesaurus);
-        log.info("Mise à jour de tous les votes des candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour de l'id thésaurus dans le module candidat du {} vers {}", oldIdThesaurus, newIdThesaurus);
+        log.debug("Mise à jour de tous les votes des candidats dans le thésaurus id {}", oldIdThesaurus);
         candidatVoteRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour de tous les status des candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour de tous les status des candidats dans le thésaurus id {}", oldIdThesaurus);
         candidatStatusRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour de tous les messages des candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour de tous les messages des candidats dans le thésaurus id {}", oldIdThesaurus);
         candidatMessageRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour des concept candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour des concept candidats dans le thésaurus id {}", oldIdThesaurus);
         conceptCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour des concepts terms des candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour des concepts terms des candidats dans le thésaurus id {}", oldIdThesaurus);
         conceptTermCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour des terms des candidats dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour des terms des candidats dans le thésaurus id {}", oldIdThesaurus);
         termCandidatRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     private List<NodeCandidateOld> getCandidatesIdFromOldModule(String idThesaurus) {
 
-        log.info("Recherche des candidats présent dans le thésaurus id {}", idThesaurus);
+        log.debug("Recherche des candidats présent dans le thésaurus id {}", idThesaurus);
         var candidats = conceptCandidatRepository.findAllByIdThesaurusAndStatus(idThesaurus, "a");
         if (CollectionUtils.isEmpty(candidats)) {
-            log.info("Aucun candidat n'est trouvé dans le thésaurus id {} avec le status 'a'", idThesaurus);
+            log.debug("Aucun candidat n'est trouvé dans le thésaurus id {} avec le status 'a'", idThesaurus);
         }
 
-        log.info("{} cadidats sont trouvés dans le thésaurus id {}", candidats.size(), idThesaurus);
+        log.debug("{} cadidats sont trouvés dans le thésaurus id {}", candidats.size(), idThesaurus);
         return candidats.stream()
                 .map(candidat -> NodeCandidateOld.builder()
                         .idCandidate(candidat.getIdConcept())
@@ -597,14 +597,14 @@ public class CandidatService {
 
     private List<CandidatDto> getCandidatsByThesaurusAndStatus(String idThesaurus, String lang, int stat) {
 
-        log.info("Chargement des candidats en statut {} pour le thésaurus {}", stat, idThesaurus);
+        log.debug("Chargement des candidats en statut {} pour le thésaurus {}", stat, idThesaurus);
         var projections = candidatStatusRepository.findCandidatesByStatus(idThesaurus, stat);
         if (CollectionUtils.isEmpty(projections)) {
-            log.info("Aucun candidat n'est trouvé dans le thésaurus id {}", idThesaurus);
+            log.debug("Aucun candidat n'est trouvé dans le thésaurus id {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} candidats trouvés dans le thésaurus id {} avec l'état {}", projections.size(), idThesaurus, stat);
+        log.debug("{} candidats trouvés dans le thésaurus id {} avec l'état {}", projections.size(), idThesaurus, stat);
         return projections.stream()
                 .map(projection ->
                     CandidatDto.builder()
@@ -626,15 +626,15 @@ public class CandidatService {
 
     private List<CandidatDto> searchCandidatsByValue(String value, String idThesaurus, String lang, int etat, String statut) {
 
-        log.info("Recherche de candidats avec la valeur '{}' pour le thésaurus '{}', langue '{}', statut '{}', état {}",
+        log.debug("Recherche de candidats avec la valeur '{}' pour le thésaurus '{}', langue '{}', statut '{}', état {}",
                 value, idThesaurus, lang, statut, etat);
         var results = conceptCandidatRepository.searchCandidatesByValue(value, idThesaurus, lang, etat, statut);
         if (CollectionUtils.isEmpty(results)) {
-            log.info("Aucun candidat n'est trouvé avec la valeur {}", value);
+            log.debug("Aucun candidat n'est trouvé avec la valeur {}", value);
             return List.of();
         }
 
-        log.info("{} candidats est trouvé avec la valeur {}", results.size(), value);
+        log.debug("{} candidats est trouvé avec la valeur {}", results.size(), value);
         return results.stream()
                 .map(projection ->
                         CandidatDto.builder()
@@ -651,7 +651,7 @@ public class CandidatService {
 
     private List<NodeTraductionCandidat> getCandidatesTraductionsFromOldModule(String idOldCandidat, String idThesaurus) {
 
-        log.info("Récupération des traductions du candidat '{}' pour le thésaurus '{}'", idOldCandidat, idThesaurus);
+        log.debug("Récupération des traductions du candidat '{}' pour le thésaurus '{}'", idOldCandidat, idThesaurus);
         return conceptTermCandidatRepository.getCandidateTranslations(idOldCandidat, idThesaurus).stream()
                 .map(proj ->
                     NodeTraductionCandidat.builder()
@@ -711,7 +711,7 @@ public class CandidatService {
 
     public List<MessageDto> getAllMessagesByCandidat(CandidatDto candidatSelected, int idUser) {
 
-        log.info("Recherche des messages pour le candidat id {}", candidatSelected.getIdConcepte());
+        log.debug("Recherche des messages pour le candidat id {}", candidatSelected.getIdConcepte());
         var candidatMessages = candidatMessageRepository.findMessagesByConceptAndThesaurus(candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus());
 
@@ -750,13 +750,13 @@ public class CandidatService {
     public void saveNewCandidat(CandidatDto candidatSelected, String idThesaurus, String idLang, Integer idUser,
                                 String userName, String currentLang, String definition) throws SQLException {
 
-        log.info("Vérification de l'existance du term (recherche dans prefLabels)");
+        log.debug("Vérification de l'existance du term (recherche dans prefLabels)");
         if (termService.existsPrefLabel(candidatSelected.getNomPref().trim(), idLang, idThesaurus)) {
             MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg3"));
             return;
         }
 
-        log.info("Vérification de l'existance du term (recherche dans altLabels)");
+        log.debug("Vérification de l'existance du term (recherche dans altLabels)");
         if (termService.isAltLabelExist(candidatSelected.getNomPref().trim(), idThesaurus, idLang)) {
             MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg4"));
             return;

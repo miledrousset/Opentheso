@@ -64,7 +64,7 @@ public class ConceptAddService {
                                  String idBTfacet, String relationType, int idUser, boolean isConceptUnderFacet,
                                  CurrentUser currentUser) {
 
-        log.info("Début de l'ajout du nouveau concept");
+        log.debug("Début de l'ajout du nouveau concept");
         if (roleOnThesaurusBean.getNodePreference() == null) {
             MessageUtils.showMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Le thésaurus n'a pas de préférences !");
             return false;
@@ -99,13 +99,13 @@ public class ConceptAddService {
                 .build();
 
 
-        log.info("Vérification : le nouveau concept est sous une Facette (le BT est celui du parent de la Facette)");
+        log.debug("Vérification : le nouveau concept est sous une Facette (le BT est celui du parent de la Facette)");
         if (isConceptUnderFacet) {
-            log.info("Le concept est sous une Facette");
+            log.debug("Le concept est sous une Facette");
             idConceptParent = idBTfacet;
         }
 
-        log.info("Enregistrement du concept dans la base");
+        log.debug("Enregistrement du concept dans la base");
         idNewConcept = addConcept(idConceptParent, relationType, concept, terme, idUser);
 
         if (idNewConcept == null) {
@@ -113,7 +113,7 @@ public class ConceptAddService {
             return false;
         }
 
-        log.info("Enregistrement du trace de l'action");
+        log.debug("Enregistrement du trace de l'action");
         conceptDcTermRepository.save(ConceptDcTerm.builder()
                 .name(DCMIResource.CREATOR)
                 .value(currentUser.getNodeUser().getName())
@@ -159,7 +159,7 @@ public class ConceptAddService {
 
         MessageUtils.showInformationMessage("Le concept a bien été ajouté");
 
-        log.info("Fin de l'ajout du nouveau concept");
+        log.debug("Fin de l'ajout du nouveau concept");
         return true;
     }
 
@@ -250,7 +250,7 @@ public class ConceptAddService {
 
     public String addConceptInTable(Concept concept, int idUser) {
 
-        log.info("Ajouter un nouveau concept dans le thésaurus id {}", concept.getIdThesaurus());
+        log.debug("Ajouter un nouveau concept dans le thésaurus id {}", concept.getIdThesaurus());
         int idSequenceConcept = -1;
         concept.setNotation(concept.getNotation() == null ? ""  : concept.getNotation());
         concept.setIdArk(concept.getIdArk() == null ? ""  : concept.getIdArk());
@@ -296,7 +296,7 @@ public class ConceptAddService {
 
     public void addConceptHistorique(Concept concept, int idUser) {
 
-        log.info("Ajout d'une trace dans la table historique des concepts (concept id {})", concept.getIdThesaurus());
+        log.debug("Ajout d'une trace dans la table historique des concepts (concept id {})", concept.getIdThesaurus());
         conceptHistoriqueRepository.save(ConceptHistorique.builder()
                 .idConcept(concept.getIdConcept())
                 .idThesaurus(concept.getIdThesaurus())
@@ -312,7 +312,7 @@ public class ConceptAddService {
 
     public List<NodeIdValue> generateArkId(String idThesaurus, List<String> idConcepts, String idLang, Preferences preferences) {
 
-        log.info("Génération d'identifiant Ark pour une liste des concepts");
+        log.debug("Génération d'identifiant Ark pour une liste des concepts");
 
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
         if (preferences == null) {
@@ -479,17 +479,17 @@ public class ConceptAddService {
 
     public boolean isIdExiste(String idNewConcept, String idThesaurus) {
 
-        log.info("Vérifier l'existence de l'id concept {} dans le thésaurus id {}", idNewConcept, idThesaurus);
+        log.debug("Vérifier l'existence de l'id concept {} dans le thésaurus id {}", idNewConcept, idThesaurus);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idNewConcept, idThesaurus);
-        log.info("Le concept id {} existe ? {}", idNewConcept, concept.isPresent());
+        log.debug("Le concept id {} existe ? {}", idNewConcept, concept.isPresent());
         return concept.isPresent();
     }
 
     public boolean isIdExiste(String idConcept) {
 
-        log.info("Vérifier l'existence de l'id concept {}", idConcept);
+        log.debug("Vérifier l'existence de l'id concept {}", idConcept);
         var concepts = conceptRepository.findByIdConcept(idConcept);
-        log.info("Le concept id {} existe ? {}", idConcept, CollectionUtils.isNotEmpty(concepts));
+        log.debug("Le concept id {} existe ? {}", idConcept, CollectionUtils.isNotEmpty(concepts));
         return CollectionUtils.isNotEmpty(concepts);
     }
 

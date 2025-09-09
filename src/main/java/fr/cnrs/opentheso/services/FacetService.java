@@ -62,14 +62,14 @@ public class FacetService {
 
     public List<NodeIdValue> getAllIdValueFacetsOfConcept(String idConcept, String idThesaurus, String idLang) {
 
-        log.info("Recherche des facettes appartenant au concept id {}", idConcept);
+        log.debug("Recherche des facettes appartenant au concept id {}", idConcept);
         var thesaurusArrays = thesaurusArrayRepository.findAllByIdThesaurusAndIdConceptParent(idThesaurus, idConcept);
         if (CollectionUtils.isEmpty(thesaurusArrays)) {
-            log.info("Aucune facette n'est trouvée pour le concept id {}", idConcept);
+            log.debug("Aucune facette n'est trouvée pour le concept id {}", idConcept);
             return Collections.emptyList();
         }
 
-        log.info("{} facettes appartenant au concept id {}", thesaurusArrays.size(), idConcept);
+        log.debug("{} facettes appartenant au concept id {}", thesaurusArrays.size(), idConcept);
         var listFacets = new java.util.ArrayList<>(thesaurusArrays.stream()
                 .map(facet -> {
                     var lexicalValue = nodeLabelRepository.findByIdFacetAndIdThesaurusAndLang(facet.getIdFacet(), idThesaurus, idLang)
@@ -87,54 +87,54 @@ public class FacetService {
 
     public List<ConceptFacet> getFacetsByConceptAndThesaurus(String idConcept, String idThesaurus) {
 
-        log.info("Recherche de facet à rattaché au concept id {} et thésaurus id {}", idConcept, idThesaurus);
+        log.debug("Recherche de facet à rattaché au concept id {} et thésaurus id {}", idConcept, idThesaurus);
         var facets = facetRepository.findAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (CollectionUtils.isEmpty(facets)) {
-            log.info("Aucune facet n'est trouvé avec le concept id {}", idConcept);
+            log.debug("Aucune facet n'est trouvé avec le concept id {}", idConcept);
             return List.of();
         }
 
-        log.info("{} facets trouvées avec le concept id {}", facets.size(), idConcept);
+        log.debug("{} facets trouvées avec le concept id {}", facets.size(), idConcept);
         return facets;
     }
 
     public void deleteFacetsByConceptAndThesaurus(String idConcept, String idThesaurus) {
 
-        log.info("Suppression de tous les facette rattachées au concept id {} dans le thésaurus id {}", idConcept, idThesaurus);
+        log.debug("Suppression de tous les facette rattachées au concept id {} dans le thésaurus id {}", idConcept, idThesaurus);
         facetRepository.deleteAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
     }
 
     public boolean isConceptHaveFacet(String idConcept, String idThesaurus) {
 
-        log.info("Vérifier si le concept id {} contient des facets", idConcept);
+        log.debug("Vérifier si le concept id {} contient des facets", idConcept);
         var thesaurusArray = thesaurusArrayRepository.findAllByIdThesaurusAndIdConceptParent(idThesaurus, idConcept);
         return CollectionUtils.isNotEmpty(thesaurusArray);
     }
 
     public boolean isFacetHaveThisMember(String idFacet, String idConcept, String idThesaurus) {
 
-        log.info("Vérifier si la facet id {} contient des facets", idFacet);
+        log.debug("Vérifier si la facet id {} contient des facets", idFacet);
         var facets = facetRepository.findAllByIdConceptAndIdThesaurusAndIdFacet(idConcept, idThesaurus, idFacet);
         return CollectionUtils.isNotEmpty(facets);
     }
 
     public boolean isIdFacetExist(String idFacet) {
 
-        log.info("Vérifier si une facet avec l'id {} existe", idFacet);
+        log.debug("Vérifier si une facet avec l'id {} existe", idFacet);
         var facet = facetRepository.findByIdFacet(idFacet);
         return facet.isPresent();
     }
 
     public boolean isFacetHaveMembers(String idFacet, String idThesaurus) {
 
-        log.info("Vérifier si la facet avec l'id {}a des concepts membres", idThesaurus);
+        log.debug("Vérifier si la facet avec l'id {}a des concepts membres", idThesaurus);
         var facet = conceptFacetRepository.findByIdFacetAndIdThesaurus(idFacet, idThesaurus);
         return facet.isPresent();
     }
 
     public String addNewFacet(String idFacet, String idThesaurus, String idConceptParent, String lexicalValue, String idLang) {
 
-        log.info("Ajout d'une nouvelle facette");
+        log.debug("Ajout d'une nouvelle facette");
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
 
         if (StringUtils.isEmpty(idFacet)) {
@@ -173,14 +173,14 @@ public class FacetService {
 
     public List<NodeFacet> getAllFacetsDetailsOfThesaurus(String idThesaurus) {
 
-        log.info("Recherche des facettes du thésaurus id {}", idThesaurus);
+        log.debug("Recherche des facettes du thésaurus id {}", idThesaurus);
         var facets = nodeLabelRepository.findAllFacetsWithConceptParent(idThesaurus);
         if (CollectionUtils.isNotEmpty(facets)) {
-            log.info("Aucune facet n'est trouvée");
+            log.debug("Aucune facet n'est trouvée");
             return List.of();
         }
 
-        log.info("{} facettes récupérées pour le thésaurus '{}'", facets.size(), idThesaurus);
+        log.debug("{} facettes récupérées pour le thésaurus '{}'", facets.size(), idThesaurus);
         return facets.stream().map(facet -> {
 
             var created = (Date) facet[3];
@@ -210,7 +210,7 @@ public class FacetService {
 
     public boolean updateFacetTraduction(String idFacet, String idThesaurus, String idLang, String lexicalValue) {
 
-        log.info("Mise à jour de la valeur de la facette avec id {}", idFacet);
+        log.debug("Mise à jour de la valeur de la facette avec id {}", idFacet);
         var facet = nodeLabelRepository.findByIdFacetAndIdThesaurusAndLang(idFacet, idThesaurus, idLang);
         if (facet.isEmpty()) {
             log.error("Aucune facette n'est trouvée avec l'id {}", idFacet);
@@ -220,18 +220,18 @@ public class FacetService {
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         facet.get().setLexicalValue(lexicalValue);
         nodeLabelRepository.save(facet.get());
-        log.info("Mise à jour terminée de la facet id {}", idFacet);
+        log.debug("Mise à jour terminée de la facet id {}", idFacet);
         return true;
     }
 
     public void updateFacetParent(String idConceptParent, String idFacet, String idThesaurus) {
-        log.info("Mise à jour du concept parent pour la facet id {}", idFacet);
+        log.debug("Mise à jour du concept parent pour la facet id {}", idFacet);
         thesaurusArrayRepository.updateConceptParent(idConceptParent, idThesaurus, idFacet);
     }
 
     public void deleteFacet(String idFacet, String idThesaurus) {
 
-        log.info("Suppression de la facet id {} avec ses relations", idFacet);
+        log.debug("Suppression de la facet id {} avec ses relations", idFacet);
         thesaurusArrayRepository.deleteAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
         conceptFacetRepository.deleteAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
         nodeLabelRepository.deleteAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
@@ -239,19 +239,19 @@ public class FacetService {
 
     public void deleteTraductionFacet(String idFacet, String idThesaurus, String idLang) {
 
-        log.info("Suppression de la traduction en langue {} de la facette avec id {}", idLang, idFacet);
+        log.debug("Suppression de la traduction en langue {} de la facette avec id {}", idLang, idFacet);
         nodeLabelRepository.deleteAllByIdThesaurusAndIdFacetAndLang(idThesaurus, idFacet, idLang);
     }
 
     public void deleteConceptFromFacet(String idFacet, String idConcept, String idThesaurus) {
 
-        log.info("Suppression de la facette avec id {}", idFacet);
+        log.debug("Suppression de la facette avec id {}", idFacet);
         conceptFacetRepository.deleteAllByIdConceptAndIdThesaurusAndIdFacet(idConcept, idThesaurus, idFacet);
     }
 
     public boolean checkExistenceFacetByNameAndLangAndThesaurus(String name, String lang, String idThesaurus) {
 
-        log.info("Vérifier l'existence d'une facet par sa valeur {} (langue {})", name, lang);
+        log.debug("Vérifier l'existence d'une facet par sa valeur {} (langue {})", name, lang);
         var nodeLabel = nodeLabelRepository.findByIdThesaurusAndLexicalValueAndLang(idThesaurus, name, lang);
         return nodeLabel.isPresent();
     }
@@ -259,14 +259,14 @@ public class FacetService {
 
     public boolean isTraductionExistOfFacet(String idFacet, String idThesaurus, String idLang) {
 
-        log.info("Vérifier si une traduction existe pour la facet id {} en lang {}", idFacet, idLang);
+        log.debug("Vérifier si une traduction existe pour la facet id {} en lang {}", idFacet, idLang);
         var nodeLabel = nodeLabelRepository.findByIdFacetAndIdThesaurusAndLang(idFacet, idThesaurus, idLang);
         return nodeLabel.isPresent();
     }
 
     public void addConceptToFacet(String idFacet, String idThesaurus, String idConcept) {
 
-        log.info("Ajout d'un concept dans la facet id {}", idFacet);
+        log.debug("Ajout d'un concept dans la facet id {}", idFacet);
         conceptFacetRepository.save(ConceptFacet.builder()
                 .idFacet(idFacet)
                 .idThesaurus(idThesaurus)
@@ -276,7 +276,7 @@ public class FacetService {
 
     public void addFacetTraduction(String idFacet, String idThesaurus, String lexicalValue, String idLang) {
 
-        log.info("Ajout d'une nouvelle traduction pour la facet id {} en lang {}", idFacet, idLang);
+        log.debug("Ajout d'une nouvelle traduction pour la facet id {} en lang {}", idFacet, idLang);
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         nodeLabelRepository.save(NodeLabel.builder()
                 .idFacet(idFacet)
@@ -290,10 +290,10 @@ public class FacetService {
 
     public void updateDateOfFacet(String idThesaurus, String idFacet, int contributor) {
 
-        log.info("Mise à jour de la date de modification de la facet avec id {}", idFacet);
+        log.debug("Mise à jour de la date de modification de la facet avec id {}", idFacet);
         var thesaurusArray = thesaurusArrayRepository.findAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
         if (thesaurusArray.isEmpty()) {
-            log.info("Aucune facette n'est trouvée avec l'id {}", idFacet);
+            log.debug("Aucune facette n'est trouvée avec l'id {}", idFacet);
             return;
         }
 
@@ -304,10 +304,10 @@ public class FacetService {
 
     public String getIdConceptParentOfFacet(String idFacet, String idThesaurus) {
 
-        log.info("Recherche de l'id du concept Parent de la facet id {}", idFacet);
+        log.debug("Recherche de l'id du concept Parent de la facet id {}", idFacet);
         var thesaurusArray = thesaurusArrayRepository.findAllByIdThesaurusAndIdFacet(idThesaurus, idFacet);
         if (thesaurusArray.isEmpty()) {
-            log.info("Aucune facette n'est trouvée avec l'id {}", idFacet);
+            log.debug("Aucune facette n'est trouvée avec l'id {}", idFacet);
             return null;
         }
 
@@ -316,10 +316,10 @@ public class FacetService {
 
     public List<String> getAllMembersOfFacet(String idFacet, String idThesaurus) {
 
-        log.info("Recherche des concepts membre à la facet id {}", idFacet);
+        log.debug("Recherche des concepts membre à la facet id {}", idFacet);
         var facettes = conceptFacetRepository.findAllByIdFacetAndIdThesaurus(idFacet, idThesaurus);
         if (CollectionUtils.isEmpty(facettes)) {
-           log.info("Aucun concept membre à la facet id {}", idFacet);
+           log.debug("Aucun concept membre à la facet id {}", idFacet);
            return Collections.emptyList();
         }
         return facettes.stream().map(ConceptFacet::getIdConcept).toList();
@@ -329,7 +329,7 @@ public class FacetService {
 
         var facettes = nodeLabelRepository.findByIdFacetAndIdThesaurusAndLangNot(idFacet, idThesaurus, lang);
         if (CollectionUtils.isEmpty(facettes)) {
-            log.info("Aucune traduction n'est trouvée pour la facet id {}", idFacet);
+            log.debug("Aucune traduction n'est trouvée pour la facet id {}", idFacet);
             return Collections.emptyList();
         }
         return facettes.stream()
@@ -344,7 +344,7 @@ public class FacetService {
 
     public boolean isFacetInGroups(String idThesaurus, String idFacet, List<String> groups) {
 
-        log.info("Vérifier si le parent de la Facette est dans les collections indiquées");
+        log.debug("Vérifier si le parent de la Facette est dans les collections indiquées");
         if (CollectionUtils.isEmpty(groups)) {
             log.error("La liste des groups est vide");
             return false;
@@ -360,11 +360,11 @@ public class FacetService {
 
     public List<NodeIdValue> searchFacet(String name, String lang, String idThesaurus) {
 
-        log.info("Recherche des facettes contenant '{}' (lang='{}', thésaurus='{}')", name, lang, idThesaurus);
+        log.debug("Recherche des facettes contenant '{}' (lang='{}', thésaurus='{}')", name, lang, idThesaurus);
         var normalized = fr.cnrs.opentheso.utils.StringUtils.convertString(name);
         var rawResults = nodeLabelRepository.searchFacetsByName(normalized, lang, idThesaurus);
 
-        log.info("{} facettes trouvées pour la recherche sur '{}'", rawResults.size(), name);
+        log.debug("{} facettes trouvées pour la recherche sur '{}'", rawResults.size(), name);
         return rawResults.stream().map(row -> {
             NodeIdValue node = new NodeIdValue();
             node.setId((String) row[0]);
@@ -374,7 +374,7 @@ public class FacetService {
     }
 
     public List<NodeIdValue> getAllMembersOfFacetSorted(String idFacet, String idLang, String idTheso) {
-        log.info("Recherche des membres de la facette '{}' dans le thésaurus '{}'", idFacet, idTheso);
+        log.debug("Recherche des membres de la facette '{}' dans le thésaurus '{}'", idFacet, idTheso);
         try {
             var conceptIds = conceptFacetRepository.findConceptIdsByFacet(idTheso, idFacet);
 
@@ -386,7 +386,7 @@ public class FacetService {
                     .collect(Collectors.toCollection(ArrayList::new));
 
             Collections.sort(results);
-            log.info("{} concepts trouvés pour la facette '{}'", results.size(), idFacet);
+            log.debug("{} concepts trouvés pour la facette '{}'", results.size(), idFacet);
             return results;
         } catch (Exception e) {
             log.error("Erreur lors de la récupération des membres de la facette : " + idFacet, e);

@@ -47,7 +47,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
     public void removeConceptAndChildFromGroup(String idGroup) {
 
-        log.info("Début de la suppression de tous les concepts rattachés au group id {}", idGroup);
+        log.debug("Début de la suppression de tous les concepts rattachés au group id {}", idGroup);
         var allId  = conceptService.getIdsOfBranch(conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
 
         if(CollectionUtils.isEmpty(allId)) {
@@ -64,7 +64,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
                 conceptView.getSelectedLang(), currentUser);
         nodeGroups = conceptView.getNodeConcept().getNodeConceptGroup();
 
-        log.info("Initialisation de l'interface");
+        log.debug("Initialisation de l'interface");
         init();
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("conceptForm:listeConceptGroupeToDelete");

@@ -50,7 +50,7 @@ public class AlignmentManualBean implements Serializable {
 
 
     public void reset() {
-        log.info("Initialisation des données nécessaire pour l'interface alignement manuel");
+        log.debug("Initialisation des données nécessaire pour l'interface alignement manuel");
         nodeAlignmentTypes = alignmentService.searchAllAlignementTypes();
         manualAlignmentSource = "";
         manualAlignmentUri = "";

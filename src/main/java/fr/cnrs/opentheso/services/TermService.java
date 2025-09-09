@@ -51,9 +51,9 @@ public class TermService {
 
     public String addTerm(Term term, String idConcept, int idUser) {
 
-        log.info("Ajout d'un nouveau term {}", term.getLexicalValue());
+        log.debug("Ajout d'un nouveau term {}", term.getLexicalValue());
         var idTerm = generateNextIdTerm(term);
-        log.info("Le nouveau id Term est {}", idTerm);
+        log.debug("Le nouveau id Term est {}", idTerm);
 
         var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
                 .idTerm(idTerm)
@@ -68,7 +68,7 @@ public class TermService {
                 .modified(new Date())
                 .build());
 
-        log.info("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
+        log.debug("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
         termHistoriqueRepository.save(TermHistorique.builder()
                 .idTerm(termSaved.getIdTerm())
                 .lexicalValue(termSaved.getLexicalValue())
@@ -103,7 +103,7 @@ public class TermService {
     }
 
     public void updateTermTraduction(String label, String idTerm, String idLang, String idTheso, int idUser) {
-        log.info("Mise à jour du term");
+        log.debug("Mise à jour du term");
         var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idTheso, idLang);
         if (term.isPresent()) {
             term.get().setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label));
@@ -111,7 +111,7 @@ public class TermService {
             term.get().setModified(new Date());
             termRepository.save(term.get());
 
-            log.info("Ajout d'une trace de modification de la traduction {}", term.get().getLexicalValue());
+            log.debug("Ajout d'une trace de modification de la traduction {}", term.get().getLexicalValue());
             termHistoriqueRepository.save(TermHistorique.builder()
                     .idTerm(term.get().getIdTerm())
                     .lexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(label))
@@ -126,16 +126,47 @@ public class TermService {
         }
     }
 
+    public void addTermTraduction(String label, String idTerm, String idLang, String idTheso, int idUser) {
+        label = StringUtils.convertString(label);
+        log.debug("Ajout d'un nouveau term traduction {}", label);
+
+        var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
+                .idTerm(idTerm)
+                .lexicalValue(label)
+                .lang(idLang)
+                .idThesaurus(idTheso)
+                .source("")
+                .status("")
+                .contributor(idUser)
+                .creator(idUser)
+                .created(new Date())
+                .modified(new Date())
+                .build());
+
+        log.debug("Ajout d'une trace de création d'un nouveau term {}", label);
+        termHistoriqueRepository.save(TermHistorique.builder()
+                .idTerm(termSaved.getIdTerm())
+                .lexicalValue(termSaved.getLexicalValue())
+                .lang(termSaved.getLang())
+                .idThesaurus(termSaved.getIdThesaurus())
+                .source(termSaved.getSource())
+                .status(termSaved.getStatus())
+                .idUser(idUser)
+                .modified(LocalDateTime.now())
+                .action("New")
+                .build());
+    }
+
     public void addTerms(NodeTerm nodeTerm, int idUser) {
 
         if (CollectionUtils.isEmpty(nodeTerm.getNodeTermTraduction())) {
             log.error("Aucune traduction n'est pas présente !");
         }
 
-        log.info("Début de l'ajout des traductions");
+        log.debug("Début de l'ajout des traductions");
         for (NodeTermTraduction termTraduction : nodeTerm.getNodeTermTraduction()) {
 
-            log.info("Traduction {}", termTraduction.getLexicalValue());
+            log.debug("Traduction {}", termTraduction.getLexicalValue());
             addInPermutedTable(nodeTerm, termTraduction);
 
             var lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(termTraduction.getLexicalValue());
@@ -153,7 +184,7 @@ public class TermService {
                     .build());
         }
 
-        log.info("Ajout du lien avec preferred term {}", nodeTerm.getIdTerm());
+        log.debug("Ajout du lien avec preferred term {}", nodeTerm.getIdTerm());
         preferredTermRepository.save(PreferredTerm.builder()
                 .idTerm(nodeTerm.getIdTerm())
                 .idThesaurus(nodeTerm.getIdThesaurus())
@@ -163,21 +194,21 @@ public class TermService {
 
     private void addInPermutedTable(NodeTerm nodeTerm, NodeTermTraduction termTraduction) {
 
-        log.info("Recherche de l'id Groupe");
+        log.debug("Recherche de l'id Groupe");
         var conceptGroup = conceptGroupConceptRepository.findByIdThesaurusAndIdConcept(nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
         if (CollectionUtils.isEmpty(conceptGroup)) {
-            log.info("Aucun group n'est associé au thésaurus id {} et concept id {}", nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
+            log.debug("Aucun group n'est associé au thésaurus id {} et concept id {}", nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
             return;
         }
         var idGroup = conceptGroup.get(0).getIdGroup();
-        log.info("Id Group trouvé : {}", idGroup);
+        log.debug("Id Group trouvé : {}", idGroup);
 
         var value = formatLexicalValue(termTraduction.getLexicalValue());
-        log.info("Formatage de lexicalValue : {}", value);
+        log.debug("Formatage de lexicalValue : {}", value);
 
         var tabMots = value.split(" ");
         for (int index = 1; index < tabMots.length; index++) {
-            log.info("Enregistrement dans la table permuted pour lexicalValue {} ({}/{})", tabMots[index], index, tabMots.length);
+            log.debug("Enregistrement dans la table permuted pour lexicalValue {} ({}/{})", tabMots[index], index, tabMots.length);
             permutedRepository.save(Permuted.builder()
                     .ord(index++)
                     .idConcept(nodeTerm.getIdConcept())
@@ -201,7 +232,7 @@ public class TermService {
     }
 
     public boolean addLinkTerm(String idConcept, String idThesaurus, String idTerm) {
-        log.info("Ajout d'une relation avec Terme Préféré");
+        log.debug("Ajout d'une relation avec Terme Préféré");
         preferredTermRepository.save(PreferredTerm.builder()
                 .idConcept(idConcept)
                 .idThesaurus(idThesaurus)
@@ -212,7 +243,7 @@ public class TermService {
 
     public boolean isTermExistInLangAndThesaurus(String idTerm, String idThesaurus, String idLang) {
 
-        log.info("Vérification de l'existence du term {} dans le thésaurus {} ({})", idTerm, idThesaurus, idLang);
+        log.debug("Vérification de l'existence du term {} dans le thésaurus {} ({})", idTerm, idThesaurus, idLang);
         var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, idLang);
         return term.isPresent();
     }
@@ -220,55 +251,55 @@ public class TermService {
     @Transactional
     public void deleteTerm(String idTerm, String idThesaurus) {
 
-        log.info("Suppression du terme");
+        log.debug("Suppression du terme");
         termRepository.deleteByIdTermAndIdThesaurus(idTerm, idThesaurus);
 
-        log.info("Suppression de la relation Term_Concept");
+        log.debug("Suppression de la relation Term_Concept");
         preferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
 
-        log.info("Suppression des synonymes");
+        log.debug("Suppression des synonymes");
         nonPreferredTermRepository.deleteByIdThesaurusAndIdTerm(idThesaurus, idTerm);
     }
 
     public void deleteAllTermsInThesaurus(String idThesaurus) {
 
-        log.info("Suppression des relations Term_Concept");
+        log.debug("Suppression des relations Term_Concept");
         preferredTermRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des synonymes");
+        log.debug("Suppression des synonymes");
         nonPreferredTermRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.info("Suppression du historique des synonymes");
+        log.debug("Suppression du historique des synonymes");
         nonPreferredTermHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les termes présents dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les termes présents dans le thésaurus id {}", idThesaurus);
         termRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.info("Suppression des traces de terms");
+        log.debug("Suppression des traces de terms");
         termHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String newIdThesaurus, String oldIdThesaurus) {
 
-        log.info("Suppression des relations Term_Concept");
+        log.debug("Suppression des relations Term_Concept");
         preferredTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Suppression des synonymes");
+        log.debug("Suppression des synonymes");
         nonPreferredTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Suppression du historique des synonymes");
+        log.debug("Suppression du historique des synonymes");
         nonPreferredTermHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Suppression de tous les termes présents dans le thésaurus");
+        log.debug("Suppression de tous les termes présents dans le thésaurus");
         termRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Suppression des traces de terms");
+        log.debug("Suppression des traces de terms");
         termHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     public void addTermTraduction(Term term, int idUser) {
 
-        log.info("Ajout d'un nouveau term traduction {}", term.getLexicalValue());
+        log.debug("Ajout d'un nouveau term traduction {}", term.getLexicalValue());
 
         var termSaved = termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
                 .idTerm(term.getIdTerm())
@@ -283,7 +314,7 @@ public class TermService {
                 .modified(new Date())
                 .build());
 
-        log.info("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
+        log.debug("Ajout d'une trace de création d'un nouveau term {}", term.getLexicalValue());
         termHistoriqueRepository.save(TermHistorique.builder()
                 .idTerm(termSaved.getIdTerm())
                 .lexicalValue(termSaved.getLexicalValue())
@@ -318,7 +349,7 @@ public class TermService {
 
     public boolean existsPrefLabel(String termValue, String idLang, String idThesaurus) {
 
-        log.info("Vérifier l'existence d'un term {}  (langue {}) dans le thésaurus id {}", termValue, idLang, idThesaurus);
+        log.debug("Vérifier l'existence d'un term {}  (langue {}) dans le thésaurus id {}", termValue, idLang, idThesaurus);
         return termRepository.existsPrefLabel(termValue, idLang, idThesaurus);
     }
 
@@ -380,39 +411,39 @@ public class TermService {
     }
 
     public void deleteTerm(String idThesaurus, String idTerm, String idLang) {
-        log.info("Suppression d'un term id {}", idTerm);
+        log.debug("Suppression d'un term id {}", idTerm);
         termRepository.deleteByIdTermAndLangAndIdThesaurus(idTerm, idLang, idThesaurus);
     }
 
     public List<String> searchDistinctLangInThesaurus(String idThesaurus) {
 
-        log.info("Recherche des langues utilisées par le thésaurus id {}", idThesaurus);
+        log.debug("Recherche des langues utilisées par le thésaurus id {}", idThesaurus);
         var langues = termRepository.searchDistinctLangInThesaurus(idThesaurus);
         if (CollectionUtils.isEmpty(langues)) {
-            log.info("Aucune langue n'est utilisée par le thésaurus id {}", idThesaurus);
+            log.debug("Aucune langue n'est utilisée par le thésaurus id {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} langues utilisées par le thésaurus id {}", langues.size(), idThesaurus);
+        log.debug("{} langues utilisées par le thésaurus id {}", langues.size(), idThesaurus);
         return langues;
     }
 
     public String getLexicalValueOfConcept(String idConcept, String idThesaurus, String idLang) {
 
-        log.info("Recherche du nom du concept avec l'id {}", idConcept);
+        log.debug("Recherche du nom du concept avec l'id {}", idConcept);
         Optional<String> label = termRepository.getLexicalValueOfConcept(idConcept, idThesaurus, idLang);
         if (label.isEmpty()) {
-            log.info("Aucun nom n'est trouvé pour le concept avec l'id {}", idConcept);
+            log.debug("Aucun nom n'est trouvé pour le concept avec l'id {}", idConcept);
             return "";
         }
 
-        log.info("Le nom du concept dont l'id {} est {}", idConcept, label.get());
+        log.debug("Le nom du concept dont l'id {} est {}", idConcept, label.get());
         return label.get();
     }
 
     public void updateIntitule(String intitule, String idTerm, String idThesaurus, String lang) {
 
-        log.info("Mise à jour de la valeur du term avec id {}", idTerm);
+        log.debug("Mise à jour de la valeur du term avec id {}", idTerm);
         var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, lang);
         if (term.isEmpty()) {
             log.error("Aucun term n'est trouvé avec l'id {} et id thésaurus {}", idTerm, idThesaurus);
@@ -421,26 +452,26 @@ public class TermService {
 
         term.get().setLexicalValue(intitule);
         termRepository.save(term.get());
-        log.info("Mise à jour du term id {} terminée", idTerm);
+        log.debug("Mise à jour du term id {} terminée", idTerm);
     }
 
     public List<String> getSynonymesParConcept(String idConcept, String idThesaurus, String idLang){
 
-        log.info("Recherche des synonymes pour le concept '{}', thésaurus '{}', langue '{}'", idConcept, idThesaurus, idLang);
+        log.debug("Recherche des synonymes pour le concept '{}', thésaurus '{}', langue '{}'", idConcept, idThesaurus, idLang);
         var synonymes = nonPreferredTermRepository.findNonPreferredTerms(idConcept, idThesaurus, idLang);
         if(CollectionUtils.isEmpty(synonymes)) {
-            log.info("Aucun synonymes n'est trouvé pour le concept id {}", idConcept);
+            log.debug("Aucun synonymes n'est trouvé pour le concept id {}", idConcept);
             return new ArrayList<>();
         }
 
-        log.info("Nombre de non-preferred terms récupérés : {}", synonymes.size());
+        log.debug("Nombre de non-preferred terms récupérés : {}", synonymes.size());
         return synonymes.stream().map(NodeEMProjection::getLexicalValue).toList();
     }
 
     @Transactional
     public void addSynonyme(String intitule, String idThesaurus, String lang, String idTerm) {
 
-        log.info("Ajout d'un nouveau synonymes");
+        log.debug("Ajout d'un nouveau synonymes");
         nonPreferredTermRepository.save(NonPreferredTerm.builder()
                 .lexicalValue(intitule)
                 .lang(lang)
@@ -454,7 +485,7 @@ public class TermService {
 
     public void addNewTerme(Term term) {
 
-        log.info("Ajout d'un nouveau terme");
+        log.debug("Ajout d'un nouveau terme");
         term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         termRepository.save(fr.cnrs.opentheso.entites.Term.builder()
                 .idTerm(term.getIdTerm())
@@ -471,7 +502,7 @@ public class TermService {
 
     public boolean isAltLabelExist(String title, String idThesaurus, String idLang) {
 
-        log.info("Vérifier si le synonyme {} existe dans le thésaurus {}", title, idThesaurus);
+        log.debug("Vérifier si le synonyme {} existe dans le thésaurus {}", title, idThesaurus);
         return nonPreferredTermRepository.isAltLabelExist(title, idThesaurus, idLang);
     }
 
@@ -487,7 +518,7 @@ public class TermService {
 
     public fr.cnrs.opentheso.entites.Term getTermByIdAndThesaurusAndLang(String idTerm, String idThesaurus, String idLang) {
 
-        log.info("Recherche de term par son id {}", idTerm);
+        log.debug("Recherche de term par son id {}", idTerm);
         var term = termRepository.findByIdTermAndIdThesaurusAndLang(idTerm, idThesaurus, idLang);
         if (term.isEmpty()) {
             log.error("Aucun term n'est trouvé");
@@ -498,10 +529,10 @@ public class TermService {
 
     public List<NodeTermTraduction> getTraductionByConcept(String idThesaurus, String idConcept) {
 
-        log.info("Recherche des traductions pour le concept id {}", idConcept);
+        log.debug("Recherche des traductions pour le concept id {}", idConcept);
         var traductions = termRepository.findAllTraductionsOfConcept(idConcept, idThesaurus);
         if (CollectionUtils.isEmpty(traductions)) {
-            log.info("Aucune traduction trouvée pour le concept id {}", idConcept);
+            log.debug("Aucune traduction trouvée pour le concept id {}", idConcept);
             return List.of();
         }
         return traductions;

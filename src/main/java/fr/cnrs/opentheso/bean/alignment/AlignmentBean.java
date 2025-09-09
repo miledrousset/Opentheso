@@ -123,7 +123,7 @@ public class AlignmentBean implements Serializable {
 
     public void deleteAlignment(AlignementElement alignement) {
 
-        log.info("Suppression de l'alignement avec id {} et situé dans le thésaurus id {}",
+        log.debug("Suppression de l'alignement avec id {} et situé dans le thésaurus id {}",
                 alignement.getIdAlignment(), selectedTheso.getCurrentIdTheso());
         alignmentService.deleteAlignment(alignement.getIdAlignment(), selectedTheso.getCurrentIdTheso());
 
@@ -164,7 +164,7 @@ public class AlignmentBean implements Serializable {
 
     public void getIdsAndValues(String idLang, String idThesaurus) {
 
-        log.info("Rechercher des identifiants et leurs valeurs");
+        log.debug("Rechercher des identifiants et leurs valeurs");
         if (idsToGet == null) {
             return;
         }

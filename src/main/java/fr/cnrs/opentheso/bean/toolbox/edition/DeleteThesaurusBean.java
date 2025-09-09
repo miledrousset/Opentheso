@@ -81,7 +81,7 @@ public class DeleteThesaurusBean implements Serializable {
                 return;
             }
         } catch (Exception exception) {
-            log.info("Erreur de suppression : " + exception.getMessage());
+            log.error("Erreur de suppression : " + exception.getMessage());
         }
 
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran

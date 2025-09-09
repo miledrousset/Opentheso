@@ -216,7 +216,7 @@ public class UserRoleGroupService {
 
     public boolean removeUserRoleOnThesaurus(int idUser, int idRole, int idGroup, String idThesaurus) {
 
-        log.info("Suppression de l'utilisateur {} avec le rôle {} du thésaurus {} et le group {}", idUser, idRole, idThesaurus, idGroup);
+        log.debug("Suppression de l'utilisateur {} avec le rôle {} du thésaurus {} et le group {}", idUser, idRole, idThesaurus, idGroup);
         var user = userRepository.findById(idUser);
         if (user.isEmpty()) {
             log.error("L'utilisateur id {} n'existe pas", idUser);
@@ -280,16 +280,16 @@ public class UserRoleGroupService {
     }
 
     public List<Roles> getAllRoles() {
-        log.info("Recherche de tous les roles disponible");
+        log.debug("Recherche de tous les roles disponible");
         return roleRepository.findAll();
     }
 
     public List<UserGroupLabel> findAllUserRoleGroup() {
 
-        log.info("Recherche de tous les user role group disponible");
+        log.debug("Recherche de tous les user role group disponible");
         var users = userGroupLabelRepository.findAll();
         if (users.isEmpty()) {
-            log.error("Aucun group n'est trouvé");
+        //    log.error("Aucun group n'est trouvé");
             return List.of();
         }
         return users;
@@ -297,7 +297,7 @@ public class UserRoleGroupService {
 
     public UserGroupLabel getUserGroupLabelRepository(int idGroup) {
 
-        log.info("Recherche du group utilisateur id {}", idGroup);
+        log.debug("Recherche du group utilisateur id {}", idGroup);
         var userGroup = userGroupLabelRepository.findById(idGroup);
         if (userGroup.isEmpty()) {
             log.error("Aucun group utilisateur trouvé avec id {}", idGroup);
@@ -323,7 +323,7 @@ public class UserRoleGroupService {
 
     public List<NodeIdValue> getRolesByIdGreaterThanEqual(int idRoleFrom) {
 
-        log.info("Recherche des rôles avec un id supérieur à {}", idRoleFrom);
+        log.debug("Recherche des rôles avec un id supérieur à {}", idRoleFrom);
         var roles = roleRepository.findAllByIdGreaterThanEqual(idRoleFrom);
         if (roles.isEmpty()) {
             log.error("Aucun rôle n'est trouvé avec un id supérieur à {}", idRoleFrom);

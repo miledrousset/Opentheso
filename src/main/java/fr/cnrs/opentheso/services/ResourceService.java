@@ -42,7 +42,7 @@ public class ResourceService {
 
 
     public List<String> getConceptsTT(String idTheso, String idBT) {
-        log.info("Recherche des top termes de '{}' avec broader '{}'", idTheso, idBT);
+        log.debug("Recherche des top termes de '{}' avec broader '{}'", idTheso, idBT);
         try {
             return resourceRepository.findNarrowersIgnoreFacet(idTheso, idBT);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class ResourceService {
 
     public NodeFullConcept getFullConcept(String idThesaurus, String idConcept, String idLang, int offset, int step, boolean isPrivate) {
 
-        log.info("Rechercher toutes les informations du concept {} avec la langue {}", idConcept, idLang);
+        log.debug("Rechercher toutes les informations du concept {} avec la langue {}", idConcept, idLang);
         var conceptDetails = resourceRepository.getFullConcept(idThesaurus, idConcept, idLang, offset, step, isPrivate);
 
         if (conceptDetails.isEmpty()) {
@@ -355,7 +355,7 @@ public class ResourceService {
 
     public List<NodeConceptGraph> getConceptsTTForGraph(String idThesaurus, String idLang) {
 
-        log.info("Chargement des TopTerm pour le graphe du thésaurus '{}' (lang='{}')", idThesaurus, idLang);
+        log.debug("Chargement des TopTerm pour le graphe du thésaurus '{}' (lang='{}')", idThesaurus, idLang);
         var result = resourceRepository.getTopConceptsForGraph(idThesaurus, idLang);
         if(CollectionUtils.isEmpty(result)) {
             log.error("Aucun top term n'est trouvé pour le thésaurus '{}' (lang='{}')", idThesaurus, idLang);
@@ -425,14 +425,14 @@ public class ResourceService {
 
     public List<NodeConceptGraph> getConceptsNTForGraph(String idThesaurus, String idConceptBT, String idLang) {
 
-        log.info("Chargement de la liste de fils pour le concept '{}' du thésaurus '{}' trié par alphabétique", idConceptBT, idThesaurus);
+        log.debug("Chargement de la liste de fils pour le concept '{}' du thésaurus '{}' trié par alphabétique", idConceptBT, idThesaurus);
         var result = resourceRepository.getNarrowersForGraph(idThesaurus, idConceptBT, idLang);
         if(CollectionUtils.isEmpty(result)) {
             log.error("Aucun fils n'est trouvé pour le thésaurus '{}' (lang='{}')", idThesaurus, idLang);
             return Collections.emptyList();
         }
 
-        log.info("{} fils trouvés pour le concept '{}' du thésaurus '{}'", result.size(), idThesaurus, idLang);
+        log.debug("{} fils trouvés pour le concept '{}' du thésaurus '{}'", result.size(), idThesaurus, idLang);
         return result.stream()
                 .map(element -> NodeConceptGraph.builder()
                         .idConcept(element.getIdconcept2())
@@ -452,15 +452,15 @@ public class ResourceService {
 
     public List<NodeConceptTree> getConceptsNTForTree(String idThesaurus, String idConceptBT, String idLang, boolean isSortByNotation, boolean isPrivate) {
 
-        log.info("Chargement des enfants + facettes pour le concept '{}' (theso='{}', lang='{}')", idConceptBT, idThesaurus, idLang);
+        log.debug("Chargement des enfants + facettes pour le concept '{}' (theso='{}', lang='{}')", idConceptBT, idThesaurus, idLang);
         List<NodeConceptTree> results = new ArrayList<>();
 
-        log.info("Recherche des concepts fils");
+        log.debug("Recherche des concepts fils");
         List<NarrowerTreeProjection> fils = resourceRepository.getNarrowersForTree(idThesaurus, idConceptBT, idLang, isPrivate);
         if (CollectionUtils.isEmpty(fils)) {
-            log.info("Aucun concept fils n'est trouvé pour le concept '{}' (lang='{}')", idThesaurus, idLang);
+            log.debug("Aucun concept fils n'est trouvé pour le concept '{}' (lang='{}')", idThesaurus, idLang);
         } else {
-            log.info("{} concept fils trouvés pour le concept '{}' (lang='{}')", fils.size(), idThesaurus, idLang);
+            log.debug("{} concept fils trouvés pour le concept '{}' (lang='{}')", fils.size(), idThesaurus, idLang);
             for (NarrowerTreeProjection p : fils) {
                 NodeConceptTree node = new NodeConceptTree();
                 node.setIdConcept(p.getIdconcept2());
@@ -476,7 +476,7 @@ public class ResourceService {
         }
 
         // Facets
-        log.info("Recherche des facets présent dans le concept {} (lang = {}) définit dans le thésaurus {}", idConceptBT, idLang, idThesaurus);
+        log.debug("Recherche des facets présent dans le concept {} (lang = {}) définit dans le thésaurus {}", idConceptBT, idLang, idThesaurus);
         List<FacetProjection> facets = resourceRepository.getFacetsOfConcept(idThesaurus, idConceptBT, idLang);
         if (CollectionUtils.isEmpty(facets)) {
             log.debug("Aucune facets n'est trouvée pour le concept '{}' (lang='{}')", idThesaurus, idLang);
@@ -509,7 +509,7 @@ public class ResourceService {
     }
 
     public List<ConceptRelation> getListNT(String idTheso, String idConcept, String idLang, int offset, int step) {
-        log.info("Chargement des NT pour le concept '{}', thésaurus '{}', langue '{}', offset={}, step={}",
+        log.debug("Chargement des NT pour le concept '{}', thésaurus '{}', langue '{}', offset={}, step={}",
                 idConcept, idTheso, idLang, offset, step);
 
         boolean isPrivate = currentUser.getNodeUser() != null;

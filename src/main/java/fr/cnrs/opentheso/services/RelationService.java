@@ -61,28 +61,28 @@ public class RelationService {
 
     public void deleteAllByThesaurus(String idThesaurus) {
 
-        log.info("Suppression des relation des concepts présents dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression des relation des concepts présents dans le thésaurus id {}", idThesaurus);
         hierarchicalRelationshipRepository.deleteAllByIdThesaurus(idThesaurus);
         hierarchicalRelationshipHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void deleteAllRelationOfConcept(String idConcept, String idThesaurus) {
 
-        log.info("Suppression des toutes relation avec le concept id {} présents dans le thésaurus id {}", idConcept, idThesaurus);
+        log.debug("Suppression des toutes relation avec le concept id {} présents dans le thésaurus id {}", idConcept, idThesaurus);
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1(idThesaurus, idConcept);
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept2(idThesaurus, idConcept);
     }
 
     public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Mise à jour du thésaurus id pour les relation entre les concepts présents dans le thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour du thésaurus id pour les relation entre les concepts présents dans le thésaurus id {}", oldIdThesaurus);
         hierarchicalRelationshipRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         hierarchicalRelationshipHistoriqueRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     public void addLinkHierarchicalRelation(HierarchicalRelationship hierarchicalRelationship, int idUser) {
 
-        log.info("Ajouter une relation d'hiérarchique entre les deux concepts {} et {}",
+        log.debug("Ajouter une relation d'hiérarchique entre les deux concepts {} et {}",
                 hierarchicalRelationship.getIdConcept1(), hierarchicalRelationship.getIdConcept2());
 
         hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
@@ -113,7 +113,7 @@ public class RelationService {
 
     public List<NodeBT> getListBT(String idConcept, String idThesaurus, String idLang) {
 
-        log.info("Chargement des relations BT pour le concept '{}' dans le thésaurus '{}'", idConcept, idThesaurus);
+        log.debug("Chargement des relations BT pour le concept '{}' dans le thésaurus '{}'", idConcept, idThesaurus);
         var broaderRelations = hierarchicalRelationshipRepository.findBroaderConcepts(idConcept, idThesaurus);
 
         List<NodeBT> result = new ArrayList<>();
@@ -142,7 +142,7 @@ public class RelationService {
         }
 
         result.sort(Comparator.naturalOrder());
-        log.info("Nombre de termes BT trouvés : {}", result.size());
+        log.debug("Nombre de termes BT trouvés : {}", result.size());
         return result;
     }
 
@@ -162,7 +162,7 @@ public class RelationService {
     }
 
     public List<NodeRT> getListRT(String idConcept, String idThesaurus, String idLang) {
-        log.info("Chargement des relations RT pour le concept '{}' dans le thésaurus '{}'", idConcept, idThesaurus);
+        log.debug("Chargement des relations RT pour le concept '{}' dans le thésaurus '{}'", idConcept, idThesaurus);
 
         var rawRelations = hierarchicalRelationshipRepository.findRelatedConcepts(idConcept, idThesaurus);
         List<NodeRT> result = new ArrayList<>();
@@ -182,36 +182,36 @@ public class RelationService {
         }
 
         result.sort(Comparator.naturalOrder());
-        log.info("{} relations RT trouvées pour le concept '{}'", result.size(), idConcept);
+        log.debug("{} relations RT trouvées pour le concept '{}'", result.size(), idConcept);
         return result;
     }
 
     public List<HierarchicalRelationship> getListConceptRelationParRole(String idConcept, String idThesaurus, String role) {
 
-        log.info("Recherche des concepts en relation avec le concept {} et avec le rôle {}", idConcept, role);
+        log.debug("Recherche des concepts en relation avec le concept {} et avec le rôle {}", idConcept, role);
         return hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, role);
     }
 
     public boolean isConceptHaveRelationBT(String idConcept, String idThesaurus) {
 
-        log.info("Vérifier si un concept a une relation BT (term générique");
+        log.debug("Vérifier si un concept a une relation BT (term générique");
         var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, "BT");
         return CollectionUtils.isNotEmpty(result);
     }
 
     public List<String> getListIdBT(String idConcept, String idThesaurus) {
 
-        log.info("Recherche des id des terms génériques du concept id {}", idConcept);
+        log.debug("Recherche des id des terms génériques du concept id {}", idConcept);
         var listIdBT = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRoleLike(idThesaurus, idConcept, "BT");
         return listIdBT.stream().map(HierarchicalRelationship::getIdConcept2).toList();
     }
 
     public List<HierarchicalRelationship> getListLoopRelations(String role, String idThesaurus) {
 
-        log.info("Recherche de relation dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
+        log.debug("Recherche de relation dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
         var result = hierarchicalRelationshipRepository.getListLoopRelations(idThesaurus, role);
         if (CollectionUtils.isEmpty(result)) {
-            log.info("Aucune relation trouvée dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
+            log.debug("Aucune relation trouvée dans le thésaurus {} et avec le rôle {}", idThesaurus, role);
             return List.of();
         }
         return result;
@@ -219,7 +219,7 @@ public class RelationService {
 
     public void deleteThisRelation(String idConcept1, String idThesaurus, String role, String idConcept2) {
 
-        log.info("Suppression de la relation entre le concept {} et le concept {}", idConcept1, idThesaurus);
+        log.debug("Suppression de la relation entre le concept {} et le concept {}", idConcept1, idThesaurus);
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus, idConcept1, idConcept2, role);
     }
 
@@ -228,7 +228,7 @@ public class RelationService {
 
         var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept2AndRoleLike(idThesaurus, idConcept, "NT");
         if (CollectionUtils.isEmpty(result)) {
-            log.info("Aucune relation trouvée avec le concept le concept {} et avec le role NR", idConcept);
+            log.debug("Aucune relation trouvée avec le concept le concept {} et avec le role NR", idConcept);
             return List.of();
         }
         return result.stream().map(HierarchicalRelationship::getIdConcept1).toList();
@@ -236,14 +236,14 @@ public class RelationService {
 
     public NodeRelation getLoopRelation(String idTheso, String idConcept) {
 
-        log.info("Recherche d'une relation en boucle pour le concept '{}' dans le thésaurus '{}'", idConcept, idTheso);
+        log.debug("Recherche d'une relation en boucle pour le concept '{}' dans le thésaurus '{}'", idConcept, idTheso);
         return hierarchicalRelationshipRepository.findBtRelation(idTheso, idConcept)
                 .flatMap(rel1 -> {
                     log.debug("Relation BT trouvée : {} → {}", rel1.getIdConcept1(), rel1.getIdConcept2());
                     return hierarchicalRelationshipRepository.findLoopBtRelation(idTheso, rel1.getIdConcept1(), rel1.getIdConcept2());
                 })
                 .map(rel -> {
-                    log.info("Relation en boucle détectée : {} → {}", rel.getIdConcept1(), rel.getIdConcept2());
+                    log.debug("Relation en boucle détectée : {} → {}", rel.getIdConcept1(), rel.getIdConcept2());
                     NodeRelation nodeRelation = new NodeRelation();
                     nodeRelation.setIdConcept1(rel.getIdConcept1());
                     nodeRelation.setIdConcept2(rel.getIdConcept2());
@@ -251,7 +251,7 @@ public class RelationService {
                     return nodeRelation;
                 })
                 .orElseGet(() -> {
-                    log.info("Aucune relation en boucle trouvée pour le concept '{}'", idConcept);
+                    log.debug("Aucune relation en boucle trouvée pour le concept '{}'", idConcept);
                     return null;
                 });
     }
@@ -265,7 +265,7 @@ public class RelationService {
             merged.addAll(topConcepts);
             merged.addAll(isolatedConcepts);
 
-            log.info("Top terms à réparer pour le thésaurus '{}': {} concepts", idThesaurus, merged.size());
+            log.debug("Top terms à réparer pour le thésaurus '{}': {} concepts", idThesaurus, merged.size());
             return new ArrayList<>(merged);
         } catch (Exception e) {
             log.error("Erreur lors de la récupération des TopTerms pour réparation du thésaurus '{}'", idThesaurus, e);
@@ -276,7 +276,7 @@ public class RelationService {
     @Transactional
     public void deleteRelationBT(String idConceptNT, String idThesaurus, String idConceptBT, int idUser) {
 
-        log.info("Suppression la relatio, entre le terme générique {} au concept {}", idConceptNT, idConceptBT);
+        log.debug("Suppression la relatio, entre le terme générique {} au concept {}", idConceptNT, idConceptBT);
         addRelationHistorique(idConceptNT, idThesaurus, idConceptBT, "BT", idUser, "DEL");
 
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
@@ -289,7 +289,7 @@ public class RelationService {
     @Transactional
     public void deleteRelationRT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
 
-        log.info("Suppression la relation entre le terme associé {} au concept {}", idConcept1, idConcept2);
+        log.debug("Suppression la relation entre le terme associé {} au concept {}", idConcept1, idConcept2);
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "DEL");
 
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
@@ -301,7 +301,7 @@ public class RelationService {
 
     private void addRelationHistorique(String idConcept1, String idThesaurus, String idConcept2, String role, int idUser, String action) {
 
-        log.info("Enregistrement un nouveau historique des relations");
+        log.debug("Enregistrement un nouveau historique des relations");
         hierarchicalRelationshipHistoriqueRepository.save(HierarchicalRelationshipHistorique.builder()
                 .idConcept1(idConcept1)
                 .idConcept2(idConcept2)
@@ -316,7 +316,7 @@ public class RelationService {
     @Transactional
     public void addRelationBT(String idConceptNT, String idThesaurus, String idConceptBT, int idUser) {
 
-        log.info("Ajouter une relation de type terme générique au concept {}", idConceptNT);
+        log.debug("Ajouter une relation de type terme générique au concept {}", idConceptNT);
         addRelationHistorique(idConceptNT, idThesaurus, idConceptBT, "BT", idUser, "ADD");
 
         hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
@@ -337,7 +337,7 @@ public class RelationService {
     @Transactional
     public void addRelationNT(String idConcept, String idThesaurus, String idConceptNT, int idUser) {
 
-        log.info("Ajouter une relation entre le terme spécifique {} et le concept {}", idConcept, idConceptNT);
+        log.debug("Ajouter une relation entre le terme spécifique {} et le concept {}", idConcept, idConceptNT);
         addRelationHistorique(idConcept, idThesaurus, idConceptNT, "NT", idUser, "ADD");
 
         hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
@@ -374,7 +374,7 @@ public class RelationService {
     @Transactional
     public void addRelationRT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
 
-        log.info("Ajouter une relation associative entre les deux concepts {} et {}", idConcept1, idConcept2);
+        log.debug("Ajouter une relation associative entre les deux concepts {} et {}", idConcept1, idConcept2);
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "ADD");
 
         hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
@@ -396,7 +396,7 @@ public class RelationService {
     public void deleteCustomRelationship(String idConcept1, String idThesaurus, String idConcept2, int idUser,
                                          String conceptType, boolean isReciprocal) {
 
-        log.info("Supprimer une relation qualificatif au concept {}", idConcept1);
+        log.debug("Supprimer une relation qualificatif au concept {}", idConcept1);
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
                 idConcept1, idConcept2, conceptType);
 
@@ -411,7 +411,7 @@ public class RelationService {
     @Transactional
     public void deleteRelationNT(String idConcept1, String idThesaurus, String idConcept2, int idUser) {
 
-        log.info("Supprimer une relation entre un terme spécifique au concept {}", idConcept1);
+        log.debug("Supprimer une relation entre un terme spécifique au concept {}", idConcept1);
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, "RT", idUser, "DELETE");
 
         hierarchicalRelationshipRepository.deleteAllByIdThesaurusAndIdConcept1AndIdConcept2AndRole(idThesaurus,
@@ -425,7 +425,7 @@ public class RelationService {
     public void addCustomRelationship(String idConcept1, String idThesaurus, String idConcept2, int idUser,
                                          String relationType, boolean isReciprocal) {
 
-        log.info("Ajouter une relation personnalisée entre le concept {} et le concept {}", idConcept1, idConcept2);
+        log.debug("Ajouter une relation personnalisée entre le concept {} et le concept {}", idConcept1, idConcept2);
         hierarchicalRelationshipRepository.save(HierarchicalRelationship.builder()
                 .idConcept1(idConcept1)
                 .idConcept2(idConcept2)
@@ -448,38 +448,38 @@ public class RelationService {
 
     public boolean isConceptHaveRelationNTorBT(String idConcept1, String idConcept2, String idThesaurus) {
 
-        log.info("Verifier si le Concept {} a une relation NT avec le concept {}", idConcept1, idConcept2);
+        log.debug("Verifier si le Concept {} a une relation NT avec le concept {}", idConcept1, idConcept2);
         var result = hierarchicalRelationshipRepository.findAllByIdThesaurusAndIdConcept1AndRole(idThesaurus, idConcept1, idConcept2);
         return CollectionUtils.isNotEmpty(result);
     }
 
     public boolean isConceptHaveRelationRT(String idConcept1, String idConcept2, String idThesaurus) {
 
-        log.info("Vérification si le concept {} dispose d'une relation de type RT", idConcept1);
+        log.debug("Vérification si le concept {} dispose d'une relation de type RT", idConcept1);
         return hierarchicalRelationshipRepository.existsRelationRT(idConcept1, idConcept2, idThesaurus);
     }
 
     public boolean isConceptHaveBrother(String idConcept1, String idConcept2, String idThesaurus) {
 
-        log.info("Vérification si le concept {} a le frère {}", idConcept1, idConcept2);
+        log.debug("Vérification si le concept {} a le frère {}", idConcept1, idConcept2);
         return hierarchicalRelationshipRepository.existsBrotherRelation(idConcept1, idConcept2, idThesaurus);
     }
 
     public List<String> getListIdOfBT(String idConcept, String idThesaurus) {
 
-        log.info("Recherche de la liste des BT pour le concept {}", idConcept);
+        log.debug("Recherche de la liste des BT pour le concept {}", idConcept);
         return hierarchicalRelationshipRepository.findIdsOfBroaderConcepts(idConcept, idThesaurus);
     }
 
     public boolean isConceptHaveManyRelationBT(String idConcept, String idThesaurus) {
 
-        log.info("Vérification si le concept {} contient plusieurs relation de type BT", idConcept);
+        log.debug("Vérification si le concept {} contient plusieurs relation de type BT", idConcept);
         return hierarchicalRelationshipRepository.countBroaderRelations(idConcept, idThesaurus) > 1;
     }
 
     public List<NodeCustomRelation> getAllNodeCustomRelation(String idConcept, String idThesaurus, String idLang, String interfaceLang) {
 
-        log.info("Recherche de toutes les relations client avec le concept {}", idConcept);
+        log.debug("Recherche de toutes les relations client avec le concept {}", idConcept);
         var projections = hierarchicalRelationshipRepository.findCustomRelations(idConcept, idThesaurus);
         if (CollectionUtils.isEmpty(projections)) {
             log.error("Aucune relation client n'est trouvée !");

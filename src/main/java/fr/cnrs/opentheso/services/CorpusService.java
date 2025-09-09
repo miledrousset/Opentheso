@@ -22,14 +22,14 @@ public class CorpusService {
 
     public List<NodeCorpus> getAllCorpusByThesaurus(String idThesaurus) {
 
-        log.info("Recherche des Corpus liés au thésaurus id {}", idThesaurus);
+        log.debug("Recherche des Corpus liés au thésaurus id {}", idThesaurus);
         var corpusList = corpusLinkRepository.findAllByIdThesaurusOrderBySortAsc(idThesaurus);
         if (corpusList.isEmpty()) {
-            log.info("Aucun corpus n'est trouvé dans le thésaurus id {}", idThesaurus);
+            log.debug("Aucun corpus n'est trouvé dans le thésaurus id {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} corpus liés au thésaurus id {} trouvés", corpusList.size(), idThesaurus);
+        log.debug("{} corpus liés au thésaurus id {} trouvés", corpusList.size(), idThesaurus);
         return corpusList.stream()
                 .map(element -> NodeCorpus.builder()
                         .corpusName(element.getCorpusName())
@@ -44,7 +44,7 @@ public class CorpusService {
 
     public CorpusLink getCorpusByNameAndThesaurus(String name, String idThesaurus) {
 
-        log.info("Recherche de corpus {} dans le thésaurus {}", name, idThesaurus);
+        log.debug("Recherche de corpus {} dans le thésaurus {}", name, idThesaurus);
         var corpus = corpusLinkRepository.findByIdThesaurusAndCorpusName(idThesaurus, name);
         if (corpus.isEmpty()) {
             log.error("Aucun corpus n'est trouvé avec le nom {} dans le thésaurus id {}", name, idThesaurus);
@@ -55,13 +55,13 @@ public class CorpusService {
 
     public boolean updateCorpusLink(String idThesaurus, NodeCorpus nodeCorpusForEdit, String oldName) {
 
-        log.info("Mise à jour du corpus name {}", oldName);
+        log.debug("Mise à jour du corpus name {}", oldName);
         var corpusToUpdate = corpusLinkRepository.findByIdThesaurusAndCorpusName(idThesaurus, oldName);
         if (corpusToUpdate.isPresent()) {
-            log.info("Mise à jour du corpus Name {} en {}", oldName, nodeCorpusForEdit.getCorpusName());
+            log.debug("Mise à jour du corpus Name {} en {}", oldName, nodeCorpusForEdit.getCorpusName());
             corpusLinkRepository.updateCorpusName(nodeCorpusForEdit.getCorpusName(), oldName, idThesaurus);
 
-            log.info("Mise à jour du reste des informations du corpus");
+            log.debug("Mise à jour du reste des informations du corpus");
             corpusToUpdate.get().setUriLink(nodeCorpusForEdit.getUriLink());
             corpusToUpdate.get().setUriCount(nodeCorpusForEdit.getUriCount());
             corpusToUpdate.get().setOnlyUriLink(nodeCorpusForEdit.isOnlyUriLink());
@@ -79,7 +79,7 @@ public class CorpusService {
         if (corpusFind != null) {
             return false;
         }
-        log.info("Enregistrement du corpus dans la base de données");
+        log.debug("Enregistrement du corpus dans la base de données");
         corpusLinkRepository.save(CorpusLink.builder()
                 .idThesaurus(idThesaurus)
                 .corpusName(corpusLink.getCorpusName())
@@ -94,7 +94,7 @@ public class CorpusService {
 
     public void deleteCorpusLinkByThesaurusAndName(String idThesaurus, String corpusName) {
 
-        log.info("Suppression de corpus {} situé dans le thésaurus id {}", corpusName, idThesaurus);
+        log.debug("Suppression de corpus {} situé dans le thésaurus id {}", corpusName, idThesaurus);
         corpusLinkRepository.deleteCorpusLinkByIdThesaurusAndCorpusName(idThesaurus, corpusName);
     }
 

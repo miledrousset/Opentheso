@@ -29,7 +29,7 @@ public class GraphService implements Serializable {
 
     public Map<Integer, GraphObject> getViews(int idUser) {
 
-        log.info("Rechercher les informations complètes pour toutes les vues de l'utilisateur {}", idUser);
+        log.debug("Rechercher les informations complètes pour toutes les vues de l'utilisateur {}", idUser);
         var graphViewsList = graphViewRepository.findAllByIdUser(idUser);
         if (graphViewsList.isEmpty()) {
             log.error("Aucun graphView n'est trouvé pour l'id user {}", idUser);
@@ -77,7 +77,7 @@ public class GraphService implements Serializable {
 
     public void deleteView(String idView) {
 
-        log.info("Suppression de la view id {}", idView);
+        log.debug("Suppression de la view id {}", idView);
         graphViewRepository.deleteById(Integer.parseInt(idView));
         graphViewExportedConceptBranchRepository.deleteAllByGraphViewId(Integer.parseInt(idView));
     }
@@ -92,7 +92,7 @@ public class GraphService implements Serializable {
 
     public int createView(GraphObject view, int idUser) {
 
-        log.info("Création d'une view par l'utilisateur {}", idUser);
+        log.debug("Création d'une view par l'utilisateur {}", idUser);
         var graphView = graphViewRepository.save(GraphView.builder()
                 .name(view.getName())
                 .description(view.getDescription())
@@ -103,7 +103,7 @@ public class GraphService implements Serializable {
 
     public void addDataToView(int idView, ImmutablePair<String, String> tuple) {
 
-        log.info("Ajout des données à la view id {}", idView);
+        log.debug("Ajout des données à la view id {}", idView);
         var concept = tuple.right == null ? null : tuple.right;
         graphViewExportedConceptBranchRepository.save(GraphViewExportedConceptBranch.builder()
                         .graphViewId(idView)
@@ -113,7 +113,7 @@ public class GraphService implements Serializable {
     }
 
     public boolean isExistDatas(int idView, String idThesaurus, String idConcept) {
-        log.info("Vérification si la combinaison {} de vue existe", idView);
+        log.debug("Vérification si la combinaison {} de vue existe", idView);
         if (StringUtils.isEmpty(idConcept)) {
             var graphView = graphViewExportedConceptBranchRepository
                     .findByGraphViewIdAndTopConceptIdNullAndTopConceptThesaurusId(idView, idThesaurus);
@@ -126,7 +126,7 @@ public class GraphService implements Serializable {
     }
 
     public void removeDataFromView(int selectedViewId, ImmutablePair<String, String> tuple) {
-        log.info("Suppression des données depuis la vie {}", selectedViewId);
+        log.debug("Suppression des données depuis la vie {}", selectedViewId);
         if (tuple.right == null) {
             graphViewExportedConceptBranchRepository.deleteAllByGraphViewIdAndTopConceptThesaurusId(selectedViewId, tuple.left);
         } else {

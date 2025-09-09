@@ -47,7 +47,7 @@ public class ApiKeyService {
      */
     public boolean saveApiKey(String apiKey, int idUser) {
 
-        log.info("Mise à jour du l'API Key de l'utilisateur {}", idUser);
+        log.debug("Mise à jour du l'API Key de l'utilisateur {}", idUser);
         var user = userRepository.findById(idUser);
         if (user.isEmpty()) {
             log.error("Aucun utilisateur n'est trouvé avec l'id {}", idUser);
@@ -57,7 +57,7 @@ public class ApiKeyService {
         user.get().setApiKey(apiKey);
         user.get().setKeyNeverExpire(true);
         userRepository.save(user.get());
-        log.info("Mise à jour du APiKey terminé avec sucée");
+        log.debug("Mise à jour du APiKey terminé avec sucée");
         return true;
     }
 

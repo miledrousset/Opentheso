@@ -168,10 +168,10 @@ public class ArkService {
 
     public boolean updateArkIdOfConcept(String idConcept, String idThesaurus, String idArk) {
 
-        log.info("Mise à jour de l'id ark (nouvelle valeur {}) du concept id {}", idArk, idConcept);
+        log.debug("Mise à jour de l'id ark (nouvelle valeur {}) du concept id {}", idArk, idConcept);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {} dans le thesaurus id {}", idConcept, idThesaurus);
+            log.debug("Aucun concept n'est trouvé avec l'id {} dans le thesaurus id {}", idConcept, idThesaurus);
             return false;
         }
 
@@ -179,13 +179,13 @@ public class ArkService {
         concept.get().setModified(new Date());
         concept.get().setNotation(concept.get().getNotation() == null ? "" : concept.get().getNotation());
         conceptRepository.save(concept.get());
-        log.info("Mise à jou de l'id Ark dans le concept id {} est terminée", idConcept);
+        log.debug("Mise à jou de l'id Ark dans le concept id {} est terminée", idConcept);
         return true;
     }
 
     public boolean updateUriArk(String idThesaurus, List<String> idConcepts) {
 
-        log.info("Regénération des ids Ark des concepts");
+        log.debug("Regénération des ids Ark des concepts");
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preference == null || !preference.isUseArkLocal()) {
             return false;
@@ -218,7 +218,7 @@ public class ArkService {
 
     public boolean generateArkIdLocal(String idThesaurus, List<String> idConcepts) {
 
-        log.info("Générer les idArk en local");
+        log.debug("Générer les idArk en local");
         var preference = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preference == null || !preference.isUseArkLocal()) {
             return false;
@@ -240,10 +240,10 @@ public class ArkService {
 
     private Concept getConcept(String idConcept, String idThesaurus) {
 
-        log.info("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
+        log.debug("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            log.debug("Aucun concept n'est trouvé avec l'id {}", idConcept);
             return null;
         }
 

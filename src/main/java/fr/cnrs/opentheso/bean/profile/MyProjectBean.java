@@ -51,7 +51,7 @@ public class MyProjectBean implements Serializable {
         myAuthorizedRoles = null;
         selectedIndex = "0";
       
-        log.info("Recherche de la liste des groupes/projets d'un utilisateur");
+        log.debug("Recherche de la liste des groupes/projets d'un utilisateur");
         listeGroupsOfUser = currentUser.getNodeUser().isSuperAdmin()
                 ? userRoleGroupService.findAllUserRoleGroup().stream().collect(Collectors.toMap(item -> String.valueOf(item.getId()), UserGroupLabel::getLabel))
                 : userService.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
