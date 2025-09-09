@@ -23,7 +23,7 @@ public class GroupTypeService {
 
     public boolean updateTypeGroup(String type, String idThesaurus, String idGroup) {
 
-        log.info("Mise à jour du type de group id {}", idGroup);
+        log.debug("Mise à jour du type de group id {}", idGroup);
 
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup.toLowerCase(), idThesaurus);
         if (conceptGroup.isEmpty()) {
@@ -33,20 +33,20 @@ public class GroupTypeService {
 
         conceptGroup.get().setIdTypeCode(type);
         conceptGroupRepository.save(conceptGroup.get());
-        log.info("Fin de la mise à jour du type de group id {}", idGroup);
+        log.debug("Fin de la mise à jour du type de group id {}", idGroup);
         return true;
     }
 
     public List<SelectItem> getAllGroupType() {
 
-        log.info("Recherche de tous les groups disponible");
+        log.debug("Recherche de tous les groups disponible");
         var groupTypes = conceptGroupTypeRepository.findAll();
         if(CollectionUtils.isEmpty(groupTypes)) {
             log.warn("Aucun type de group n'est disponible");
             return List.of();
         }
 
-        log.info("{} types de group trouvé", groupTypes.size());
+        log.debug("{} types de group trouvé", groupTypes.size());
         return groupTypes.stream().map(element -> {
             var item = new SelectItem();
             item.setLabel(element.getLabel());
@@ -57,7 +57,7 @@ public class GroupTypeService {
 
     public ConceptGroupType getGroupType(String codeType) {
 
-        log.info("Chercher le group type à partir du code {}", codeType);
+        log.debug("Chercher le group type à partir du code {}", codeType);
         var groupType = conceptGroupTypeRepository.findByCode(codeType);
         if (groupType.isEmpty()) {
             log.error("Aucun type de group n'est trouvé à partir du type {}", codeType);

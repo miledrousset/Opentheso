@@ -71,7 +71,7 @@ public class StatistiqueBean implements Serializable {
     
     public void init() {
 
-        log.info("Initialisation de l'interface statistiques");
+        log.debug("Initialisation de l'interface statistiques");
         genericTypeVisible = false;
         conceptTypeVisible = false;
 
@@ -156,12 +156,12 @@ public class StatistiqueBean implements Serializable {
 
     private void initChamps() {
 
-        log.info("Initialisation des champs de l'interface statistiques");
+        log.debug("Initialisation des champs de l'interface statistiques");
 
-        log.info("Recupération de la liste des langues du thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
+        log.debug("Recupération de la liste des langues du thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
         languagesOfThesaurus = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
 
-        log.info("Recherche de la liste des groupes présent dans le thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
+        log.debug("Recherche de la liste des groupes présent dans le thésaurus {} ({})", selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso());
         groupList = statistiqueService.getListGroupes(selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
     }
 
@@ -188,7 +188,7 @@ public class StatistiqueBean implements Serializable {
 
     public void onSelectLanguageType() {
 
-        log.info("Début de l'analyse des données des statistique");
+        log.debug("Début de l'analyse des données des statistique");
 
         onSelectStatType();
         clearFilter();
@@ -229,17 +229,17 @@ public class StatistiqueBean implements Serializable {
 
     public StreamedContent exportStatistiques() {
 
-        log.info("Début de l'export des statistiques du thésaurus {}", selectedTheso.getThesoName());
+        log.debug("Début de l'export des statistiques du thésaurus {}", selectedTheso.getThesoName());
         var statistiquesRapportCSV = new StatistiquesRapportCSV();
         if (genericTypeVisible) {
-            log.info("Statistiques générique sélectionné");
+            log.debug("Statistiques générique sélectionné");
             statistiquesRapportCSV.createGenericStatistiquesRapport(genericStatistiques);
         } else {
-            log.info("Statistiques concepts sélectionné");
+            log.debug("Statistiques concepts sélectionné");
             statistiquesRapportCSV.createConceptsStatistiquesRapport(conceptStatistiques);
         }
 
-        log.info("Recherche des données terminée, début de la génération du fichier");
+        log.debug("Recherche des données terminée, début de la génération du fichier");
         return DefaultStreamedContent.builder()
                 .contentType("text/csv")
                 .name(selectedTheso.getThesoName() + ".csv")

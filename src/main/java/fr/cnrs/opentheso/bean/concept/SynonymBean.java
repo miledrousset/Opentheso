@@ -81,7 +81,7 @@ public class SynonymBean implements Serializable {
    
     public void prepareNodeEMForEdit() {
 
-        log.info("Charger la liste des synonymes disponibles pour le concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
+        log.debug("Charger la liste des synonymes disponibles pour le concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
         nodeEMsForEdit = new ArrayList<>();
         if (!CollectionUtils.isEmpty(conceptBean.getNodeConcept().getNodeEM())) {
             for (var nodeEM1 : conceptBean.getNodeConcept().getNodeEM()) {
@@ -101,13 +101,13 @@ public class SynonymBean implements Serializable {
      */
     public void addForced(int idUser) {
 
-        log.info("Recherche de preferred term");
+        log.debug("Recherche de preferred term");
         var preferredTerm = termService.getPreferenceTermByThesaurusAndConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
-        log.info("Id du term {}", preferredTerm.getIdTerm());
+        log.debug("Id du term {}", preferredTerm.getIdTerm());
 
-        log.info("Enregistrement du synonyme dans la base de données");
+        log.debug("Enregistrement du synonyme dans la base de données");
         nonPreferredTermService.addNonPreferredTerm(Term.builder()
                 .idTerm(preferredTerm.getIdTerm())
                 .lexicalValue(value)
@@ -132,13 +132,13 @@ public class SynonymBean implements Serializable {
      */
     public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
 
-        log.info("Début de la modification du synonyme {}", nodeEMLocal.getLexicalValue());
+        log.debug("Début de la modification du synonyme {}", nodeEMLocal.getLexicalValue());
 
         // save de la valeur pour une modification forcée
         this.nodeEM = nodeEMLocal;
 
         if (!nodeEMLocal.getOldValue().equals(nodeEMLocal.getLexicalValue())) {
-            log.info("Modification de la valeur de la synonyme");
+            log.debug("Modification de la valeur de la synonyme");
             if (termService.existsPrefLabel(nodeEMLocal.getLexicalValue(), nodeEMLocal.getLang(), selectedTheso.getCurrentIdTheso())) {
                 MessageUtils.showWarnMessage("Un label identique existe déjà !");
                 duplicate = true;
@@ -225,7 +225,7 @@ public class SynonymBean implements Serializable {
      */
     public void addPropSynonym() {
 
-        log.info("Ajout d'une proposition synonyme !");
+        log.debug("Ajout d'une proposition synonyme !");
         checkData();
 
         if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
@@ -259,7 +259,7 @@ public class SynonymBean implements Serializable {
      */
     public void updateStatus(NodeEM nodeEM, int idUser) {
 
-        log.info("Modification du status de la synonyme {}", nodeEM.getLexicalValue());
+        log.debug("Modification du status de la synonyme {}", nodeEM.getLexicalValue());
         if (!nonPreferredTermService.updateStatusNonPreferredTerm(conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeEM.getLexicalValue(), nodeEM.getLang(), selectedTheso.getCurrentIdTheso(), nodeEM.isHiden(), idUser)) {
             MessageUtils.showErrorMessage("La modification a échoué !");
@@ -282,7 +282,7 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        log.info("Début de la modification de la liste des synonyms !");
+        log.debug("Début de la modification de la liste des synonyms !");
         for (NodeEM nodeEM1 : nodeEMsForEdit) {
             updateSynonym(nodeEM1, idUser);
         }
@@ -396,11 +396,11 @@ public class SynonymBean implements Serializable {
 
     private void refreshConceptDatas(int idUser) {
 
-        log.info("Recherche des données du concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
+        log.debug("Recherche des données du concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        log.info("Mise à jour de la date de modification du concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
+        log.debug("Mise à jour de la date de modification du concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
         conceptService.updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptDcTermRepository.save(ConceptDcTerm.builder()

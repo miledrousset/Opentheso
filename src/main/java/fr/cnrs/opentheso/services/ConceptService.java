@@ -137,13 +137,13 @@ public class ConceptService {
 
     public void updateConcept(Concept concept) {
 
-        log.info("Mise à jour du concept id {}", concept.getId());
+        log.debug("Mise à jour du concept id {}", concept.getId());
         conceptRepository.save(concept);
     }
 
     public List<Concept> getConceptByThesaurusAndTopConceptAndStatusNotLike(String idThesaurus, boolean isTopConcept, String status) {
 
-        log.info("Recherche des concepts par thésaurus {}, topConcept {} et status {}", idThesaurus, isTopConcept, status);
+        log.debug("Recherche des concepts par thésaurus {}, topConcept {} et status {}", idThesaurus, isTopConcept, status);
         return conceptRepository.findAllByIdThesaurusAndTopConceptAndStatusNotLike(idThesaurus, isTopConcept, status);
     }
 
@@ -154,19 +154,19 @@ public class ConceptService {
 
     public List<String> getAllIdConceptOfThesaurus(String idThesaurus) {
 
-        log.info("Recherche de tous les concepts présent dans le thésaurus id {}", idThesaurus);
+        log.debug("Recherche de tous les concepts présent dans le thésaurus id {}", idThesaurus);
         var concepts = conceptRepository.findAllByIdThesaurusAndStatusNot(idThesaurus, "CA");
         if (CollectionUtils.isEmpty(concepts)) {
-            log.info("Aucun concept n'est trouvé dans le thésaurus id {}", idThesaurus);
+            log.debug("Aucun concept n'est trouvé dans le thésaurus id {}", idThesaurus);
             return List.of();
         }
-        log.info("{} concepts trouvés !", concepts.size());
+        log.debug("{} concepts trouvés !", concepts.size());
         return concepts.stream().map(Concept::getIdConcept).toList();
     }
 
     public boolean isTopConcept(String idConcept, String idThesaurus) {
 
-        log.info("Vérifier si le concept id {} est un top concept {}", idConcept, idThesaurus);
+        log.debug("Vérifier si le concept id {} est un top concept {}", idConcept, idThesaurus);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
             log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
@@ -178,10 +178,10 @@ public class ConceptService {
 
     public Concept getConcept(String idConcept) {
 
-        log.info("Recherche du concept avec l'id {}", idConcept);
+        log.debug("Recherche du concept avec l'id {}", idConcept);
         var concept = conceptRepository.findByIdConcept(idConcept);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            log.debug("Aucun concept n'est trouvé avec l'id {}", idConcept);
             return null;
         }
 
@@ -190,10 +190,10 @@ public class ConceptService {
 
     public Concept getConcept(String idConcept, String idThesaurus) {
 
-        log.info("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
+        log.debug("Recherche du concept avec l'id {} dans le thésaurus id {}", idConcept, idThesaurus);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
-            log.info("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            log.debug("Aucun concept n'est trouvé avec l'id {}", idConcept);
             return null;
         }
 
@@ -202,13 +202,13 @@ public class ConceptService {
 
     public void cleanConcept() {
 
-        log.info("Nettoyage des concepts");
+        log.debug("Nettoyage des concepts");
         conceptRepository.cleanConcept();
     }
 
     public void setConceptType(String idThesaurus, String idConcept, String type) {
 
-        log.info("Mise à jour du type de concept {} pour le concept id {}", type, idConcept);
+        log.debug("Mise à jour du type de concept {} pour le concept id {}", type, idConcept);
         var concept = getConcept(idConcept, idThesaurus);
         if (concept == null) {
             return;
@@ -219,13 +219,13 @@ public class ConceptService {
 
     public void setTopConceptTag(boolean status, String idConcept, String idThesaurus) {
 
-        log.info("Mise à jour du Flag 'topConcept' du concept id {}", idConcept);
+        log.debug("Mise à jour du Flag 'topConcept' du concept id {}", idConcept);
         conceptRepository.setTopConceptTag(status, idConcept, idThesaurus);
     }
 
     public void deleteByThesaurus(String idThesaurus) {
 
-        log.info("Suppression de tous les concepts présents dans le thésaurus id {}", idThesaurus);
+        log.debug("Suppression de tous les concepts présents dans le thésaurus id {}", idThesaurus);
         permutedRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptReplacedByRepository.deleteAllByIdThesaurus(idThesaurus);
         corpusLinkRepository.deleteAllByIdThesaurus(idThesaurus);
@@ -234,7 +234,7 @@ public class ConceptService {
         try {
             conceptRepository.deleteAllByIdThesaurus(idThesaurus);
         } catch (Exception ex) {
-            log.info("Aucun thésaurus n'est présent dans le thésaurus");
+            log.debug("Aucun thésaurus n'est présent dans le thésaurus");
         }
         conceptTypeRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptFacetRepository.deleteAllByIdThesaurus(idThesaurus);
@@ -242,7 +242,7 @@ public class ConceptService {
 
     public void updateThesaurusId(String oldThesaurusId, String newThesaurusId) {
 
-        log.info("Modification du thesaurus id dans tous les concepts (du l'id {} vers l'id {})", oldThesaurusId, newThesaurusId);
+        log.debug("Modification du thesaurus id dans tous les concepts (du l'id {} vers l'id {})", oldThesaurusId, newThesaurusId);
         permutedRepository.updateThesaurusId(newThesaurusId, oldThesaurusId);
         conceptReplacedByRepository.updateThesaurusId(newThesaurusId, oldThesaurusId);
         corpusLinkRepository.updateThesaurusId(newThesaurusId, oldThesaurusId);
@@ -254,18 +254,18 @@ public class ConceptService {
     }
 
     public NodeConceptSearch getConceptForSearch(String idConcept, String idThesaurus, String idLang) {
-        log.info("Chargement du concept '{}' dans le thésaurus '{}' pour la langue '{}'", idConcept, idThesaurus, idLang);
+        log.debug("Chargement du concept '{}' dans le thésaurus '{}' pour la langue '{}'", idConcept, idThesaurus, idLang);
         return buildConceptSearch(idConcept, idThesaurus, idLang);
     }
 
     public NodeConceptSearch getConceptForSearchFromLabel(String label, String idThesaurus, String idLang) {
-        log.info("Recherche d'un concept depuis le label '{}' (langue '{}', thésaurus '{}')", label, idLang, idThesaurus);
+        log.debug("Recherche d'un concept depuis le label '{}' (langue '{}', thésaurus '{}')", label, idLang, idThesaurus);
 
         String conceptId = getOneIdConceptFromLabel(idThesaurus, label, idLang);
 
         if (StringUtils.isEmpty(conceptId)) {
             String normalizedLabel = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
-            log.info("Aucun concept trouvé via label exact. Tentative via altLabel normalisé : '{}'", normalizedLabel);
+            log.debug("Aucun concept trouvé via label exact. Tentative via altLabel normalisé : '{}'", normalizedLabel);
             conceptId = conceptRepository.findConceptIdFromAltLabel(idThesaurus, normalizedLabel, idLang).orElse(null);
         }
 
@@ -274,7 +274,7 @@ public class ConceptService {
             return null;
         }
 
-        log.info("Concept trouvé : '{}'", conceptId);
+        log.debug("Concept trouvé : '{}'", conceptId);
         return buildConceptSearch(conceptId, idThesaurus, idLang);
     }
 
@@ -307,28 +307,28 @@ public class ConceptService {
         log.debug("Récupération des groupes de concept...");
         node.setNodeConceptGroup(groupService.getListGroupOfConcept(idThesaurus, idConcept, idLang));
 
-        log.info("Concept chargé avec succès : '{}'", idConcept);
+        log.debug("Concept chargé avec succès : '{}'", idConcept);
         return node;
     }
 
     public boolean isDeprecated(String idConcept, String idThesaurus) {
 
-        log.info("Vérifier si le concept id {} est déprécié", idConcept);
+        log.debug("Vérifier si le concept id {} est déprécié", idConcept);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
-        log.info("Le concept id {} est déprécié : {}", idConcept, concept.isPresent() && "dep".equalsIgnoreCase(concept.get().getStatus()));
+        log.debug("Le concept id {} est déprécié : {}", idConcept, concept.isPresent() && "dep".equalsIgnoreCase(concept.get().getStatus()));
         return concept.isPresent() && "dep".equalsIgnoreCase(concept.get().getStatus());
     }
 
     public String getOneIdConceptFromLabel(String idTheso, String label, String idLang) {
 
-        log.info("Recherche d'un idConcept depuis un label exact dans le thésaurus '{}', langue '{}', valeur '{}'", idTheso, idLang, label);
+        log.debug("Recherche d'un idConcept depuis un label exact dans le thésaurus '{}', langue '{}', valeur '{}'", idTheso, idLang, label);
         var normalizedLabel = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         return conceptRepository.findConceptIdFromLabel(idTheso, normalizedLabel, idLang).orElse(null);
     }
 
     public boolean deleteConcept(String idConcept, String idThesaurus) {
 
-        log.info("Suppression du Concept id {} avec ses relations et traductions", idConcept);
+        log.debug("Suppression du Concept id {} avec ses relations et traductions", idConcept);
         var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(idThesaurus, idConcept);
         if (preferredTerm.isEmpty()) {
             return false;
@@ -355,7 +355,7 @@ public class ConceptService {
 
     public boolean deleteBranchConcept(String idConceptTop, String idThesaurus) {
 
-        log.info("Suppression du concept (id {}) avec ses relations et traductions", idConceptTop);
+        log.debug("Suppression du concept (id {}) avec ses relations et traductions", idConceptTop);
         var idConcepts = getIdsOfBranch2(idThesaurus, idConceptTop);
 
         // test si les concepts fils ont une poly-hiérarchie, on refuse la suppression (qui peut supprimer plusieurs branches
@@ -406,7 +406,7 @@ public class ConceptService {
     private List<NodeIdValue> getConceptsByGroup(String idThesaurus, String idLang, String idGroup,
                                                  boolean isSortByNotation, boolean topOnly) {
         String typeLabel = topOnly ? "Top Concepts" : "Concepts";
-        log.info("Chargement des {} du groupe '{}' dans le thésaurus '{}' (tri par notation: {})", typeLabel, idGroup, idThesaurus, isSortByNotation);
+        log.debug("Chargement des {} du groupe '{}' dans le thésaurus '{}' (tri par notation: {})", typeLabel, idGroup, idThesaurus, isSortByNotation);
 
         List<Object[]> rawConcepts = topOnly
                 ? conceptRepository.findTopConceptsByGroup(idThesaurus, idGroup)
@@ -430,20 +430,20 @@ public class ConceptService {
             Collections.sort(result);
         }
 
-        log.info("{} {} récupérés pour le groupe '{}'", result.size(), typeLabel, idGroup);
+        log.debug("{} {} récupérés pour le groupe '{}'", result.size(), typeLabel, idGroup);
         return result;
     }
 
     public void deleteConceptReplacedby(String idThesaurus, String idConcept) {
 
-        log.info("Supprimer le concept id {} de la table concept_replacedby", idConcept);
+        log.debug("Supprimer le concept id {} de la table concept_replacedby", idConcept);
         conceptReplacedByRepository.deleteAllByIdConcept1AndIdThesaurus(idConcept, idThesaurus);
         conceptReplacedByRepository.deleteAllByIdConcept2AndIdThesaurus(idConcept, idThesaurus);
     }
 
     public boolean updateDateOfConcept(String idThesaurus, String idConcept, int contributor) {
 
-        log.info("Mise à jour de la date de mise à jour du concept id {}", idConcept);
+        log.debug("Mise à jour de la date de mise à jour du concept id {}", idConcept);
         var concept = conceptRepository.findByIdConceptAndIdThesaurus(idConcept, idThesaurus);
         if (concept.isEmpty()) {
             log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
@@ -456,12 +456,12 @@ public class ConceptService {
         concept.get().setIdDoi(concept.get().getIdDoi() == null ? "" : concept.get().getIdDoi());
         concept.get().setIdArk(concept.get().getIdArk() == null ? "" : concept.get().getIdArk());
         conceptRepository.save(concept.get());
-        log.info("Mise à jour de la date de modification du concept id {}", idConcept);
+        log.debug("Mise à jour de la date de modification du concept id {}", idConcept);
         return true;
     }
 
     public List<String> getIdsOfBranchWithoutLoop(String idConceptDeTete, String idThesaurus) {
-        log.info("Rechercher tous les identifiants d'une branche en partant du concept id {}", idConceptDeTete);
+        log.debug("Rechercher tous les identifiants d'une branche en partant du concept id {}", idConceptDeTete);
         List<String> lisIds = new ArrayList<>();
         return getIdsOfBranchWithoutLoop__(idConceptDeTete, idThesaurus, lisIds);
     }
@@ -485,7 +485,7 @@ public class ConceptService {
      */
     public List<String> getListChildrenOfConcept(String idConcept, String idThesaurus) {
 
-        log.info("Recherche des concept id {} de la table concept_children", idConcept);
+        log.debug("Recherche des concept id {} de la table concept_children", idConcept);
         var relations = relationService.getListConceptRelationParRole(idConcept, idThesaurus, "NT");
 
         if (CollectionUtils.isEmpty(relations)) return List.of();
@@ -542,7 +542,7 @@ public class ConceptService {
         try {
             var dates = conceptRepository.findLastModifiedDates(idThesaurus, PageRequest.of(0, 1));
             if (!dates.isEmpty()) {
-                log.info("Dernière modification du thésaurus {} : {}", idThesaurus, dates.get(0));
+                log.debug("Dernière modification du thésaurus {} : {}", idThesaurus, dates.get(0));
                 return dates.get(0);
             }
         } catch (Exception e) {
@@ -658,14 +658,14 @@ public class ConceptService {
 
     public boolean isNotationExist(String idThesaurus, String notation) {
 
-        log.info("Vérification si l'id du concept {} existe dans le thésaurus {}", notation, idThesaurus);
+        log.debug("Vérification si l'id du concept {} existe dans le thésaurus {}", notation, idThesaurus);
         var concept = conceptRepository.findAllByIdThesaurusAndNotationLike(idThesaurus, notation);
         return CollectionUtils.isNotEmpty(concept);
     }
 
     public boolean setTopConcept(String idConcept, String idThesaurus, boolean isTopConcept) {
 
-        log.info("Mise à jour du status 'TopConcept' pour le concept {}", idConcept);
+        log.debug("Mise à jour du status 'TopConcept' pour le concept {}", idConcept);
         var concept = getConcept(idConcept, idThesaurus);
         if (concept != null) {
             concept.setTopConcept(isTopConcept);
@@ -696,7 +696,7 @@ public class ConceptService {
 
     public boolean updateNotation(String idConcept, String idThesaurus, String notation) {
 
-        log.info("Mise à jour du notation pour le concept {}", idConcept);
+        log.debug("Mise à jour du notation pour le concept {}", idConcept);
         var concept = getConcept(idConcept, idThesaurus);
         if (concept != null) {
             concept.setNotation(notation);
@@ -1276,7 +1276,7 @@ public class ConceptService {
 
     public String getIdThesaurusFromHandleId(String handleId) {
 
-        log.info("Recherche du thésaurus id avec l'id handle {}", handleId);
+        log.debug("Recherche du thésaurus id avec l'id handle {}", handleId);
         var concept = conceptRepository.findByIdHandle(handleId);
         if (concept.isEmpty()){
             log.error("Aucun concept trouvé avec l'id Handle {}", handleId);
@@ -1296,7 +1296,7 @@ public class ConceptService {
 
     public List<NodeIdValue> getAllReplacedBy(String idThesaurus, String idConcept, String idLang) {
 
-        log.info("Recherche des concepts qui remplacent le concept déprécié {}", idConcept);
+        log.debug("Recherche des concepts qui remplacent le concept déprécié {}", idConcept);
         var concepts = conceptReplacedByRepository.findAllByIdConcept1AndIdThesaurus(idConcept, idThesaurus);
         if (concepts.isEmpty()) {
             log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
@@ -1314,7 +1314,7 @@ public class ConceptService {
 
     public List<NodeIdValue> getAllReplaces(String idThesaurus, String idConcept, String idLang) {
 
-        log.info("Recherche des concepts dépréciés et remplacée par le concept {}", idConcept);
+        log.debug("Recherche des concepts dépréciés et remplacée par le concept {}", idConcept);
         var concepts = conceptReplacedByRepository.findAllByIdConcept2AndIdThesaurus(idConcept, idThesaurus);
         if (concepts.isEmpty()) {
             log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
@@ -1351,7 +1351,7 @@ public class ConceptService {
     @Transactional
     public boolean deprecateConcept(String idConcept, String idThesaurus, int idUser) {
         try {
-            log.info("Dépréciation du concept {}", idConcept);
+            log.debug("Dépréciation du concept {}", idConcept);
             setStatus("DEP", idConcept, idThesaurus);
             fr.cnrs.opentheso.models.concept.Concept concept = getThisConcept(idConcept, idThesaurus);
             addHistory(concept, idUser);
@@ -1365,11 +1365,11 @@ public class ConceptService {
     @Transactional
     public boolean approveConcept(String idConcept, String idThesaurus, int idUser) {
         try {
-            log.info("Activation du concept id {}", idConcept);
+            log.debug("Activation du concept id {}", idConcept);
             setStatus("D", idConcept, idThesaurus);
             var concept = getThisConcept(idConcept, idThesaurus);
             addHistory(concept, idUser);
-            log.info("Suppression du concept déprécié {}", idConcept);
+            log.debug("Suppression du concept déprécié {}", idConcept);
             conceptReplacedByRepository.deleteAllByIdConcept1AndIdThesaurus(idConcept, idThesaurus);
             return true;
         } catch (Exception sqle) {
@@ -1380,13 +1380,13 @@ public class ConceptService {
 
     public void deleteReplacedBy(String idConcept, String idThesaurus, String idConceptReplaceBy) {
 
-        log.info("Suppression du concept {} qui remplace le concept déprécié {}", idConceptReplaceBy, idConcept);
+        log.debug("Suppression du concept {} qui remplace le concept déprécié {}", idConceptReplaceBy, idConcept);
         conceptReplacedByRepository.deleteAllByIdConcept1AndIdConcept2AndIdThesaurus(idConcept, idConceptReplaceBy, idThesaurus);
     }
 
     public void addReplacedBy(String idConcept, String idThesaurus, String idConceptReplaceBy, int idUser) {
 
-        log.info("Remplacement du concept déprécie par le concept {}", idConcept);
+        log.debug("Remplacement du concept déprécie par le concept {}", idConcept);
         conceptReplacedByRepository.save(ConceptReplacedBy.builder()
                 .idConcept1(idConcept)
                 .idConcept2(idConceptReplaceBy)

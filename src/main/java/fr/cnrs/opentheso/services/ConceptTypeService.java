@@ -36,13 +36,13 @@ public class ConceptTypeService {
     }
 
     public void deleteConceptType(String idThesaurus, NodeConceptType nodeConceptType) {
-        log.info("Suppression du concept type {}", nodeConceptType.getCode());
+        log.debug("Suppression du concept type {}", nodeConceptType.getCode());
         conceptTypeRepository.deleteByCodeAndIdThesaurus(nodeConceptType.getCode(), idThesaurus);
     }
 
     public void addNewConceptType(String idThesaurus, NodeConceptType nodeConceptType) {
 
-        log.info("Enregistrement d'un nouveau concept type {}", nodeConceptType.getCode());
+        log.debug("Enregistrement d'un nouveau concept type {}", nodeConceptType.getCode());
         conceptTypeRepository.save(ConceptType.builder()
                 .code(nodeConceptType.getCode())
                 .labelEn(nodeConceptType.getLabelEn())
@@ -54,7 +54,7 @@ public class ConceptTypeService {
 
     public boolean isConceptTypeExist(String idThesaurus, NodeConceptType nodeConceptType) {
 
-        log.info("Vérifier si le concept type {} existe", nodeConceptType.getCode());
+        log.debug("Vérifier si le concept type {} existe", nodeConceptType.getCode());
         var conceptType = conceptTypeRepository.findByCodeAndIdThesaurus(nodeConceptType.getCode(), idThesaurus);
         return conceptType.isPresent();
     }
@@ -79,7 +79,7 @@ public class ConceptTypeService {
 
     public NodeConceptType getNodeTypeConcept(String conceptType, String idThesaurus) {
 
-        log.info("Recherche du concept type {} dans le thésaurus {}", conceptType, idThesaurus);
+        log.debug("Recherche du concept type {} dans le thésaurus {}", conceptType, idThesaurus);
         var result = conceptTypeRepository.findByCodeAndIdThesaurusIn(conceptType, List.of(idThesaurus, "all"));
         if (result.isEmpty()) {
             log.error("Aucune concept type n'est trouvé avec le code {} dans le thésaurus {}", conceptType, idThesaurus);

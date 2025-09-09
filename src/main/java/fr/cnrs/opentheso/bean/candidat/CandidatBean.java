@@ -223,7 +223,7 @@ public class CandidatBean implements Serializable {
 
     private String getIdLang() {
 
-        log.info("Récupération de la langue préféré d'un thésaurus");
+        log.debug("Récupération de la langue préféré d'un thésaurus");
         if (roleOnThesoBean.getNodePreference() != null) {
             return roleOnThesoBean.getNodePreference().getSourceLang();
         }

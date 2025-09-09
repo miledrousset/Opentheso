@@ -44,15 +44,15 @@ public class AlignmentService {
 
     public List<NodeAlignment> getAllAlignmentOfConcept(String idConcept, String idThesaurus) {
 
-        log.info("Rechercher de tous les alignements du concept {} (thésaurus id {})", idConcept, idThesaurus);
+        log.debug("Rechercher de tous les alignements du concept {} (thésaurus id {})", idConcept, idThesaurus);
         List<NodeAlignmentProjection> alignements = alignementRepository.findAllAlignmentsByConceptAndThesaurus(idConcept, idThesaurus);
 
         if (CollectionUtils.isEmpty(alignements)) {
-            log.info("Aucun alignement n'est trouvé pour le concept {} (thésaurus id {})", idConcept, idThesaurus);
+            log.debug("Aucun alignement n'est trouvé pour le concept {} (thésaurus id {})", idConcept, idThesaurus);
             return new ArrayList<>();
         }
 
-        log.info("{} alignements trouvé pour le concept {} (thésaurus id {})", alignements.size(), idConcept, idThesaurus);
+        log.debug("{} alignements trouvé pour le concept {} (thésaurus id {})", alignements.size(), idConcept, idThesaurus);
         return alignements.stream().map(element ->
             NodeAlignment.builder()
                     .id_alignement(element.getId())
@@ -87,7 +87,7 @@ public class AlignmentService {
         thesaurusTarget = StringUtils.convertString(thesaurusTarget);
 
         if (alignementRepository.existsByConceptThesaurusTypeAndUri(idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
-            log.info("L'alignement existe déjà dans la base de données, cas de mise à jour !");
+            log.debug("L'alignement existe déjà dans la base de données, cas de mise à jour !");
             var alignement = AlignementElement.builder()
                     .idAlignment(idTypeAlignment)
                     .alignement_id_type(idTypeAlignment)
@@ -97,23 +97,23 @@ public class AlignmentService {
                     .build();
             updateAlignement(alignement, idConcept, idThesaurus);
         } else {
-            log.info("Ajout d'un nouveau alignement !");
+            log.debug("Ajout d'un nouveau alignement !");
 
-            log.info("Rechercher du type d'alignement");
+            log.debug("Rechercher du type d'alignement");
             var alignementType = alignementTypeRepository.findById(idTypeAlignment);
             if (alignementType.isEmpty()) {
                 log.error("Aucun type alignement n'est trouvé avec l'id {}", idTypeAlignment);
                 return false;
             }
 
-            log.info("Rechercher de la source d'alignement");
+            log.debug("Rechercher de la source d'alignement");
             Optional<AlignementSource> alignementSource = idAlignementSource > 0 ? alignementSourceRepository.findById(idAlignementSource) : Optional.empty();
 
-            log.info("Formatage des données target");
+            log.debug("Formatage des données target");
             conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(conceptTarget);
             uriTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(uriTarget);
 
-            log.info("Enregistrement dans la base de données");
+            log.debug("Enregistrement dans la base de données");
             alignementRepository.save(Alignement.builder()
                     .author(author)
                     .conceptTarget(conceptTarget)
@@ -146,7 +146,7 @@ public class AlignmentService {
             return false;
         }
 
-        log.info("Début de la mise à jour de l'alignement {} dans la base de donnée", alignementElement.getIdAlignment());
+        log.debug("Début de la mise à jour de l'alignement {} dans la base de donnée", alignementElement.getIdAlignment());
 
         var uriTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(alignementElement.getTargetUri());
         var conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(alignementElement.getConceptTarget());
@@ -158,7 +158,7 @@ public class AlignmentService {
         alignement.get().setModified(new Date());
         alignementRepository.save(alignement.get());
 
-        log.info("Fin de la mise à jour de l'alignement {} dans la base de donnée", alignementElement.getIdAlignment());
+        log.debug("Fin de la mise à jour de l'alignement {} dans la base de donnée", alignementElement.getIdAlignment());
         return true;
     }
 
@@ -197,11 +197,11 @@ public class AlignmentService {
     }
 
     public List<NodeAlignmentType> searchAllAlignementTypes() {
-        log.info("Recherche de la liste de tous les types d'alignements");
+        log.debug("Recherche de la liste de tous les types d'alignements");
         var alignementTypes = alignementTypeRepository.findAll();
 
         if (CollectionUtils.isNotEmpty(alignementTypes)) {
-            log.info("{} types d'alignements trouvés !", alignementTypes.size());
+            log.debug("{} types d'alignements trouvés !", alignementTypes.size());
             return alignementTypes.stream()
                     .map(element -> NodeAlignmentType.builder()
                             .id(element.getId())
@@ -218,15 +218,15 @@ public class AlignmentService {
 
     public HashMap<String, String> getAlignmentTypes() {
 
-        log.info("Rechercher des types d'alignements disponibles");
+        log.debug("Rechercher des types d'alignements disponibles");
         var alignementTypes = alignementTypeRepository.findAll();
 
         if (CollectionUtils.isEmpty(alignementTypes)) {
-            log.info("Aucun type d'alignement n'est trouvé !");
+            log.debug("Aucun type d'alignement n'est trouvé !");
             return new HashMap<>();
         }
 
-        log.info("{} types d'alignement trouvés !", alignementTypes.size());
+        log.debug("{} types d'alignement trouvés !", alignementTypes.size());
         HashMap<String, String> result = new HashMap<>();
         for(AlignementType alignementType : alignementTypes) {
             result.put(String.valueOf(alignementType.getId()), alignementType.getLabelSkos());
@@ -236,15 +236,15 @@ public class AlignmentService {
 
     public List<NodeAlignmentSmall> getAllAlignmentsOfConcept(String idConcept, String idThesaurus) {
 
-        log.info("Recherche de tous les alignements d'un concept {}", idConcept);
+        log.debug("Recherche de tous les alignements d'un concept {}", idConcept);
         var alignements = alignementRepository.findAllAlignmentsByConceptAndThesaurus(idConcept, idThesaurus);
 
         if (CollectionUtils.isEmpty(alignements)) {
-            log.info("Aucun alignement n'est trouvé pour le concept id {} and thésaurus {}", idConcept, idThesaurus);
+            log.debug("Aucun alignement n'est trouvé pour le concept id {} and thésaurus {}", idConcept, idThesaurus);
             return List.of();
         }
 
-        log.info("{} alignements trouvés pour le concept id {}", alignements.size(), idConcept);
+        log.debug("{} alignements trouvés pour le concept id {}", alignements.size(), idConcept);
         return alignements.stream()
                 .map(element -> NodeAlignmentSmall.builder()
                         .uri_target(element.getUri_target())
@@ -255,7 +255,7 @@ public class AlignmentService {
 
     public void updateAlignmentUrlStatut(int idAlignment, boolean newStatut, String idConcept, String idThesaurus) {
 
-        log.info("Mise à jour du status de l'URL de l'alignement id {}, id Concept {} et id thesaurus {}", idAlignment, idConcept, idThesaurus);
+        log.debug("Mise à jour du status de l'URL de l'alignement id {}, id Concept {} et id thesaurus {}", idAlignment, idConcept, idThesaurus);
         var alignement = alignementRepository.findByInternalIdThesaurusAndInternalIdConceptAndId(idThesaurus, idConcept, idAlignment);
 
         if(alignement.isEmpty()) {
@@ -263,22 +263,22 @@ public class AlignmentService {
             return;
         }
 
-        log.info("Mise à jour de l'alignement dans la base");
+        log.debug("Mise à jour de l'alignement dans la base");
         alignement.get().setUrlAvailable(newStatut);
         alignementRepository.save(alignement.get());
     }
 
     public List<NodeSelectedAlignment> getSelectedAlignementOfThisThesaurus(String idThesaurus) {
 
-        log.info("Rechercher des alignements d'un thesaurus {}", idThesaurus);
+        log.debug("Rechercher des alignements d'un thesaurus {}", idThesaurus);
         var alignements = alignementRepository.findSelectedAlignmentsByThesaurus(idThesaurus);
 
         if (CollectionUtils.isEmpty(alignements)) {
-            log.info("Aucun alignement n'est trouvé pour le thésaurus {}", idThesaurus);
+            log.debug("Aucun alignement n'est trouvé pour le thésaurus {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} alignements sont trouvés pour le thésaurus {}", alignements.size(), idThesaurus);
+        log.debug("{} alignements sont trouvés pour le thésaurus {}", alignements.size(), idThesaurus);
         return alignements.stream()
                 .map(element -> NodeSelectedAlignment.builder()
                         .idAlignmentSource(element.getId_alignement_source())
@@ -291,44 +291,44 @@ public class AlignmentService {
 
     public List<NodeIdValue> getLinkedConceptsWithOntome(String idThesaurus, String cidocClass) {
 
-        log.info("Rechercher des relations vers les concepts dans le thésaurus id {} avec Ontome", idThesaurus);
+        log.debug("Rechercher des relations vers les concepts dans le thésaurus id {} avec Ontome", idThesaurus);
         var alignements = alignementRepository.findLinkedConceptsWithOntome(idThesaurus, cidocClass);
         return formatAlignements(alignements, idThesaurus);
     }
 
     public List<NodeIdValue> getAllLinkedConceptsWithOntome(String idThesaurus) {
 
-        log.info("Rechercher des relations vers les concepts dans le thésaurus id {} avec Ontome", idThesaurus);
+        log.debug("Rechercher des relations vers les concepts dans le thésaurus id {} avec Ontome", idThesaurus);
         var alignements = alignementRepository.findAllLinkedConceptsWithOntome(idThesaurus);
         return formatAlignements(alignements, idThesaurus);
     }
 
     public void deleteAllAlignmentsByThesaurus(String idThesaurus) {
 
-        log.info("Suppression de tous les alignements présents dans le thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les alignements présents dans le thésaurus {}", idThesaurus);
         alignementRepository.deleteByThesaurus(idThesaurus);
 
-        log.info("Suppression de tous les préférences d'alignements dans le thésaurus {}", idThesaurus);
+        log.debug("Suppression de tous les préférences d'alignements dans le thésaurus {}", idThesaurus);
         alignementPreferencesRepository.deleteByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Mise à jour du thésaurus id pour les alignements présents dans le thésaurus {}", oldIdThesaurus);
+        log.debug("Mise à jour du thésaurus id pour les alignements présents dans le thésaurus {}", oldIdThesaurus);
         alignementRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
 
-        log.info("Mise à jour du thésaurus id pour les préférences d'alignements dans le thésaurus {}", oldIdThesaurus);
+        log.debug("Mise à jour du thésaurus id pour les préférences d'alignements dans le thésaurus {}", oldIdThesaurus);
         alignementPreferencesRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     private List<NodeIdValue> formatAlignements(List<NodeIdValueProjection> alignements, String idThesaurus) {
 
         if (CollectionUtils.isEmpty(alignements)) {
-            log.info("Aucun alignement n'est trouvé pour le thésaurus {}", idThesaurus);
+            log.debug("Aucun alignement n'est trouvé pour le thésaurus {}", idThesaurus);
             return List.of();
         }
 
-        log.info("{} alignements sont trouvés pour le thésaurus {}", alignements.size(), idThesaurus);
+        log.debug("{} alignements sont trouvés pour le thésaurus {}", alignements.size(), idThesaurus);
         return alignements.stream()
                 .map(element -> NodeIdValue.builder()
                         .id(element.getInternal_id_concept())

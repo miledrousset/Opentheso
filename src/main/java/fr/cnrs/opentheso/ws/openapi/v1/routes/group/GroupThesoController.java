@@ -185,7 +185,7 @@ public class GroupThesoController {
         }
         
         var datas = restRDFHelper.brancheOfGroup(groups, idTheso, removeCharset(acceptHeader));
-        log.info(LocalTime.now() + " fin ");
+        log.debug(LocalTime.now() + " fin ");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 

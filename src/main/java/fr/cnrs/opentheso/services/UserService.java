@@ -55,10 +55,10 @@ public class UserService {
 
     public NodeUser getUserById(Integer userId) {
 
-        log.info("Rechercher l'utilisateur avec id {}", userId);
+        log.debug("Rechercher l'utilisateur avec id {}", userId);
         var user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            log.info("L'utilisateur avec id {} n'existe pas", userId);
+            log.debug("L'utilisateur avec id {} n'existe pas", userId);
             return null;
         }
         return NodeUser.builder()
@@ -78,14 +78,14 @@ public class UserService {
     }
 
     public List<NodeUser> searchUserByCriteria(String mail, String username) {
-        log.info("Recherche des utilisateurs avec mail contenant '{}' et nom d'utilisateur contenant '{}'", mail, username);
+        log.debug("Recherche des utilisateurs avec mail contenant '{}' et nom d'utilisateur contenant '{}'", mail, username);
 
         // Sécurité minimale contre null
         var safeMail = StringUtils.defaultString(mail);
         var safeUsername = StringUtils.defaultString(username);
         var users = userRepository.searchByMailAndUsername(safeMail, safeUsername);
 
-        log.info("Nombre d'utilisateurs trouvés : {}", users.size());
+        log.debug("Nombre d'utilisateurs trouvés : {}", users.size());
         return users.stream().map(user -> {
             NodeUser nodeUser = new NodeUser();
             nodeUser.setIdUser(user.getId());
@@ -106,7 +106,7 @@ public class UserService {
 
     public NodeUser getUser(int idUser) {
 
-        log.info("Recherche des informations de l'utilisateur avec l'ID : {}", idUser);
+        log.debug("Recherche des informations de l'utilisateur avec l'ID : {}", idUser);
         return userRepository.findById(idUser)
                 .map(user -> {
                     NodeUser nodeUser = new NodeUser();
@@ -122,7 +122,7 @@ public class UserService {
                     nodeUser.setApiKeyExpireDate(user.getKeyExpiresAt());
                     nodeUser.setServiceAccount(user.getIsServiceAccount());
                     nodeUser.setKeyDescription(user.getKeyDescription());
-                    log.info("Utilisateur trouvé : {}", user.getUsername());
+                    log.debug("Utilisateur trouvé : {}", user.getUsername());
                     return nodeUser;
                 })
                 .orElseGet(() -> {
@@ -132,7 +132,7 @@ public class UserService {
     }
 
     public User getUserById(int idUser) {
-        log.info("Recherche des informations de l'utilisateur avec l'ID : {}", idUser);
+        log.debug("Recherche des informations de l'utilisateur avec l'ID : {}", idUser);
         var user = userRepository.findById(idUser);
         if (user.isEmpty()) {
             log.error("Aucun utilisateur avec l'ID : {}", idUser);
@@ -143,7 +143,7 @@ public class UserService {
 
     public NodeUserComplet getUserByLoginAndPassword(String login, String password) {
 
-        log.info("Tentative de connexion pour l'utilisateur : {}", login);
+        log.debug("Tentative de connexion pour l'utilisateur : {}", login);
         return userRepository.findByUsernameAndPassword(login, password)
                 .map(user -> {
                     NodeUserComplet nodeUser = new NodeUserComplet();
@@ -159,7 +159,7 @@ public class UserService {
                     nodeUser.setApiKeyExpireDate(user.getKeyExpiresAt());
                     nodeUser.setServiceAccount(user.getIsServiceAccount());
                     nodeUser.setKeyDescription(user.getKeyDescription());
-                    log.info("Connexion réussie pour l'utilisateur : {}", login);
+                    log.debug("Connexion réussie pour l'utilisateur : {}", login);
                     return nodeUser;
                 })
                 .orElseGet(() -> {
@@ -170,7 +170,7 @@ public class UserService {
 
     public List<String> getListThesaurusLimitedRoleByUserAsAdmin(int idUser) {
 
-        log.info("Rechercher les thésaurus ayant des utilisateurs avec des rôles limités");
+        log.debug("Rechercher les thésaurus ayant des utilisateurs avec des rôles limités");
         var user = userRepository.findById(idUser);
         if (user.isEmpty()) {
             log.error("L'utilisateur id {} n'existe pas", idUser);
@@ -185,11 +185,11 @@ public class UserService {
 
         var result = userRoleOnlyOnRepository.findAllByUserAndRoleOrderByThesaurus(user.get(), role.get());
         if (CollectionUtils.isEmpty(result)) {
-            log.info("Aucun thésaurus n'est trouvé !");
+            log.debug("Aucun thésaurus n'est trouvé !");
             return List.of();
         }
 
-        log.info("{} thésaurus trouvé pour l'utilisateur id {}", result.size(), idUser);
+        log.debug("{} thésaurus trouvé pour l'utilisateur id {}", result.size(), idUser);
         return result.stream().map(element -> element.getThesaurus().getIdThesaurus()).toList();
     }
 
@@ -205,20 +205,20 @@ public class UserService {
 
     public int getGroupOfThisThesaurus(String idThesaurus) {
 
-        log.info("Recherche du group id associé au thésaurus id {}", idThesaurus);
+        log.debug("Recherche du group id associé au thésaurus id {}", idThesaurus);
         var thesaurus = thesaurusService.getThesaurusById(idThesaurus);
         var groupThesaurus = userGroupThesaurusRepository.findAllByThesaurus(thesaurus);
         return groupThesaurus.map(UserGroupThesaurus::getIdGroup).orElse(-1);
     }
 
     public Map<String, String> getGroupsOfUser(int userId) {
-        log.info("Recherche des groupes pour l'utilisateur avec ID {}", userId);
+        log.debug("Recherche des groupes pour l'utilisateur avec ID {}", userId);
         List<UserGroupLabel> groupLabels = userGroupLabelRepository.findAllGroupsOfUser(userId);
 
         if (groupLabels.isEmpty()) {
             log.warn("Aucun groupe trouvé pour l'utilisateur ID {}", userId);
         } else {
-            log.info("{} groupe(s) trouvé(s) pour l'utilisateur ID {}", groupLabels.size(), userId);
+            log.debug("{} groupe(s) trouvé(s) pour l'utilisateur ID {}", groupLabels.size(), userId);
         }
 
         return groupLabels.stream()
@@ -226,14 +226,14 @@ public class UserService {
     }
 
     public List<UserGroupLabel> getProjectOfUser(int userId) {
-        log.info("Recherche des projets pour l'utilisateur avec ID {}", userId);
+        log.debug("Recherche des projets pour l'utilisateur avec ID {}", userId);
         List<UserGroupLabel> labels = userGroupLabelRepository.findAllGroupsOfUser(userId);
-        log.info("{} projet(s) trouvé(s)", labels.size());
+        log.debug("{} projet(s) trouvé(s)", labels.size());
         return labels;
     }
 
     public List<NodeIdValue> getThesaurusOfProject(int groupId, String lang) {
-        log.info("Chargement des thésaurus pour le projet ID {}, langue = {}", groupId, lang);
+        log.debug("Chargement des thésaurus pour le projet ID {}, langue = {}", groupId, lang);
 
         var groups = userGroupThesaurusRepository.findAllByIdGroup(groupId);
 
@@ -249,12 +249,12 @@ public class UserService {
             thesaurusList.add(node);
         }
 
-        log.info("{} thésaurus chargé(s) pour le projet ID {}", thesaurusList.size(), groupId);
+        log.debug("{} thésaurus chargé(s) pour le projet ID {}", thesaurusList.size(), groupId);
         return thesaurusList;
     }
 
     public Optional<Integer> getUserGroupId(int userId, String thesoId) {
-        log.info("Recherche de l'identifiant du groupe de l'utilisateur ID {} pour le thésaurus '{}'", userId, thesoId);
+        log.debug("Recherche de l'identifiant du groupe de l'utilisateur ID {} pour le thésaurus '{}'", userId, thesoId);
         try {
             return userRoleGroupRepository.findGroupIdByUserIdAndThesaurus(userId, thesoId);
         } catch (Exception e) {
@@ -264,7 +264,7 @@ public class UserService {
     }
 
     public List<NodeIdValue> getThesaurusOfProject(int idProject, String idLang, boolean isPrivate) {
-        log.info("Recherche des thésaurus du projet ID={}, visibilité={}, langue={}", idProject, isPrivate, idLang);
+        log.debug("Recherche des thésaurus du projet ID={}, visibilité={}, langue={}", idProject, isPrivate, idLang);
 
         List<String> thesaurusIds = userGroupThesaurusRepository.findThesaurusIdsByGroupAndVisibility(idProject, isPrivate);
 
@@ -286,7 +286,7 @@ public class UserService {
     }
 
     public int getRoleOnThisThesaurus(int idUser, int idGroup, String idTheso) {
-        log.info("Recherche du rôle pour l'utilisateur ID={} sur le thésaurus '{}' et le groupe ID={}", idUser, idTheso, idGroup);
+        log.debug("Recherche du rôle pour l'utilisateur ID={} sur le thésaurus '{}' et le groupe ID={}", idUser, idTheso, idGroup);
 
         return userRoleOnlyOnRepository.findRoleFromOnlyOn(idUser, idGroup, idTheso)
                 .or(() -> userRoleOnlyOnRepository.findRoleFromGroup(idUser, idGroup, idTheso))
@@ -294,7 +294,7 @@ public class UserService {
     }
 
     public NodeUserRoleGroup getUserRoleOnThisGroup(int idUser, int idGroup) {
-        log.info("Recherche du rôle de l'utilisateur ID={} dans le groupe ID={}", idUser, idGroup);
+        log.debug("Recherche du rôle de l'utilisateur ID={} dans le groupe ID={}", idUser, idGroup);
 
         return userRoleGroupRepository.findUserRoleOnThisGroup(idUser, idGroup)
                 .map(role -> {
@@ -309,14 +309,14 @@ public class UserService {
     }
 
     public List<NodeUserRole> getUsersRolesByGroup(int idGroup, int idRole) {
-        log.info("Chargement des utilisateurs du groupe ID={} avec rôle >= {}", idGroup, idRole);
+        log.debug("Chargement des utilisateurs du groupe ID={} avec rôle >= {}", idGroup, idRole);
         List<NodeUserRole> users = userRoleGroupRepository.findUsersByGroupAndRole(idGroup, idRole);
-        log.info("{} utilisateur(s) récupéré(s) pour le groupe ID={}", users.size(), idGroup);
+        log.debug("{} utilisateur(s) récupéré(s) pour le groupe ID={}", users.size(), idGroup);
         return users;
     }
 
     public List<NodeUserRole> getAllUsersRolesLimitedByTheso(int idGroup) {
-        log.info("Chargement des utilisateurs avec rôles limités par thésaurus dans le groupe ID={}", idGroup);
+        log.debug("Chargement des utilisateurs avec rôles limités par thésaurus dans le groupe ID={}", idGroup);
 
         var users = userRoleOnlyOnRepository.findAllUsersWithLimitedRoleByGroup(idGroup);
 
@@ -325,22 +325,22 @@ public class UserService {
             user.setThesoName(thesaurusService.getTitleOfThesaurus(user.getIdTheso(), idLang));
         }
 
-        log.info("{} utilisateur(s) trouvé(s) avec des rôles limités par thésaurus dans le groupe ID={}", users.size(), idGroup);
+        log.debug("{} utilisateur(s) trouvé(s) avec des rôles limités par thésaurus dans le groupe ID={}", users.size(), idGroup);
         return users;
     }
 
     public List<String> getThesaurusOfUser(int idUser) {
-        log.info("Recherche des thésaurus pour l'utilisateur ID={}", idUser);
+        log.debug("Recherche des thésaurus pour l'utilisateur ID={}", idUser);
 
         List<String> thesaurusIds = userGroupThesaurusRepository.findThesaurusIdsByUserId(idUser);
 
-        log.info("{} thésaurus trouvé(s) pour l'utilisateur ID={}", thesaurusIds.size(), idUser);
+        log.debug("{} thésaurus trouvé(s) pour l'utilisateur ID={}", thesaurusIds.size(), idUser);
         return thesaurusIds;
     }
 
     public List<NodeThesoRole> getAllRolesThesosByUserGroup(int idGroup, int idUser) {
 
-        log.info("Recherche des roles/thesaurus pour l'utilisateur id {} et un group id {}", idUser, idGroup);
+        log.debug("Recherche des roles/thesaurus pour l'utilisateur id {} et un group id {}", idUser, idGroup);
         ArrayList<NodeThesoRole> nodeThesoRoles = new ArrayList<>();
         var listThesaurus = getIdThesaurusOfProject(idGroup);
         for (String idThesaurus : listThesaurus) {
@@ -360,9 +360,9 @@ public class UserService {
 
     private List<String> getIdThesaurusOfProject(int idProject) {
 
-        log.info("Chargement des thésaurus pour le projet ID={}", idProject);
+        log.debug("Chargement des thésaurus pour le projet ID={}", idProject);
         List<String> thesaurusIds = userGroupThesaurusRepository.findThesaurusIdsByGroupId(idProject);
-        log.info("{} thésaurus trouvés pour le projet ID={}", thesaurusIds.size(), idProject);
+        log.debug("{} thésaurus trouvés pour le projet ID={}", thesaurusIds.size(), idProject);
         return thesaurusIds;
     }
 
@@ -377,13 +377,13 @@ public class UserService {
     }
 
     public List<String> getThesaurusOfUserAsAdmin(int idUser) {
-        log.info("Recherche des thésaurus où l'utilisateur ID={} est administrateur...", idUser);
+        log.debug("Recherche des thésaurus où l'utilisateur ID={} est administrateur...", idUser);
 
         List<String> thesaurusIds = userGroupThesaurusRepository.findThesaurusIdsWhereUserIsAdmin(idUser);
         if (thesaurusIds.isEmpty()) {
-            log.info("Aucun thésaurus trouvé pour l'utilisateur ID={} avec un rôle admin.", idUser);
+            log.debug("Aucun thésaurus trouvé pour l'utilisateur ID={} avec un rôle admin.", idUser);
         } else {
-            log.info("{} thésaurus trouvés pour l'utilisateur ID={} avec un rôle admin.", thesaurusIds.size(), idUser);
+            log.debug("{} thésaurus trouvés pour l'utilisateur ID={} avec un rôle admin.", thesaurusIds.size(), idUser);
         }
 
         return thesaurusIds;
@@ -391,10 +391,10 @@ public class UserService {
 
     public boolean updateUserInformation(Integer idUSer, String userName, String password, String email, Boolean alertMail) {
 
-        log.info("Mise à jour des données utilisateur avec id {}", idUSer);
+        log.debug("Mise à jour des données utilisateur avec id {}", idUSer);
         var user = userRepository.findById(idUSer);
         if (user.isEmpty()) {
-            log.info("L'utilisateur avec id {} n'existe pas", idUSer);
+            log.debug("L'utilisateur avec id {} n'existe pas", idUSer);
             return false;
         }
 
@@ -423,7 +423,7 @@ public class UserService {
 
         var user = userRepository.findByApiKey(apiKey);
         if (user.isEmpty()) {
-            log.info("Aucun utilisateur n'est trouvé avec l'apiKey {}", apiKey);
+            log.debug("Aucun utilisateur n'est trouvé avec l'apiKey {}", apiKey);
             return null;
         }
         return user.get();
@@ -453,7 +453,7 @@ public class UserService {
 
         var userList = userRepository.findAllByUsernameLikeIgnoreCase(userName);
         if (CollectionUtils.isEmpty(userList)) {
-            log.info("Aucun utilisateur n'est trouvé avec l'userName {}", userName);
+            log.debug("Aucun utilisateur n'est trouvé avec l'userName {}", userName);
             return null;
         }
         return userList;
@@ -461,7 +461,7 @@ public class UserService {
 
     public List<String> getSelectedThesaurus(Integer selectedProject, Integer idUser) {
 
-        log.info("Recherche des thésaurus rattachés au projet id {} et à l'utilisateur id {}", idUser, selectedProject);
+        log.debug("Recherche des thésaurus rattachés au projet id {} et à l'utilisateur id {}", idUser, selectedProject);
         var result = new ArrayList<String>();
         var nodeUserRoles = userRoleOnlyOnRepository.getListRoleByThesaurusLimited(selectedProject, idUser);
         if (CollectionUtils.isEmpty(nodeUserRoles)) {
@@ -499,7 +499,7 @@ public class UserService {
 
     public List<NodeUserGroupUser> getAllUserGroup() {
 
-        log.info("Recherche de tous les groups utilisateurs existant");
+        log.debug("Recherche de tous les groups utilisateurs existant");
         List<NodeUserGroupUser> nodeUserGroupUsers = userRoleGroupRepository.getAllGroupUser();
         nodeUserGroupUsers.addAll(userRepository.getAllGroupUserWithoutGroup());
         nodeUserGroupUsers.addAll(userRepository.getAllUsersSuperadmin());
@@ -508,13 +508,13 @@ public class UserService {
 
     public void deleteUserById(int idUser) {
 
-        log.info("Supprimer l'utilisateur id {}", idUser);
+        log.debug("Supprimer l'utilisateur id {}", idUser);
         userRepository.deleteById(idUser);
     }
 
     public User getUserByMail(String mail) {
 
-        log.info("Recherche de l'utilisateur par mail {}", mail);
+        log.debug("Recherche de l'utilisateur par mail {}", mail);
         var user = userRepository.findByMail(mail);
         if (user.isEmpty()) {
             log.error("Aucun utilisateur n'existe avec le mail {}", mail);
@@ -524,7 +524,7 @@ public class UserService {
     }
 
     public User saveUser(User user) {
-        log.info("Ajout du nouveau utilisateur");
+        log.debug("Ajout du nouveau utilisateur");
         return userRepository.save(user);
     }
 

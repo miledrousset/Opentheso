@@ -64,7 +64,7 @@ public class EditThesaurusService {
 
     public String generateArkIdForThesaurus(String idThesaurus) {
 
-        log.info("Regénération d'un identifiant Ark pour le thésaurus id {}", idThesaurus);
+        log.debug("Regénération d'un identifiant Ark pour le thésaurus id {}", idThesaurus);
         var preferences = preferenceService.getThesaurusPreferences(idThesaurus);
         if (preferences == null) {
             log.error("Erreur: Veuillez paramétrer les préférences pour ce thésaurus !!");
@@ -92,7 +92,7 @@ public class EditThesaurusService {
             if (StringUtils.isEmpty(nodeThesaurus.getIdArk())) {
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     log.error(arkHelper2.getMessage() + "  idThesaurus = " + nodeThesaurus.getIdThesaurus());
-                    log.info("La création Ark a échoué ici : " + nodeThesaurus.getIdThesaurus());
+                    log.error("La création Ark a échoué ici : " + nodeThesaurus.getIdThesaurus());
                     return null;
                 }
                 if (thesaurusService.updateIdArkOfThesaurus(idThesaurus, arkHelper2.getIdArk())) {

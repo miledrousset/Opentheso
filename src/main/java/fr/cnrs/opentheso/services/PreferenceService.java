@@ -20,7 +20,7 @@ public class PreferenceService {
 
     public void initPreferences(String idThesaurus, String workLanguage) {
 
-        log.info("Initialisation des préférences pour le thésaurus {}", idThesaurus);
+        log.debug("Initialisation des préférences pour le thésaurus {}", idThesaurus);
         preferencesRepository.save(Preferences.builder()
                 .idThesaurus(idThesaurus)
                 .sourceLang(workLanguage)
@@ -42,29 +42,29 @@ public class PreferenceService {
 
     public void addPreference(Preferences preference, String idThesaurus) {
 
-        log.info("Formatage des données de preférence");
+        log.debug("Formatage des données de preférence");
         var preferenceToSave = normalizePreferencesDatas(preference);
 
-        log.info("Ajout des préférences du thésaurus {} dans la base de données", idThesaurus);
+        log.debug("Ajout des préférences du thésaurus {} dans la base de données", idThesaurus);
         preferencesRepository.save(preferenceToSave);
     }
 
     public void updateAllPreferenceUser(Preferences preference) {
 
-        log.info("Mise à jour des preferences du thésaurus {}", preference.getIdThesaurus());
+        log.debug("Mise à jour des preferences du thésaurus {}", preference.getIdThesaurus());
         preferencesRepository.save(preference);
     }
 
     private Preferences normalizePreferencesDatas(Preferences preference) {
 
         if (StringUtils.isNotEmpty(preference.getCheminSite())) {
-            log.info("Formatage de la valeur de chemin du site {}", preference.getCheminSite());
+            log.debug("Formatage de la valeur de chemin du site {}", preference.getCheminSite());
             if (!preference.getCheminSite().substring(preference.getCheminSite().length() - 1).equalsIgnoreCase("/")) {
                 preference.setCheminSite(preference.getCheminSite() + "/");
             }
         }
         if (StringUtils.isNotEmpty(preference.getServerArk())) {
-            log.info("Formatage de la valeur du serveur Ark {}", preference.getServerArk());
+            log.debug("Formatage de la valeur du serveur Ark {}", preference.getServerArk());
             if (!preference.getServerArk().substring(preference.getServerArk().length() - 1).equalsIgnoreCase("/")) {
                 preference.setServerArk(preference.getServerArk() + "/");
             }
@@ -75,7 +75,7 @@ public class PreferenceService {
 
     public Preferences getThesaurusPreferences(String idThesaurus) {
 
-        log.info("Rechercher des paramètres du thésaurus {}", idThesaurus);
+        log.debug("Rechercher des paramètres du thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
 
         if (preference.isEmpty()) {
@@ -83,13 +83,13 @@ public class PreferenceService {
             return null;
         }
 
-        log.info("Paramètres trouvés pour le thésaurus id {}", idThesaurus);
+        log.debug("Paramètres trouvés pour le thésaurus id {}", idThesaurus);
         return preference.get();
     }
 
     public void setIdentifierFlags(String idThesaurus, boolean useArk, boolean useArkLocal, boolean useHandle) {
 
-        log.info("Mise à jour des flags d'identifier du thésaurus {}", idThesaurus);
+        log.debug("Mise à jour des flags d'identifier du thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
 
         if (preference.isEmpty()) {
@@ -105,43 +105,43 @@ public class PreferenceService {
 
     public String getWorkLanguageOfThesaurus(String idThesaurus) {
 
-        log.info("Rechercher de la langue source du thésaurus {}", idThesaurus);
+        log.debug("Rechercher de la langue source du thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
 
         if (preference.isEmpty()) {
-            log.error("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
+            log.debug("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
             return null ;
         }
 
-        log.info("La langue source du thésaurus {}  est {}", idThesaurus, preference.get().getSourceLang());
+        log.debug("La langue source du thésaurus {}  est {}", idThesaurus, preference.get().getSourceLang());
         return preference.get().getSourceLang();
     }
 
     public boolean setWorkLanguageOfThesaurus(String idLang, String idThesaurus) {
 
-        log.info("Début de la mise à jour de la source language pour le thésaurus {}", idThesaurus);
+        log.debug("Début de la mise à jour de la source language pour le thésaurus {}", idThesaurus);
         var preference = preferencesRepository.findByIdThesaurus(idThesaurus);
 
         if (preference.isEmpty()) {
-            log.error("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
+            log.debug("Aucun paramètre n'est trouvé pour le thésaurus id {}", idThesaurus);
             return false;
         }
 
         preference.get().setSourceLang(idLang);
         preferencesRepository.save(preference.get());
-        log.info("Mise à jour de la source language terminé pour le thésaurus {}", idThesaurus);
+        log.debug("Mise à jour de la source language terminé pour le thésaurus {}", idThesaurus);
         return true;
     }
 
     public void deletePreferenceThesaurus(String idThesaurus) {
 
-        log.info("Suppression des préférences du thésaurus id {}", idThesaurus);
+        log.debug("Suppression des préférences du thésaurus id {}", idThesaurus);
         preferencesRepository.deleteByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
 
-        log.info("Mise à jour du thésaurus id pour les préférences du thésaurus id {}", oldIdThesaurus);
+        log.debug("Mise à jour du thésaurus id pour les préférences du thésaurus id {}", oldIdThesaurus);
         preferencesRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 }

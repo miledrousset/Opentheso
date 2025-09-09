@@ -29,7 +29,7 @@ public class NonPreferredTermService {
     @Transactional
     public void addNonPreferredTerm(Term term, int idUser) {
 
-        log.info("Enregistrement du nouveau synonyme");
+        log.debug("Enregistrement du nouveau synonyme");
         nonPreferredTermRepository.save(NonPreferredTerm.builder()
                 .idTerm(term.getIdTerm())
                 .lexicalValue(term.getLexicalValue())
@@ -47,7 +47,7 @@ public class NonPreferredTermService {
 
     public void deleteNonPreferredTerm(String idTerm, String idLang, String lexicalValue, String idTheso, int idUser) {
 
-        log.info("Suppression du synonyme du term " + idTerm);
+        log.debug("Suppression du synonyme du term " + idTerm);
         nonPreferredTermRepository.deleteByIdThesaurusAndIdTermAndLexicalValueAndLang(idTheso, idTerm, lexicalValue, idLang);
 
         saveTrace(idTerm, lexicalValue, idTheso, idLang, idUser, false, "delete");
@@ -64,11 +64,11 @@ public class NonPreferredTermService {
 
     public boolean updateNonPreferredTerm(String oldValue, String newValue, String idTerm, String idLang, String idTheso, boolean isHidden, int idUser) {
 
-        log.info("Début du mise à jour du synonyme " + idTerm);
+        log.debug("Début du mise à jour du synonyme " + idTerm);
         var nonPreferredTerm = nonPreferredTermRepository.findByIdTermAndLexicalValueAndLangAndIdThesaurus(idTerm, oldValue, idLang, idTheso);
 
         if (nonPreferredTerm.isPresent()) {
-            log.info("Mise à jour du synonyme");
+            log.debug("Mise à jour du synonyme");
             nonPreferredTerm.get().setLexicalValue(newValue);
             nonPreferredTerm.get().setHiden(isHidden);
             nonPreferredTerm.get().setModified(new Date());
@@ -82,11 +82,11 @@ public class NonPreferredTermService {
 
 
     public boolean updateStatusNonPreferredTerm(String idTerm, String value, String idLang, String idTheso, boolean isHidden, int idUser) {
-        log.info("Début du mise à jour du status du synonyme " + idTerm);
+        log.debug("Début du mise à jour du status du synonyme " + idTerm);
         var nonPreferredTerm = nonPreferredTermRepository.findByIdTermAndLexicalValueAndLangAndIdThesaurus(idTerm, value, idLang, idTheso);
 
         if (nonPreferredTerm.isPresent()) {
-            log.info("Mise à jour du status synonyme");
+            log.debug("Mise à jour du status synonyme");
             nonPreferredTerm.get().setHiden(isHidden);
             nonPreferredTerm.get().setModified(new Date());
             nonPreferredTermRepository.save(nonPreferredTerm.get());
@@ -98,7 +98,7 @@ public class NonPreferredTermService {
     }
 
     private void saveTrace(String idTerm, String lexicalValue, String idThesaurus, String idLang, int idUser, boolean isHidden, String action) {
-        log.info("Enregistrement du trace de l'action du mise à jour");
+        log.debug("Enregistrement du trace de l'action du mise à jour");
         nonPreferredTermHistoriqueRepository.save(NonPreferredTermHistorique.builder()
                 .idTerm(idTerm)
                 .lexicalValue(lexicalValue)
@@ -134,7 +134,7 @@ public class NonPreferredTermService {
     @Transactional
     public void deleteEMByIdTermAndLang(String idTerm, String idThesaurus, String idLang) {
 
-        log.info("Suppression du terme id {} (langue : {} et thésaurus id {})", idTerm, idLang, idThesaurus);
+        log.debug("Suppression du terme id {} (langue : {} et thésaurus id {})", idTerm, idLang, idThesaurus);
         nonPreferredTermRepository.deleteByIdThesaurusAndIdTermAndLang(idThesaurus, idTerm, idLang);
     }
 

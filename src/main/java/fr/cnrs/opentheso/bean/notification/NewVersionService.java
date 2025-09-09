@@ -64,12 +64,10 @@ public class NewVersionService implements Serializable {
         try {
             release = rechercherReleases();
             if (ObjectUtils.isEmpty(release)) {
-                log.info("No new release found !");
-                System.out.println("Aucune nouvelle release n'est trouvé !");
+                log.debug("No new release found !");
                 newVersionExist = false;
             } else {
-                log.info("New release found {} !", release.getVersion());
-                System.out.println("Nouvelle release trouvé " + release.getVersion());
+                log.debug("New release found {} !", release.getVersion());
                 newVersionExist = true;
             }
         } catch (IOException e) {
@@ -94,7 +92,7 @@ public class NewVersionService implements Serializable {
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
-            log.info("First project running ! Saving previous releases");
+            log.debug("First project running ! Saving previous releases");
             var releaseList = releases.stream()
                     .map(this::toRelease)
                     .collect(Collectors.toList());
@@ -104,17 +102,17 @@ public class NewVersionService implements Serializable {
                     releaseRepository.save(element);
                 }
             }
-            log.info("All releases are saved in DB !");
+            log.debug("All releases are saved in DB !");
             return null;
         } else {
-            log.info("Not of first project running ! searching of latest release");
+            log.debug("Not of first project running ! searching of latest release");
             TagDto tag = tags.stream().findFirst().get();
-            log.info("Latest tag version {}", tag.getName());
+            log.debug("Latest tag version {}", tag.getName());
             Optional<Release> oldRelease = releasesSaved.stream()
                     .filter(releaseDto -> tag.getName().equalsIgnoreCase(releaseDto.getVersion()))
                     .findFirst();
             if (oldRelease.isPresent()) {
-                log.info("We have already the last tag available {}", tag.getName());
+                log.debug("We have already the last tag available {}", tag.getName());
                 return null;
             } else {
                 Optional<ReleaseDto> release = releases.stream()
@@ -123,7 +121,7 @@ public class NewVersionService implements Serializable {
                 if (release.isPresent()) {
                     var newRelease = toRelease(release.get());
                     releaseRepository.save(newRelease);
-                    log.info("Save latest release in DB !");
+                    log.debug("Save latest release in DB !");
                     return newRelease;
                 } else {
                     log.error("No information found for tag {}", tag.getName());

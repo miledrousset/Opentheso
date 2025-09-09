@@ -76,7 +76,7 @@ public class HandleService {
             }
         } catch (Throwable t) {
             message = "Cannot read private key " + admprivPath + ": " + t;
-            log.info("Cannot read private key " + admprivPath + ": " + t);
+            log.debug("Cannot read private key " + admprivPath + ": " + t);
             return false;
         }
 
@@ -96,7 +96,7 @@ public class HandleService {
             key = Util.decrypt(key, secKey);
             privkey = Util.getPrivateKeyFromBytes(key, 0);
         } catch (Throwable t) {
-            log.info("Can't load private key in " + admprivPath + ": " + t);
+            log.debug("Can't load private key in " + admprivPath + ": " + t);
             return false;
         }
 
@@ -116,7 +116,7 @@ public class HandleService {
                     true, true, true, true, true, true);
 
         } catch (Throwable t) {
-            log.info("\nError: " + t);
+            log.debug("\nError: " + t);
         }
         return true;
     }
@@ -177,9 +177,9 @@ public class HandleService {
 
         var newId = nodePreference.getPrefixIdHandle() + "/" + nodePreference.getPrivatePrefixHandle() + getNewHandleId(nodePreference);
 
-        log.info("avant l'appel à HandleClient");
+        log.debug("avant l'appel à HandleClient");
         var jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri);//"?idc=" + idConcept + "&idt=" + idThesaurus);
-        log.info("avant le put ");
+        log.debug("avant le put ");
         var idHandle = handleClient.putHandle(nodePreference.getPassHandle(), nodePreference.getPathKeyHandle(),
                 nodePreference.getPathCertHandle(), nodePreference.getUrlApiHandle(), newId, jsonData);
         if (idHandle == null) {

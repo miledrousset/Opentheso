@@ -28,14 +28,14 @@ public class AlignmentSourceService {
 
     public List<AlignementSource> getAllAlignementSources() {
 
-        log.info("Recherche de tous les sources d'alignement disponible");
+        log.debug("Recherche de tous les sources d'alignement disponible");
         var alignmentSources = alignementSourceRepository.findAll();
 
         if (CollectionUtils.isEmpty(alignmentSources)) {
-            log.info("Aucune source d'alignement n'est trouvée dans la base");
+            log.debug("Aucune source d'alignement n'est trouvée dans la base");
             return new ArrayList<>();
         } else {
-            log.info("{} sources d'alignement trouvée", alignmentSources.size());
+            log.debug("{} sources d'alignement trouvée", alignmentSources.size());
             return alignmentSources.stream().map(element ->
                     AlignementSource.builder()
                             .id(element.getId())
@@ -53,11 +53,11 @@ public class AlignmentSourceService {
 
     public List<AlignementSource> getAlignementSources(String idThesaurus) {
 
-        log.info("Recherche des sources d'alignement rattachées au thésaurus {}", idThesaurus);
+        log.debug("Recherche des sources d'alignement rattachées au thésaurus {}", idThesaurus);
         List<AlignementSourceProjection> projections = alignementSourceRepository.findAllByThesaurus(idThesaurus);
 
         if (CollectionUtils.isNotEmpty(projections)) {
-            log.info("{} sources d'alignement trouvée pour le thésaurus {}", projections.size(), idThesaurus);
+            log.debug("{} sources d'alignement trouvée pour le thésaurus {}", projections.size(), idThesaurus);
             return projections.stream().map(element ->
                 AlignementSource.builder()
                         .id(element.getId())
@@ -71,14 +71,14 @@ public class AlignmentSourceService {
                         .build()
                 ).toList();
         } else {
-            log.info("Aucune source d'alignement n'est trouvée pour le thésaurus {}", idThesaurus);
+            log.debug("Aucune source d'alignement n'est trouvée pour le thésaurus {}", idThesaurus);
             return List.of();
         }
     }
 
     public void addSourceAlignementToThesaurus(String idThesaurus, int idAlignement) {
 
-        log.info("Ajout de la source d'alignement {} au thésaurus {}", idAlignement, idThesaurus);
+        log.debug("Ajout de la source d'alignement {} au thésaurus {}", idAlignement, idThesaurus);
         thesaurusAlignementSourceRepository.save(ThesaurusAlignementSource.builder()
                 .idAlignementSource(idAlignement)
                 .idThesaurus(idThesaurus)
@@ -88,14 +88,14 @@ public class AlignmentSourceService {
 
     public AlignementSource getAlignementSourceById(int idSourceAlignement) {
 
-        log.info("Rechercher de la source d'alignement {}", idSourceAlignement);
+        log.debug("Rechercher de la source d'alignement {}", idSourceAlignement);
         var sourceAlignement = alignementSourceRepository.findById(idSourceAlignement);
         if (sourceAlignement.isEmpty()) {
             log.error("Aucune source d'alignement n'est trouvée avec l'id {}", idSourceAlignement);
             return null;
         }
 
-        log.info("Formatage de la source d'alignement trouvée");
+        log.debug("Formatage de la source d'alignement trouvée");
         return AlignementSource.builder()
                 .id(sourceAlignement.get().getId())
                 .source(sourceAlignement.get().getSource())
@@ -111,7 +111,7 @@ public class AlignmentSourceService {
     @Transactional
     public boolean addNewAlignmentSource(AlignementSource alignement, String idThesaurus, int idUser) {
 
-        log.info("Enregistrement de la source d'alignement dans la base de données");
+        log.debug("Enregistrement de la source d'alignement dans la base de données");
         var alignementSourceSaved = alignementSourceRepository.save(fr.cnrs.opentheso.entites.AlignementSource.builder()
                 .source(alignement.getSource())
                 .requete(alignement.getRequete())
@@ -132,10 +132,10 @@ public class AlignmentSourceService {
 
     public boolean updateAlignmentSource(fr.cnrs.opentheso.models.alignment.AlignementSource alignementSource) {
 
-        log.info("Mise à jour de la source d'alignement {}", alignementSource.getId());
+        log.debug("Mise à jour de la source d'alignement {}", alignementSource.getId());
         var alignementSourceFound = alignementSourceRepository.findById(alignementSource.getId());
         if (alignementSourceFound.isPresent()) {
-            log.info("Source d'alignement trouvée dans la base de données");
+            log.debug("Source d'alignement trouvée dans la base de données");
             alignementSourceFound.get().setSource(alignementSource.getSource());
             alignementSourceFound.get().setRequete(alignementSource.getRequete());
             alignementSourceFound.get().setDescription(alignementSource.getDescription());
