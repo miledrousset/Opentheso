@@ -12,19 +12,18 @@ import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.services.graphs.GraphService;
 import fr.cnrs.opentheso.utils.MessageUtils;
 
-import jakarta.faces.context.ExternalContext;
-import lombok.Data;
-
-import java.io.IOException;
-import java.util.*;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.primefaces.PrimeFaces;
 import org.primefaces.component.chip.Chip;
 import org.primefaces.extensions.event.ClipboardErrorEvent;
 import org.primefaces.extensions.event.ClipboardSuccessEvent;

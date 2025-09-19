@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.client.alignement;
 
 import fr.cnrs.opentheso.client.CurlHelper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -29,15 +31,11 @@ import fr.cnrs.opentheso.models.alignment.SelectedResource;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import lombok.Data;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
-import javax.net.ssl.HttpsURLConnection;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 
@@ -315,9 +313,11 @@ public class WikidataHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(String jsonDatas, String entity, List<String> languages) {
-        ArrayList<SelectedResource> traductions = new ArrayList<>();
-
+    private List<SelectedResource> getTraductions(String jsonDatas, String entity, List<String> languages) {
+        List<SelectedResource> traductions = new ArrayList<>();
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return traductions;
+        }
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
         JsonObject jsonObject1;
@@ -357,7 +357,12 @@ public class WikidataHelper {
      */
     private List<SelectedResource> getDescriptions(String jsonDatas, String entity, List<String> languages) {
 
-        ArrayList<SelectedResource> descriptions = new ArrayList<>();
+        List<SelectedResource> descriptions = new ArrayList<>();
+
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return descriptions;
+        }
+
         JsonObject jsonObject = new JsonHelper().getJsonObject(jsonDatas);
 
         JsonObject jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("descriptions");
@@ -383,12 +388,16 @@ public class WikidataHelper {
      * @param entity
      * @return
      */
-    private ArrayList<SelectedResource> getImages(String jsonDatas, String entity) {
+    private List<SelectedResource> getImages(String jsonDatas, String entity) {
         // pour construire l'URL de Wikimedia, il faut ajouter 
         // http://commons.wikimedia.org/wiki/Special:FilePath/
         // puis le nom de l'image
 
         String fixedUrl = "https://commons.wikimedia.org/wiki/Special:FilePath/";
+
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return Collections.emptyList();
+        }
 
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);

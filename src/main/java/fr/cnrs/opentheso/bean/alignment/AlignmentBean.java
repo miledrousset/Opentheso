@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cnrs.opentheso.entites.ConceptDcTerm;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -38,11 +40,20 @@ import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,6 +85,8 @@ import org.primefaces.PrimeFaces;
 @RequiredArgsConstructor
 @Named(value = "alignmentBean")
 public class AlignmentBean implements Serializable {
+
+    private static final String WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 
     private final ConceptView conceptView;
     private final SelectedTheso selectedTheso;
@@ -1140,7 +1153,7 @@ public class AlignmentBean implements Serializable {
      * définitions, traductions en plus de l'URL d'alignement récupération des
      * options
      */
-    public void getUriAndOptions(NodeAlignment selectedNodeAlignment, String idTheso) {
+    public void getUriAndOptions(NodeAlignment selectedNodeAlignment, String idTheso) throws IOException, InterruptedException {
         alignmentInProgress = true;
 
         if (idConceptSelectedForAlignment == null) {
@@ -1167,16 +1180,7 @@ public class AlignmentBean implements Serializable {
 
         // si l'alignement est de type Wikidata
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql") || selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
-            WikidataHelper wikidataHelper = new WikidataHelper();
-            resetVariables();
-
-            wikidataHelper.setOptionsFromWikidata(selectedNodeAlignment,
-                    selectedOptions,
-                    thesaurusUsedLanguageWithoutCurrentLang,
-                    thesaurusUsedLanguage);
-            setObjectTraductions(wikidataHelper.getResourceWikidataTraductions());
-            setObjectDefinitions(wikidataHelper.getResourceWikidataDefinitions());
-            setObjectImages(wikidataHelper.getResourceWikidataImages());
+            searchInWikidata(selectedNodeAlignment.getUri_target().substring(selectedNodeAlignment.getUri_target().lastIndexOf("/")+1));
         }
 
         // si l'alignement est de type IdRef
@@ -1219,6 +1223,109 @@ public class AlignmentBean implements Serializable {
             setObjectImages(geoNamesHelper.getResourceImages());
         }
 
+    }
+
+    public void searchInWikidata(String qid) throws IOException, InterruptedException {
+
+        HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+        ObjectMapper mapper = new ObjectMapper();
+
+        String url = WIKIDATA_API +
+                "?action=wbgetentities" +
+                "&ids=" + URLEncoder.encode(qid, StandardCharsets.UTF_8) +
+                "&format=json" +
+                "&props=" + URLEncoder.encode("labels|descriptions|claims", StandardCharsets.UTF_8);
+
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(20))
+                .header("User-Agent", "WikidataFetcher/1.0 (example@example.com)")
+                .GET()
+                .build();
+
+        HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() != 200) {
+            throw new IOException("Wikidata API returned status " + resp.statusCode());
+        }
+
+        JsonNode entity = mapper.readTree(resp.body()).path("entities").path(qid);
+        if (entity.isMissingNode()) {
+            throw new IOException("Entity not found: " + qid);
+        }
+
+        // Traductions
+        entity.path("labels").fieldNames().forEachRemaining(lang -> {
+            String val = entity.path("labels").path(lang).path("value").asText(null);
+            if (val != null) {
+                boolean isNotExist = false;
+                for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+                    if (lang.equalsIgnoreCase(nodeTermTraduction.getLang())) {
+                        if (!val.trim().equalsIgnoreCase(nodeTermTraduction.getLexicalValue().trim())) {
+                            isNotExist = true;
+                            break;
+                        }
+                    }
+                }
+                if (isNotExist) {
+                    SelectedResource selectedResource = new SelectedResource();
+                    selectedResource.setIdLang(lang);
+                    selectedResource.setGettedValue(val);
+                    traductionsOfAlignment.add(selectedResource);
+                }
+            }
+        });
+
+        // Définitions
+        entity.path("descriptions").fieldNames().forEachRemaining(lang -> {
+            String val = entity.path("descriptions").path(lang).path("value").asText(null);
+            if (val != null) {
+                boolean isNotExist = false;
+                for (NodeNote nodeNote : nodeNotes) {
+                    if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
+                        if(lang.equalsIgnoreCase(nodeNote.getLang())){
+                            // la def existe dans cette langue
+                            if (!val.equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
+                                isNotExist = true;
+                            }
+                        }
+                    }
+                }
+                if (isNotExist) {
+                    SelectedResource selectedResource = new SelectedResource();
+                    selectedResource.setIdLang(lang);
+                    selectedResource.setGettedValue(val);
+                    descriptionsOfAlignment.add(selectedResource);
+                }
+            }
+        });
+
+        JsonNode claims = entity.path("claims");
+        for (JsonNode claim : claims.path("P18")) {
+            JsonNode valNode = claim.path("mainsnak").path("datavalue").path("value");
+            if (valNode.isTextual()) {
+                boolean isNotExist = false;
+                String filename = valNode.asText();
+                for (NodeImage nodeImage : nodeImages) {
+                    // on compare l'URI est équivalente, on l'ignore
+                    if (!commonsFilePathUrl(filename).equalsIgnoreCase(nodeImage.getUri().trim())) {
+                        isNotExist = true;
+                        break;
+                    }
+                }
+                if (isNotExist) {
+                    SelectedResource selectedResource = new SelectedResource();
+                    selectedResource.setLocalValue(commonsFilePathUrl(filename));
+                    selectedResource.setGettedValue(commonsFilePathUrl(filename));
+                    imagesOfAlignment.add(selectedResource);
+                }
+            }
+        }
+    }
+
+    private String commonsFilePathUrl(String filename) {
+        String name = filename.replace(' ', '_');
+        String encoded = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
+        return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encoded;
     }
 
     /**
