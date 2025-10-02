@@ -1255,46 +1255,52 @@ public class AlignmentBean implements Serializable {
 
         // Traductions
         entity.path("labels").fieldNames().forEachRemaining(lang -> {
-            String val = entity.path("labels").path(lang).path("value").asText(null);
-            if (val != null) {
-                boolean isNotExist = false;
-                for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
-                    if (lang.equalsIgnoreCase(nodeTermTraduction.getLang())) {
-                        if (!val.trim().equalsIgnoreCase(nodeTermTraduction.getLexicalValue().trim())) {
-                            isNotExist = true;
-                            break;
+            // On ne traite que les langues existantes pour ce thésaurus
+            if (thesaurusUsedLanguage.contains(lang.toLowerCase())) {
+                String val = entity.path("labels").path(lang).path("value").asText(null);
+                if (val != null) {
+                    boolean added = false;
+                    for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+                        if (lang.equalsIgnoreCase(nodeTermTraduction.getLang())) {
+                            if (val.trim().equalsIgnoreCase(nodeTermTraduction.getLexicalValue().trim())) {
+                                added = true;
+                                break;
+                            }
                         }
                     }
-                }
-                if (isNotExist) {
-                    SelectedResource selectedResource = new SelectedResource();
-                    selectedResource.setIdLang(lang);
-                    selectedResource.setGettedValue(val);
-                    traductionsOfAlignment.add(selectedResource);
+                    if (!added) {
+                        SelectedResource selectedResource = new SelectedResource();
+                        selectedResource.setIdLang(lang);
+                        selectedResource.setGettedValue(val);
+                        traductionsOfAlignment.add(selectedResource);
+                    }
                 }
             }
         });
 
         // Définitions
         entity.path("descriptions").fieldNames().forEachRemaining(lang -> {
-            String val = entity.path("descriptions").path(lang).path("value").asText(null);
-            if (val != null) {
-                boolean isNotExist = false;
-                for (NodeNote nodeNote : nodeNotes) {
-                    if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
-                        if(lang.equalsIgnoreCase(nodeNote.getLang())){
-                            // la def existe dans cette langue
-                            if (!val.equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
-                                isNotExist = true;
+            if (thesaurusUsedLanguage.contains(lang.toLowerCase())) {
+                String val = entity.path("descriptions").path(lang).path("value").asText(null);
+                if (val != null) {
+                    boolean added = false;
+                    for (NodeNote nodeNote : nodeNotes) {
+                        if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
+                            if (lang.equalsIgnoreCase(nodeNote.getLang())) {
+                                // la def existe dans cette langue
+                                if (val.equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
+                                    added = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                if (isNotExist) {
-                    SelectedResource selectedResource = new SelectedResource();
-                    selectedResource.setIdLang(lang);
-                    selectedResource.setGettedValue(val);
-                    descriptionsOfAlignment.add(selectedResource);
+                    if (!added) {
+                        SelectedResource selectedResource = new SelectedResource();
+                        selectedResource.setIdLang(lang);
+                        selectedResource.setGettedValue(val);
+                        descriptionsOfAlignment.add(selectedResource);
+                    }
                 }
             }
         });
@@ -1303,16 +1309,16 @@ public class AlignmentBean implements Serializable {
         for (JsonNode claim : claims.path("P18")) {
             JsonNode valNode = claim.path("mainsnak").path("datavalue").path("value");
             if (valNode.isTextual()) {
-                boolean isNotExist = false;
+                boolean added = false;
                 String filename = valNode.asText();
                 for (NodeImage nodeImage : nodeImages) {
                     // on compare l'URI est équivalente, on l'ignore
-                    if (!commonsFilePathUrl(filename).equalsIgnoreCase(nodeImage.getUri().trim())) {
-                        isNotExist = true;
+                    if (commonsFilePathUrl(filename).equalsIgnoreCase(nodeImage.getUri().trim())) {
+                        added = true;
                         break;
                     }
                 }
-                if (isNotExist) {
+                if (!added) {
                     SelectedResource selectedResource = new SelectedResource();
                     selectedResource.setLocalValue(commonsFilePathUrl(filename));
                     selectedResource.setGettedValue(commonsFilePathUrl(filename));
