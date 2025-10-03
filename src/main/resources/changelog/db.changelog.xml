@@ -3,7 +3,7 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-    <!-- create database if not exist -->
+    <!-- create database if not exist-->
     <include file="/changelog/database/createdb.xml"/>
 
     <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
@@ -169,4 +169,5 @@
     <include file="/changelog/v25.08/25-09_01.sql"/>
     <include file="/changelog/v25.08/25-09_02.sql"/>
     <include file="/changelog/v25.08/25-09_03.sql"/>
+    <include file="/changelog/v25.08/25-09_04.sql"/>
 </databaseChangeLog>
