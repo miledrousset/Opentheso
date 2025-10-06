@@ -1304,7 +1304,7 @@ public class ConceptService {
         log.debug("Recherche des concepts qui remplacent le concept déprécié {}", idConcept);
         var concepts = conceptReplacedByRepository.findAllByIdConcept1AndIdThesaurus(idConcept, idThesaurus);
         if (concepts.isEmpty()) {
-            log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            log.debug("Aucun concept replaceBy avec l'id {}", idConcept);
             return List.of();
         }
 
@@ -1322,7 +1322,7 @@ public class ConceptService {
         log.debug("Recherche des concepts dépréciés et remplacée par le concept {}", idConcept);
         var concepts = conceptReplacedByRepository.findAllByIdConcept2AndIdThesaurus(idConcept, idThesaurus);
         if (concepts.isEmpty()) {
-            log.error("Aucun concept n'est trouvé avec l'id {}", idConcept);
+            log.debug("Aucun concept Replaces avec l'id {}", idConcept);
             return List.of();
         }
 
