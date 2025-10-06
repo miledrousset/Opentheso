@@ -72,6 +72,7 @@ public class Alignement {
 
     @ManyToOne
     @JoinColumn(name = "alignement_id_type", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private AlignementType alignementType;
 
     @ManyToOne
