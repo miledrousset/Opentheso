@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel >
+        <div class="row">
+            <div class="col-md-12">
+                <p:panel header="Relations sémantiques" toggleable="true" closable="false"
+                         toggleSpeed="500"
+                         closeSpeed="500" widgetVar="relations"
+                         style="font-family: 'Roboto', sans-serif; font-size: 14px;">
+
+                    <!-- concepts génériques -->
+                    <div class="row mb-0" style="font-size: 14px;">
+                        <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                            <h:outputText value="Concepts génériques"/>
+
+                            <!-- Groupe d'icônes à droite -->
+                            <div class="d-flex gap-2">
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fa-solid fa-gear fa-fw" style="color: #47624D;"></i>
+                                    <p:tooltip value="Paramètres" position="top"/>
+                                </p:commandLink>
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fas fa-level-up-alt fa-fw" style="color: #4C5C5A;"></i>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <div class="col-8 border p-1">
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <!-- concepts spécifiques -->
+                    <div class="row mb-0" style="font-size: 14px;">
+                        <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                            <h:outputText value="Concepts spécifiques"/>
+
+                            <!-- Groupe d'icônes à droite -->
+                            <div class="d-flex gap-2">
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fa-solid fa-gear fa-fw" style="color: #47624D;"></i>
+                                    <p:tooltip value="Paramètres" position="top"/>
+                                </p:commandLink>
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fas fa-level-down-alt fa-fw" style="color: #4C5C5A;"></i>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <div class="col-8 border p-1">
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <!-- concepts associés -->
+                    <div class="row mb-0" style="font-size: 14px;">
+                        <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                            <h:outputText value="Concepts associés"/>
+
+                            <!-- Groupe d'icônes à droite -->
+                            <div class="d-flex gap-2">
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fa-solid fa-gear fa-fw" style="color: #47624D;"></i>
+                                    <p:tooltip value="Paramètres" position="top"/>
+                                </p:commandLink>
+                                <p:commandLink action="#" process="@this" update="@none">
+                                    <i class="fas fa-arrows-alt-h fa-fw" style="color: #4C5C5A;"></i>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <div class="col-8 border p-1">
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                            <h:outputText value=", "/>
+                            <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                                <h:outputText value="convoi funèbre" style="color: #0A58CA;"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <f:facet name="options">
+                        <p:menu>
+                            <p:submenu label="Settings">
+                                <p:menuitem value="Toggle" url="#" icon="pi pi-clone"
+                                            onclick="PF('relations').toggle()"/>
+                                <p:menuitem value="Remove" url="#" icon="pi pi-times"
+                                            onclick="PF('relations').close()"/>
+                            </p:submenu>
+                        </p:menu>
+                    </f:facet>
+                    <h:outputScript target="body">
+                        $(document).ready(function () {
+                            $("#relationsPanel_header").on("click", function (e) {
+                                if (
+                                        $(e.target).closest(".ui-panel-titlebar-icon, .ui-panel-titlebar-options, .ui-menuitem").length === 0
+                                ) {
+                                    PF('relations').toggle();
+                                }
+                            });
+                        });
+                    </h:outputScript>
+                </p:panel>
+            </div>
+        </div>
+
+    </p:outputPanel>
+
+
+
+
+</ui:composition>

@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- Conteneur principal -->
+    <div class="search-wrapper">
+        <!-- Burger pour options (mobile) -->
+        <div class="burger-search-control">
+            <p:commandButton icon="pi pi-sliders-h"
+                             styleClass="search-burger-button p-button-rounded p-button-text"
+                             onclick="PF('searchOptionsPanel').show();"
+                             title="Options de recherche" />
+        </div>
+
+        <!-- Colonne gauche : Select Projet / Thésaurus -->
+        <div class="search-selects">
+            <p:selectOneMenu value="#{selectedThesaurus.projectIdSelected}" styleClass="search-select">
+                <f:selectItem itemLabel="Projet" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{currentUser.userPermissions.listProjects}" var="project"
+                               itemLabel="#{project.label}" itemValue="#{project.id}" />
+            </p:selectOneMenu>
+
+            <p:selectOneMenu value="#{selectedThesaurus.selectedIdTheso}" styleClass="search-select">
+                <f:selectItem itemLabel="Thésaurus" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso"
+                               itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
+            </p:selectOneMenu>
+        </div>
+
+        <!-- Colonne centre : zone de recherche -->
+        <div class="search-bar">
+            <p:inputText placeholder="Recherche..." styleClass="search-input"/>
+            <p:commandButton icon="pi pi-search"
+                             styleClass="search-button"
+                             actionListener="#{searchBean.applySearch()}" />
+
+            <!-- Bouton pour afficher les filtres -->
+            <p:commandButton icon="pi pi-sliders-h"
+                             title="Recherche avancée"
+                             onclick="toggleAdvancedSearch(); return false;"
+                             styleClass="p-button-rounded p-button-text advanced-search-toggle" />
+        </div>
+
+        <!-- 4. Bouton afficher/cacher les résultats -->
+
+        <div class="toggle-result">
+            <p:commandButton icon="pi pi-arrow-right"
+                             onclick="toggleRightPanel(); return false;"
+                             styleClass="p-button-sm p-button-rounded p-button-secondary"
+                             title="Afficher/cacher résultats"/>
+        </div>
+    </div>
+
+    <!-- aficher la recherche avancée -->
+    <div id="advanced-search-options" class="advanced-search-section" style="display: none;">
+        <div class="advanced-filters">
+            <div class="filter-item">
+                <p:selectOneMenu id="type" value="#{searchBean.activateWithId()}" styleClass="compact-select">
+                    <f:selectItem itemLabel="Tous" itemValue=""/>
+                    <f:selectItem itemLabel="Concept" itemValue="concept"/>
+                    <f:selectItem itemLabel="Collection" itemValue="collection"/>
+                </p:selectOneMenu>
+            </div>
+
+            <div class="filter-item">
+                <p:selectOneMenu id="status" value="#{searchBean.searchSelected}" styleClass="compact-select">
+                    <f:selectItem itemLabel="Tous" itemValue=""/>
+                    <f:selectItem itemLabel="Actif" itemValue="active"/>
+                    <f:selectItem itemLabel="Inactif" itemValue="inactive"/>
+                </p:selectOneMenu>
+            </div>
+
+            <!-- Ajoute ici d'autres filtres si besoin -->
+        </div>
+    </div>
+
+
+    <!-- Bouton toggle arbre, visible uniquement sur mobile, centré sous la barre -->
+    <div class="tree-toggle-button" id="treeToggleButton">
+        <p:commandButton icon="pi pi-sitemap"
+                         styleClass="rounded-button ui-button-success"
+                         onclick="toggleTreePanel(); return false;"
+                         title="Afficher / Cacher l'arbre" />
+    </div>
+
+    <!-- Dialog pour mobile -->
+    <p:dialog widgetVar="searchOptionsPanel"
+              header="Options de recherche"
+              modal="true"
+              responsive="true"
+              closable="true"
+              styleClass="search-dialog"
+              showEffect="fade"
+              hideEffect="fade"
+              style="width:90vw;max-width:400px;">
+        <div class="search-options-mobile">
+            <p:selectOneMenu value="#{selectedThesaurus.projectIdSelected}" styleClass="search-select">
+                <f:selectItem itemLabel="Projet" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{currentUser.userPermissions.listProjects}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
+            </p:selectOneMenu>
+
+            <p:selectOneMenu value="#{selectedThesaurus.selectedIdTheso}" styleClass="search-select">
+                <f:selectItem itemLabel="Thésaurus" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
+            </p:selectOneMenu>
+        </div>
+    </p:dialog>
+
+    <script>
+        function toggleAdvancedSearch() {
+            const section = document.getElementById('advanced-search-options');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+
+
+    <!-- Permet de réinitialiser l'affichage en mode bureau -->
+    <script>
+        function resetTreeOnResize() {
+            const tree = document.getElementById('leftTreePanel');
+            const iconSpan = document.querySelector('#treeToggleButton .ui-button-icon-left');
+
+            if (!tree || !iconSpan) return;
+
+            if (window.innerWidth >= 769) {
+                // Mode bureau : on réinitialise l'arbre
+                tree.style.display = '';
+                tree.style.position = '';
+                tree.style.top = '';
+                tree.style.left = '';
+                tree.style.width = '';
+                tree.style.height = '';
+                tree.style.backgroundColor = '';
+                tree.style.zIndex = '';
+                tree.style.overflowY = '';
+
+                // Icône du bouton remise à "ouvrir arbre"
+                iconSpan.classList.remove('pi-times');
+                iconSpan.classList.add('pi-sitemap');
+            }
+        }
+
+        // Exécute une première fois au chargement (au cas où)
+        resetTreeOnResize();
+
+        // Surveille les changements de taille de la fenêtre
+        window.addEventListener('resize', resetTreeOnResize);
+    </script>
+
+</ui:composition>

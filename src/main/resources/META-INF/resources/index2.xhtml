@@ -1,0 +1,124 @@
+<ui:composition template="theso_commun/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="mainContent">
+
+        <!-- Barre de recherche -->
+        <section class="app-search">
+            <ui:include src="theso_search/search.xhtml"/>
+        </section>
+
+        <!-- Contenu principal avec 3 panneaux -->
+        <section class="app-content">
+
+            <!-- start of application, show stats of all theso -->
+            <h:panelGroup rendered="#{tree.root == null}">
+                <p:outputPanel >
+                    info et statistiques générales de l'application (combien de thésaurus, .....)
+                    <div class="card">
+                        <p:chart style="width: 100%; height: 500px;">
+                            <f:facet name="value">
+                                {
+                                type: 'bar',
+                                data: {
+                                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                                datasets: [{
+                                label: '# of Votes',
+                                data: [12, 19, 3, 5, 2, 3],
+                                borderWidth: 1,
+                                backgroundColor: ['DarkRed', 'CornflowerBlue', 'Gold', 'Lime', 'BlueViolet', 'DarkOrange']
+                                }]
+                                },
+                                options: {
+                                scales: {
+                                y: {
+                                beginAtZero: true
+                                }
+                                },
+                                plugins: {
+                                zoom: {
+                                pan: {
+                                enabled: true,
+                                mode: 'y',
+                                threshold: 5,
+                                },
+                                zoom: {
+                                wheel: {
+                                enabled: true
+                                },
+                                pinch: {
+                                enabled: true
+                                },
+                                mode: 'y',
+                                },
+                                }
+                                }
+                                }
+                                }
+                            </f:facet>
+                        </p:chart>
+                    </div>
+                </p:outputPanel>
+            </h:panelGroup>
+
+
+            <!-- Conteneur central -->
+            <h:panelGroup rendered="#{tree.root != null}">
+
+                <!-- Tree -->
+                <div class="left-tree" id="leftTreePanel">
+                    <!-- Menu d’onglets -->
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem icon="pi pi-sitemap" title="Concept" outcome="/theso_tree/tree.xhtml">
+                        </p:menuitem>
+                        <p:menuitem icon="fas fa-object-group fa-1x" title="collection">
+                        </p:menuitem>
+                        <p:menuitem icon="fa-solid fa-hand-point-up" title="Index" >
+                        </p:menuitem>
+                    </p:tabMenu>
+
+                    <!-- Affichage dynamique de l’arbre -->
+                    <ui:fragment > <!--rendered="#{param.tab eq 'treeA'}">-->
+                        <ui:include src="theso_tree/treeActions.xhtml"/>
+                        <ui:include src="theso_tree/tree.xhtml"/>
+                    </ui:fragment>
+                </div>
+
+                <!-- Concept selected -->
+                <h:panelGroup rendered="#{tree.selectedNode != null}" >
+                    <div class="info-concept">
+                        <h:panelGroup rendered="#{tree.root != null}">
+                            <ui:include src="theso_conceptDetail/concept.xhtml"/>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <!-- no concept selected, show theso_home -->
+                <h:panelGroup rendered="#{tree.selectedNode == null}" >
+                    <p:outputPanel >
+                        <ui:include src="theso_home/home.xhtml"/>
+                    </p:outputPanel>
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+
+            <!-- Panneau droit masqué -->
+            <div id="panelRight" class="search-result" style="display: none;">
+                <ui:include src="theso_search/searchResult.xhtml"/>
+            </div>
+        </section>
+
+        <!-- JS toggle résultat -->
+        <h:outputScript target="body">
+            function toggleRightPanel() {
+                const panel = document.getElementById('panelRight');
+                panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+            }
+        </h:outputScript>
+    </ui:define>
+</ui:composition>

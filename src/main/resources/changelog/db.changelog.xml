@@ -169,8 +169,11 @@
     <include file="/changelog/v25.08/25-09_01.sql"/>
     <include file="/changelog/v25.08/25-09_02.sql"/>
     <include file="/changelog/v25.08/25-09_03.sql"/>
-    <include file="/changelog/v25.08/25-09_04.sql"/>
+
     <changeSet id="25.10.1" author="Miled">
         <sqlFile path="../changelog/v25.10/25-10_01.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+    <changeSet id="25.10.2" author="Miled">
+        <sqlFile path="../changelog/v25.10/25-10_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
 </databaseChangeLog>

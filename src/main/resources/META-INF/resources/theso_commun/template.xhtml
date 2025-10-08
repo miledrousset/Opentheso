@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Mon Application</title>
+
+    <link href="../resources/img/icon_opentheso2.png" rel="icon"/>
+
+    <!-- FontAwsome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.7.2/css/all.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.7.2/css/v4-shims.css"/>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <link rel="stylesheet" type="text/css" href="resources/css/theso_style.css" />
+    <script type="text/javascript" src="resources/js/theso_responsiveMenu.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+</h:head>
+
+<h:body styleClass="app-body">
+
+    <!-- Bandeau en haut à modifier à la demande -->
+    <h:panelGroup layout="block" style="padding:10px;">
+        <div style="align-items: flex-start">
+            <span class="footer-version">Application v1.0 — © 2025</span>
+
+            <div style="align-items: flex-start">
+                <a href="http://www.culture.gouv.fr/Mentions-legales" target="_blank">Mentions légales</a> |
+                <a href="/pages/credits" target="_blank">Crédits</a> |
+                <a href="/pages/accessibilite" target="_blank">Accessibilité : non conforme</a> |
+                <a href="/pages/contact/" target="_blank">Nous contacter</a> |
+                <a href="https://www.data.gouv.fr/fr/" target="_blank">data.gouv.fr</a>
+            </div>
+        </div>
+    </h:panelGroup>
+
+    <!-- HEADER -->
+    <header class="app-header">
+
+        <div class="header-left">
+            <div class="burger-button">
+                <!-- Barre mobile avec bouton burger -->
+                <p:commandButton icon="pi pi-bars text-white"
+                                 styleClass="mobile-burger-button"
+                                 onclick="toggleSidebar()"
+                                 type="button"
+                                 title="Menu" />
+            </div>
+
+            <!-- Logos : un pour desktop, un pour mobile -->
+            <img src="#{request.contextPath}/resources/img/opentheso_blanc.png"
+                 alt="OpenTheso"
+                 class="logo-desktop header-logo" />
+
+            <img src="#{request.contextPath}/resources/img/o_blanc.png"
+                 alt="OpenTheso mobile"
+                 class="logo-mobile header-logo" />
+
+        </div>
+        <div class="header-title">
+            Thesaurus Pactols
+        </div>
+        <div class="header-right">
+            <!-- Icône d’alertes -->
+            <p:commandButton icon="pi pi-bell text-white"
+                             styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                             title="Alertes"
+                             action="#{notificationBean.showAlerts}" />
+
+            <!-- Bouton de connexion/déconnexion -->
+            <p:commandButton icon="pi pi-user text-white"
+                             styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                             title="Mon compte"
+                             action="#{loginBean.handleUserAction}" />
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- MENU LATERAL -->
+        <aside id="sidebar" class="app-sidebar">
+            <h:form>
+                <p:menu styleClass="sidebar-menu" model="#{thesoMenuBean.model}" />
+            </h:form>
+        </aside>
+
+        <!-- CONTENU CENTRAL -->
+        <main class="app-main">
+            <ui:insert name="mainContent"/>
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <span class="footer-version">Application v1.0 — © 2025</span>
+
+            <div class="infos-footer">
+                <a href="http://www.culture.gouv.fr/Mentions-legales" target="_blank">Mentions légales</a> |
+                <a href="/pages/credits" target="_blank">Crédits</a> |
+                <a href="/pages/accessibilite" target="_blank">Accessibilité : non conforme</a> |
+                <a href="/pages/contact/" target="_blank">Nous contacter</a> |
+                <a href="https://www.data.gouv.fr/fr/" target="_blank">data.gouv.fr</a>
+            </div>
+        </div>
+    </footer>
+
+</h:body>
+</html>

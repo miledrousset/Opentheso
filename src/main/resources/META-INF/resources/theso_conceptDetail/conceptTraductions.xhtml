@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- Bloc traductions -->
+    <div class="row">
+        <div class="col-md-12">
+            <p:panel id="traductionsPanel" header="Traductions" toggleable="true" closable="false"
+                     toggleSpeed="500"
+                     closeSpeed="500" widgetVar="traductions"
+                     style="font-family: 'Roboto', sans-serif; font-size: 14px;">
+
+                <!-- Contenu à répeter-->
+                <div class="row mb-0">
+                    <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                        <h:outputText value="Libellé" style="font-size: 14px; font-weight: bold"/>
+
+                        <!-- Groupe d'icônes à droite -->
+                        <div class="d-flex gap-2">
+                            <p:commandLink action="#" process="@this" update="@none">
+                                <i class="fa-solid fa-flag-checkered fa-fw" style="color: #47624D;"></i>
+                                <p:tooltip value="Paramètres" position="top"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                            <h:outputText value="Leichenzug" style="color: #0A58CA;"/>
+                        </p:commandLink>
+                        <h:outputText value=" (de)" style="font-size: 14px;"/>
+                    </div>
+                </div>
+
+                <div class="row mb-0" style="font-size: 14px; font-style: italic">
+                    <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                        <h:outputText value="Variantes du Libellé"/>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <h:outputText value="Trauerzug"/>
+                    </div>
+                </div>
+
+                <!-- Contenu à répeter-->
+                <div class="row mb-0">
+                    <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                        <h:outputText value="Libellé" style="font-size: 14px; font-weight: bold"/>
+
+                        <!-- Groupe d'icônes à droite -->
+                        <div class="d-flex gap-2">
+                            <p:commandLink action="#" process="@this" update="@none">
+                                <i class="fa-solid fa-flag-checkered fa-fw" style="color: red;"></i>
+                                <p:tooltip value="Paramètres" position="top"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <p:commandLink action="#" process="@this" update="@none" style="font-size: 14px;">
+                            <h:outputText value="funeral procession" style="color: #0A58CA;"/>
+                        </p:commandLink>
+                        <h:outputText value=" (en)" style="font-size: 14px;"/>
+                    </div>
+                </div>
+
+                <div class="row mb-0" style="font-size: 14px; font-style: italic">
+                    <div class="col-4 border p-1 d-flex justify-content-between align-items-center">
+                        <h:outputText value="Variantes du Libellé"/>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <h:outputText value="funeral cortege"/>
+                        <h:outputText value=", "/>
+                        <h:outputText value="procession of mourners"/>
+                    </div>
+                </div>
+
+
+            </p:panel>
+        </div>
+    </div>
+
+
+
+
+</ui:composition>

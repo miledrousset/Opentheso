@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- Bloc Groups Collections -->
+    <div class="row">
+        <div class="col-md-12">
+            <p:panel id="groupsPanel" header="Collections / groupes" toggleable="true" closable="false"
+                     toggleSpeed="500"
+                     closeSpeed="500" widgetVar="groups"
+                     style="font-family: 'Roboto', sans-serif; font-size: 14px;">
+                <div class="row mb-0">
+                    <div class="col-4 border p-1">
+                        <h:outputText value="Collection 1" style="font-size: 14px; "/>
+                        <h:outputText value=" (id=e3453)" style="font-size: 14px;"/>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <h:outputText value="Collection 2" style="font-size: 14px; "/>
+                        <h:outputText value=" (id=65d65)" style="font-size: 14px;"/>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-4 border p-1">
+                        <h:outputText value="Collection 3" style="font-size: 14px; "/>
+                        <h:outputText value=" (id=3453)" style="font-size: 14px;"/>
+                        <h:outputText value=" membres (5)" style="font-size: 14px;"/>
+                    </div>
+                    <div class="col-8 border p-1">
+                        <h:outputText value="Collection 4" style="font-size: 14px; "/>
+                        <h:outputText value=" (id=6565)" style="font-size: 14px;"/>
+                        <h:outputText value=" (id=6565)" style="font-size: 14px;"/>
+                    </div>
+                </div>
+                <f:facet name="options">
+                    <p:menu>
+                        <p:submenu label="Settings">
+                            <p:menuitem value="Toggle" url="#" icon="pi pi-clone" onclick="PF('groups').toggle()"/>
+                            <p:menuitem value="Remove" url="#" icon="pi pi-times" onclick="PF('groups').close()"/>
+                        </p:submenu>
+                    </p:menu>
+                </f:facet>
+                <h:outputScript target="body">
+                    $(document).ready(function () {
+                        $("#groupsPanel_header").on("click", function (e) {
+                            if (
+                                    $(e.target).closest(".ui-panel-titlebar-icon, .ui-panel-titlebar-options, .ui-menuitem").length === 0
+                            ) {
+                                PF('groups').toggle();
+                            }
+                        });
+                    });
+                </h:outputScript>
+            </p:panel>
+        </div>
+    </div>
+
+
+
+</ui:composition>

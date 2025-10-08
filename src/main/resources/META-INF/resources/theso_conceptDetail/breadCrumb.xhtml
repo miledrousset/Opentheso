@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel >
+
+        <!-- Bloc Groups Collections -->
+        <div class="row" >
+            <div class="col-md-12">
+                <p:panel id="groupsPanelBreadCrumb" toggleable="true" closable="false"
+                         toggleSpeed="500"
+                         closeSpeed="500" widgetVar="breadCrumb"
+                         styleClass="breadcrumb-panel"
+                         collapsed="true"
+                         style="font-family: 'Roboto', sans-serif; font-size: 14px;">
+
+                    <f:facet name="header">
+                        <h:panelGroup >
+                            <!-- Icône FontAwesome ou PrimeIcons -->
+                            <i class="fas fa-sitemap" aria-hidden="true"></i>
+                            <!-- Le texte du titre -->
+                            <h:outputText value="File d’ariane" />
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <div class="row mb-0">
+                        <div class="col-12 ">
+                            <p:breadCrumb style="font-size: 0.9rem;">
+                                <p:menuitem value="Electronics"/>
+                                <p:menuitem value="Computer"/>
+                                <p:menuitem value="Notebook"/>
+                                <p:menuitem value="Accessories"/>
+                                <p:menuitem value="Backpacks"/>
+                                <p:menuitem value="Item"/>
+                            </p:breadCrumb>
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-12" >
+                            <p:breadCrumb style="font-size: 0.9rem;">
+                                <p:menuitem value="Electronics1"/>
+                                <p:menuitem value="Computer2"/>
+                                <p:menuitem value="Notebook3"/>
+                                <p:menuitem value="Accessories4"/>
+                                <p:menuitem value="Backpacks5"/>
+                                <p:menuitem value="Item6"/>
+                            </p:breadCrumb>
+                        </div>
+                    </div>
+
+                    <h:outputScript target="body">
+                        $(document).ready(function () {
+                            $("#groupsPanelBreadCrumb_header").on("click", function (e) {
+                                if (
+                                        $(e.target).closest(".ui-panel-titlebar-icon, .ui-panel-titlebar-options, .ui-menuitem").length === 0
+                                ) {
+                                    PF('breadCrumb').toggle();
+                                }
+                            });
+                        });
+                    </h:outputScript>
+                </p:panel>
+            </div>
+        </div>
+
+    </p:outputPanel>
+
+    <p:spacer height="10" style="height: 5px; color: var(--color-action-secondary)"></p:spacer>
+
+
+
+
+</ui:composition>

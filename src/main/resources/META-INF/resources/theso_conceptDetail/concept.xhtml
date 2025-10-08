@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- Menu d’onglets -->
+    <p:tabMenu activeIndex="#{param.i}">
+        <p:menuitem value="Concept" outcome="/theso_tree/tree.xhtml">
+        </p:menuitem>
+        <p:menuitem value="Collection">
+        </p:menuitem>
+        <p:menuitem value="Alignement" >
+        </p:menuitem>
+    </p:tabMenu>
+
+    <!-- Affichage dynamique de l’arbre selon l’onglet -->
+    <p:outputPanel >
+        <ui:fragment >
+            <ui:include src="breadCrumb.xhtml"/>
+
+            <ui:include src="conceptLabel.xhtml"></ui:include>
+            <ui:include src="conceptCollections.xhtml"></ui:include>
+            <ui:include src="conceptSemantiqueRelations.xhtml"></ui:include>
+            <ui:include src="conceptTraductions.xhtml"/>
+            <ui:include src="conceptNotes.xhtml"/>
+        </ui:fragment >
+    </p:outputPanel>
+
+
+
+
+
+        <!-- #MR samples buttons, to be deleted -->
+        <p:spacer height="20" />
+
+        <div class="row" style="margin-left: 20px;">
+            <div class="col-md-12">
+                <p:commandButton value="Valider" icon="fa-solid fa-check" styleClass="btn-main" />
+                <p:commandButton value="Valider" icon="fa-solid fa-check" iconPos="right" styleClass="btn-main" />
+                <p:commandButton value="Valider"  styleClass="btn-main"/>
+                <p:commandButton value="Annuler" icon="fa-solid fa-rotate-left" styleClass="btn-secondary" />
+                <p:commandButton value="Supprimer" icon="fa-solid fa-trash-can" styleClass="btn-danger" />
+
+                <p:commandButton value="style" icon="fa-solid fa-check" styleClass="btn-secondary" />
+
+                <p:commandButton value="style" icon="fa-solid fa-check" styleClass="btn-link " />
+                <p:commandButton value="style" icon="fa-solid fa-circle-info" styleClass="btn-link-discreet" />
+
+                <p:commandButton value="Aide" icon="fa-solid fa-circle-info" styleClass="btn-help" />
+            </div>
+        </div>
+        <div class="row" style="margin-left: 20px;">
+            <div class="col-md-12">
+                <p:commandButton icon="fa-solid fa-rotate-left text-danger"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.showAlerts}" />
+
+                <p:commandButton icon="fa-solid fa-info text-primary"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.showAlerts}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-secondary"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.showAlerts}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-secondary"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-warning"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-info"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-light"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-dark"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-muted"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+                <p:commandButton icon="fa-solid fa-rotate-left text-white"
+                                 styleClass="p-button-rounded p-button-text p-button-secondary header-icon"
+                                 title="Alertes"
+                                 action="#{notificationBean.success}" />
+            </div>
+        </div>
+
+</ui:composition>
