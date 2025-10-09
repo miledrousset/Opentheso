@@ -2,7 +2,94 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+
+
+
+
+        <h:form id="conceptForm">
+
+            <!-- Menu de configuration -->
+            <h:panelGroup style="display: flex; justify-content: flex-end; align-items: center;">
+                <p:menuButton id="menuButton" title="Afficher / Masquer les panels" icon="pi pi-cog"
+                              buttonStyleClass="ui-button-outlined" buttonStyle="border-radius: 0 1rem">
+
+                    <c:forEach var="panel" items="#{conceptPanelsView.panelsVisibility.entrySet()}">
+                        <p:menuitem
+                                value="#{conceptPanelsView.getLabel(panel.key)}"
+                                icon="#{panel.value ? 'pi pi-check' : 'pi pi-times'}"
+                                ajax="true"
+                                process="@this"
+                                update="conceptForm menuButton contentPanels"
+                                actionListener="#{conceptPanelsView.togglePanel(panel.key)}" />
+                    </c:forEach>
+                </p:menuButton>
+            </h:panelGroup>
+
+
+            <h:panelGroup style="display: flex; justify-content: flex-end; align-items: center;">
+                <p:commandButton id="panelButton"
+                                 title="Afficher / Masquer les panels"
+                                 icon="pi pi-cog"
+                                 styleClass="ui-button-outlined"
+                                 style="border-radius: 0 1rem"
+                                 type="button" />
+
+                <p:overlayPanel id="panelOverlay"
+                                for="panelButton"
+                                widgetVar="panelOverlay"
+                                dismissable="false"
+                                showEvent="click"
+                                hideEvent="none">
+
+                    <p:outputLabel value="Choisir les panels à afficher :" />
+                    <p:selectManyCheckbox value="#{conceptPanelsView.selectedPanels}" layout="grid" columns="1">
+                        <f:selectItems value="#{conceptPanelsView.panelOptions}" var="p"
+                                       itemLabel="#{p.label}" itemValue="#{p.key}" />
+                        <p:ajax listener="#{conceptPanelsView.updatePanels}" update="contentPanels" />
+                    </p:selectManyCheckbox>
+
+                    <p:separator />
+
+                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                        <p:commandButton value="Fermer" icon="fa-solid fa-rotate-left" styleClass="btn-secondary"
+                                onclick="PF('panelOverlay').hide()"/>
+                    </div>
+                </p:overlayPanel>
+
+            </h:panelGroup>
+        </h:form>
+
+
+
+        <!-- Contenu dynamique -->
+        <h:panelGroup id="contentPanels" layout="block">
+            <c:if test="#{conceptPanelsView.panelsVisibility['label']}">
+                <ui:include src="conceptLabel.xhtml"/>
+            </c:if>
+
+            <c:if test="#{conceptPanelsView.panelsVisibility['collections']}">
+                <ui:include src="conceptCollections.xhtml"/>
+            </c:if>
+
+            <c:if test="#{conceptPanelsView.panelsVisibility['relations']}">
+                <ui:include src="conceptSemantiqueRelations.xhtml"/>
+            </c:if>
+
+            <c:if test="#{conceptPanelsView.panelsVisibility['traductions']}">
+                <ui:include src="conceptTraductions.xhtml"/>
+            </c:if>
+
+            <c:if test="#{conceptPanelsView.panelsVisibility['notes']}">
+                <ui:include src="conceptNotes.xhtml"/>
+            </c:if>
+
+        </h:panelGroup>
+
+
 
     <!-- Menu d’onglets -->
     <p:tabMenu activeIndex="#{param.i}">
@@ -17,13 +104,16 @@
     <!-- Affichage dynamique de l’arbre selon l’onglet -->
     <p:outputPanel >
         <ui:fragment >
+
+
+            <!--
             <ui:include src="breadCrumb.xhtml"/>
 
             <ui:include src="conceptLabel.xhtml"></ui:include>
             <ui:include src="conceptCollections.xhtml"></ui:include>
             <ui:include src="conceptSemantiqueRelations.xhtml"></ui:include>
             <ui:include src="conceptTraductions.xhtml"/>
-            <ui:include src="conceptNotes.xhtml"/>
+            <ui:include src="conceptNotes.xhtml"/>-->
         </ui:fragment >
     </p:outputPanel>
 

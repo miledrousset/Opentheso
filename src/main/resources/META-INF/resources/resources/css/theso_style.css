@@ -1,0 +1,855 @@
+/*  🎨 Palette de couleurs utilisée */
+:root {
+    /* Actions */
+    --color-action-main: #47624D;      /* ✅ Vert forêt foncé */
+    --color-action-secondary: #6C757D; /* ⚠️ Gris-bleu foncé */
+    --color-danger: #B84A3C;           /* ❌ Rouge brique */
+    --color-link-discreet: #516D75;   /* ✏️ Lien discret */
+    --color-link: #0A58CA;            /* 🔗 Lien classique */
+    --color-surface-secondary: #f0f2f5; /* légèrement bleuté (style PrimeFaces moderne) */
+
+    /* Fonds */
+    --color-bg-global: #EEEFE0;       /* Fond global */
+    --color-bg-secondary: #D1D8BE;    /* Fond secondaire */
+    --color-hover: #A7C1A8;           /* Hover/survol */
+
+    /* Texte / icône secondaire */
+    --color-text-secondary: #819A91;
+    --color-text-primary: #333;
+}
+
+
+/* 1. Base */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: var(--color-text-primary, #333);
+
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden; /* permet le scroll vertical */
+}
+
+/* 2. Structure App */
+.app-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/*  3. Header & Footer */
+.app-header {
+    height: 50px;
+    background-color: var(--color-action-main);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+
+/* Regroupe burger + logo */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Logo réduit si besoin */
+.header-logo {
+    height: 25px;
+    max-width: 120px;
+}
+
+/* Titre central ou adaptatif */
+.header-title {
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Par défaut : afficher le logo desktop, cacher le mobile */
+.logo-desktop {
+    display: inline-block;
+}
+
+.logo-mobile {
+    display: none;
+}
+
+
+
+/**** Footer dynamique ****/
+.app-footer {
+    background-color: var(--color-surface-secondary);
+    text-align: center;
+    padding: 1rem 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    width: 100%;
+    font-size: 1rem;
+}
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.infos-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.infos-footer a:hover {
+    text-decoration: underline;
+    color: var(--color-link);
+}
+
+.ods-front-footer__ods-logo-img {
+    height: 35px;
+    max-width: 100%;
+}
+
+.footer-logo {
+    margin-top: 0.5rem;
+    height: 30px;
+}
+
+
+
+
+
+
+
+
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    background: transparent;
+}
+
+.mobile-burger-button {
+    background-color: transparent !important;
+    border: none !important;
+    color: white !important;
+    font-size: 1.4rem;
+    margin-right: 10px;
+    display: none !important;
+    box-shadow: none;
+}
+
+
+
+/* === SIDEBAR === */
+.app-sidebar {
+    width: 40px;
+    background-color: var(--color-action-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+/*MenuItem et MenuButton*/
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover {
+    background: var(--color-action-main);
+}
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-text {
+    color: white;
+}
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-icon, body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-icon {
+    color: white;
+}
+
+
+
+/* pour le hover */
+.sidebar-menu .ui-menuitem-link:hover {
+    background-color: #A7C1A8 !important;
+    color: white !important;
+}
+/* Icône à l'intérieur */
+.sidebar-menu .ui-menuitem-icon {
+    color: white !important; /* Garde la couleur de l'icône */
+}
+
+/* === Liens du menu (boutons icônes) === */
+.sidebar-menu .ui-menuitem-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-action-main);
+    color: white;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+/* === PrimeFaces Menu Contextuel en Sidebar === */
+body .ui-menu {
+    padding: 0 0 0 0;
+    /*background: var(--color-action-secondary) !important;*/
+  /*  border: none; */
+    width: auto;
+}
+body .ui-menu .ui-menu-list .ui-menuitem {
+    margin: 0;
+    width: 100%;
+    border: 0 none;
+    float: none;
+    border-radius: 0;
+    font-size: 0.9rem;
+}
+
+
+
+
+/**** tabMenu ***/
+body .ui-tabmenu {
+    padding: 0;
+    position: static;
+    /*margin-bottom: -10px;*/
+}
+body .ui-tabmenu .ui-tabmenu-nav {
+    /*position: static;*/
+}
+
+body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem a {
+    padding: .5em 1em;
+}
+body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active a {
+    color: var( --color-action-main);/*#47624D;*/
+    background-color: var(--color-bg-secondary);/*#D1D8BE;*/
+}
+body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active {
+    background: #fff;
+    border-color: var(--color-action-main);
+}
+
+/* CheckBox */
+body .ui-chkbox .ui-chkbox-box {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--color-action-secondary);
+    border-radius: 0.25rem;
+    background-color: var(--color-bg-secondary);
+    transition: all 0.2s ease;
+    position: relative;
+}
+body .ui-chkbox .ui-chkbox-box:hover {
+    border-color: var(--color-action-main);
+    background-color: var(--color-hover);
+}
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: var(--color-action-main);
+    border-color: var(--color-action-main);
+}
+body .ui-chkbox .ui-chkbox-box.ui-state-active.ui-state-hover {
+    background-color: var(--color-hover);
+    border-color: var(--color-action-main);
+}
+body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon {
+    font-family: "primeicons" !important;
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    color: white; /* coche en blanc pour contraste */
+    background: none;
+    overflow: visible;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-40%, -50%);
+    font-size: 1rem; /* ajustable selon besoin */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* 5. Contenu central */
+
+/* Zone de recherche */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.app-search {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    flex-wrap: wrap;
+    position: relative;
+}
+.search-controls {
+    display: flex;
+    gap: 10px;
+}
+/* Colonne gauche : selects */
+.search-selects {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    width: 40%; /* Les deux selects prennent 40% de la largeur totale */
+}
+
+.search-select {
+    flex: 1; /* Chaque select occupe la moitié de la largeur de .search-selects */
+}
+
+.search-select .ui-selectonemenu {
+    min-width: 140px;
+}
+/* Zone centrale : recherche centrée */
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-grow: 1;
+    width: 60%; /* La zone de recherche prend 60% */
+    min-width: 0; /* Permet la réduction sur petits écrans */
+}
+/* Input de recherche */
+.search-input {
+    width: 100%; /* Prend tout l'espace disponible */
+    padding: 0.5rem;
+}
+/* Bouton loupe */
+.search-button {
+    margin-left: 5px;
+}
+/* Bouton "toggle result" */
+.toggle-result {
+    flex-shrink: 0;
+}
+
+.search-burger-button {
+    display: none; /* caché par défaut */
+    background-color: transparent !important;
+    border: none;
+    font-size: 1.3rem;
+    color: #4C5C5A; /* ton action secondaire */
+}
+
+/** Recherche avancée **/
+.advanced-search-toggle {
+    margin-left: 5px;
+    font-size: 1.2rem;
+    color: #4C5C5A;
+}
+
+.advanced-search-section {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 20px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    margin-top: 5px;
+    display: none;
+}
+.advanced-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: nowrap; /* tout sur une ligne */
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    min-width: 120px; /* tu peux ajuster */
+}
+
+.filter-item label {
+    margin-bottom: 3px;
+    color: #555;
+}
+
+.compact-select {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 3px 6px !important; /* réduction du padding */
+}
+
+
+
+
+.app-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    gap: 5px; /* Espacement entre les blocs */
+    padding: 5px;
+    background-color: var(--color-bg-global);
+    box-sizing: border-box;
+}
+
+body .ui-tree {
+    padding: 0rem;
+}
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler {
+   width: 1rem;
+}
+
+/** CSS pour le Tree **/
+.left-tree {
+    flex: 0 0 25%;
+    background-color: var(--color-surface-secondary);
+    border-right: 1px solid #ccc; /* séparation droite */
+    border-radius: 8px;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+    max-height: 85vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/** taille des icones du Tree **/
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e{
+    font-size: 0.9rem;
+}
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s{
+    font-size: 0.9rem;
+}
+/** marge des icones de l'arbre **/
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
+    margin: 0 0 0 0rem;
+}
+
+/* Le bouton toggle caché sur desktop */
+.tree-toggle-button {
+    display: none;
+}
+
+/* partie de concept centrale */
+.info-concept {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* effet "carte" */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+/* resultat de la recherche */
+.search-result {
+    flex: 0 0 15%;
+    background-color: var(--color-surface-secondary);
+    border-left: 1px solid #ccc; /* séparation gauche */
+    border-radius: 8px;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+}
+
+#treeMobileHeader button i {
+    font-size: 1.2em;
+}
+
+/* Masquer le bouton burger sur les écrans plus larges que 992px */
+@media (min-width: 769px) {
+    .burger-button {
+        display: none !important;
+    }
+    .burger-search-control {
+        display: none !important; /* caché sur desktop */
+    }
+    .burger-tree-return {
+        display: none !important; /* caché sur desktop */
+    }
+    #treeMobileHeader {
+        display: none !important;
+    }
+}
+
+/* 📱 6. Responsive */
+@media (max-width: 768px) {
+    .app-sidebar {
+        display: none !important;
+    }
+
+    /* Cache l'arbre sur mobile */
+    .left-tree {
+        display: none;
+        position: fixed; /* quand visible, il sera positionné */
+        top: 60px;       /* laisse la place pour le menu + barre recherche */
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - 60px); /* prend toute la hauteur moins barre */
+        background-color: #e8f5e9;
+        z-index: 9999;
+        /*overflow-y: auto;*/
+        padding: 10px;
+        box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+    }
+    /* Affiche le bouton toggle sous la barre */
+    .tree-toggle-button {
+        display: flex;
+        justify-content: center;
+        margin: 0px 0;
+        width: 100%;
+    }
+    .tree-toggle-button p\.commandButton {
+        margin: 0 auto;
+    }
+    body .ui-button.rounded-button.ui-button-icon-only {
+        border-radius: 50%;
+        height: 1rem;
+    }
+
+    /* Sur smartphone : on inverse */
+    .logo-desktop {
+        display: none;
+    }
+
+    .logo-mobile {
+        display: inline-block;
+    }
+
+
+
+
+
+    /* partie pour la barre de recherche */
+    .search-selects {
+        display: none;
+    }
+    .burger-search-control {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-grow: 1;
+        width: 60%; /* La zone de recherche prend 60% */
+        min-width: 0; /* Permet la réduction sur petits écrans */
+    }
+    .search-input {
+        width: 100%; /* Prend tout l'espace disponible */
+        padding: 0.5rem;
+    }
+    .toggle-result {
+        flex-shrink: 0;
+    }
+
+
+
+
+    .burger-button {
+        display: inline-block;
+    }
+
+    body.menu-open .app-sidebar {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        width: 40px;
+        height: calc(100vh - 50px);
+        background-color: var(--color-action-secondary);
+        z-index: 999;
+        overflow-y: auto;
+    }
+
+    .app-main {
+        margin-left: 0 !important;
+    }
+
+    body.menu-open .app-main {
+        margin-left: 40px !important;
+    }
+
+    .ui-splitter-panel {
+        flex-grow: 1 !important;
+        max-width: 100% !important;
+    }
+}
+
+/* 7. Composants UI (PrimeFaces) */
+body .ui-panel .ui-panel-titlebar {
+    background-color: var(--color-bg-global);
+    border: none;
+    padding: .5em 1em .3em;
+    color: var(--color-action-main);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: normal !important;
+}
+
+/** panel private pour le fil d'ariane **/
+.breadcrumb-panel .ui-panel-titlebar {
+    background-color: var(--color-bg-global) !important;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+body .ui-breadcrumb {
+    border: 0px solid #FFFFFF;
+    border-radius: 0px;
+    padding: 0rem;
+}
+
+body .ui-panel .ui-panel-content {
+    padding: 0rem 1rem 1rem 1rem;
+    border: none;
+}
+
+.ui-outputlabel, .ui-outputtext,
+.ui-icon {
+    font-size: 14px;
+}
+
+/* Boutons de base PrimeFaces stylés comme Bootstrap */
+.ui-button {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px !important;
+    padding: 0.75rem 1.1rem 0.75rem 2.0rem !important;
+    line-height: 1.5 !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem; /* espace entre icône et texte */
+    box-shadow: none !important;
+    margin-right: 4px !important;
+}
+
+
+
+/* 8. Boutons personnalisés */
+.btn-main {
+    background-color: var(--color-action-main) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+.btn-main:hover,
+.btn-secondary:hover {
+    filter: brightness(0.9) !important;
+}
+.btn-danger:hover {
+    filter: brightness(0.85) !important;
+}
+.btn-secondary {
+    background-color: var(--color-action-secondary) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+.btn-danger {
+    background-color: var(--color-danger) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+
+.btn-link {
+    background-color: transparent !important;
+    color: var(--color-link) !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+.btn-link-discreet {
+    background-color: transparent !important;
+    color: var(--color-link-discreet) !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+.btn-help {
+    background-color: var(--color-link-discreet) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.btn-help:hover {
+    background-color: var(--color-hover) !important;
+}
+.btn-help .icon {
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+/* ajustement des boutons pour ressembler à BootStrap */
+/* Bouton principal PrimeFaces style Bootstrap */
+.ui-button.btn-main,
+.ui-button.btn-secondary,
+.ui-button.btn-danger {
+  /*  padding: 0.75rem 1.1rem 0.75rem 2.0rem !important; /* ⬅️ comme Bootstrap */
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    border-radius: 0.25rem !important;
+    border: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Supprime les paddings internes du texte dans le bouton */
+.ui-button-text-only .ui-button-text,
+.ui-button-text-icon-left .ui-button-text,
+.ui-button-text-icon-right .ui-button-text {
+    padding: 0 !important;
+}
+
+body .ui-button.ui-button-text-icon-right .ui-button-text {
+    padding: 0rem 1rem 0rem 0rem !important;
+}
+body .ui-button.ui-button-text-icon-left .ui-button-text {
+    padding: 0rem 0rem 0rem 1rem !important;
+}
+
+/* design du bouton icon */
+/* Boutons icon-only PrimeFaces avec design rond, centré, moderne */
+body .ui-button.ui-button-icon-only {
+    width: 40px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    color: #47624D; /* couleur d’icône primaire */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: background-color 0.3s ease;
+    box-shadow: none;
+    padding: 0;
+}
+
+body .ui-button.ui-button-icon-only .ui-icon {
+    font-size: 1.2rem;
+    color: inherit;
+    position: relative; /* plus besoin de `absolute` si on centre via flex */
+    margin: 0;
+}
+
+/* Effet hover pour les boutons */
+body .ui-button.ui-button-icon-only:hover {
+    background-color: #A7C1A8; /* Hover vert clair */
+    color: white;
+}
+
+body .ui-button.ui-button-icon-only:hover .ui-icon {
+    color: white;
+}
+
+
+/* 9. Fonds */
+.bg-global {
+    background-color: var(--color-bg-global);
+}
+
+.bg-secondary {
+    background-color: var(--color-bg-secondary);
+}
+
+.bg-hover {
+    background-color: var(--color-hover);
+}
+
+/* 10. Textes */
+.text-main {
+    color: var(--color-action-main);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+.text-discreet {
+    color: var(--color-link-discreet);
+}
+
+.text-link {
+    color: var(--color-link);
+    text-decoration: underline;
+}
