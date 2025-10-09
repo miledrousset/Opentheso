@@ -13,6 +13,12 @@ import java.util.Optional;
 public interface UserGroupLabelRepository extends JpaRepository<UserGroupLabel, Integer> {
 
     @Query("SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +
+            "FROM UserGroupLabel ugl " +
+            "WHERE LOWER(ugl.label) LIKE LOWER(CONCAT('%', :label, '%'))" +
+            "ORDER BY ugl.label")
+    List<UserGroupLabel> findAllByLabel(@Param("label") String label);
+
+    @Query("SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +
             "FROM UserRoleGroup urg " +
             "JOIN UserGroupLabel ugl ON urg.group.id = ugl.id " +
             "WHERE urg.user.id = :idUser " +

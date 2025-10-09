@@ -53,8 +53,15 @@ public class MoveThesoToProjectBean implements Serializable {
     
     public List<NodeUserGroup> autoCompleteProject(String projectName) {
         if(currentUser.getNodeUser().isSuperAdmin()) {
-            return userGroupLabelRepository.findAll().stream()
-                    .map(group -> NodeUserGroup.builder().idGroup(group.getId()).groupName(group.getLabel()).build())
+            var projets = userGroupLabelRepository.findAllByLabel(projectName);
+            if (ObjectUtils.isEmpty(projets)) {
+                return List.of();
+            }
+            return projets.stream()
+                    .map(element -> NodeUserGroup.builder()
+                            .idGroup(element.getId())
+                            .groupName(element.getLabel())
+                            .build())
                     .toList();
         } else {
             return userRoleGroupRepository.findGroupByUserAndProject(currentUser.getNodeUser().getIdUser(), projectName);
