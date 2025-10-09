@@ -204,7 +204,7 @@ public class ThesaurusService {
 
         var thesaurusLabel = thesaurusLabelRepository.findByIdThesaurusAndLang(idThesaurus, idLang);
         if (thesaurusLabel.isEmpty()) {
-            log.error("Aucun thésaurus trouvé avec l'id {}", idThesaurus);
+            log.error("Le thésaurus n'a pas de Label dans sa langue source, id {}", idThesaurus);
             return "";
         }
 

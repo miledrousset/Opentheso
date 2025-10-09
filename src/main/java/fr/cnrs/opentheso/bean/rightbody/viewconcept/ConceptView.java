@@ -36,6 +36,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,28 +161,57 @@ public class ConceptView implements Serializable {
     }
     
     public String getDrapeauImgLocal(String codePays) {
-
         var facesContext = FacesContext.getCurrentInstance();
         var externalContext = facesContext.getExternalContext();
+        var ctxPath = externalContext.getRequestContextPath();
+
         if (StringUtils.isEmpty(codePays)) {
-            return externalContext.getRequestContextPath() + "/resources/img/flag/noflag.png";
+            return ctxPath + "/resources/img/flag/noflag.png";
         }
 
-        var relativePath = "/resources/img/flag/" + codePays + ".png";
-        var absolutePath = externalContext.getRealPath(relativePath);
-        var file = new File(absolutePath);
-        if (file.exists()) {
-            return externalContext.getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
-        } else {
-            return externalContext.getRequestContextPath() + "/resources/img/flag/noflag.png";
+        String resourcePath = "/resources/img/flag/" + codePays.toLowerCase() + ".png";
+
+        try (InputStream is = facesContext.getExternalContext().getResourceAsStream(resourcePath)) {
+            if (is != null) {
+                return ctxPath + resourcePath;
+            }
+        } catch (Exception ignored) {
         }
+
+        return ctxPath + "/resources/img/flag/noflag.png";
     }
     
     public String getFlagFromCodeLang(String idLang){
-        var language = languageRepository.findByIso6391(idLang);
-        return language.map(languageIso639 ->
-                FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
-                        + "/resources/img/flag/" + languageIso639.getCodePays() + ".png").orElse("");
+        var ctx = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestContextPath();
+
+        var defaultFlag = ctx + "/resources/img/flag/noflag.png";
+
+        if (StringUtils.isEmpty(idLang)) {
+            return defaultFlag;
+        }
+
+        return languageRepository.findByIso6391(idLang)
+                .map(languageIso639 -> {
+                    var codePays = languageIso639.getCodePays();
+                    if (StringUtils.isEmpty(codePays)) {
+                        return defaultFlag;
+                    }
+
+                    String resourcePath = "/resources/img/flag/" + codePays.toLowerCase() + ".png";
+
+                    try (InputStream is = FacesContext.getCurrentInstance()
+                            .getExternalContext()
+                            .getResourceAsStream(resourcePath)) {
+                        if (is != null) {
+                            return ctx + resourcePath;
+                        }
+                    } catch (Exception ignored) {}
+
+                    return defaultFlag;
+                })
+                .orElse(defaultFlag);
     }
 
     /**
