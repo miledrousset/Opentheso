@@ -5,11 +5,6 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-
-
-
-
-
         <h:form id="conceptForm">
 
             <!-- Menu de configuration -->
@@ -27,10 +22,7 @@
                                 actionListener="#{conceptPanelsView.togglePanel(panel.key)}" />
                     </c:forEach>
                 </p:menuButton>
-            </h:panelGroup>
 
-
-            <h:panelGroup style="display: flex; justify-content: flex-end; align-items: center;">
                 <p:commandButton id="panelButton"
                                  title="Afficher / Masquer les panels"
                                  icon="pi pi-cog"
@@ -67,6 +59,7 @@
 
         <!-- Contenu dynamique -->
         <h:panelGroup id="contentPanels" layout="block">
+            <ui:include src="breadCrumb.xhtml"/>
             <c:if test="#{conceptPanelsView.panelsVisibility['label']}">
                 <ui:include src="conceptLabel.xhtml"/>
             </c:if>
@@ -88,38 +81,6 @@
             </c:if>
 
         </h:panelGroup>
-
-
-
-    <!-- Menu d’onglets -->
-    <p:tabMenu activeIndex="#{param.i}">
-        <p:menuitem value="Concept" outcome="/theso_tree/tree.xhtml">
-        </p:menuitem>
-        <p:menuitem value="Collection">
-        </p:menuitem>
-        <p:menuitem value="Alignement" >
-        </p:menuitem>
-    </p:tabMenu>
-
-    <!-- Affichage dynamique de l’arbre selon l’onglet -->
-    <p:outputPanel >
-        <ui:fragment >
-
-
-            <!--
-            <ui:include src="breadCrumb.xhtml"/>
-
-            <ui:include src="conceptLabel.xhtml"></ui:include>
-            <ui:include src="conceptCollections.xhtml"></ui:include>
-            <ui:include src="conceptSemantiqueRelations.xhtml"></ui:include>
-            <ui:include src="conceptTraductions.xhtml"/>
-            <ui:include src="conceptNotes.xhtml"/>-->
-        </ui:fragment >
-    </p:outputPanel>
-
-
-
-
 
         <!-- #MR samples buttons, to be deleted -->
         <p:spacer height="20" />
