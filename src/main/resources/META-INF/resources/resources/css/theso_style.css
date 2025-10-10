@@ -193,7 +193,26 @@ body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link 
 body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-icon, body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-icon {
     color: white;
 }
-
+/* Styles spécifiques pour <p:menu> */
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link:hover {
+    background: var(--color-action-main);
+}
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link {
+    background: var(--color-action-main);
+    color: white;
+}
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-icon,
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-icon {
+    color: white;
+}
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover .ui-menuitem-text{
+    color: white;
+    background: var(--color-action-main);
+}
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover .ui-menuitem-icon{
+    color: white;
+    background: var(--color-action-main);
+}
 
 
 /* pour le hover */

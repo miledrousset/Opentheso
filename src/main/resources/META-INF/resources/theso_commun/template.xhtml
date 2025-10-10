@@ -23,12 +23,11 @@
 
 <h:body styleClass="app-body">
 
-    <!-- Bandeau en haut à modifier à la demande -->
-    <h:panelGroup layout="block" style="padding:10px;">
-        <div style="align-items: flex-start">
-            <span class="footer-version">Application v1.0 — © 2025</span>
-
-            <div style="align-items: flex-start">
+    <!-- Bandeau en haut de page, il faut activer l'affichage à la demande et intégrer le contenu dans la BDD -->
+    <h:panelGroup rendered="false" layout="block" style="width:100%; padding:10px; background-color:#f5f5f5; border-bottom:1px solid #ccc; position:fixed; top:0; left:0; z-index:1000;">
+        <div style="display:flex; justify-content:space-between; align-items:center; max-width:1200px; margin:0 auto;">
+            <span class="footer-top">Logo et nom de l'institution</span>
+            <div>
                 <a href="http://www.culture.gouv.fr/Mentions-legales" target="_blank">Mentions légales</a> |
                 <a href="/pages/credits" target="_blank">Crédits</a> |
                 <a href="/pages/accessibilite" target="_blank">Accessibilité : non conforme</a> |
@@ -36,7 +35,14 @@
                 <a href="https://www.data.gouv.fr/fr/" target="_blank">data.gouv.fr</a>
             </div>
         </div>
-    </h:panelGroup>
+    </h:panelGroup >
+    <!-- Pour que le contenu ne soit pas caché par la barre fixe -->
+    <h:panelGroup rendered="false" style="height:50px;"></h:panelGroup>
+
+
+
+
+
 
     <!-- HEADER -->
     <header class="app-header">
