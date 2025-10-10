@@ -443,7 +443,7 @@ public class UserService {
 
        var user = userRepository.findByUsernameAndPassword(userName, MD5Password.getEncodedPassword(password));
        if (user.isEmpty()) {
-           log.error("Aucun utilisateur n'existe avec l'username {} et le password {}", userName, password);
+           log.error("Aucun utilisateur n'existe avec l'username {} et le password {}", userName, "*****");
            return null;
        }
        return user.get();
