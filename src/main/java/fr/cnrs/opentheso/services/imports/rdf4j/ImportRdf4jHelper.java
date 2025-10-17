@@ -234,28 +234,6 @@ public class ImportRdf4jHelper {
         preferenceService.updateAllPreferenceUser(nodePreference);
     }
 
-    private void setPreferences(String idThesaurus, String uri) {
-
-        if (nodePreference == null) {
-            initPreferencesThesaurus(idThesaurus, uri);
-        } else {
-            nodePreference.setCheminSite(uri);
-            nodePreference.setSourceLang(langueSource);
-            nodePreference.setPreferredName(idThesaurus);
-            nodePreference.setOriginalUri(uri);
-            if (selectedIdentifier.equalsIgnoreCase("ark")) {
-                nodePreference.setOriginalUriIsArk(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("handle")) {
-                nodePreference.setOriginalUriIsHandle(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("doi")) {
-                nodePreference.setOriginalUriIsDoi(true);
-            }
-            preferenceService.addPreference(nodePreference, idThesaurus);
-        }
-    }
-
     private void setOriginalUri(String idTheso, String uri) {
 
         if (nodePreference == null) {

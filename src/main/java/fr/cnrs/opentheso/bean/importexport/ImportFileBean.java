@@ -2690,7 +2690,6 @@ public class ImportFileBean implements Serializable {
      * seront placés au bon endroit suivant l'information du BT
      *
      * @param idTheso
-     * @param idUser
      */
     @Transactional
     public void addListConceptsToTheso(String idTheso) {
@@ -2782,7 +2781,7 @@ public class ImportFileBean implements Serializable {
 
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
-            error.append(e.toString());
+            error.append(e);
         } finally {
             showError();
         }
@@ -2858,7 +2857,7 @@ public class ImportFileBean implements Serializable {
 
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
-            error.append(e.toString());
+            error.append(e);
         } finally {
             showError();
         }
@@ -2889,14 +2888,14 @@ public class ImportFileBean implements Serializable {
                     selectedLang = workLanguage;
                 }
 
-                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), selectedLang);
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), selectedLang, error);
                 total = sKOSXmlDocument.getConceptList().size();
                 uri = sKOSXmlDocument.getTitle();
                 loadDone = true;
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
             } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
+                log.error("Erreur pendant l'import du fichier", e);
             } finally {
                 showError();
             }
@@ -2906,19 +2905,13 @@ public class ImportFileBean implements Serializable {
     }
 
     private RDFFormat getRdfFormat(int format) {
-        RDFFormat rdfFormat = RDFFormat.RDFJSON;
-        switch (format) {
-            case 0:
-                rdfFormat = RDFFormat.RDFXML;
-                break;
-            case 1:
-                rdfFormat = RDFFormat.JSONLD;
-                break;
-            case 2:
-                rdfFormat = RDFFormat.TURTLE;
-                break;
-        }
-        return rdfFormat;
+
+        return switch (format) {
+            case 0 -> RDFFormat.RDFXML;
+            case 1 -> RDFFormat.JSONLD;
+            case 2 -> RDFFormat.TURTLE;
+            default -> RDFFormat.RDFJSON;
+        };
     }
 
     /**
@@ -3061,7 +3054,6 @@ public class ImportFileBean implements Serializable {
         }
 
         try {
-
             progress = 0;
             progressStep = 0;
 
@@ -3103,7 +3095,6 @@ public class ImportFileBean implements Serializable {
     }
 
     public Integer getProgress1() {
-        //  progress1 = updateProgress(progress1);
         progressStep = 0;
         for (int i = 0; i < 10; i++) {
             progressStep++;
@@ -3136,25 +3127,16 @@ public class ImportFileBean implements Serializable {
     }
 
     private void showError() {
-        if (info != null) {
-            if (!info.isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info :", info));
-            }
+        if (info != null && !info.isEmpty()) {
+            MessageUtils.showInformationMessage("Info : " + info);
         }
-        if (error != null) {
-            if (error.length() != 0) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error :", error.toString()));
-            }
+        if (error != null && !error.isEmpty()) {
+            MessageUtils.showErrorMessage("Error : " + error);
         }
-        if (warning != null) {
-            if (!warning.isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning :", warning));
-            }
+        if (warning != null && !warning.isEmpty()) {
+            MessageUtils.showWarnMessage("Warning : " + warning);
         }
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().executeScript("PF('pbAjax').cancel();");
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
+        PrimeFaces.current().executeScript("PF('pbAjax').cancel();");
     }
 
     private void initError() {
