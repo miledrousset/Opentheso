@@ -8,11 +8,14 @@ import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.services.TermService;
 import fr.cnrs.opentheso.utils.StringUtils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import fr.cnrs.opentheso.utils.ToolsHelper;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -152,8 +155,13 @@ public class SKOSResource {
     }
 
     public void addMatch(String v, int prop) {
-        matchList.add(new SKOSMatch(v, prop));
+        if (new ToolsHelper().isValidURI(v)) {
+            matchList.add(new SKOSMatch(v, prop));
+        } else {
+            throw new IllegalArgumentException("URI invalide : " + v);
+        }
     }
+
 
     public void addNotation(String notation) {
         notationList.add(new SKOSNotation(notation));

@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso.utils;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class ToolsHelper {
 
     public static String getNewId(int length, boolean isUpperCase, boolean isUseNoidCheck) {
@@ -22,6 +25,15 @@ public class ToolsHelper {
             return idArk.toUpperCase();
         else
             return idArk;
+    }
+
+    public boolean isValidURI(String uriStr) {
+        try {
+            URI uri = new URI(uriStr);
+            return uri.getScheme() != null && (uri.getHost() != null || uri.getSchemeSpecificPart() != null);
+        } catch (URISyntaxException e) {
+            return false;
+        }
     }
 
 }
