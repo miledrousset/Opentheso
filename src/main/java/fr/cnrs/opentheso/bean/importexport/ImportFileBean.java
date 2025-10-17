@@ -2895,6 +2895,8 @@ public class ImportFileBean implements Serializable {
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
             } catch (Exception e) {
+                loadDone = true;
+                error.append(e.getMessage());
                 log.error("Erreur pendant l'import du fichier", e);
             } finally {
                 showError();

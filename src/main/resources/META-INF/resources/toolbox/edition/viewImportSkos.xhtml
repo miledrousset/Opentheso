@@ -172,7 +172,6 @@
                             </div>
                         </h:panelGroup>
 
-
                         <!-- infos -->
                         <h:panelGroup rendered="#{importFileBean.loadDone or importFileBean.importDone}" style="margin-left: 30px; margin-right: 30px;">
                             <div class="row" style="margin-top: 5px">             
@@ -185,12 +184,12 @@
                                                 <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
                                             </p:scrollPanel>
                                         </p:tab>
-                                        <p:tab title="#{langueBean.getMsg('error')}" titleStyleClass="errorAcordionPanel">
+                                        <p:tab rendered="#{importFileBean.error != null and importFileBean.error != ''}" title="#{langueBean.getMsg('error')}" titleStyleClass="errorAcordionPanel" titleStyle="color: red">
                                             <p:scrollPanel mode="native" style="height:200px">
                                                 <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
                                             </p:scrollPanel>
                                         </p:tab>
-                                    </p:accordionPanel> 
+                                    </p:accordionPanel>
                                 </div>
                             </div>
                         </h:panelGroup>
