@@ -79,7 +79,7 @@ public class SynonymBean implements Serializable {
         this.nodeEM = null;
     }
    
-    public void prepareNodeEMForEdit() {
+        public void prepareNodeEMForEdit() {
 
         log.debug("Charger la liste des synonymes disponibles pour le concept {}", conceptBean.getNodeConcept().getConcept().getIdConcept());
         nodeEMsForEdit = new ArrayList<>();
@@ -130,7 +130,7 @@ public class SynonymBean implements Serializable {
     /**
      * permet de modifier un synonyme
      */
-    public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
+    public void updateSynonym(NodeEM nodeEMLocal, int idUser, boolean isMultiple) {
 
         log.debug("Début de la modification du synonyme {}", nodeEMLocal.getLexicalValue());
 
@@ -156,8 +156,10 @@ public class SynonymBean implements Serializable {
             }
         }
 
-        reset();
-        prepareNodeEMForEdit();
+        if (!isMultiple) {
+            reset();
+            prepareNodeEMForEdit();
+        }
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
@@ -284,12 +286,12 @@ public class SynonymBean implements Serializable {
 
         log.debug("Début de la modification de la liste des synonyms !");
         for (NodeEM nodeEM1 : nodeEMsForEdit) {
-            updateSynonym(nodeEM1, idUser);
+            updateSynonym(nodeEM1, idUser, true);
         }
 
         reset();
-
         prepareNodeEMForEdit();
+        PrimeFaces.current().executeScript("PF('renameSynonym').hide();");
     }
 
 
