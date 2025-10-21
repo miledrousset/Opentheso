@@ -34,6 +34,10 @@ public interface NonPreferredTermRepository extends JpaRepository<NonPreferredTe
 
     @Modifying
     @Transactional
+    void deleteByIdThesaurusAndIdTermAndLangAndLexicalValue(String idThesaurus, String idTerm, String lang, String lexicalValue);
+
+    @Modifying
+    @Transactional
     void deleteByIdThesaurusAndIdTermAndLang(String idThesaurus, String idTerm, String lang);
 
     @Modifying
