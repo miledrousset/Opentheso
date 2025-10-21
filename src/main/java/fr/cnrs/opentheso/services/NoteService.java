@@ -16,6 +16,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class NoteService {
         idLang = normalizeIdLang(idLang);
         var note = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(idConcept, idThesaurus, noteType, idLang);
         if (note.isEmpty()) {
-            log.error("Aucune note n'est trouvée");
+            log.info("Aucune note n'est trouvée");
             return null;
         }
 
@@ -347,7 +348,19 @@ public class NoteService {
     public List<NoteType> getNotesType() {
 
         log.debug("Recherche de tous les types note");
-        return noteTypeRepository.findAll();
+
+        List<NoteType> noteTypes = noteTypeRepository.findAll();
+        List<NoteType> sorted = noteTypes.stream()
+                .sorted(Comparator.comparingInt((NoteType n) -> {
+                    // Priorité spéciale pour "definition" et "scopeNote" et ...
+                    if ("definition".equals(n.getCode())) return 0;
+                    if ("scopeNote".equals(n.getCode())) return 1;
+                    if ("note".equals(n.getCode())) return 2;
+                    if ("editorialNote".equals(n.getCode())) return 3;
+                    return 4; // tous les autres après
+                }).thenComparing(NoteType::getCode))
+                .toList();
+        return sorted;
     }
 
 }

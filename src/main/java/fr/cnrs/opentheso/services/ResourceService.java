@@ -194,7 +194,7 @@ public class ResourceService {
             }
         }
         if (CollectionUtils.isNotEmpty(conceptLabels)) {
-            Collections.sort(conceptLabels);
+     //       Collections.sort(conceptLabels);
             return conceptLabels;
         }
         return null;

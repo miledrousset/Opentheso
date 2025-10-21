@@ -747,7 +747,7 @@ public class AlignmentBean implements Serializable {
         reset();
         for (AlignementSource alignementSource : alignementSources) {
             if (alignementSource.getSource().equalsIgnoreCase(selectedAlignement)) {
-                selectedAlignementSource = alignementSource;
+                selectedAlignementSource = new AlignementSource(alignementSource);
                 break;
             }
         }
@@ -870,13 +870,23 @@ public class AlignmentBean implements Serializable {
             return;
         }
         WikidataHelper wikidataHelper = new WikidataHelper();
-
+        alignementSource.setRequete(alignementSource.getRequete().replace("##lang##", idLang));
+        alignementSource.setRequete(alignementSource.getRequete().replace("##value##", lexicalValue));
         // action JSON (HashMap (Wikidata)
         //ici il faut appeler le filtre de Wikidata
         listAlignValues = wikidataHelper.queryWikidata_sparql(idConcept, idTheso, alignementSource.getRequete(), alignementSource.getSource());
         if (listAlignValues == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                     languageBean.getMsg("search.noResult"), wikidataHelper.getMessages().toString()));
+        }
+    }
+
+    @Override
+    public AlignementSource clone() {
+        try {
+            return (AlignementSource) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
         }
     }
 

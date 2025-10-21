@@ -142,7 +142,7 @@ public class SearchBean implements Serializable {
             }
 
             if (!withId && !withNote && !indexMatch && !exactMatch) {
-                listResultAutoComplete = searchService.searchElastic(value, currentUser.getNodeUser());
+                listResultAutoComplete = searchService.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
         }
 

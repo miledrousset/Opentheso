@@ -567,41 +567,45 @@ public class ImportFileBean implements Serializable {
      */
     public void loadFileAlignmentCsvToDelete(FileUploadEvent event) {
         initError();
+
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
-        } else {
-            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            return;
+        }
 
-            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+        CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
 
-                if (!csvReadHelper.readFileAlignmentToDelete(reader)) {
-                    error.append(csvReadHelper.getMessage());
-                }
+        try (Reader reader = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8)) {
 
-                warning = csvReadHelper.getMessage();
-                conceptObjects = csvReadHelper.getConceptObjects();
-                if (conceptObjects != null) {
-                    if (conceptObjects.isEmpty()) {
-                        haveError = true;
-                        error.append(System.getProperty("line.separator"));
-                        error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
-                        warning = "";
-                    } else {
-                        total = conceptObjects.size();
-                        uri = "";//csvReadHelper.getUri();
-                        loadDone = true;
-                        BDDinsertEnable = true;
-                        info = "File correctly loaded";
-                    }
-                }
-            } catch (Exception e) {
+            if (!csvReadHelper.readFileAlignmentToDelete(reader)) {
                 haveError = true;
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
+                error.append(System.lineSeparator())
+                        .append(csvReadHelper.getMessage());
                 showError();
+                return;
             }
+
+            conceptObjects = csvReadHelper.getConceptObjects();
+
+            if (conceptObjects == null || conceptObjects.isEmpty()) {
+                haveError = true;
+                error.append(System.lineSeparator())
+                        .append("La lecture a échoué, vérifiez le séparateur des colonnes !!");
+                warning = "";
+            } else {
+                total = conceptObjects.size();
+                loadDone = true;
+                BDDinsertEnable = true;
+                info = "Fichier correctement chargé (" + total + " concepts).";
+            }
+
+        } catch (Exception e) {
+            haveError = true;
+            error.append(System.lineSeparator()).append("Erreur : ").append(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            showError();
         }
     }
 

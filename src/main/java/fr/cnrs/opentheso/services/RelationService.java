@@ -482,7 +482,7 @@ public class RelationService {
         log.debug("Recherche de toutes les relations client avec le concept {}", idConcept);
         var projections = hierarchicalRelationshipRepository.findCustomRelations(idConcept, idThesaurus);
         if (CollectionUtils.isEmpty(projections)) {
-            log.error("Aucune relation client n'est trouvée !");
+            log.debug("Aucune relation personnalisée n'est trouvée !");
             return List.of();
         }
 
