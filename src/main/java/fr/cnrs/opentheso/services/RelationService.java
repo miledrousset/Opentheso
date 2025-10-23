@@ -365,7 +365,7 @@ public class RelationService {
     public boolean updateRelationNT(String idConcept1, String idConcept2, String idThesaurus, String directRelation, String inverseRelation, int idUser) {
 
         hierarchicalRelationshipRepository.updateRole(directRelation, idConcept1, idConcept2, idThesaurus);
-        hierarchicalRelationshipRepository.updateRole(directRelation, idConcept2, idConcept1, idThesaurus);
+        hierarchicalRelationshipRepository.updateRole(inverseRelation, idConcept2, idConcept1, idThesaurus);
 
         addRelationHistorique(idConcept1, idThesaurus, idConcept2, directRelation, idUser, "UPDATE");
         return true;

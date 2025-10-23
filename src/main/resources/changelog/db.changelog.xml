@@ -178,4 +178,7 @@
     <changeSet id="25.10.3" author="Miled">
         <sqlFile path="../changelog/v25.10/25-10_03.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+    <changeSet id="25.10.4" author="Miled">
+        <sqlFile path="../changelog/v25.10/25-10_04.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>
