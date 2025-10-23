@@ -513,8 +513,10 @@ public class CandidatBean implements Serializable {
         }
 
         if (initialCandidat == null) {
-            candidatService.saveNewCandidat(candidatSelected, selectedTheso.getCurrentIdTheso(), getIdLang(),
-                    currentUser.getNodeUser().getIdUser(), currentUser.getUsername(), selectedTheso.getCurrentLang(), definition);
+            if(!candidatService.saveNewCandidat(candidatSelected, selectedTheso.getCurrentIdTheso(), getIdLang(),
+                    currentUser.getNodeUser().getIdUser(), currentUser.getUsername(), selectedTheso.getCurrentLang(), definition)){
+                return;
+            }
             setIsListCandidatsActivate(true);
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {

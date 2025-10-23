@@ -747,19 +747,19 @@ public class CandidatService {
         }
     }
 
-    public void saveNewCandidat(CandidatDto candidatSelected, String idThesaurus, String idLang, Integer idUser,
+    public boolean saveNewCandidat(CandidatDto candidatSelected, String idThesaurus, String idLang, Integer idUser,
                                 String userName, String currentLang, String definition) throws SQLException {
 
         log.debug("Vérification de l'existance du term (recherche dans prefLabels)");
         if (termService.existsPrefLabel(candidatSelected.getNomPref().trim(), idLang, idThesaurus)) {
             MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg3"));
-            return;
+            return false;
         }
 
         log.debug("Vérification de l'existance du term (recherche dans altLabels)");
         if (termService.isAltLabelExist(candidatSelected.getNomPref().trim(), idThesaurus, idLang)) {
             MessageUtils.showWarnMessage(languageBean.getMsg("candidat.save.msg4"));
-            return;
+            return false;
         }
 
         var idNewConcept = saveNewCandidat(Concept.builder()
@@ -775,7 +775,7 @@ public class CandidatService {
 
         if (idNewConcept == null) {
             MessageUtils.showErrorMessage(languageBean.getMsg("candidat.save.msg5"));
-            return;
+            return false;
         }
         candidatSelected.setIdConcepte(idNewConcept);
 
@@ -793,5 +793,6 @@ public class CandidatService {
 
         noteService.addNote(candidatSelected.getIdConcepte(), currentLang, idThesaurus,
                 definition, "definition", "", idUser);
+        return true;
     }
 }
