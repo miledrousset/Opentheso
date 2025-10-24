@@ -37,7 +37,7 @@ public class NoteService {
         idLang = normalizeIdLang(idLang);
         var note = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(idConcept, idThesaurus, noteType, idLang);
         if (note.isEmpty()) {
-            log.info("Aucune note n'est trouvée");
+            log.debug("Aucune note n'est trouvée");
             return null;
         }
 
