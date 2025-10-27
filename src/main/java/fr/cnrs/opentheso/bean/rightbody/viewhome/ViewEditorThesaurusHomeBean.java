@@ -45,7 +45,7 @@ public class ViewEditorThesaurusHomeBean implements Serializable {
     
     public void initText(String idLanguage, String idThesaurus) {
 
-        text = thesaurusEditService.getHtmlPage(idLanguage, idThesaurus);
+        text = thesaurusEditService.getHtmlPage(idThesaurus, idLanguage);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
@@ -54,7 +54,7 @@ public class ViewEditorThesaurusHomeBean implements Serializable {
 
     public String getThesaurusHomePage(String idLanguage, String idThesaurus){
 
-        var homePage = thesaurusEditService.getHtmlPage(idLanguage, idThesaurus);
+        var homePage = thesaurusEditService.getHtmlPage(idThesaurus, idLanguage);
         PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
         PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
         return homePage;
