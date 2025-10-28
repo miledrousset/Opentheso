@@ -241,7 +241,7 @@ public class NoteService {
 
     public List<NodeNote> getNoteByConceptAndThesaurusAndLangAndType(String idConcept, String idThesaurus, String idLang, String typeCode) {
         log.debug("Recherche des notes par concept {}, thésaurus {} et NoteType {}", idConcept, idThesaurus, typeCode);
-        var notes = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(idConcept, idThesaurus, idLang, typeCode);
+        var notes = noteRepository.findAllByIdentifierAndIdThesaurusAndNoteTypeCodeAndLang(idConcept, idThesaurus, typeCode, idLang);
         if (CollectionUtils.isEmpty(notes)) {
             log.debug("Aucune note n'est trouvée !");
             return List.of();
