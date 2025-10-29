@@ -920,7 +920,7 @@ public class GroupService {
         conceptGroupHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
-    public void updateThesaurusId(String oldThesaurusID, String newThesaurusID) {
+    public void updateThesaurusId(String newThesaurusID, String oldThesaurusID) {
 
         log.debug("Mise à jour du thésaurus id pour les groups (du {} vers {})", oldThesaurusID, newThesaurusID);
         conceptGroupRepository.updateThesaurusId(newThesaurusID, oldThesaurusID);

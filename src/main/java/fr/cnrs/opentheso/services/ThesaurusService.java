@@ -467,35 +467,24 @@ public class ThesaurusService {
         userGroupThesaurusRepository.deleteByIdThesaurus(idThesaurus);
         userRoleOnlyOnRepository.deleteByThesaurusIdThesaurus(idThesaurus);
         thesaurusAlignementSourceRepository.deleteAllByIdThesaurus(idThesaurus);
-        thesaurusDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         thesaurusArrayRepository.deleteAllByIdThesaurus(idThesaurus);
         nodeLabelRepository.deleteAllByIdThesaurus(idThesaurus);
+        thesaurusDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         thesaurusAlignementRepository.deleteAllByIdThesaurus(idThesaurus);
         graphViewExportedConceptBranchRepository.deleteAllByTopConceptThesaurusId(idThesaurus);
         routineMailRepository.deleteAllByIdThesaurus(idThesaurus);
 
         termService.deleteAllTermsInThesaurus(idThesaurus);
-
         groupService.deleteAllGroupsByThesaurus(idThesaurus);
-
         candidatService.deleteAllCandidatsByThesaurus(idThesaurus);
-
         preferenceService.deletePreferenceThesaurus(idThesaurus);
-
         gpsService.deleteGpsByThesaurus(idThesaurus);
-
         alignmentService.deleteAllAlignmentsByThesaurus(idThesaurus);
-
         propositionService.deleteByThesaurus(idThesaurus);
-
         relationService.deleteAllByThesaurus(idThesaurus);
-
         imageService.deleteImagesByThesaurus(idThesaurus);
-
         externalResourceRepository.deleteAllByIdThesaurus(idThesaurus);
-
         noteService.deleteByThesaurus(idThesaurus);
-
         conceptService.deleteByThesaurus(idThesaurus);
         return true;
     }
@@ -511,41 +500,27 @@ public class ThesaurusService {
 
         thesaurusRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusLabelRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
-        thesaurusArrayRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
-        nodeLabelRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusHomePageRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         userGroupThesaurusRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         userRoleOnlyOnRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusAlignementSourceRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        thesaurusArrayRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        nodeLabelRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusDcTermRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         thesaurusAlignementRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         graphViewExportedConceptBranchRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         routineMailRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
-
         termService.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
-
         groupService.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
-
-        gpsService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         candidatService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         preferenceService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         gpsService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         alignmentService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         propositionService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         relationService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         imageService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         externalResourceRepository.updateThesaurusId(newIdThesaurus, newIdThesaurus);
-
         noteService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-
         conceptService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
 
         return true;
