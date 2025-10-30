@@ -35,6 +35,8 @@ import fr.cnrs.opentheso.repositories.ConceptCandidatRepository;
 import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
 import fr.cnrs.opentheso.repositories.ConceptFacetRepository;
 import fr.cnrs.opentheso.repositories.ConceptGroupConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptGroupHistoriqueRepository;
+import fr.cnrs.opentheso.repositories.ConceptGroupLabelHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.ConceptReplacedByRepository;
 import fr.cnrs.opentheso.repositories.ConceptRepository;
@@ -53,6 +55,8 @@ import fr.cnrs.opentheso.repositories.NoteHistoriqueRepository;
 import fr.cnrs.opentheso.repositories.NoteRepository;
 import fr.cnrs.opentheso.repositories.PermutedRepository;
 import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
 import fr.cnrs.opentheso.repositories.PropositionRepository;
 import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.repositories.ThesaurusArrayRepository;
@@ -133,6 +137,10 @@ public class ConceptService {
     private final ExternalImageRepository externalImageRepository;
     private final ConceptAddService conceptAddService;
     private final ThesaurusRepository thesaurusRepository;
+    private final PropositionModificationRepository propositionModificationRepository;
+    private final PropositionModificationDetailRepository propositionModificationDetailRepository;
+    private final ConceptGroupHistoriqueRepository conceptGroupHistoriqueRepository;
+    private final ConceptGroupLabelHistoriqueRepository conceptGroupLabelHistoriqueRepository;
 
 
     public NodeFullConcept getConcept(String idConcept, String idThesaurus, String idLang, int offset, int step, boolean isPrivate) {
@@ -239,9 +247,18 @@ public class ConceptService {
         conceptTypeRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptFacetRepository.deleteAllByIdThesaurus(idThesaurus);
         try {
+            log.debug("Suppression des historiques des groups du thésaurus id {}", idThesaurus);
+            conceptGroupHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+
+            log.debug("Suppression de tous les labels des groups du thésaurus {}", idThesaurus);
+            conceptGroupLabelHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+
+            log.debug("Suppression de tous les relations entre les groups et les concepts du thésaurus {}", idThesaurus);
+            conceptGroupConceptRepository.deleteAllByIdThesaurus(idThesaurus);
+
             conceptRepository.deleteAllByIdThesaurus(idThesaurus);
         } catch (Exception ex) {
-            log.debug("Aucun thésaurus n'est présent dans le thésaurus");
+            log.debug("Aucun concept n'est présent dans le thésaurus");
         }
     }
 
@@ -346,6 +363,13 @@ public class ConceptService {
         conceptRepository.deleteAllByIdThesaurusAndIdConcept(idThesaurus, idConcept);
         facetService.deleteFacetsByConceptAndThesaurus(idConcept, idThesaurus);
         groupService.deleteAllGroupOfConcept(idConcept, idThesaurus);
+        gpsRepository.deleteByIdConceptAndIdTheso(idConcept, idThesaurus);
+        externalImageRepository.deleteAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        externalResourceRepository.deleteAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        propositionModificationDetailRepository.deleteByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+        propositionModificationRepository.deleteAllByIdConceptAndIdTheso(idConcept, idThesaurus);
+        propositionRepository.deleteAllByIdConceptAndIdThesaurus(idConcept, idThesaurus);
+
         deleteConceptReplacedby(idThesaurus, idConcept);
 
         var preferences = preferenceService.getThesaurusPreferences(idThesaurus);

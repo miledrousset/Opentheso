@@ -19,5 +19,12 @@ public interface ExternalImageRepository extends JpaRepository<ImageExterne, Int
     @Query(value = "UPDATE external_images SET id_thesaurus = :newIdThesaurus WHERE id_thesaurus = :oldIdThesaurus", nativeQuery = true)
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 
+
+    @Modifying
+    @Transactional
     void deleteAllByIdThesaurus(String idThesaurus);
+
+    @Modifying
+    @Transactional
+    void deleteAllByIdConceptAndIdThesaurus(String idConcept, String idThesaurus);
 }

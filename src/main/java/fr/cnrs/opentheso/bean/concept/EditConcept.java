@@ -82,6 +82,7 @@ public class EditConcept implements Serializable {
     private final ArkService arkService;
     private final ConceptTypeService conceptTypeService;
     private final SearchService searchService;
+    private final SelectedTheso selectedThesaurus;
 
     private String prefLabel, source, notation, selectedConceptType;
     private boolean applyToBranch, reciprocalRelationship, isCreated, duplicate, forDelete, inProgress, replacedByRTRelation;
@@ -336,7 +337,7 @@ public class EditConcept implements Serializable {
         forDelete = true;
     }
 
-    public void deleteConcept(String idThesaurus, int idUser) {
+    public void deleteConcept() {
 
         if (roleOnThesaurusBean.getNodePreference() == null) {
             MessageUtils.showErrorMessage("Le thésaurus n'a pas de préférences !");
@@ -345,13 +346,15 @@ public class EditConcept implements Serializable {
 
         if (conceptView.getNodeConcept().getNodeNT().isEmpty()) {
             // suppression du concept
-            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus)) {
+            if (!conceptService.deleteConcept(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedThesaurus.getCurrentIdTheso())) {
                 MessageUtils.showErrorMessage("La suppression a échoué !!");
                 return;
             }
         } else {
             /// suppression d'une branche
-            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus)){
+            if(!conceptService.deleteBranchConcept(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedThesaurus.getCurrentIdTheso())){
                 MessageUtils.showErrorMessage("La suppression a échoué, vérifier la poly-hiérarchie pour le concept");
                 return;                
             }
@@ -362,7 +365,8 @@ public class EditConcept implements Serializable {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
                     conceptView.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idThesaurus, selectedTheso.getCurrentLang());
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                        selectedThesaurus.getCurrentIdTheso(), selectedTheso.getCurrentLang());
             }
             TreeNode parent = tree.getSelectedNode().getParent();
             if (parent != null) {
@@ -372,7 +376,7 @@ public class EditConcept implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(conceptView.getNodeConcept().getNodeBT())){// !conceptView.getNodeConcept().getNodeBT().isEmpty()) {
-            conceptView.getConcept(idThesaurus, conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
+            conceptView.getConcept(selectedThesaurus.getCurrentIdTheso(), conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
                     selectedTheso.getCurrentLang(), currentUser);
         }
 
