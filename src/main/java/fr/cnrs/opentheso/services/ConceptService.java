@@ -236,13 +236,13 @@ public class ConceptService {
         corpusLinkRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptDcTermRepository.deleteAllByIdThesaurus(idThesaurus);
         conceptHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
+        conceptTypeRepository.deleteAllByIdThesaurus(idThesaurus);
+        conceptFacetRepository.deleteAllByIdThesaurus(idThesaurus);
         try {
             conceptRepository.deleteAllByIdThesaurus(idThesaurus);
         } catch (Exception ex) {
             log.debug("Aucun thésaurus n'est présent dans le thésaurus");
         }
-        conceptTypeRepository.deleteAllByIdThesaurus(idThesaurus);
-        conceptFacetRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String oldThesaurusId, String newThesaurusId) {

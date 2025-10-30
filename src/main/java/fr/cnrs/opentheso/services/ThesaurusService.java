@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.entites.ThesaurusLabel;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.repositories.ExternalImageRepository;
 import fr.cnrs.opentheso.repositories.ExternalResourceRepository;
 import fr.cnrs.opentheso.repositories.GraphViewExportedConceptBranchRepository;
 import fr.cnrs.opentheso.repositories.LanguageIso639Repository;
@@ -65,6 +66,7 @@ public class ThesaurusService {
     private final PreferenceService preferenceService;
     private final NoteService noteService;
     private final UserRoleOnlyOnRepository userRoleOnlyOnRepository;
+    private final ExternalImageRepository externalImageRepository;
 
 
     public Thesaurus getThesaurusById(String idThesaurus) {
@@ -473,7 +475,6 @@ public class ThesaurusService {
         thesaurusAlignementRepository.deleteAllByIdThesaurus(idThesaurus);
         graphViewExportedConceptBranchRepository.deleteAllByTopConceptThesaurusId(idThesaurus);
         routineMailRepository.deleteAllByIdThesaurus(idThesaurus);
-
         termService.deleteAllTermsInThesaurus(idThesaurus);
         groupService.deleteAllGroupsByThesaurus(idThesaurus);
         candidatService.deleteAllCandidatsByThesaurus(idThesaurus);
@@ -484,6 +485,7 @@ public class ThesaurusService {
         relationService.deleteAllByThesaurus(idThesaurus);
         imageService.deleteImagesByThesaurus(idThesaurus);
         externalResourceRepository.deleteAllByIdThesaurus(idThesaurus);
+        externalImageRepository.deleteAllByIdThesaurus(idThesaurus);
         noteService.deleteByThesaurus(idThesaurus);
         conceptService.deleteByThesaurus(idThesaurus);
         return true;
@@ -519,7 +521,8 @@ public class ThesaurusService {
         propositionService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
         relationService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
         imageService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
-        externalResourceRepository.updateThesaurusId(newIdThesaurus, newIdThesaurus);
+        externalResourceRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        externalImageRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
         noteService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
         conceptService.updateThesaurusId(oldIdThesaurus, newIdThesaurus);
 
