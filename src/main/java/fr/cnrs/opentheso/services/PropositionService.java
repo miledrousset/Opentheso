@@ -963,6 +963,7 @@ public class PropositionService {
 
         log.debug("Mise à jour du thésaurus id pour les propositions présentes dans le thésaurus id {}", oldIdThesaurus);
         propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        propositionModificationRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
     }
 
     public void deleteByThesaurus(String idThesaurus) {
