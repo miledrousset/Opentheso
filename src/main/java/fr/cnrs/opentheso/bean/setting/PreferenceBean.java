@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.setting;
 
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
@@ -30,6 +31,7 @@ public class PreferenceBean implements Serializable {
     private final PreferenceService preferenceService;
     private final HomePageService homePageService;
     private final ThesaurusService thesaurusService;
+    private final RoleOnThesaurusBean roleOnThesaurus;
 
     private String uriType;
     private Preferences preferences;
@@ -95,6 +97,8 @@ public class PreferenceBean implements Serializable {
         preferences.setOriginalUriIsArk(uriType.equalsIgnoreCase("ark"));
         preferences.setOriginalUriIsHandle(uriType.equalsIgnoreCase("handle"));
         preferenceService.updateAllPreferenceUser(preferences);
+
+        roleOnThesaurus.setNodePreference(preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso()));
 
         MessageUtils.showInformationMessage("Préférences enregistrées avec succès");
     }
