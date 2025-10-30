@@ -416,12 +416,12 @@
     </dependencies>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>
         <websocket.version>2.2.0</websocket.version>
         <openapi.version>1.7.0</openapi.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
         <deepl.version>1.5.0</deepl.version>
         <commons-io.version>2.16.1</commons-io.version>
         <qrcodegen.version>1.8.0</qrcodegen.version>
