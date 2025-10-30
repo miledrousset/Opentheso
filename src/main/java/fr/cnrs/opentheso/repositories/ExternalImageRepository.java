@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public interface ExternalImageRepository extends JpaRepository<ImageExterne, Integer> {
@@ -13,4 +14,10 @@ public interface ExternalImageRepository extends JpaRepository<ImageExterne, Int
     @Query(value = "UPDATE external_images SET id_thesaurus = :target WHERE id_concept = :concept AND id_thesaurus = :from", nativeQuery = true)
     void updateThesaurus(@Param("concept") String concept, @Param("from") String from, @Param("target") String target);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE external_images SET id_thesaurus = :newIdThesaurus WHERE id_thesaurus = :oldIdThesaurus", nativeQuery = true)
+    void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
+
+    void deleteAllByIdThesaurus(String idThesaurus);
 }
