@@ -37,6 +37,7 @@ public interface UserRoleOnlyOnRepository extends JpaRepository<UserRoleOnlyOn, 
     void deleteByThesaurusIdThesaurus(String thesaurus);
 
     @Modifying
+    @Transactional
     void deleteByUserAndGroupAndRoleAndThesaurus(User user, UserGroupLabel group, Roles role, Thesaurus thesaurus);
 
     List<UserRoleOnlyOn> findAllByUserOrderByThesaurus(User user);
