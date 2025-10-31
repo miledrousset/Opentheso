@@ -517,7 +517,7 @@ public class UserService {
         log.debug("Recherche de l'utilisateur par mail {}", mail);
         var user = userRepository.findByMail(mail);
         if (user.isEmpty()) {
-            log.error("Aucun utilisateur n'existe avec le mail {}", mail);
+            log.debug("Aucun utilisateur n'existe avec le mail {}", mail);
             return null;
         }
         return user.get();

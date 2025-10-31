@@ -150,7 +150,7 @@ public class EditThesaurusBean implements Serializable {
     public void modifyIdOfThesaurus() {
 
         if(!thesaurusService.changeIdOfThesaurus(nodeIdValueOfThesaurus.getId(), newIdThesaurus)) {
-            MessageUtils.showErrorMessage("Erreur de changement d'identifiant !!!");
+            MessageUtils.showErrorMessage("Erreur de changement d'identifiant, vérifiez que l'identifant est unique !!!");
             return;
         }
 
