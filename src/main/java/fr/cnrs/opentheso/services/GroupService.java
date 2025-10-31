@@ -907,17 +907,8 @@ public class GroupService {
         log.debug("Suppression de tous les traduction des groups du thésaurus {}", idThesaurus);
         conceptGroupLabelRepository.deleteByIdThesaurus(idThesaurus);
 
-        log.debug("Suppression de tous les labels des groups du thésaurus {}", idThesaurus);
-        conceptGroupLabelHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
-
-        log.debug("Suppression de tous les relations entre les groups et les concepts du thésaurus {}", idThesaurus);
-        conceptGroupConceptRepository.deleteAllByIdThesaurus(idThesaurus);
-
         log.debug("Suppression des relations entre les groups");
         relationGroupService.deleteRelationGroupByThesaurus(idThesaurus);
-
-        log.debug("Suppression des historiques des groups du thésaurus id {}", idThesaurus);
-        conceptGroupHistoriqueRepository.deleteAllByIdThesaurus(idThesaurus);
     }
 
     public void updateThesaurusId(String newThesaurusID, String oldThesaurusID) {

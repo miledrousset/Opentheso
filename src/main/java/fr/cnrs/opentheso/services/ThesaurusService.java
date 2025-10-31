@@ -463,8 +463,6 @@ public class ThesaurusService {
         }
 
         idThesaurus = fr.cnrs.opentheso.utils.StringUtils.convertString(idThesaurus);
-        thesaurusRepository.deleteById(idThesaurus);
-        thesaurusLabelRepository.deleteByIdThesaurus(idThesaurus);
         thesaurusHomePageRepository.deleteAllByIdTheso(idThesaurus);
         userGroupThesaurusRepository.deleteByIdThesaurus(idThesaurus);
         userRoleOnlyOnRepository.deleteByThesaurusIdThesaurus(idThesaurus);
@@ -478,7 +476,6 @@ public class ThesaurusService {
         termService.deleteAllTermsInThesaurus(idThesaurus);
         groupService.deleteAllGroupsByThesaurus(idThesaurus);
         candidatService.deleteAllCandidatsByThesaurus(idThesaurus);
-        preferenceService.deletePreferenceThesaurus(idThesaurus);
         gpsService.deleteGpsByThesaurus(idThesaurus);
         alignmentService.deleteAllAlignmentsByThesaurus(idThesaurus);
         propositionService.deleteByThesaurus(idThesaurus);
@@ -488,6 +485,9 @@ public class ThesaurusService {
         externalImageRepository.deleteAllByIdThesaurus(idThesaurus);
         noteService.deleteByThesaurus(idThesaurus);
         conceptService.deleteByThesaurus(idThesaurus);
+        thesaurusRepository.deleteById(idThesaurus);
+        thesaurusLabelRepository.deleteByIdThesaurus(idThesaurus);
+        preferenceService.deletePreferenceThesaurus(idThesaurus);
         return true;
     }
 

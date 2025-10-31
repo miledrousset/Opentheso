@@ -16,6 +16,10 @@ public interface ExternalResourceRepository extends JpaRepository<ExternalResour
 
     @Modifying
     @Transactional
+    void deleteAllByIdConceptAndIdThesaurus(String idConcept, String idThesaurus);
+
+    @Modifying
+    @Transactional
     @Query("UPDATE ExternalResource t SET t.idThesaurus = :newIdThesaurus WHERE t.idThesaurus = :oldIdThesaurus")
     void updateThesaurusId(@Param("newIdThesaurus") String newIdThesaurus, @Param("oldIdThesaurus") String oldIdThesaurus);
 

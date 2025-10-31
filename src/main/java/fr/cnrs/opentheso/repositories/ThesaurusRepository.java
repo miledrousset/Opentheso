@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface ThesaurusRepository extends JpaRepository<Thesaurus, String> {
 
     List<Thesaurus> findAllByIsPrivateFalseOrderByCreatedDesc();
 
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     @Query(value = "SELECT * FROM thesaurus ORDER BY created DESC", nativeQuery = true)
     List<Thesaurus> findAllOrderByCreatedDesc();
 
