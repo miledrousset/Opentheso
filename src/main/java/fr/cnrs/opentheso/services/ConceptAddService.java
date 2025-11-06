@@ -272,7 +272,6 @@ public class ConceptAddService {
         }
 
         conceptRepository.save(fr.cnrs.opentheso.entites.Concept.builder()
-                .id(idSequenceConcept)
                 .idConcept(concept.getIdConcept())
                 .idThesaurus(concept.getIdThesaurus())
                 .idArk(concept.getIdArk())
