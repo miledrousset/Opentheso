@@ -209,77 +209,107 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
             """, nativeQuery = true)
     List<Object[]> searchNonPreferredTermsLike(@Param("value") String value, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
-    @Query(value = """
-                SELECT
-                  pt.id_concept,
-                  t.lexical_value,
-                  t.id_term,
-                  c.status
-                FROM term t
-                JOIN preferred_term pt
-                  ON pt.id_term = t.id_term
-                 AND pt.id_thesaurus = t.id_thesaurus
-                JOIN concept c
-                  ON c.id_concept = pt.id_concept
-                 AND c.id_thesaurus = pt.id_thesaurus
-                WHERE c.status != 'CA'
-                  AND t.id_thesaurus = :idThesaurus
-                  AND (:idLang IS NULL OR t.lang = :idLang)
-                  AND (
-                    unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT(:val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('% ', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('%-', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('% (', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('%_', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('%''', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('%ʿ', :val, '%')))
-                    OR unaccent(lower(t.lexical_value)) LIKE unaccent(lower(CONCAT('%[', :val, '%')))
-                  )
-                ORDER BY
-                  CASE
-                    WHEN unaccent(lower(t.lexical_value)) ILIKE :val THEN 1
-                    WHEN unaccent(lower(t.lexical_value)) ILIKE CONCAT(:val, ' %') THEN 2
-                  END,
-                  unaccent(lower(t.lexical_value))
-                LIMIT 50
-            """, nativeQuery = true)
-    List<Object[]> searchStartWithPreferred(@Param("val") String val, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
 
     @Query(value = """
-            SELECT
-                  pt.id_concept,
-                  t.id_term,
-                  npt.lexical_value AS npt,
-                  t.lexical_value   AS pt,
-                  c.status
-                FROM non_preferred_term npt
-                JOIN preferred_term pt
-                  ON pt.id_term = npt.id_term
-                 AND pt.id_thesaurus = npt.id_thesaurus
-                JOIN term t
-                  ON t.id_term = pt.id_term
-                 AND t.id_thesaurus = pt.id_thesaurus
-                 AND t.lang = npt.lang
-                JOIN concept c
-                  ON c.id_concept = pt.id_concept
-                 AND c.id_thesaurus = pt.id_thesaurus
-                WHERE c.status != 'CA'
-                  AND t.id_thesaurus = :idThesaurus
-                  AND (:idLang IS NULL OR npt.lang = :idLang)
-                  AND (
-                    unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT(:val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('% ', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('%-', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('% (', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('%_', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('%''', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('%ʿ', :val, '%')))
-                    OR unaccent(lower(npt.lexical_value)) LIKE unaccent(lower(CONCAT('%[', :val, '%')))
-                  )
-                ORDER BY npt.lexical_value
-                LIMIT 50
-            """, nativeQuery = true)
-    List<Object[]> searchStartWithSynonyms(@Param("val") String val, @Param("idLang") String idLang, @Param("idThesaurus") String idThesaurus);
+        SELECT
+          pt.id_concept,
+          t.lexical_value,
+          t.id_term,
+          c.status
+        FROM term t
+        JOIN preferred_term pt
+          ON pt.id_term = t.id_term
+         AND pt.id_thesaurus = t.id_thesaurus
+        JOIN concept c
+          ON c.id_concept = pt.id_concept
+         AND c.id_thesaurus = pt.id_thesaurus
+        WHERE c.status != 'CA'
+          AND t.id_thesaurus = :idThesaurus
+          AND (:idLang IS NULL OR t.lang = :idLang)
+          AND ' ' || LTRIM(
+                lower(
+                  replace(
+                    replace(
+                      replace(
+                        replace(
+                          replace(
+                            replace(
+                              replace(
+                                replace(
+                                  t.lexical_value, '[', ' '),
+                                ']', ' '),
+                              '(', ' '),
+                            ')', ' '),
+                          '~', ' '),
+                        '-', ' '),
+                      '''', ' '),  -- Remplace apostrophe
+                    '`', ' ')       -- Remplace backtick si présent
+                )
+              ) || ' ' LIKE '% ' || lower(:val) || '%'
+        ORDER BY
+          CASE
+            WHEN unaccent(lower(t.lexical_value)) ILIKE 'terme' THEN 1
+            WHEN unaccent(lower(t.lexical_value)) ILIKE CONCAT('terme', ' %') THEN 2
+          END,
+          unaccent(lower(t.lexical_value))
+        LIMIT 50;
+""", nativeQuery = true)
+    List<Object[]> searchStartWithPreferred(
+            @Param("val") String val,
+            @Param("idLang") String idLang,
+            @Param("idThesaurus") String idThesaurus
+    );
+
+
+    @Query(value = """
+    SELECT
+        pt.id_concept,
+        t.id_term,
+        npt.lexical_value AS npt,
+        t.lexical_value AS pt,
+        c.status
+    FROM non_preferred_term npt
+    JOIN preferred_term pt
+        ON pt.id_term = npt.id_term
+       AND pt.id_thesaurus = npt.id_thesaurus
+    JOIN term t
+        ON t.id_term = pt.id_term
+       AND t.id_thesaurus = pt.id_thesaurus
+       AND t.lang = npt.lang
+    JOIN concept c
+        ON c.id_concept = pt.id_concept
+       AND c.id_thesaurus = pt.id_thesaurus
+    WHERE c.status != 'CA'
+      AND t.id_thesaurus = :idThesaurus
+      AND (:idLang IS NULL OR npt.lang = :idLang)
+      AND ' ' || LTRIM(
+            lower(
+              replace(
+                replace(
+                  replace(
+                    replace(
+                      replace(
+                        replace(
+                          replace(
+                            replace(
+                              npt.lexical_value, '[', ' '),
+                            ']', ' '),
+                          '(', ' '),
+                        ')', ' '),
+                      '~', ' '),
+                    '-', ' '),
+                  '''', ' '),  -- apostrophe
+                '`', ' ')       -- backtick
+            )
+          ) || ' ' LIKE '% ' || lower(:val) || '%'
+    ORDER BY npt.lexical_value
+    LIMIT 50
+""", nativeQuery = true)
+    List<Object[]> searchNonPreferred(
+            @Param("val") String val,
+            @Param("idLang") String idLang,
+            @Param("idThesaurus") String idThesaurus
+    );
 
     @Query(value = """
                  SELECT
@@ -982,48 +1012,102 @@ public interface SearchRepository extends JpaRepository<Concept, Integer> {
                                    @Param("idLang") String idLang,
                                    @Param("idThesaurus") String idThesaurus);
 
+    /// Anciennes requêtes désactivées par Miled, elles ne fonctionnent pas correctement, les données retournées ne sont pas pertinentes.
+    /// Il reste à intégrer la gestion des Collections privées
     @Query(value = """
-                SELECT DISTINCT ON (pt.id_concept) pt.id_concept AS idConcept, t.id_term AS idTerm,t.lexical_value AS prefLabel, c.status AS status
+                SELECT 
+                    pt.id_concept AS idConcept,
+                    t.id_term AS idTerm,
+                    t.lexical_value AS prefLabel,
+                    c.status AS status
                 FROM term t
-                INNER JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
-                INNER JOIN concept c ON pt.id_concept = c.id_concept AND pt.id_thesaurus = c.id_thesaurus
-                LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
-                LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
-                WHERE c.status != 'CA'
-                  AND t.id_thesaurus = :idThesaurus
-                  AND (:idLang IS NULL OR t.lang = :idLang)
-                  AND (
-                    (:langSensitive = true AND unaccent(lower(t.lexical_value)) LIKE CONCAT('%', unaccent(lower(:value)), '%'))
-                    OR (:langSensitive = false AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2)
-                  )
-                  AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
-                ORDER BY pt.id_concept, similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) DESC
+                JOIN preferred_term pt 
+                    ON pt.id_term = t.id_term
+                    AND pt.id_thesaurus = t.id_thesaurus
+                JOIN concept c 
+                    ON c.id_concept = pt.id_concept
+                    AND c.id_thesaurus = pt.id_thesaurus
+                WHERE 
+                    c.id_thesaurus = :idThesaurus
+                    AND c.status != 'CA'
+                    AND (
+                        -- Mode "langues spéciales" (ar, he, el, ru, gr, zh, zh-hans)
+                        (
+                            :isSpecialLang = true
+                            AND unaccent(lower(t.lexical_value)) LIKE CONCAT('%', unaccent(lower(:value)), '%')
+                        )
+                        -- Mode "normal" (langues européennes, etc.)
+                        OR (
+                            :isSpecialLang = false
+                            AND similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value))) > 0.2
+                        )
+                    )
+                    AND (:langSensitive = false OR t.lang = :idLang)
+                ORDER BY 
+                    CASE 
+                        WHEN :isSpecialLang = true THEN t.lexical_value <-> :value
+                        ELSE similarity(unaccent(lower(t.lexical_value)), unaccent(lower(:value)))
+                    END DESC
                 LIMIT 50
             """, nativeQuery = true)
-    List<NodeSearchMiniProjection> searchPreferredTermsFullText(@Param("value") String value, @Param("idLang") String idLang,
-                                                                @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate,
-                                                                @Param("langSensitive") boolean langSensitive);
+    List<NodeSearchMiniProjection> searchPreferredTermsFullText(
+            @Param("value") String value,
+            @Param("idLang") String idLang,
+            @Param("idThesaurus") String idThesaurus,
+            @Param("langSensitive") boolean langSensitive,
+            @Param("isSpecialLang") boolean isSpecialLang
+    );
 
     @Query(value = """
-                SELECT DISTINCT ON (pt.id_concept) pt.id_concept AS idConcept, t.id_term AS idTerm, t.lexical_value AS prefLabel, npt.lexical_value AS altLabelValue, c.status AS status
-                FROM term t
-                    INNER JOIN preferred_term pt ON t.id_term = pt.id_term AND t.id_thesaurus = pt.id_thesaurus
-                    INNER JOIN concept c ON pt.id_concept = c.id_concept AND pt.id_thesaurus = c.id_thesaurus
-                    INNER JOIN non_preferred_term npt ON npt.id_term = pt.id_term AND npt.id_thesaurus = pt.id_thesaurus AND t.lang = npt.lang
-                    LEFT JOIN concept_group_concept cgc ON c.id_concept = cgc.idconcept
-                    LEFT JOIN concept_group cg ON cgc.idgroup = cg.idgroup
-                WHERE c.status != 'CA'
-                  AND npt.id_thesaurus = :idThesaurus
-                  AND (:idLang IS NULL OR npt.lang = :idLang)
-                  AND ((:langSensitive = true AND unaccent(lower(npt.lexical_value)) LIKE CONCAT('%', unaccent(lower(:value)), '%'))
-                    OR (:langSensitive = false AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2))
-                  AND (:isPrivate = false OR cg.private IS NULL OR cg.private = false)
-                ORDER BY pt.id_concept, similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) DESC
+                SELECT 
+                    pt.id_concept AS idConcept,
+                    t.id_term AS idTerm,
+                    npt.lexical_value AS altLabelValue,
+                    t.lexical_value AS prefLabel,
+                    c.status AS status
+                FROM non_preferred_term npt
+                JOIN term t
+                    ON t.id_term = npt.id_term
+                    AND t.lang = npt.lang
+                    AND t.id_thesaurus = npt.id_thesaurus
+                JOIN preferred_term pt
+                    ON pt.id_term = t.id_term
+                    AND pt.id_thesaurus = t.id_thesaurus
+                JOIN concept c
+                    ON c.id_concept = pt.id_concept
+                    AND c.id_thesaurus = pt.id_thesaurus
+                WHERE 
+                    c.id_thesaurus = :idThesaurus
+                    AND c.status != 'CA'
+                    AND (
+                        -- Mode langues spéciales (ar, he, el, ru, gr, zh, zh-hans)
+                        (
+                            :isSpecialLang = true
+                            AND unaccent(lower(npt.lexical_value)) LIKE CONCAT('%', unaccent(lower(:value)), '%')
+                        )
+                        -- Mode standard avec similarité
+                        OR (
+                            :isSpecialLang = false
+                            AND similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value))) > 0.2
+                        )
+                    )
+                    AND (:langSensitive = false OR npt.lang = :idLang)
+                ORDER BY 
+                    CASE 
+                        WHEN :isSpecialLang = true THEN npt.lexical_value <-> :value
+                        ELSE similarity(unaccent(lower(npt.lexical_value)), unaccent(lower(:value)))
+                    END DESC
                 LIMIT 50
             """, nativeQuery = true)
-    List<NodeSearchMiniAltProjection> searchAltTermsFullText(@Param("value") String value, @Param("idLang") String idLang,
-                                                             @Param("idThesaurus") String idThesaurus, @Param("isPrivate") boolean isPrivate,
-                                                             @Param("langSensitive") boolean langSensitive);
+    List<NodeSearchMiniAltProjection> searchAltTermsFullText(
+            @Param("value") String value,
+            @Param("idLang") String idLang,
+            @Param("idThesaurus") String idThesaurus,
+            @Param("langSensitive") boolean langSensitive,
+            @Param("isSpecialLang") boolean isSpecialLang
+    );
+
+
 
     @Query(value = "SELECT DISTINCT new fr.cnrs.opentheso.models.search.NodeSearchMini("
             + "pt.idConcept, t.idTerm, t.lexicalValue, c.status) "

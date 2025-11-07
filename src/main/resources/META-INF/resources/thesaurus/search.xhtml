@@ -157,8 +157,9 @@
                                     </div>
                                     <div style="width: 55%; z-index: 100">
                                         <p:autoComplete id="autocompleteSearch" class="form-control" value="#{searchBean.searchSelected}" var="values"
-                                                        placeholder="#{langueBean.getMsg('candidat.search')}..."
-                                                        completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}"
+                                                        placeholder="#{langueBean.getMsg('candidat.search')}..." delay="400"
+                                                        minQueryLength="#{(selectedThesaurus.currentIdTheso!=null) ? 1 : 9999}"
+                                                        completeMethod="#{searchBean.completTermFullText}"  itemLabel="#{values.prefLabel}"
                                                         itemValue="#{values}" converter="searchConverterAdvanced" scrollHeight="600"
                                                         inputStyle="font-size: 14px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
                                                         style="background-color: transparent; border-color: transparent; width: 100%; font-size: 12px;">

@@ -123,6 +123,8 @@ public class SearchBean implements Serializable {
 
         selectedItem = false;
         listResultAutoComplete = new ArrayList<>();
+        if(StringUtils.isEmpty(value)) return List.of();
+        value = value.trim();
 
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getSelectedLang() != null) {
 

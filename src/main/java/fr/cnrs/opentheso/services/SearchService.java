@@ -47,6 +47,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class SearchService {
+    private static final Set<String> SUPPORTED_LANGS = Set.of("ar", "he", "el", "ru", "gr", "zh", "zh-hans");
 
     private final SearchRepository searchRepository;
     private final NonPreferredTermService nonPreferredTermService;
@@ -261,30 +262,50 @@ public class SearchService {
         return StringUtils.isEmpty(status) ? "CO" : status;
     }
 
+    // #MR OK validé le 07/11/2025
     public List<NodeSearchMini> searchFullTextElastic(String value, String idLang, String idThesaurus, boolean isPrivate) {
         if (value == null || value.isEmpty()) {
             return Collections.emptyList();
         }
 
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = value.trim();
 
         boolean langSensitive = idLang != null && !idLang.isEmpty();
 
         List<NodeSearchMini> results = new ArrayList<>();
+        boolean isSpecialLang = true; // permet de chercher dans toutes les langues hors européennes comme l'arabe
+        if(StringUtils.isNotEmpty(idLang)) {
+            isSpecialLang = SUPPORTED_LANGS.contains(idLang.toLowerCase()); // cas où la langue est en latin (fr, en, ...)
+        }
+        var preferredResults = searchRepository.searchPreferredTermsFullText(
+                value,
+                idLang,
+                idThesaurus,
+                langSensitive,
+                isSpecialLang
+        );
 
-        var preferredResults = searchRepository.searchPreferredTermsFullText(value, idLang, idThesaurus, isPrivate, langSensitive);
         for (NodeSearchMiniProjection projection : preferredResults) {
             var node = new NodeSearchMini(projection.getIdConcept(),projection.getIdTerm(),
                     projection.getPrefLabel(), projection.getStatus());
             node.setConcept(true);
-            if (value.trim().equalsIgnoreCase(node.getPrefLabel())) {
+            if (value.equalsIgnoreCase(node.getPrefLabel())) {
                 results.add(0, node);
             } else {
                 results.add(node);
             }
         }
 
-        var altResults = searchRepository.searchAltTermsFullText(value, idLang, idThesaurus, isPrivate, langSensitive);
+      //  var altResults = searchRepository.searchAltTermsFullText(value, idLang, idThesaurus, isPrivate, langSensitive);
+        var altResults = searchRepository.searchAltTermsFullText(
+                value,
+                idLang,
+                idThesaurus,
+                langSensitive,
+                isSpecialLang
+        );
+
         for (NodeSearchMiniAltProjection projection : altResults) {
             var node = new NodeSearchMini();
             node.setIdConcept(projection.getIdConcept());
@@ -294,10 +315,10 @@ public class SearchService {
             node.setDeprecated("DEP".equalsIgnoreCase(projection.getStatus()));
             node.setAltLabel(true);
 
-            if (value.trim().equalsIgnoreCase(node.getAltLabelValue())) {
+            if (value.equalsIgnoreCase(node.getAltLabelValue())) {
                 if (results.isEmpty()) {
                     results.add(0, node);
-                } else if (results.get(0).getPrefLabel().equalsIgnoreCase(value.trim())) {
+                } else if (results.get(0).getPrefLabel().equalsIgnoreCase(value)) {
                     results.add(1, node);
                 } else {
                     results.add(0, node);
@@ -306,26 +327,25 @@ public class SearchService {
                 results.add(node);
             }
         }
-
+        searchCollections(idThesaurus, value, idLang).forEach(results::add);
+        searchFacets(idThesaurus, value, idLang).forEach(results::add);
         return results;
     }
 
+    // #MR OK validé le 07/11/2025
     public List<NodeSearchMini> searchStartWith(String value, String idLang, String idTheso, boolean isPrivate) {
-
+        if (StringUtils.isEmpty(value)) {
+            return Collections.emptyList();
+        }
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = value.trim();
         List<NodeSearchMini> results = new ArrayList<>();
-
-        String normalizedValue = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         List<Object[]> preferredTerms;
         List<Object[]> altTerms;
 
-        if (isPrivate) {
-            preferredTerms = searchRepository.searchStartWithPreferredPublic(normalizedValue, idLang, idTheso);
-            altTerms = searchRepository.searchStartWithSynonymsPublic(normalizedValue, idLang, idTheso);
-        } else {
-            preferredTerms = searchRepository.searchStartWithPreferred(normalizedValue, idLang, idTheso);
-            altTerms = searchRepository.searchStartWithSynonyms(normalizedValue, idLang, idTheso);
-        }
+        preferredTerms = searchRepository.searchStartWithPreferred(value, idLang, idTheso);
+        altTerms = searchRepository.searchStartWithSynonymsPublic(value, idLang, idTheso);
 
         for (Object[] row : preferredTerms) {
             NodeSearchMini nsm = new NodeSearchMini();
@@ -335,7 +355,7 @@ public class SearchService {
             nsm.setConcept(true);
             nsm.setDeprecated("DEP".equalsIgnoreCase((String) row[3]));
 
-            if (value.trim().equalsIgnoreCase(nsm.getPrefLabel())) {
+            if (value.equalsIgnoreCase(nsm.getPrefLabel())) {
                 results.add(0, nsm);
             } else {
                 results.add(nsm);
@@ -351,7 +371,7 @@ public class SearchService {
             nsm.setAltLabel(true);
             nsm.setDeprecated("DEP".equalsIgnoreCase((String) row[4]));
 
-            if (value.trim().equalsIgnoreCase(nsm.getAltLabelValue())) {
+            if (value.equalsIgnoreCase(nsm.getAltLabelValue())) {
                 results.add(0, nsm);
             } else {
                 results.add(nsm);

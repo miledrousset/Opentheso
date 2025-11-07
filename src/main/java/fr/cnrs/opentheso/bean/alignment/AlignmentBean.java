@@ -1269,17 +1269,19 @@ public class AlignmentBean implements Serializable {
             if (thesaurusUsedLanguage.contains(lang.toLowerCase())) {
                 String val = entity.path("labels").path(lang).path("value").asText(null);
                 if (val != null) {
+                    SelectedResource selectedResource = new SelectedResource();
                     boolean added = false;
                     for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
                         if (lang.equalsIgnoreCase(nodeTermTraduction.getLang())) {
                             if (val.trim().equalsIgnoreCase(nodeTermTraduction.getLexicalValue().trim())) {
                                 added = true;
                                 break;
+                            } else {
+                                selectedResource.setLocalValue(nodeTermTraduction.getLexicalValue().trim());
                             }
                         }
                     }
                     if (!added) {
-                        SelectedResource selectedResource = new SelectedResource();
                         selectedResource.setIdLang(lang);
                         selectedResource.setGettedValue(val);
                         traductionsOfAlignment.add(selectedResource);
@@ -1293,6 +1295,7 @@ public class AlignmentBean implements Serializable {
             if (thesaurusUsedLanguage.contains(lang.toLowerCase())) {
                 String val = entity.path("descriptions").path(lang).path("value").asText(null);
                 if (val != null) {
+                    SelectedResource selectedResource = new SelectedResource();
                     boolean added = false;
                     for (NodeNote nodeNote : nodeNotes) {
                         if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
@@ -1301,12 +1304,13 @@ public class AlignmentBean implements Serializable {
                                 if (val.equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
                                     added = true;
                                     break;
+                                } else {
+                                    selectedResource.setLocalValue(nodeNote.getLexicalValue().trim());
                                 }
                             }
                         }
                     }
                     if (!added) {
-                        SelectedResource selectedResource = new SelectedResource();
                         selectedResource.setIdLang(lang);
                         selectedResource.setGettedValue(val);
                         descriptionsOfAlignment.add(selectedResource);
