@@ -306,7 +306,8 @@ public class Tree implements Serializable {
                         dataService.addNodeWithChild("concept", data, parent);
                     }
                 } else {
-                    if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
+                    if (nodeConceptTree.getStatusConcept() != null
+                            && nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
                         dataService.addNodeWithoutChild("deprecated", data, parent);
                     } else {
                         dataService.addNodeWithoutChild("file", data, parent);
