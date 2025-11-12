@@ -187,4 +187,5 @@
     <changeSet id="25.11.5" author="Miled">
         <sqlFile path="v25.10/25-11_06.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+
 </databaseChangeLog>

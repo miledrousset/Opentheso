@@ -345,7 +345,7 @@ public class SearchService {
         List<Object[]> altTerms;
 
         preferredTerms = searchRepository.searchStartWithPreferred(value, idLang, idTheso);
-        altTerms = searchRepository.searchStartWithSynonymsPublic(value, idLang, idTheso);
+        altTerms = searchRepository.searchStartWithSynonyms(value, idLang, idTheso);
 
         for (Object[] row : preferredTerms) {
             NodeSearchMini nsm = new NodeSearchMini();
@@ -470,9 +470,9 @@ public class SearchService {
         List<NodeSearchMini> results = new ArrayList<>();
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
-        List<Object[]> preferredResults = isPrivate ?
-                searchRepository.searchExactPreferredTermsPrivate(idTheso, idLang, value) :
-                searchRepository.searchExactPreferredTermsPublic(idTheso, idLang, value);
+        List<Object[]> preferredResults = //isPrivate ?
+       //         searchRepository.searchExactPreferredTermsPublic(idTheso, idLang, value) :
+                searchRepository.searchExactPreferredTerms(idTheso, idLang, value);
 
         for (Object[] row : preferredResults) {
             NodeSearchMini node = new NodeSearchMini();
@@ -488,9 +488,9 @@ public class SearchService {
             }
         }
 
-        List<Object[]> altResults = isPrivate ?
-                searchRepository.searchExactAltTermsPrivate(idTheso, idLang, value) :
-                searchRepository.searchExactAltTermsPublic(idTheso, idLang, value);
+        List<Object[]> altResults = //isPrivate ?
+                //searchRepository.searchExactAltTermsPrivate(idTheso, idLang, value) :
+                searchRepository.searchExactAltTerms(idTheso, idLang, value);
 
         for (Object[] row : altResults) {
             NodeSearchMini node = new NodeSearchMini();
