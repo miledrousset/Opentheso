@@ -27,6 +27,13 @@
                 <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso"
                                itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
             </p:selectOneMenu>
+
+            <p:selectOneMenu id="languageSelect" value="#{selectedThesaurus.selectedLang}"
+                             class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}" >
+                <p:ajax event="valueChange" listener="#{selectedThesaurus.changeLang()}"/>
+                <f:selectItems value="#{selectedThesaurus.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
+                <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
+            </p:selectOneMenu>
         </div>
 
         <!-- Colonne centre : zone de recherche -->
