@@ -55,7 +55,9 @@ public class AlignmentManualBean implements Serializable {
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
-        nodeAlignments = alignmentService.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(),selectedTheso.getCurrentIdTheso());
+        if(conceptView.getNodeFullConcept() != null) {
+            nodeAlignments = alignmentService.getAllAlignmentOfConcept(conceptView.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentIdTheso());
+        }
     }
 
     public void showManuelAlignmentDialog() {

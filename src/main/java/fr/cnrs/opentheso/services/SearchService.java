@@ -274,16 +274,11 @@ public class SearchService {
         boolean langSensitive = idLang != null && !idLang.isEmpty();
 
         List<NodeSearchMini> results = new ArrayList<>();
-        boolean isSpecialLang = true; // permet de chercher dans toutes les langues hors européennes comme l'arabe
-        if(StringUtils.isNotEmpty(idLang)) {
-            isSpecialLang = SUPPORTED_LANGS.contains(idLang.toLowerCase()); // cas où la langue est en latin (fr, en, ...)
-        }
         var preferredResults = searchRepository.searchPreferredTermsFullText(
                 value,
                 idLang,
                 idThesaurus,
-                langSensitive,
-                isSpecialLang
+                langSensitive
         );
 
         for (NodeSearchMiniProjection projection : preferredResults) {
@@ -302,8 +297,7 @@ public class SearchService {
                 value,
                 idLang,
                 idThesaurus,
-                langSensitive,
-                isSpecialLang
+                langSensitive
         );
 
         for (NodeSearchMiniAltProjection projection : altResults) {
@@ -416,6 +410,32 @@ public class SearchService {
         }
 
         return nodeSearchMinis;
+    }
+
+    // #MR OK validé le 07/11/2025
+    public List<NodeSearchMini> searchNotes(String value, String idLang, String idThesaurus) {
+        if (StringUtils.isEmpty(value)) {
+            return Collections.emptyList();
+        }
+
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = value.trim();
+
+        List<NodeSearchMini> results = new ArrayList<>();
+
+        var notesResults = searchRepository.searchNotes(
+                value,
+                idLang,
+                idThesaurus
+        );
+
+        for (NodeSearchMiniProjection projection : notesResults) {
+            var node = new NodeSearchMini(projection.getIdConcept(),projection.getIdTerm(),
+                    projection.getPrefLabel(), projection.getStatus());
+            node.setConcept(true);
+            results.add(node);
+        }
+        return results;
     }
 
     public List<NodeSearchMini> searchFullText(String value, String idLang, String idThesaurus, int limit) {

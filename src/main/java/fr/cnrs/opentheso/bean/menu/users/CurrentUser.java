@@ -45,7 +45,9 @@ import jakarta.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
@@ -54,7 +56,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-
+@Slf4j
 @Getter
 @Setter
 @SessionScoped
@@ -171,17 +173,21 @@ public class CurrentUser implements Serializable {
 
         var groups = groupService.getListGroupOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentLang());
-        if (CollectionUtils.isNotEmpty(groups) && groups.stream().anyMatch(NodeGroup::isGroupPrivate)) {
-            indexSetting.setIsSelectedTheso(true);
-            indexSetting.setIsValueSelected(false);
-            indexSetting.setIsHomeSelected(true);
-            indexSetting.setIsThesoActive(true);
-            indexSetting.setProjectSelected(false);
+        try {
+            if (CollectionUtils.isNotEmpty(groups) && groups.stream().anyMatch(NodeGroup::isGroupPrivate)) {
+                indexSetting.setIsSelectedTheso(true);
+                indexSetting.setIsValueSelected(false);
+                indexSetting.setIsHomeSelected(true);
+                indexSetting.setIsThesoActive(true);
+                indexSetting.setProjectSelected(false);
+            }
+        } catch (Exception e) {
+            log.error("Erreur d'initialisation des groupes privés", e.getMessage());
         }
 
         conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
                 selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, false));
-
+        tree.reloadSelectedConcept();
 
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
@@ -288,6 +294,7 @@ public class CurrentUser implements Serializable {
 
         conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
                 selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, true));
+        tree.reloadSelectedConcept();
 
         PrimeFaces.current().executeScript("PF('login').hide();");
 

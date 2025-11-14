@@ -493,7 +493,7 @@ public class GroupService {
         log.debug("Rechercher du group id {}", idGroup);
         var conceptGroup = conceptGroupRepository.findByIdGroupAndIdThesaurus(idGroup, idThesaurus);
         if (conceptGroup.isEmpty()) {
-            log.error("Aucun group n'est trouvé pour l'id Group {}", idGroup);
+            log.debug("Aucun group n'est trouvé pour l'id Group {}", idGroup);
             return null;
         }
 
