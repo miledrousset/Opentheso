@@ -41,7 +41,7 @@
                                severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300;" rounded="true"
                                value=" #{conceptView.getLabelOfConceptType(
                                          conceptView.nodeFullConcept.conceptType,
-                                                selectedTheso.currentIdTheso)} ">
+                                                selectedThesaurus.currentIdTheso)} ">
                         </p:tag>
 
                         <!-- Pour copier l'URL pour partage -->
@@ -57,11 +57,11 @@
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
                         <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
 
-                        <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
+                        <p:commandButton rendered="#{!roleOnThesaurus.nodePreference.autoExpandTree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeFullConcept.identifier,
-                                                   selectedTheso.currentIdTheso, conceptView.nodeFullConcept.prefLabel.idLang)}"
-                                         actionListener="#{selectedTheso.actionFromConceptToOn()}" update="containerIndex"
+                                                   selectedThesaurus.currentIdTheso, conceptView.nodeFullConcept.prefLabel.idLang)}"
+                                         actionListener="#{selectedThesaurus.actionFromConceptToOn()}" update="containerIndex"
                                          style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" />
                     </div>
                 </div>
@@ -98,11 +98,11 @@
                                 <ui:repeat var="replace" value="#{conceptView.nodeFullConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.label != ''}" value="#{replace.label}"
                                                    title="#{replace.identifier}"  style="font-size: 1rem;"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formRightTab indexTitle" />
 
                                     <p:commandLink rendered="#{replace.label == ''}" value="(#{replace.identifier})"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;font-size: 1rem;" />
 
@@ -127,14 +127,12 @@
                             <ui:repeat var="replaces" value="#{conceptView.nodeFullConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeFullConcept.replaces.size() != 0}">
                                 <p:commandLink rendered="#{replaces.label != ''}" value="#{replaces.label}"
                                                title="#{replaces.identifier}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
-                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"
-                                               />
+                                               action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"/>
                                 <p:commandLink rendered="#{replaces.label == ''}" value="(#{replaces.identifier})"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
+                                               action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
-                                               style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"
-                                               />
+                                               style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"/>
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>
@@ -161,7 +159,7 @@
                                             oncomplete="PF('addSynonym').show();" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
-                                            actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();" 
+                                            actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();"
                                             update="containerIndex:idRenameSynonym" icon="fas fa-edit"/>
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
@@ -316,8 +314,7 @@
                                                 oncomplete="PF('addConceptToFacet').show();" />
                                     <p:menuitem value="#{langueBean.getMsg('leftbody.removeTheConceptOfFacets')}" icon="far fa-trash-alt"
                                                 oncomplete="PF('removeConceptFromFracets').show();"
-                                                update="containerIndex:idRemoveConceptFromFracets"
-                                                disabled="#{conceptView.nodeFacets.size() == 0}"/>                                      
+                                                update="containerIndex:idRemoveConceptFromFracets"/>
                                 </p:menuButton>
 
                                 <h:panelGroup rendered="#{conceptView.nodeFacets.size() == 0}" >                          
@@ -356,13 +353,13 @@
                     </div>
 
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px;">
-                        <p:commandLink rendered="#{(currentUser.nodeUser != null)}" actionListener="#{conceptView.countTheTotalOfBranch(selectedTheso.getCurrentIdTheso())}"
+                        <p:commandLink rendered="#{(currentUser.nodeUser != null)}" actionListener="#{conceptView.countTheTotalOfBranch(selectedThesaurus.getCurrentIdTheso())}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab" process="@this" ajax="true">
                             <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px; margin-left: 14px" />
                         </p:commandLink>  
 
-                        <p:commandLink rendered="#{(currentUser.nodeUser == null)}" actionListener="#{conceptView.countTheTotalOfBranch(selectedTheso.getCurrentIdTheso())}"
+                        <p:commandLink rendered="#{(currentUser.nodeUser == null)}" actionListener="#{conceptView.countTheTotalOfBranch(selectedThesaurus.getCurrentIdTheso())}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab" process="@this" ajax="true">
                             <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px;" />
@@ -376,12 +373,12 @@
             </div>     
 
             <!-- ligne Corpus liés --> 
-            <h:panelGroup id="corpusView" rendered="#{selectedTheso.haveActiveCorpus}">
+            <h:panelGroup id="corpusView" rendered="#{selectedThesaurus.haveActiveCorpus}">
                 <div class="list-group-item list-group-item-action" style="padding-top: 5px; margin-bottom: -5px">
                     <div class="row" style="vertical-align: central; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                             <p:commandButton styleClass="mr-2" value="#{langueBean.getMsg('rightbody.concept.showLinked_corpus')}" style="background-color: #f47b2a" 
-                                             actionListener="#{conceptView.searchCorpus(selectedTheso.getCurrentIdTheso())}"
+                                             actionListener="#{conceptView.searchCorpus(selectedThesaurus.getCurrentIdTheso())}"
                                         update="containerIndex:rightTab:corpusView" >
                                 
                             </p:commandButton>

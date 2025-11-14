@@ -49,10 +49,12 @@
                     </div>
 
                     <div class="col-7" style="margin-top: 3px">                
-                        <p:selectOneMenu id="option" value="#{dataGraphView.selectedIdTheso}">
+                        <p:selectOneMenu id="option" value="#{dataGraphView.selectedIdTheso}"
+                                         style="min-width: 200px; background: none;  box-shadow: none; "
+                                         panelStyle="border: none; box-shadow: none;">
                             <p:ajax event="valueChange" update="manageViewForm" />
                             <f:selectItem itemValue="" itemLabel="..." />
-                            <f:selectItems value="#{currentUser.userPermissions.listThesos}" var="idTheso" itemValue="#{idTheso.id}"
+                            <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="idTheso" itemValue="#{idTheso.id}"
                                             itemLabel="#{idTheso.value} (#{idTheso.id})" />
                         </p:selectOneMenu>                         
                     </div>
@@ -64,7 +66,8 @@
                         </div>                        
                         <div class="col-7" style="margin-top: 3px">                    
                             <p:autoComplete id="autoBroaderLink" value="#{dataGraphView.searchSelected}"
-                                            var="values" style="width: 100%"
+                                            var="values" style="width: 100%; min-width: 200px; background: none;  box-shadow: none; "
+                                            panelStyle="border: none; box-shadow: none;"
                                             forceSelection="true"
                                             completeMethod="#{dataGraphView.getAutoComplete}"                                  
                                             minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"

@@ -1,47 +1,27 @@
 package fr.cnrs.opentheso.services.imports.rdf4j;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.ImagesHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.entites.CandidatStatus;
+import fr.cnrs.opentheso.entites.ExternalResource;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.Preferences;
+import fr.cnrs.opentheso.entites.ThesaurusDcTerm;
+import fr.cnrs.opentheso.entites.UserGroupThesaurus;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.DeprecateHelper;
-import fr.cnrs.opentheso.repositories.ExternalResourcesHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.status.NodeStatus;
 import fr.cnrs.opentheso.models.terms.NodeTerm;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
-import fr.cnrs.opentheso.models.skosapi.FoafImage;
 import fr.cnrs.opentheso.models.skosapi.SKOSAgent;
 import fr.cnrs.opentheso.models.skosapi.SKOSDate;
 import fr.cnrs.opentheso.models.skosapi.SKOSDiscussion;
@@ -57,138 +37,110 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import java.sql.Statement;
-import java.util.Date;
+import fr.cnrs.opentheso.repositories.CandidatStatusRepository;
+import fr.cnrs.opentheso.repositories.ConceptFacetRepository;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ExternalResourcesRepository;
+import fr.cnrs.opentheso.repositories.ImagesRepository;
+import fr.cnrs.opentheso.repositories.StatusRepository;
+import fr.cnrs.opentheso.repositories.ThesaurusDcTermRepository;
+import fr.cnrs.opentheso.repositories.UserGroupThesaurusRepository;
+import fr.cnrs.opentheso.services.AlignmentService;
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.FacetService;
+import fr.cnrs.opentheso.services.GpsService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.ImageService;
+import fr.cnrs.opentheso.services.NonPreferredTermService;
+import fr.cnrs.opentheso.services.NoteService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.RelationGroupService;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.TermService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 
-/**
- *
- * @author Quincy
- */
 @Data
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ImportRdf4jHelper {
 
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private DeprecateHelper deprecateHelper;
-
-    @Autowired
-    private ImagesHelper imagesHelper;
-
-    @Autowired
-    private CandidatDao candidatDao;
-
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private GpsHelper gpsHelper;
-
-    @Autowired
-    private AlignmentHelper alignmentHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private ExternalResourcesHelper externalResourcesHelper;
-
-    @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
-    private DcElementHelper dcElementHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private FacetHelper facetHelper;
+    private final DataSource dataSource;
+    private final AlignmentService alignmentService;
+    private final ImageService imageService;
+    private final PreferenceService preferenceService;
+    private final ExternalResourcesRepository externalResourcesRepository;
+    private final ThesaurusDcTermRepository thesaurusDcTermRepository;
+    private final RelationService relationService;
+    private final UserGroupThesaurusRepository userGroupThesaurusRepository;
+    private final GpsService gpsService;
+    private final StatusRepository statusRepository;
+    private final RelationGroupService relationGroupService;
+    private final CandidatStatusRepository candidatStatusRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final TermService termService;
+    private final GroupService groupService;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
+    private final NoteService noteService;
+    private final FacetService facetService;
+    private final ConceptAddService conceptAddService;
+    private final ConceptRepository conceptRepository;
+    private final ImagesRepository imagesRepository;
+    private final ConceptFacetRepository conceptFacetRepository;
 
 
-    private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
-    private String langueSource;
-    private String formatDate;
-    private int idUser;
-    private int idGroupUser;
-    private ArrayList<String> idLangsFound;
-
-    //    private boolean useArk;
-    private String selectedIdentifier;
-    private String prefixHandle;
-    private String prefixDoi;
-
-    private NodePreference nodePreference;
-    private StringBuilder message;
-
-    HashMap<String, String> memberHashMap = new HashMap<>();
-    HashMap<String, String> groupSubGroup = new HashMap<>(); // pour garder en mémoire les relations de types (member) pour détecter ce qui est groupe ou concept 
-
-    ArrayList<String> hasTopConcceptList = new ArrayList<>();
-
+    private List<String> idGroups = new ArrayList<>();
+    private int idUser, idGroupUser;
+    private List<String> idLangsFound = new ArrayList<>(), hasTopConcceptList = new ArrayList<>();;
+    private String langueSource, formatDate, selectedIdentifier, prefixHandle, prefixDoi;
+    private Preferences nodePreference;
+    private StringBuilder message = new StringBuilder();
+    private HashMap<String, String> memberHashMap = new HashMap<>();
+    private HashMap<String, String> groupSubGroup = new HashMap<>(); // pour garder en mémoire les relations de types (member) pour détecter ce qui est groupe ou concept
     private SKOSXmlDocument skosXmlDocument;
-
     boolean isFirst = true;
 
-    public ImportRdf4jHelper() {
-        idGroups = new ArrayList<>();
-        message = new StringBuilder();
-        idLangsFound = new ArrayList<>();
-        isFirst = true;
-    }
 
     /**
      * initialisation des paramètres d'import
-     *
-     * @param formatDate
-     * @param idGroupUser
-     * @param idUser
-     * @param langueSource
-     * @return
      */
-    public boolean setInfos(String formatDate, int idUser, int idGroupUser, String langueSource) {
+    public void setInfos(String formatDate, int idUser, int idGroupUser, String langueSource) {
         this.formatDate = formatDate;
         this.idUser = idUser;
         this.idGroupUser = idGroupUser;
         this.langueSource = langueSource;
-        return true;
+        this.isFirst = true;
     }
 
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
-     *
-     * @return
-     * @throws java.sql.SQLException
      */
     public String addThesaurus() throws SQLException {
 
@@ -214,106 +166,72 @@ public class ImportRdf4jHelper {
         thesaurus.setCreator(creator);
         thesaurus.setContributor(contributor);
 
-        thesaurusHelper.setIdentifierType("2");
-
         String idTheso1;
-        try (Connection conn = dataSource.getConnection()) {
+        if (thesaurus.getLanguage() == null) {
+            thesaurus.setLanguage(langueSource);
+        }
+        if ((idTheso1 = thesaurusService.addThesaurusRollBack()) == null) {
+            message.append("Erreur lors de la création du thésaurus");
+            return null;
+        }
 
-            conn.setAutoCommit(false);
+        // Si le Titre du thésaurus n'est pas detecter, on donne un nom par defaut
+        if (skosXmlDocument.getConceptScheme().getLabelsList().isEmpty()) {
+            if (thesaurus.getTitle().isEmpty()) {
+                thesaurus.setTitle("theso_" + idTheso1);
+            }
+        }
+        thesaurus.setId_thesaurus(idTheso1);
+
+        // intégration des métadonnées DC
+        for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
+            thesaurusDcTermRepository.save(ThesaurusDcTerm.builder()
+                    .idThesaurus(idTheso1)
+                    .name(dcElement.getName())
+                    .value(dcElement.getValue())
+                    .language(dcElement.getLanguage())
+                    .dataType(dcElement.getType())
+                    .build());
+        }
+
+        // boucler pour les traductions
+        for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
+            thesaurus.setTitle(label.getLabel());
+            thesaurus.setLanguage(label.getLanguage());
             if (thesaurus.getLanguage() == null) {
-                thesaurus.setLanguage(langueSource);
+                thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
             }
-            if ((idTheso1 = thesaurusHelper.addThesaurusRollBack()) == null) {
-                conn.rollback();
-                conn.close();
-                message.append("Erreur lors de la création du thésaurus");
-                return null;
-            }
-            conn.commit();
+            thesaurusService.addThesaurusTraductionRollBack(thesaurus);
+        }
 
-            // Si le Titre du thésaurus n'est pas detecter, on donne un nom par defaut
-            if (skosXmlDocument.getConceptScheme().getLabelsList().isEmpty()) {
-                if (thesaurus.getTitle().isEmpty()) {
-                    thesaurus.setTitle("theso_" + idTheso1);
-                }
-            }
-            thesaurus.setId_thesaurus(idTheso1);
-
-            // intégration des métadonnées DC
-            for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
-                dcElementHelper.addDcElementThesaurus(dcElement, idTheso1);
-            }
-
-            // boucler pour les traductions
-            for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
-                thesaurus.setTitle(label.getLabel());
-                thesaurus.setLanguage(label.getLanguage());
-                if (thesaurus.getLanguage() == null) {
-                    thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
-                }
-                if (!thesaurusHelper.addThesaurusTraductionRollBack(thesaurus)) {
-                    conn.rollback();
-                    conn.close();
-                    message.append("Erreur lors de la création des traductions du thésaurus");
-                    return null;
-                }
-                conn.commit();
-            }
-
-            // ajouter le thésaurus dans le group de l'utilisateur
-            if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                if (!userHelper.addThesoToGroup(thesaurus.getId_thesaurus(), idGroupUser)) {
-                    conn.rollback();
-                    conn.close();
-                    message.append("Erreur lors de l'ajout du thésaurus au projet");
-                    return null;
-                }
-            }
-            conn.commit();
+        // ajouter le thésaurus dans le group de l'utilisateur
+        if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
+            var userGroupThesaurus = UserGroupThesaurus.builder().idThesaurus(thesaurus.getId_thesaurus()).idGroup(idGroupUser).build();
+            userGroupThesaurusRepository.save(userGroupThesaurus);
         }
 
         for (SKOSRelation relation : skosXmlDocument.getConceptScheme().getRelationsList()) {
             hasTopConcceptList.add(relation.getTargetUri());
         }
-        setPreferences(idTheso1, skosXmlDocument.getTitle());
+        initPreferencesThesaurus(idTheso1, skosXmlDocument.getTitle());
         return idTheso1;
     }
 
-    private void setPreferences(String idTheso, String uri) {
-
-        if (nodePreference == null) {
-            preferencesHelper.initPreferences(idTheso, langueSource);
-            nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
-            nodePreference.setCheminSite(uri);
-            nodePreference.setPreferredName(idTheso);
-            nodePreference.setOriginalUri(uri);
-            if (selectedIdentifier.equalsIgnoreCase("ark")) {
-                nodePreference.setOriginalUriIsArk(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("handle")) {
-                nodePreference.setOriginalUriIsHandle(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("doi")) {
-                nodePreference.setOriginalUriIsDoi(true);
-            }
-            preferencesHelper.updateAllPreferenceUser(nodePreference, idTheso);
-
-        } else {
-            nodePreference.setCheminSite(uri);
-            nodePreference.setSourceLang(langueSource);
-            nodePreference.setPreferredName(idTheso);
-            nodePreference.setOriginalUri(uri);
-            if (selectedIdentifier.equalsIgnoreCase("ark")) {
-                nodePreference.setOriginalUriIsArk(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("handle")) {
-                nodePreference.setOriginalUriIsHandle(true);
-            }
-            if (selectedIdentifier.equalsIgnoreCase("doi")) {
-                nodePreference.setOriginalUriIsDoi(true);
-            }
-            preferencesHelper.addPreference(nodePreference, idTheso);
+    private void initPreferencesThesaurus(String idThesaurus, String uri) {
+        langueSource = StringUtils.isEmpty(langueSource) ? "fr" : langueSource;
+        preferenceService.initPreferences(idThesaurus, langueSource);
+        nodePreference = preferenceService.getThesaurusPreferences(idThesaurus);
+        nodePreference.setPreferredName(idThesaurus);
+        if (selectedIdentifier.equalsIgnoreCase("ark")) {
+            nodePreference.setOriginalUriIsArk(true);
         }
+        if (selectedIdentifier.equalsIgnoreCase("handle")) {
+            nodePreference.setOriginalUriIsHandle(true);
+        }
+        if (selectedIdentifier.equalsIgnoreCase("doi")) {
+            nodePreference.setOriginalUriIsDoi(true);
+        }
+        preferenceService.updateAllPreferenceUser(nodePreference);
     }
 
     private void setOriginalUri(String idTheso, String uri) {
@@ -321,12 +239,10 @@ public class ImportRdf4jHelper {
         if (nodePreference == null) {
             return;
         }
-        if (nodePreference.getCheminSite().isEmpty() && nodePreference.getPreferredName().isEmpty() && nodePreference.getOriginalUri().isEmpty()) {
-            nodePreference.setCheminSite(uri);
-            nodePreference.setPreferredName(idTheso);
-            nodePreference.setOriginalUri(uri);
-            preferencesHelper.updateAllPreferenceUser(nodePreference, idTheso);
-        }
+        nodePreference.setCheminSite(uri+"/");
+        nodePreference.setPreferredName(idTheso);
+        nodePreference.setOriginalUri(uri);
+        preferenceService.updateAllPreferenceUser(nodePreference);
     }
 
     public void addFacets(ArrayList<SKOSResource> facetResources, String idTheso) {
@@ -353,15 +269,15 @@ public class ImportRdf4jHelper {
 
             for (SKOSLabel sKOSLabel : facetSKOSResource.getLabelsList()) {
                 if (first) {
-                    facetHelper.addNewFacet(idFacet, idTheso, idConceptParent, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
+                    facetService.addNewFacet(idFacet, idTheso, idConceptParent, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
                     first = false;
                 } else {
-                    facetHelper.addFacetTraduction(idFacet, idTheso, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
+                    facetService.addFacetTraduction(idFacet, idTheso, sKOSLabel.getLabel(), sKOSLabel.getLanguage());
                 }
             }
             for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
                 if (member.getProperty() == SKOSProperty.MEMBER) {
-                    facetHelper.addConceptToFacet(idFacet, idTheso, getOriginalId(member.getTargetUri()));
+                    facetService.addConceptToFacet(idFacet, idTheso, getOriginalId(member.getTargetUri()));
                 }
             }
             first = true;
@@ -371,50 +287,30 @@ public class ImportRdf4jHelper {
 
     public void addGroups(ArrayList<SKOSResource> groupResource, String idTheso) {
 
-        String idGroup;
-        String notationValue;
-        SKOSNotation notation;
-        ArrayList<SKOSNotation> notationList;
-        String type;
-        //sub group
-        String idSubGroup;
-        //concept group concept
-        String idSubConcept;
-
         for (SKOSResource group : groupResource) {
-            notation = null;
-            idGroup = getIdFromUri(group.getUri());
+
+            SKOSNotation notation = null;
+            String idSubGroup;
+            String idSubConcept;
+
+            var idGroup = getIdFromUri(group.getUri());
             if (idGroup == null || idGroup.isEmpty()) {
                 idGroup = group.getUri();
             }
 
-            notationList = group.getNotationList();
-
+            var notationList = group.getNotationList();
             if (notationList != null && !notationList.isEmpty()) {
                 notation = notationList.get(0);
             }
 
-            if (notation == null) {
-                notationValue = "";
-            } else {
-                notationValue = notation.getNotation();
-            }
+            var notationValue = notation == null ? "" : notation.getNotation();
 
-            switch (group.getProperty()) {
-                case SKOSProperty.COLLECTION:
-                    type = "C";
-                    break;
-                case SKOSProperty.CONCEPT_GROUP:
-                    type = "G";
-                    break;
-                case SKOSProperty.MICROTHESAURUS:
-                default:
-                    type = "MT";
-                    break;
-                case SKOSProperty.THEME:
-                    type = "T";
-                    break;
-            }
+            var type = switch (group.getProperty()) {
+                case SKOSProperty.COLLECTION -> "C";
+                case SKOSProperty.CONCEPT_GROUP -> "G";
+                case SKOSProperty.THEME -> "T";
+                default -> "MT";
+            };
 
             String idArkHandle = null;
             // option cochée
@@ -456,7 +352,12 @@ public class ImportRdf4jHelper {
                 }
             }
 
-            groupHelper.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            try {
+                groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+                groupService.insertGroup(idGroup, idTheso, idArkHandle, type, notationValue, created, modified);
+            }
 
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {
@@ -464,13 +365,13 @@ public class ImportRdf4jHelper {
                 switch (prop) {
                     case SKOSProperty.SUBGROUP:
                         idSubGroup = getIdFromUri(relation.getTargetUri());
-                        groupHelper.addSubGroup(idGroup, idSubGroup, idTheso);
+                        relationGroupService.addSubGroup(idGroup, idSubGroup, idTheso);
                         break;
                     case SKOSProperty.MEMBER:
                         // Récupération de l'Id d'origine sauvegardé à l'import (idArk -> identifier)
                         idSubConcept = getOriginalId(relation.getTargetUri());
                         groupSubGroup.put(idSubConcept, idGroup);
-                        groupHelper.addConceptGroupConcept(idGroup, idSubConcept, idTheso);
+                        groupService.addConceptGroupConcept(idGroup, idSubConcept, idTheso);
                         break;
                     default:
                         break;
@@ -485,41 +386,45 @@ public class ImportRdf4jHelper {
                 conceptGroupLabel.setLang(label.getLanguage());
                 conceptGroupLabel.setLexicalValue(label.getLabel());
 
-                groupHelper.addGroupTraduction(conceptGroupLabel, idUser);
+                groupService.addGroupTraduction(conceptGroupLabel, idUser);
             }
 
             for (SKOSDocumentation documentation : group.getDocumentationsList()) {
                 String noteTypeCode = "";
                 int prop = documentation.getProperty();
-                switch (prop) {
-                    case SKOSProperty.DEFINITION:
-                        noteTypeCode = "definition";
-                        break;
-                    case SKOSProperty.SCOPE_NOTE:
-                        noteTypeCode = "scopeNote";
-                        break;
-                    case SKOSProperty.EXAMPLE:
-                        noteTypeCode = "example";
-                        break;
-                    case SKOSProperty.HISTORY_NOTE:
-                        noteTypeCode = "historyNote";
-                        break;
-                    case SKOSProperty.EDITORIAL_NOTE:
-                        noteTypeCode = "editorialNote";
-                        break;
-                    case SKOSProperty.CHANGE_NOTE:
-                        noteTypeCode = "changeNote";
-                        break;
-                    case SKOSProperty.NOTE:
-                        noteTypeCode = "note";
-                        break;
-                }
+                noteTypeCode = getString(noteTypeCode, prop);
 
-                noteHelper.addNote(idGroup, documentation.getLanguage(),
-                        idTheso, documentation.getText(), noteTypeCode, "", idUser);
+                noteService.addNote(idGroup, documentation.getLanguage(), idTheso, documentation.getText(), noteTypeCode, "", idUser);
             }
         }
         addGroupConceptGroup(idTheso);
+    }
+
+    private String getString(String noteTypeCode, int prop) {
+        switch (prop) {
+            case SKOSProperty.DEFINITION:
+                noteTypeCode = "definition";
+                break;
+            case SKOSProperty.SCOPE_NOTE:
+                noteTypeCode = "scopeNote";
+                break;
+            case SKOSProperty.EXAMPLE:
+                noteTypeCode = "example";
+                break;
+            case SKOSProperty.HISTORY_NOTE:
+                noteTypeCode = "historyNote";
+                break;
+            case SKOSProperty.EDITORIAL_NOTE:
+                noteTypeCode = "editorialNote";
+                break;
+            case SKOSProperty.CHANGE_NOTE:
+                noteTypeCode = "changeNote";
+                break;
+            case SKOSProperty.NOTE:
+                noteTypeCode = "note";
+                break;
+        }
+        return noteTypeCode;
     }
 
     /**
@@ -532,16 +437,16 @@ public class ImportRdf4jHelper {
         for (String idSubGroup : groupSubGroup.keySet()) {
             if (idGroups.contains(idSubGroup)) {
                 // si la relation member est vers un sous groupe, alors on créé une relation groupe/sousGroupe
-                groupHelper.addSubGroup(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
+                relationGroupService.addSubGroup(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
             } else {
-                groupHelper.addConceptGroupConcept(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
+                groupService.addConceptGroupConcept(groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
             }
         }
     }
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
         if (isCandidatImport) {
-            if (conceptHelper.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
+            if (conceptAddService.isIdExiste(conceptResource.getIdentifier(), idTheso)) {
                 return;
             }
         }
@@ -558,7 +463,8 @@ public class ImportRdf4jHelper {
         addConceptToBdd(acs, idTheso, isCandidatImport);
     }
 
-    public void addConceptV2(SKOSResource conceptResource, String idTheso) throws SQLException {
+    @Transactional
+    public void addConceptV2(SKOSResource conceptResource, String idTheso) {
         String idConcept;
         if (StringUtils.isEmpty(conceptResource.getIdentifier())) {
             idConcept = getOriginalId(conceptResource.getUri());
@@ -600,8 +506,8 @@ public class ImportRdf4jHelper {
                     images = images + SEPERATEUR + nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
                 }
             }
-            if (images.length() > 0) {
-                images = images.substring(SEPERATEUR.length(), images.length());
+            if (!images.isEmpty()) {
+                images = images.substring(SEPERATEUR.length());
             }
         }
 
@@ -612,47 +518,22 @@ public class ImportRdf4jHelper {
             alignements = "";
             for (SKOSMatch match : conceptResource.getMatchList()) {
                 int id_type = -1;
-                switch (match.getProperty()) {
-                    case SKOSProperty.CLOSE_MATCH:
-                        id_type = 2;
-                        break;
-                    case SKOSProperty.EXACT_MATCH:
-                        id_type = 1;
-                        break;
-                    case SKOSProperty.BROAD_MATCH:
-                        id_type = 3;
-                        break;
-                    case SKOSProperty.NARROWER_MATCH:
-                        id_type = 5;
-                        break;
-                    case SKOSProperty.RELATED_MATCH:
-                        id_type = 4;
-                        break;
-                }
+                id_type = switch (match.getProperty()) {
+                    case SKOSProperty.CLOSE_MATCH -> 2;
+                    case SKOSProperty.EXACT_MATCH -> 1;
+                    case SKOSProperty.BROAD_MATCH -> 3;
+                    case SKOSProperty.NARROWER_MATCH -> 5;
+                    case SKOSProperty.RELATED_MATCH -> 4;
+                    default -> id_type;
+                };
 
                 alignements = alignements + SEPERATEUR + idUser + SOUS_SEPERATEUR + "" + SOUS_SEPERATEUR + ""
                         + SOUS_SEPERATEUR + match.getValue() + SOUS_SEPERATEUR + id_type
                         + SOUS_SEPERATEUR + idTheso + SOUS_SEPERATEUR + idConcept;
             }
-            if (alignements.length() > 0) {
-                alignements = alignements.substring(SEPERATEUR.length(), alignements.length());
+            if (!alignements.isEmpty()) {
+                alignements = alignements.substring(SEPERATEUR.length());
             }
-        }
-
-        String gpsData = null;
-        boolean isGpsPresent = false;
-        String longitude = null, altitude = null;
-        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates()) && conceptResource.getGpsCoordinates().size() == 1) {
-            isGpsPresent = true;
-            altitude = conceptResource.getGpsCoordinates().get(0).getLat();
-            longitude = conceptResource.getGpsCoordinates().get(0).getLon();
-        } else if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
-            isGpsPresent = true;
-            gpsData = "";
-            for (SKOSGPSCoordinates element : conceptResource.getGpsCoordinates()) {
-                gpsData = gpsData + element.getLat() + SOUS_SEPERATEUR + element.getLon() + SEPERATEUR;
-            }
-            gpsData = gpsData.substring(0, gpsData.length() - 2);
         }
 
         //Non Pref Term
@@ -684,11 +565,11 @@ public class ImportRdf4jHelper {
                 }
                 appendNewLang(label.getLanguage());
             }
-            if (nonPrefTerm.length() > 0) {
-                nonPrefTerm = nonPrefTerm.substring(SEPERATEUR.length(), nonPrefTerm.length());
+            if (!nonPrefTerm.isEmpty()) {
+                nonPrefTerm = nonPrefTerm.substring(SEPERATEUR.length());
             }
-            if (prefTerm.length() > 0) {
-                prefTerm = prefTerm.substring(SEPERATEUR.length(), prefTerm.length());
+            if (!prefTerm.isEmpty()) {
+                prefTerm = prefTerm.substring(SEPERATEUR.length());
             }
         }
 
@@ -699,50 +580,34 @@ public class ImportRdf4jHelper {
         if (CollectionUtils.isNotEmpty(conceptResource.getRelationsList())) {
             relations = "";
             for (SKOSRelation relation : conceptResource.getRelationsList()) {
-                String role;
-                switch (relation.getProperty()) {
-                    case SKOSProperty.NARROWER:
-                        role = "NT";
-                        break;
-                    case SKOSProperty.NARROWER_GENERIC:
-                        role = "NTG";
-                        break;
-                    case SKOSProperty.NARROWER_PARTITIVE:
-                        role = "NTP";
-                        break;
-                    case SKOSProperty.NARROWER_INSTANTIAL:
-                        role = "NTI";
-                        break;
-                    case SKOSProperty.BROADER:
+                String role = switch (relation.getProperty()) {
+                    case SKOSProperty.NARROWER -> "NT";
+                    case SKOSProperty.NARROWER_GENERIC -> "NTG";
+                    case SKOSProperty.NARROWER_PARTITIVE -> "NTP";
+                    case SKOSProperty.NARROWER_INSTANTIAL -> "NTI";
+                    case SKOSProperty.BROADER -> {
                         isTopConcept = false;
-                        role = "BT";
-                        break;
-                    case SKOSProperty.BROADER_GENERIC:
+                        yield "BT";
+                    }
+                    case SKOSProperty.BROADER_GENERIC -> {
                         isTopConcept = false;
-                        role = "BTG";
-                        break;
-                    case SKOSProperty.BROADER_INSTANTIAL:
+                        yield "BTG";
+                    }
+                    case SKOSProperty.BROADER_INSTANTIAL -> {
                         isTopConcept = false;
-                        role = "BTI";
-                        break;
-                    case SKOSProperty.BROADER_PARTITIVE:
+                        yield "BTI";
+                    }
+                    case SKOSProperty.BROADER_PARTITIVE -> {
                         isTopConcept = false;
-                        role = "BTP";
-                        break;
-                    case SKOSProperty.RELATED:
-                        role = "RT";
-                        break;
-                    case SKOSProperty.RELATED_HAS_PART:
-                        role = "RHP";
-                        break;
-                    case SKOSProperty.RELATED_PART_OF:
-                        role = "RPO";
-                        break;
-                    default:
-                        role = "";
-                }
+                        yield "BTP";
+                    }
+                    case SKOSProperty.RELATED -> "RT";
+                    case SKOSProperty.RELATED_HAS_PART -> "RHP";
+                    case SKOSProperty.RELATED_PART_OF -> "RPO";
+                    default -> "";
+                };
 
-                if (!role.equals("")) {
+                if (!role.isEmpty()) {
                     relations = relations + SEPERATEUR + idConcept + SOUS_SEPERATEUR + role + SOUS_SEPERATEUR + getOriginalId(relation.getTargetUri());
                 } else if (relation.getProperty() == SKOSProperty.MEMBER_OF) {
                     collectionToAdd = getIdFromUri(relation.getTargetUri());
@@ -752,8 +617,8 @@ public class ImportRdf4jHelper {
                     isTopConcept = true;
                 }
             }
-            if (relations.length() > 0) {
-                relations = relations.substring(SEPERATEUR.length(), relations.length());
+            if (!relations.isEmpty()) {
+                relations = relations.substring(SEPERATEUR.length());
             }
         }
 
@@ -766,30 +631,16 @@ public class ImportRdf4jHelper {
         if (CollectionUtils.isNotEmpty(conceptResource.getDocumentationsList())) {
             notes = "";
             for (SKOSDocumentation documentation : conceptResource.getDocumentationsList()) {
-                String noteTypeCode = "";
-                switch (documentation.getProperty()) {
-                    case SKOSProperty.DEFINITION:
-                        noteTypeCode = "definition";
-                        break;
-                    case SKOSProperty.SCOPE_NOTE:
-                        noteTypeCode = "scopeNote";
-                        break;
-                    case SKOSProperty.EXAMPLE:
-                        noteTypeCode = "example";
-                        break;
-                    case SKOSProperty.HISTORY_NOTE:
-                        noteTypeCode = "historyNote";
-                        break;
-                    case SKOSProperty.EDITORIAL_NOTE:
-                        noteTypeCode = "editorialNote";
-                        break;
-                    case SKOSProperty.CHANGE_NOTE:
-                        noteTypeCode = "changeNote";
-                        break;
-                    case SKOSProperty.NOTE:
-                        noteTypeCode = "note";
-                        break;
-                }
+                String noteTypeCode = switch (documentation.getProperty()) {
+                    case SKOSProperty.DEFINITION -> "definition";
+                    case SKOSProperty.SCOPE_NOTE -> "scopeNote";
+                    case SKOSProperty.EXAMPLE -> "example";
+                    case SKOSProperty.HISTORY_NOTE -> "historyNote";
+                    case SKOSProperty.EDITORIAL_NOTE -> "editorialNote";
+                    case SKOSProperty.CHANGE_NOTE -> "changeNote";
+                    case SKOSProperty.NOTE -> "note";
+                    default -> "";
+                };
 
                 notes += SEPERATEUR + documentation.getText()
                         + SOUS_SEPERATEUR + noteTypeCode
@@ -797,11 +648,11 @@ public class ImportRdf4jHelper {
                         + SOUS_SEPERATEUR + idConcept;
             }
             if (notes.length() > 0) {
-                notes = notes.substring(SEPERATEUR.length(), notes.length());
+                notes = notes.substring(SEPERATEUR.length());
             }
         }
 
-        String notationConcept = null;
+        String notationConcept = "";
         if (CollectionUtils.isNotEmpty(conceptResource.getNotationList())) {
             for (SKOSNotation notation : conceptResource.getNotationList()) {
                 notationConcept = notation.getNotation();
@@ -828,7 +679,7 @@ public class ImportRdf4jHelper {
                 }
             }
             if (isReplacedBy != null && isReplacedBy.length() > 0) {
-                isReplacedBy = isReplacedBy.substring(SEPERATEUR.length(), isReplacedBy.length());
+                isReplacedBy = isReplacedBy.substring(SEPERATEUR.length());
             }
         }
 
@@ -886,41 +737,30 @@ public class ImportRdf4jHelper {
             gps = gps.substring(SEPERATEUR.length());
         }
 
-        String sql = "";
-        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
-                    + "'" + idConcept + "', "
-                    + idUser + ", "
-                    + "'" + conceptStatus + "', "
-                    + "'concept', "
-                    + (notationConcept == null ? null : "'" + notationConcept + "'") + ""
-                    + ", "
-                    + (idArk == null ? "''" : "'" + idArk + "'") + ", "
-                    + isTopConcept + ", "
-                    + "'" + idHandle + "', "
-                    + "'" + idDoi + "', "
-                    + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (relations == null ? null : "'" + relations + "'") + ", "
-                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "
-                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
-                    + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
-                    + (images == null ? null : "'" + images + "'") + ", "
-                    + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
-                    + (gps != null) + ", "
-                    + (gps == null ? null : "'" + gps + "'") + ", "
-                    //+ "'" + created + "', "
-                    + (created == null ? null : "'" + created + "'") + ", "
-                    //+ "'" + modified + "'"
-                    + (modified == null ? null : "'" + modified + "'") + ", "
-                    + (dcterms == null ? null : "'" + dcterms + "'")
-                    + ")";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.out.println("SQL : " + sql);
-            System.out.println(e.getMessage());
-            System.out.println("--------------------------------");
-        }
+        conceptRepository.addNewConcept(
+                idTheso,
+                idConcept,
+                idUser,
+                conceptStatus,
+                "concept",
+                notationConcept,
+                idArk,
+                isTopConcept,
+                idHandle,
+                idDoi,
+                prefTerm,
+                relations,
+                customRelations,
+                notes,
+                nonPrefTerm,
+                alignements,
+                images,
+                isReplacedBy,
+                gps != null,
+                gps,
+                created,
+                modified,
+                dcterms);
 
         addExternalResources(idTheso, idConcept, conceptResource.getDcRelations());
     }
@@ -934,40 +774,29 @@ public class ImportRdf4jHelper {
             if (!fr.cnrs.opentheso.utils.StringUtils.urlValidator(externalRelation)) {
                 return;
             }
-            if (!externalResourcesHelper.addExternalResource(idConcept, idTheso, "", externalRelation)) {
-            }
+
+            externalResourcesRepository.save(ExternalResource.builder().idThesaurus(idTheso).idConcept(idConcept)
+                    .externalUri(externalRelation).build());
         }
     }
 
     public void addFoafImages(ArrayList<SKOSResource> foafImages, String idTheso) {
-        String images;
-        fr.cnrs.opentheso.utils.StringUtils stringUtils = new fr.cnrs.opentheso.utils.StringUtils();
+
         for (SKOSResource sKOSResource : foafImages) {
-            FoafImage foafImage = sKOSResource.getFoafImage();
-            if (foafImage == null) {
+            if (sKOSResource.getFoafImage() == null) {
                 return;
             }
-            images = stringUtils.convertString(foafImage.getImageName()) + SOUS_SEPERATEUR +
-                    stringUtils.convertString(foafImage.getCopyRight()) + SOUS_SEPERATEUR +
-                    sKOSResource.getUri() + SOUS_SEPERATEUR +
-                    stringUtils.convertString(foafImage.getCreator());
-            if (StringUtils.isEmpty(images)) {
+
+            var imagesStr = fr.cnrs.opentheso.utils.StringUtils.convertString(sKOSResource.getFoafImage().getImageName())
+                    + SOUS_SEPERATEUR + fr.cnrs.opentheso.utils.StringUtils.convertString(sKOSResource.getFoafImage().getCopyRight())
+                    + SOUS_SEPERATEUR + sKOSResource.getUri()
+                    + SOUS_SEPERATEUR + fr.cnrs.opentheso.utils.StringUtils.convertString(sKOSResource.getFoafImage().getCreator());
+
+            if (StringUtils.isEmpty(imagesStr)) {
                 return;
             }
-            String sql = "";
-            try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-                sql = "CALL opentheso_add_external_images("
-                        + "'" + idTheso + "',"
-                        + "'" + sKOSResource.getIdentifier() + "',"
-                        + idUser
-                        + ",'" + images + "'"
-                        + ")";
-                stmt.executeUpdate(sql);
-            } catch (SQLException e) {
-                System.out.println("SQL : " + sql);
-                System.out.println(e.getMessage());
-                System.out.println("--------------------------------");
-            }
+
+            imagesRepository.addExternalImages(idTheso, sKOSResource.getIdentifier(), idUser, imagesStr);
         }
     }
 
@@ -980,7 +809,7 @@ public class ImportRdf4jHelper {
                 continue;
             }
 
-            if (facetSKOSResource.getLabelsList().isEmpty()) {
+            if (CollectionUtils.isEmpty(facetSKOSResource.getLabelsList())) {
                 continue;
             }
 
@@ -999,8 +828,8 @@ public class ImportRdf4jHelper {
             for (SKOSLabel sKOSLabel : facetSKOSResource.getLabelsList()) {
                 labels = labels + SEPERATEUR + sKOSLabel.getLabel() + SOUS_SEPERATEUR + sKOSLabel.getLanguage();
             }
-            if (labels.length() > 0) {
-                labels = labels.substring(2, labels.length());
+            if (!labels.isEmpty()) {
+                labels = labels.substring(2);
             }
 
             String membres = null;
@@ -1011,8 +840,8 @@ public class ImportRdf4jHelper {
                         membres = membres + SEPERATEUR + getOriginalId(member.getTargetUri());
                     }
                 }
-                if (membres.length() > 0) {
-                    membres = membres.substring(2, membres.length());
+                if (!membres.isEmpty()) {
+                    membres = membres.substring(2);
                 }
             }
 
@@ -1022,30 +851,16 @@ public class ImportRdf4jHelper {
             if (CollectionUtils.isNotEmpty(facetSKOSResource.getDocumentationsList())) {
                 notes = "";
                 for (SKOSDocumentation documentation : facetSKOSResource.getDocumentationsList()) {
-                    String noteTypeCode = "";
-                    switch (documentation.getProperty()) {
-                        case SKOSProperty.DEFINITION:
-                            noteTypeCode = "definition";
-                            break;
-                        case SKOSProperty.SCOPE_NOTE:
-                            noteTypeCode = "scopeNote";
-                            break;
-                        case SKOSProperty.EXAMPLE:
-                            noteTypeCode = "example";
-                            break;
-                        case SKOSProperty.HISTORY_NOTE:
-                            noteTypeCode = "historyNote";
-                            break;
-                        case SKOSProperty.EDITORIAL_NOTE:
-                            noteTypeCode = "editorialNote";
-                            break;
-                        case SKOSProperty.CHANGE_NOTE:
-                            noteTypeCode = "changeNote";
-                            break;
-                        case SKOSProperty.NOTE:
-                            noteTypeCode = "note";
-                            break;
-                    }
+                    String noteTypeCode = switch (documentation.getProperty()) {
+                        case SKOSProperty.DEFINITION -> "definition";
+                        case SKOSProperty.SCOPE_NOTE -> "scopeNote";
+                        case SKOSProperty.EXAMPLE -> "example";
+                        case SKOSProperty.HISTORY_NOTE -> "historyNote";
+                        case SKOSProperty.EDITORIAL_NOTE -> "editorialNote";
+                        case SKOSProperty.CHANGE_NOTE -> "changeNote";
+                        case SKOSProperty.NOTE -> "note";
+                        default -> "";
+                    };
 
                     notes += SEPERATEUR + documentation.getText()
                             + SOUS_SEPERATEUR + noteTypeCode
@@ -1053,26 +868,13 @@ public class ImportRdf4jHelper {
                             + SOUS_SEPERATEUR + idFacet;
                 }
                 if (notes.length() > 0) {
-                    notes = notes.substring(SEPERATEUR.length(), notes.length());
+                    notes = notes.substring(SEPERATEUR.length());
                 }
             }
 
-            String sql = "";
-            try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-                sql = "CALL opentheso_add_facet('" + idFacet + "', "
-                        + idUser + ", '"
-                        + idTheso + "', '"
-                        + idConceptParent + "', '"
-                        + labels.replaceAll("'", "''") + "', "
-                        + (membres == null ? null : "'" + membres + "'") + ", "
-                        + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'")
-                        + ")";
-                stmt.executeUpdate(sql);
-            } catch (SQLException e) {
-                System.out.println("SQL : " + sql);
-                System.out.println(e.getMessage());
-                System.out.println("--------------------------------");
-            }
+            String safeLabels = StringUtils.isNotEmpty(labels) ? labels.replace("'", "''") : null;
+            String safeNotes  = StringUtils.isNotEmpty(notes) ? notes.replace("'", "''") : null;
+            conceptFacetRepository.addFacet(idFacet, idUser, idTheso, idConceptParent, safeLabels, membres, safeNotes);
         }
     }
 
@@ -1164,36 +966,35 @@ public class ImportRdf4jHelper {
         }
     }
 
-    public void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
+    public void addConceptToBdd(AddConceptsStruct acs, String idThesaurus, boolean isCandidatImport) {
 
-        if (!conceptHelper.insertConceptInTable(acs.concept)) {
-            System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
-        }
-        termHelper.insertTerm(acs.nodeTerm, idUser);
+        conceptService.insertConcept(acs.concept);
+
+        termService.addTerms(acs.nodeTerm, idUser);
 
         for (HierarchicalRelationship hierarchicalRelationship : acs.hierarchicalRelationships) {
             switch (hierarchicalRelationship.getRole()) {
                 case "NT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1201,26 +1002,26 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "BT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "NT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1228,26 +1029,26 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "RT":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "RT",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1255,26 +1056,26 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTP":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTP",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1282,26 +1083,26 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTG":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTG",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1309,26 +1110,26 @@ public class ImportRdf4jHelper {
                     }
                     break;
                 case "NTI":
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept1(),
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
-                            hierarchicalRelationship.getIdConcept2())) {
+                            hierarchicalRelationship.getIdConcept2()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
                         message.append(hierarchicalRelationship.getRole());
                     }
                     // pour créer la relation réciproque si elle n'existe pas
-                    if (!relationsHelper.insertHierarchicalRelation(
+                    if (relationService.addHierarchicalRelation(
                             hierarchicalRelationship.getIdConcept2(),
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTI",
-                            hierarchicalRelationship.getIdConcept1())) {
+                            hierarchicalRelationship.getIdConcept1()) == null) {
 
-                        message.append(System.getProperty("line.separator"));
+                        message.append(System.lineSeparator());
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
                         message.append(" ## ");
@@ -1339,55 +1140,60 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-            noteHelper.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                    idTheso, nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
+            noteService.addNote(acs.concept.getIdConcept(), nodeNoteList1.getLang(), idThesaurus,
+                    nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
-            alignmentHelper.addNewAlignment(nodeAlignment);
+            alignmentService.addNewAlignment(nodeAlignment);
         }
         for (NodeEM nodeEMList1 : acs.nodeEMList) {
             acs.term.setIdConcept(acs.concept.getIdConcept());
             acs.term.setIdTerm(acs.nodeTerm.getIdTerm());
             acs.term.setLexicalValue(nodeEMList1.getLexicalValue());
             acs.term.setLang(nodeEMList1.getLang());
-            acs.term.setIdThesaurus(idTheso);//thesaurus.getId_thesaurus());
+            acs.term.setIdThesaurus(idThesaurus);//thesaurus.getId_thesaurus());
             acs.term.setSource(nodeEMList1.getSource());
             acs.term.setStatus(nodeEMList1.getStatus());
             acs.term.setHidden(nodeEMList1.isHiden());
-            termHelper.addNonPreferredTerm(acs.term, idUser);
+            nonPreferredTermService.addNonPreferredTerm(acs.term, idUser);
         }
 
         if (CollectionUtils.isNotEmpty(acs.nodeGps)) {
             for (NodeGps nodeGps : acs.nodeGps) {
                 if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
                     // insertion des données GPS
-                    gpsHelper.insertCoordonees(acs.concept.getIdConcept(), idTheso,
+                    gpsService.insertCoordinates(acs.concept.getIdConcept(), idThesaurus,
                             nodeGps.getLatitude(), nodeGps.getLongitude());
                 }
             }
         }
 
         if (acs.isTopConcept) {
-            if (!conceptHelper.setTopConcept(acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
-                // erreur;
-            }
+            conceptService.setTopConcept(acs.concept.getIdConcept(), idThesaurus, true);
         }
 
         // ajout des images externes URI
         for (NodeImage nodeImage : acs.nodeImages) {
-            imagesHelper.addExternalImage(acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
+            imageService.addExternalImage(acs.concept.getIdConcept(), idThesaurus, nodeImage.getImageName(),
+                    nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
         }
 
         if (acs.conceptStatus.equalsIgnoreCase("dep")) {
-            deprecateHelper.deprecateConcept(acs.concept.getIdConcept(), idTheso, idUser, conceptHelper);
+            conceptService.deprecateConcept(acs.concept.getIdConcept(), idThesaurus, idUser);
         }
         /// ajout des relations de concepts dépréciés
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
-            deprecateHelper.addReplacedBy(acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
+            conceptService.addReplacedBy(acs.concept.getIdConcept(), idThesaurus, nodeIdValue.getId(), idUser);
         }
         if (isCandidatImport) {
-            candidatDao.setStatutForCandidat(1, acs.concept.getIdConcept(), idTheso, "" + idUser);
+            candidatStatusRepository.save(CandidatStatus.builder()
+                    .idConcept(acs.concept.getIdConcept())
+                    .idThesaurus(idThesaurus)
+                    .idUser(idUser)
+                    .date(new Date())
+                    .status(statusRepository.findById(1).orElse(null))
+                    .build());
         }
 
         // initialisation des variables
@@ -1460,23 +1266,14 @@ public class ImportRdf4jHelper {
         for (SKOSMatch match : acs.conceptResource.getMatchList()) {
             prop = match.getProperty();
             nodeAlignment = new NodeAlignment();
-            switch (prop) {
-                case SKOSProperty.CLOSE_MATCH:
-                    id_type = 2;
-                    break;
-                case SKOSProperty.EXACT_MATCH:
-                    id_type = 1;
-                    break;
-                case SKOSProperty.BROAD_MATCH:
-                    id_type = 3;
-                    break;
-                case SKOSProperty.NARROWER_MATCH:
-                    id_type = 5;
-                    break;
-                case SKOSProperty.RELATED_MATCH:
-                    id_type = 4;
-                    break;
-            }
+            id_type = switch (prop) {
+                case SKOSProperty.CLOSE_MATCH -> 2;
+                case SKOSProperty.EXACT_MATCH -> 1;
+                case SKOSProperty.BROAD_MATCH -> 3;
+                case SKOSProperty.NARROWER_MATCH -> 5;
+                case SKOSProperty.RELATED_MATCH -> 4;
+                default -> id_type;
+            };
             nodeAlignment.setId_author(idUser);
             nodeAlignment.setConcept_target("");
             nodeAlignment.setThesaurus_target("");
@@ -1508,7 +1305,7 @@ public class ImportRdf4jHelper {
             if (!StringUtils.isEmpty(vote.getIdNote())) {
                 String str = formatLinkToHtmlTag(vote.getIdNote());
                 str = str.replaceAll("'", "''");
-                NodeNote nodeNote = noteHelper.getNoteByValue(str);
+                NodeNote nodeNote = noteService.getNoteByValue(str);
                 if (nodeNote != null) {
                     voteDto.setIdNote(nodeNote.getIdNote() + "");
                 }
@@ -1600,29 +1397,7 @@ public class ImportRdf4jHelper {
             String noteTypeCode = "";
             int prop = documentation.getProperty();
             nodeNote = new NodeNote();
-            switch (prop) {
-                case SKOSProperty.DEFINITION:
-                    noteTypeCode = "definition";
-                    break;
-                case SKOSProperty.SCOPE_NOTE:
-                    noteTypeCode = "scopeNote";
-                    break;
-                case SKOSProperty.EXAMPLE:
-                    noteTypeCode = "example";
-                    break;
-                case SKOSProperty.HISTORY_NOTE:
-                    noteTypeCode = "historyNote";
-                    break;
-                case SKOSProperty.EDITORIAL_NOTE:
-                    noteTypeCode = "editorialNote";
-                    break;
-                case SKOSProperty.CHANGE_NOTE:
-                    noteTypeCode = "changeNote";
-                    break;
-                case SKOSProperty.NOTE:
-                    noteTypeCode = "note";
-                    break;
-            }
+            noteTypeCode = getString(noteTypeCode, prop);
             nodeNote.setLang(documentation.getLanguage());
             nodeNote.setLexicalValue(documentation.getText());
             nodeNote.setNoteTypeCode(noteTypeCode);
@@ -1753,7 +1528,7 @@ public class ImportRdf4jHelper {
                 String str = uri.substring(uri.indexOf("idc="));
                 uri = str.substring(4, str.indexOf("&"));
             } else {
-                uri = uri.substring(uri.indexOf("idc=") + 4, uri.length());
+                uri = uri.substring(uri.indexOf("idc=") + 4);
             }
             pass = true;
         }
@@ -1762,7 +1537,7 @@ public class ImportRdf4jHelper {
                 if (uri.contains("&")) {
                     uri = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
                 } else {
-                    uri = uri.substring(uri.indexOf("idg=") + 4, uri.length());
+                    uri = uri.substring(uri.indexOf("idg=") + 4);
                 }
                 pass = true;
             }
@@ -1772,16 +1547,16 @@ public class ImportRdf4jHelper {
                 if (uri.contains("&")) {
                     uri = uri.substring(uri.indexOf("idf=") + 4, uri.indexOf("&"));
                 } else {
-                    uri = uri.substring(uri.indexOf("idf=") + 4, uri.length());
+                    uri = uri.substring(uri.indexOf("idf=") + 4);
                 }
                 pass = true;
             }
         }
         if (!pass) {
             if (uri.contains("#")) {
-                uri = uri.substring(uri.indexOf("#") + 1, uri.length());
+                uri = uri.substring(uri.indexOf("#") + 1);
             } else {
-                uri = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+                uri = uri.substring(uri.lastIndexOf("/") + 1);
             }
         }
         return fr.cnrs.opentheso.utils.StringUtils.normalizeStringForIdentifier(uri);
@@ -1801,10 +1576,10 @@ public class ImportRdf4jHelper {
             return getIdFromUri(uri);
         }
 
-        originalId = skosXmlDocument.getEquivalenceUriArkHandle().get(uri).toString();
+        originalId = skosXmlDocument.getEquivalenceUriArkHandle().get(uri);
         if (originalId == null) {
             if (message.length() != 0) {
-                message.append(System.getProperty("line.separator"));
+                message.append(System.lineSeparator());
             }
             message.append("Identifiant (DC:Identifier) non détecté pour l'URL:");
             message.append(uri);
@@ -1815,13 +1590,11 @@ public class ImportRdf4jHelper {
     }
 
     private String getIdArkFromUri(String uri) {
-        // URI de type Ark
-        String id = "";
+
         if (uri.contains("ark:/")) {
-            id = uri.substring(uri.indexOf("ark:/") + 5, uri.length());
+            return uri.substring(uri.indexOf("ark:/") + 5);
         }
-//      if(id == null) return getIdFromUri(uri);
-        return id;
+        return "";
     }
 
     private String getIdHandleFromUri(String uri) {
@@ -1831,7 +1604,7 @@ public class ImportRdf4jHelper {
             return getIdFromUri(uri);
         }
         if (uri.contains(prefixHandle)) {
-            id = uri.substring(uri.indexOf(prefixHandle), uri.length());
+            id = uri.substring(uri.indexOf(prefixHandle));
         }
         if (id == null) {
             return getIdFromUri(uri);
@@ -1846,7 +1619,7 @@ public class ImportRdf4jHelper {
             return getIdFromUri(uri);
         }
         if (uri.contains(prefixDoi)) {
-            id = uri.substring(uri.indexOf(prefixDoi), uri.length());
+            id = uri.substring(uri.indexOf(prefixDoi));
         }
         if (id == null) {
             return getIdFromUri(uri);
@@ -1857,7 +1630,7 @@ public class ImportRdf4jHelper {
     public void addLangsToThesaurus(String idTheso) {
 
         for (String idLang : idLangsFound) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(idTheso, idLang)) {
+            if (thesaurusService.isLanguageExistOfThesaurus(idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -1873,7 +1646,7 @@ public class ImportRdf4jHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(thesaurus1);
+                thesaurusService.addThesaurusTraduction(thesaurus1);
             }
         }
     }

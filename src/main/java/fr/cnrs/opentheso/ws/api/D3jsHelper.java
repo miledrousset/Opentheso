@@ -1,13 +1,15 @@
 package fr.cnrs.opentheso.ws.api;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -16,25 +18,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Slf4j
 @Service
 public class D3jsHelper {
 
     @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private DaoResourceHelper daoResourceHelper;
+    private PreferenceService preferenceService;
 
 
     private int count = 0;
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
+    @Autowired
+    private ResourceService resourceService;
+    @Autowired
+    private ThesaurusService thesaurusService;
+    @Autowired
+    private ConceptService conceptService;
 
     public String findDatasForGraph__(String idConcept, String idTheso, String idLang, boolean limit) {
         count = 0;
@@ -45,7 +45,7 @@ public class D3jsHelper {
         if(StringUtils.isEmpty(idLang)) {
             return null;
         }
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -54,9 +54,9 @@ public class D3jsHelper {
         
         // cas où on affiche tout le thésaurus
         if(StringUtils.isEmpty(idConcept)){
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsTTForGraph(idTheso, idLang);
+            nodeConceptGraphs_childs = resourceService.getConceptsTTForGraph(idTheso, idLang);
         } else {
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
+            nodeConceptGraphs_childs = resourceService.getConceptsNTForGraph(idTheso, idConcept, idLang);
         }
         
         if(nodeConceptGraphs_childs == null || nodeConceptGraphs_childs.isEmpty())
@@ -96,7 +96,7 @@ public class D3jsHelper {
             childrens.add(getNode(nodeConceptGraph, idTheso, idLang, limit));
         }
         nodeDatas.setChildrens(childrens);
-    //    log.info("" + countNodes(nodeDatas));
+    //    log.debug("" + countNodes(nodeDatas));
         return nodeDatas;
     }
 
@@ -118,7 +118,7 @@ public class D3jsHelper {
         if(count > 2000 && limit == true) return nodeDatas;
 
         List<NodeDatas> childrens = new ArrayList<>();
-            List<NodeConceptGraph> nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
+            List<NodeConceptGraph> nodeConceptGraphs_childs = resourceService.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
             
             if(nodeConceptGraphs_childs != null && !nodeConceptGraphs_childs.isEmpty()) {            
                 /// limitation des frères à 2000
@@ -258,10 +258,8 @@ public class D3jsHelper {
 
     private NodeDatas getTopNodeDatas(String idConcept, String idTheso, String idLang){
 
-        conceptHelper.setNodePreference(nodePreference);
-
-        NodeDatas nodeDatas = conceptHelper.getConceptForGraph(idConcept, idTheso, idLang);
-        if(conceptHelper.haveChildren(idTheso, idConcept)) {
+        NodeDatas nodeDatas = conceptService.getConceptForGraph(idConcept, idTheso, idLang);
+        if(conceptService.haveChildren(idTheso, idConcept)) {
             nodeDatas.setType("type2");
         } else
             nodeDatas.setType("type3");
@@ -270,7 +268,7 @@ public class D3jsHelper {
     
     private NodeDatas getTopNodeDatasForTheso(String idTheso, String idLang){
 
-        String title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        String title = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         NodeDatas nodeDatas = new NodeDatas();
         
         nodeDatas.setType("type2");

@@ -1,13 +1,21 @@
 package fr.cnrs.opentheso.models.group;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.Normalizer;
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import fr.cnrs.opentheso.entites.ConceptGroup;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeGroup implements Serializable, Comparable<NodeGroup> {
 
     private ConceptGroup conceptGroup = new ConceptGroup();
@@ -22,6 +30,7 @@ public class NodeGroup implements Serializable, Comparable<NodeGroup> {
     private String notation;
     private boolean isHaveChildren;
     private boolean isSelected;
+    private boolean groupPrivate;
     
     
     @Override

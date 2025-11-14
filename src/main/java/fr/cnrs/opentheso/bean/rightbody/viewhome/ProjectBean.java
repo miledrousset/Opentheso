@@ -1,15 +1,20 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.models.languages.Languages_iso639;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
-import fr.cnrs.opentheso.repositories.StatisticHelper;
+import fr.cnrs.opentheso.entites.LanguageIso639;
+import fr.cnrs.opentheso.repositories.ConceptRepository;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.entites.ProjectDescription;
 import fr.cnrs.opentheso.repositories.ProjectDescriptionRepository;
-import lombok.Data;
+import fr.cnrs.opentheso.services.statistiques.StatistiqueService;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,53 +23,45 @@ import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "projectBean")
 public class ProjectBean implements Serializable {
 
-    @Value("${settings.workLanguage:fr}")
-    private String workLanguage;
+    private final SelectedTheso selectedTheso;
+    private final LanguageBean languageBean;
+    private final LanguageRepository languageRepository;
+    private final ConceptRepository conceptRepository;
+    private final StatistiqueService statistiqueService;
+    private final ConceptStatusRepository conceptStatusRepository;
+    private final ProjectDescriptionRepository projectDescriptionRepository;
 
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private LanguageBean languageBean;
-
-    @Autowired
-    private LanguageHelper languageHelper;
-
-    @Autowired
-    private StatisticHelper statisticHelper;
-
-    @Autowired
-    private ProjectDescriptionRepository projectDescriptionRepository;
-
-    private String description, langCode, langCodeSelected, projectIdSelected;
+    private String workLanguage, description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
     private ProjectDescription projectDescriptionSelected;
     private List<NodeIdValue> listeThesoOfProject;
-    private List<Languages_iso639> allLangs, selectedLangs;
+    private List<LanguageIso639> allLangs, selectedLangs;
 
 
     public void initProject(String projectIdSelected, CurrentUser currentUser) {
 
         this.projectIdSelected = projectIdSelected;
-        selectedLangs = languageHelper.getLanguagesByProject(projectIdSelected);
+        selectedLangs = languageRepository.findLanguagesByProject(projectIdSelected);
         projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
 
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
+        var tmp = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, getLang());
 
-        if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
+        if (tmp.isEmpty()) {
             if (CollectionUtils.isNotEmpty(selectedLangs)) {
-                projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected,
-                        selectedLangs.get(0).getId_iso639_1());
+                projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected,
+                        selectedLangs.get(0).getIso6391()).get();
 
                 if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
                     projectDescriptionSelected = new ProjectDescription();
@@ -80,15 +77,16 @@ public class ProjectBean implements Serializable {
             }
         }
 
-        if (ObjectUtils.isNotEmpty(projectDescriptionSelected)) {
+        if (tmp.isPresent()) {
+            projectDescriptionSelected = tmp.get();
             description = projectDescriptionSelected.getDescription();
             langCodeSelected = projectDescriptionSelected.getLang();
         }
-        listeThesoOfProject = currentUser.getUserPermissions().getListThesos();
+        listeThesoOfProject = currentUser.getUserPermissions().getListThesaurus();
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {
-                element.setNbrConcepts(statisticHelper.getNbCpt(element.getId()));
+                element.setNbrConcepts(statistiqueService.countValidConceptsByThesaurus(element.getId()));
             } catch(Exception ex) {
                 element.setNbrConcepts(0);
             }
@@ -115,11 +113,12 @@ public class ProjectBean implements Serializable {
 
     public void setEditPage() {
         if (CollectionUtils.isEmpty(allLangs)) {
-            allLangs = languageHelper.getAllLanguages();
+            allLangs = languageRepository.findAll();
         }
 
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, langCodeSelected);
-        if (!ObjectUtils.isEmpty(projectDescriptionSelected)) {
+        var project = projectDescriptionRepository.findByIdGroupAndLang(projectIdSelected, langCodeSelected);
+        if (project.isPresent()) {
+            projectDescriptionSelected = project.get();
             description = projectDescriptionSelected.getDescription();
             langCode = projectDescriptionSelected.getLang();
         } else {
@@ -153,15 +152,11 @@ public class ProjectBean implements Serializable {
         projectDescriptionSelected.setDescription(description);
         projectDescriptionSelected.setLang(langCode);
 
-        if (projectDescriptionSelected.getId() != null) {
-            projectDescriptionRepository.updateProjectDescription(projectDescriptionSelected);
-        } else {
-            projectDescriptionRepository.saveProjectDescription(projectDescriptionSelected);
-        }
+        projectDescriptionRepository.save(projectDescriptionSelected);
 
         langCodeSelected = projectDescriptionSelected.getLang();
 
-        selectedLangs = languageHelper.getLanguagesByProject(projectDescriptionSelected.getIdGroup());
+        selectedLangs = languageRepository.findLanguagesByProject(projectDescriptionSelected.getIdGroup());
         projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
         editingHomePage = false;
         isButtonEnable = true;
@@ -175,17 +170,17 @@ public class ProjectBean implements Serializable {
 
     public void deleteDescription() {
 
-        projectDescriptionRepository.removeProjectDescription(projectDescriptionSelected);
+        projectDescriptionRepository.delete(projectDescriptionSelected);
 
-        selectedLangs = languageHelper.getLanguagesByProject(projectDescriptionSelected.getIdGroup());
+        selectedLangs = languageRepository.findLanguagesByProject(projectDescriptionSelected.getIdGroup());
 
         if (CollectionUtils.isNotEmpty(selectedLangs)) {
             projectDescription = true;
-            projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(
-                    projectDescriptionSelected.getIdGroup(), selectedLangs.get(0).getId_iso639_1());
+            projectDescriptionSelected = projectDescriptionRepository
+                    .findByIdGroupAndLang(projectDescriptionSelected.getIdGroup(), selectedLangs.get(0).getIso6391()).get();
 
             projectDescription = true;
-            langCodeSelected = selectedLangs.get(0).getId_iso639_1();
+            langCodeSelected = selectedLangs.get(0).getIso6391();
             description = projectDescriptionSelected.getDescription();
         } else {
             projectDescription = false;
@@ -213,7 +208,7 @@ public class ProjectBean implements Serializable {
     }
 
     public void changeLangListener() {
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCode);
+        projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(selectedTheso.getProjectIdSelected(), langCode).get();
         if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
             projectDescriptionSelected = new ProjectDescription();
             projectDescriptionSelected.setLang(langCode);
@@ -223,7 +218,7 @@ public class ProjectBean implements Serializable {
     }
 
     public void changeProjectDescription() {
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCodeSelected);
+        projectDescriptionSelected = projectDescriptionRepository.findByIdGroupAndLang(selectedTheso.getProjectIdSelected(), langCodeSelected).get();
     }
 
     public String getDrapeauImgLocal(String codePays) {
@@ -232,7 +227,7 @@ public class ProjectBean implements Serializable {
                     .getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
 
-        var pays = allLangs.stream().filter(element -> codePays.equalsIgnoreCase(element.getId_iso639_1())).findFirst();
+        var pays = allLangs.stream().filter(element -> codePays.equalsIgnoreCase(element.getIso6391())).findFirst();
         if (pays.isPresent()) {
             return FacesContext.getCurrentInstance().getExternalContext()
                     .getRequestContextPath() + "/resources/img/flag/" + pays.get().getCodePays() + ".png";

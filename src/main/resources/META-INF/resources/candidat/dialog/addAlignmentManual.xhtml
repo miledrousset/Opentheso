@@ -57,7 +57,7 @@
                                  update="tabViewCandidat messageIndex"
                                  oncomplete="PF('addManualAlignment').hide();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{alignmentManualBean.addManualAlignement(candidatBean.candidatSelected.idConcepte, false)}" />
+                                 actionListener="#{alignmentManualBean.addManualAlignement(candidatBean, null, false)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -1,10 +1,16 @@
 package fr.cnrs.opentheso.models.terms;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.text.Normalizer;
 
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeNT implements Comparable {
 
     private String title;

@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -50,9 +50,9 @@
 
                         <div class="card shadow mb-4" style="height: 100%;"> 
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
-                                <p:dataTable rendered="#{superAdminBean.allThesoProject != null}"
-                                             value="#{superAdminBean.allThesoProject}" var="listTheso"
-                                             filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}" size="small"
+                                <p:dataTable rendered="#{superAdminBean.allThesaurusProject != null}"
+                                             value="#{superAdminBean.allThesaurusProject}" var="listTheso"
+                                             filteredValue="#{roleOnThesaurus.nodeListThesaurusAsAdminFiltered}" size="small"
                                              widgetVar="listThesoTable" styleClass="products-table"
                                              resizableColumns="true" scrollHeight="450" reflow="true"
                                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
@@ -90,14 +90,14 @@
                                                          process="@this" ajax="true"
                                                          title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
                                                          update="containerIndex:idMoveThesoToAnotherProjectSA containerIndex:moveThesoToAnotherProjectSAForm" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
-                                                         actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName, listTheso.idGroup)}"/>
+                                                         actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName)}"/>
 
                                     </p:column>
 
                                     <f:facet name="footer">
                                         <span class="p-text-bold">
                                             <h:outputText value="#{langueBean.getMsg('toolbox.totalOfTheso')} : " style="font-size: 14px;"/>
-                                            <h:outputText value="#{superAdminBean.allThesoProject.size()}" style="font-size: 16px; color: #f47b2a"/>
+                                            <h:outputText value="#{superAdminBean.allThesaurusProject.size()}" style="font-size: 16px; color: #f47b2a"/>
                                         </span>
                                     </f:facet>
                                 </p:dataTable> 

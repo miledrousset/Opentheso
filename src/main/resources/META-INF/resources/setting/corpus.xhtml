@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -54,7 +54,7 @@
                                 <div class="row" style="padding-left: 20px; margin-top: 20px; margin-left: 10px; font-size: 16px">
                                     <div class="col-12">
                                         <h:outputText value="#{langueBean.getMsg('setting.manageCorpusFor')}  " />
-                                        <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
+                                        <h:outputText value="#{selectedThesaurus.thesoName} (#{selectedThesaurus.currentIdTheso})" style="color: #f47b2a" />
                                     </div>
                                 </div>
 
@@ -82,7 +82,7 @@
                                     </p:toolbar>
                                     
 
-                                    <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true"
+                                    <p:dataTable value="#{corpusBean.corpusList}" var="corpus" scrollable="true"
                                                  resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
                                                  reflow="true" lazy="false">
 
@@ -105,17 +105,18 @@
                                         <p:column exportable="false">
                                             <p:commandButton icon="pi pi-pencil" update="containerIndex:idEditCorpus containerIndex:editCorpusForm"
                                                              oncomplete="PF('editCorpus').show()" style="margin-right: 10px"
-                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this" ajax="true"
                                                              styleClass="rounded-button" >
                                             </p:commandButton>
 
-                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
-                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
+                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" ajax="true"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
+                                                             update="containerIndex:idConfirmDeleteCorpus"
                                                              oncomplete="PF('confirmDeleteCorpus').show()"/>
                                         </p:column>
 
                                         <f:facet name="footer">
-                                            <span class="p-text-bold">#{langueBean.getMsg('setting.totalCorpus')} :  #{corpusBean.nodeCorpuses.size()}</span>
+                                            <span class="p-text-bold">#{langueBean.getMsg('setting.totalCorpus')} :  #{corpusBean.corpusList.size()}</span>
                                         </f:facet>
                                     </p:dataTable>
                                 </div>

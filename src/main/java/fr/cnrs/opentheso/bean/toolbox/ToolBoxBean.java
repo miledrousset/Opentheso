@@ -2,45 +2,31 @@ package fr.cnrs.opentheso.bean.toolbox;
 
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import jakarta.annotation.PreDestroy;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  *
  * @author miledrousset
  */
 @Getter
-@Named(value = "toolBoxBean")
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "toolBoxBean")
 public class ToolBoxBean implements Serializable {
-    @Autowired @Lazy private ViewEditionBean viewEditionBean;
-    @Autowired @Lazy private AtelierThesBean atelierThesBean;
 
-    private boolean isEditionActive;
-    private boolean isAtelierActive;
-    private boolean isServiceActive;    
-    private boolean isStatisticActive;
+    private final ViewEditionBean viewEditionBean;
+    private final AtelierThesBean atelierThesBean;
 
-    private String editionColor;
-    private String atelierColor;
-    private String serviceColor;
-    private String statisticColor;
+    private boolean isEditionActive, isAtelierActive, isServiceActive, isStatisticActive;
+    private String editionColor, atelierColor, serviceColor, statisticColor;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        editionColor = null;
-        atelierColor = null;
-        serviceColor = null;
-        statisticColor = null;
-    }      
     
     public void reset() {
         isEditionActive = true;
@@ -52,7 +38,6 @@ public class ToolBoxBean implements Serializable {
         resetColor();
         editionColor = "white";
         viewEditionBean.init();
-      
     }
 
     public void setIsEditionActive(boolean isEditionActive) {
@@ -111,23 +96,4 @@ public class ToolBoxBean implements Serializable {
         serviceColor = "#B3DDC4";        
         statisticColor = "#B3DDC4";
     }
-
-    public void setEditionColor(String editionColor) {
-        this.editionColor = editionColor;
-    }
-
-    public void setStatisticColor(String statisticColor) {
-        this.statisticColor = statisticColor;
-    }
-
-    public void setAtelierColor(String atelierColor) {
-        this.atelierColor = atelierColor;
-    }
-
-    public void setServiceColor(String serviceColor) {
-        this.serviceColor = serviceColor;
-    }
-    
-    
-    
 }

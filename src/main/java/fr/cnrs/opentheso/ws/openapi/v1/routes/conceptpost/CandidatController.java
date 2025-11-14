@@ -1,16 +1,18 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
-import fr.cnrs.opentheso.repositories.CandidateHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.services.CandidatService;
+import fr.cnrs.opentheso.services.ApiKeyService;
+import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,30 +26,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/openapi/v1/candidate")
 @CrossOrigin(methods = { RequestMethod.POST })
 @Tag(name = "Candidat", description = "Ajouter des candidats")
 public class CandidatController {
 
-    @Autowired
-    private CandidateHelper candidateHelper;
-
-    @Autowired
-    private ApiKeyHelper apiKeyHelper;
+    private final CandidatService candidatService;
+    private final ApiKeyService apiKeyHelper;
+    private final UserService userService;
 
 
     /**
      * Route qui permet d'ajouter un candidat à partir d'un JSON
      */
-    @PostMapping(consumes = jakarta.ws.rs.core.MediaType.APPLICATION_JSON,
-            produces = jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Permet d'ajouter un candidat",
+    @PostMapping
+    @Operation(summary = "Permet d'ajouter un candidat",
             description = "Permet d'ajouter un candidat à partir du JSON donné",
             tags = {"Concept Write"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON représentant le candidat à ajouter"),
-            security = { @SecurityRequirement(name = "API-KEY") }
-    )
+            security = { @SecurityRequirement(name = "API-KEY") })
     public ResponseEntity addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody Candidate candidate) {
 
         var keyState = apiKeyHelper.checkApiKey(apiKey);
@@ -56,9 +54,9 @@ public class CandidatController {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var userId = apiKeyHelper.getIdUser(apiKey);
+        var user = userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
 
-        if (!candidateHelper.saveCandidat(candidate, userId)){
+        if (!candidatService.saveCandidat(candidate, user.getId())) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("");
         }
 

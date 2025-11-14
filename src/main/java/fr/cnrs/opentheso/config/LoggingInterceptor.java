@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.config;
 
+import fr.cnrs.opentheso.services.ThesaurusService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.RequestFacade;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LoggingInterceptor implements HandlerInterceptor {
 
+    private final ThesaurusService thesaurusService;
+
+    public LoggingInterceptor(ThesaurusService thesaurusService) {
+        this.thesaurusService = thesaurusService;
+    }
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+        /* permet de savoir si le thésaurus est privé, on interdit le téléchargement */
+        if (request.getRequestURL().toString().contains("openapi/v1/thesaurus/")){
+            // reste à faire la condition pour le deuxième cas
+            var str = request.getRequestURL().toString().split("openapi/v1/thesaurus/");
+            Boolean isPrivate = thesaurusService.isPrivateThesaurus(str[1].split("/")[0]);
+            if(isPrivate == null || isPrivate) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"FORBIDDEN : the thesaurus is privated or not found\"}");
+                response.getWriter().flush();
+                return false;
+            }
+            return true;
+        }
+
         if (!request.getRequestURL().toString().contains("api/info/list")) {
             Map<String, String[]> parameterMap = request.getParameterMap(); // Récupérer tous les paramètres
             String parameters = parameterMap.entrySet().stream()

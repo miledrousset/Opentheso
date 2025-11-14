@@ -1,10 +1,12 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.users;
 
-import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.entites.User;
 import fr.cnrs.opentheso.models.users.NodeUserResource;
-import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.repositories.UserRepository;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.services.ApiKeyService;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,25 +38,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/openapi/v1/users")
-@CrossOrigin(methods = { RequestMethod.GET })
+@CrossOrigin(methods = { RequestMethod.GET , RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "User", description = "Gestion des utilisateurs")
 public class UserController {
 
-    private final UserHelper userHelper;
-    private final ApiKeyHelper apiKeyHelper;
+    private final UserRepository userRepository;
+    private final ApiKeyService apiKeyHelper;
+    private final UserRoleGroupService userRoleGroupService;
+    private final UserService userService;
 
 
     @PostMapping("/authentification")
     @Operation(summary = "Authentification d'un utilisateur")
     public ResponseEntity createUser(@RequestBody @Valid AuthentificationDto authentificationDto) {
 
-        var user = userHelper.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
+        var user = userService.getUserByLoginAndPassword(authentificationDto.getLogin(), authentificationDto.getPassword());
         if (ObjectUtils.isEmpty(user)) {
             return ResponseEntity.notFound().build();
         }
 
         if (!user.isSuperAdmin()) {
-            user.setThesorusList(userHelper.getThesaurusOfUser(user.getIdUser()));
+            user.setThesorusList(userService.getThesaurusOfUser(user.getIdUser()));
         }
         if (StringUtils.isEmpty(user.getApiKey())) {
             var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
@@ -71,25 +75,26 @@ public class UserController {
     @Operation(summary = "Créer un nouveau utilisateur")
     public ResponseEntity createUser(@RequestHeader(value = "API-KEY") String apiKey,
                                      @RequestBody @Valid UserDto userDto) {
-        NodeUser nodeUser = getUser(apiKey);
-        if (nodeUser != null && nodeUser.isSuperAdmin()) {
-            if(!userHelper.addUser(userDto.getLogin(), userDto.getMail(), userDto.getPassword(), userDto.isSuperAdmin(), userDto.isAlertMail())){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la création de l'utilisateur !!!");
-            }
 
-            var idUser = userHelper.getIdUser(userDto.getLogin(), userDto.getPassword());
+        if (getUser(apiKey).getIsSuperAdmin()) {
+
+            var userCreated = userRepository.save(User.builder().username(userDto.getLogin())
+                    .mail(userDto.getMail())
+                    .password(userDto.getPassword())
+                    .isSuperAdmin(userDto.isSuperAdmin())
+                    .alertMail(userDto.isAlertMail())
+                    .build());
+
             var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
-            if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
+            if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), userCreated.getId())){
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
             }
 
             if (!ObjectUtils.isEmpty(userDto.getIdRole()) && !ObjectUtils.isEmpty(userDto.getIdThesaurus())) {
-                var idGroup = userHelper.getGroupOfThisTheso(userDto.getIdThesaurus());
-                userHelper.addUserRoleOnGroup(idUser, userDto.getIdRole(), idGroup);
+                var idGroup = userService.getGroupOfThisThesaurus(userDto.getIdThesaurus());
+                userRoleGroupService.addUserRoleOnGroup(userCreated.getId(), userDto.getIdRole(), idGroup);
             }
 
-            var userCreated = userHelper.getUser(idUser);
-            userCreated.setApiKey(apiKeyValue);
             return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
@@ -103,10 +108,10 @@ public class UserController {
                                      @PathVariable("idUser") Integer idUser) {
 
         var userRequest = getUser(apiKey);
-        if (userRequest != null && userRequest.isSuperAdmin()) {
-            var userToRemove = userHelper.getUser(idUser);
-            if (userToRemove != null) {
-                userHelper.deleteUser(userToRemove.getIdUser());
+        if (userRequest != null && userRequest.getIsSuperAdmin()) {
+            var userToRemove = userRepository.findById(idUser);
+            if (userToRemove.isPresent()) {
+                userRepository.delete(userToRemove.get());
                 return ResponseEntity.status(HttpStatus.OK).body("");
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
@@ -124,17 +129,19 @@ public class UserController {
 
         var userRequest = getUser(apiKey);
         if (userRequest != null) {
-            var user = userHelper.getUser(idUser);
-            if (!ObjectUtils.isEmpty(user)) {
-                userHelper.updateUser(user.getIdUser(), userDto.getLogin(), userDto.getMail(), userDto.isActive(), userDto.isAlertMail());
+            var user = userRepository.findById(idUser);
+            if (user.isPresent()) {
 
-                if (!ObjectUtils.isEmpty(userDto.getPassword())) {
-                    userHelper.updatePwd(user.getIdUser(), userDto.getPassword());
-                }
+                user.get().setMail(userDto.getMail());
+                user.get().setUsername(userDto.getLogin());
+                user.get().setPassword(userDto.getPassword());
+                user.get().setActive(userDto.isActive());
+                user.get().setAlertMail(userDto.isAlertMail());
+                userRepository.save(user.get());
 
                 if (!ObjectUtils.isEmpty(userDto.getIdRole()) && !ObjectUtils.isEmpty(userDto.getIdProject())) {
-                    var idGroup = userHelper.getGroupOfThisTheso(userDto.getIdThesaurus());
-                    userHelper.updateUserRoleOnGroup(user.getIdUser(), userDto.getIdRole(), idGroup);
+                    var idGroup = userService.getGroupOfThisThesaurus(userDto.getIdThesaurus());
+                    userRoleGroupService.updateUserRoleOnGroup(user.get().getId(), userDto.getIdRole(), idGroup);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body("");
             }
@@ -149,8 +156,8 @@ public class UserController {
     public ResponseEntity searchUser(@RequestHeader(value = "API-KEY") String apiKey,
                                      @ParameterObject NodeUserResource userResource) {
 
-        if (getUser(apiKey).isSuperAdmin()) {
-            var users = userHelper.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
+        if (getUser(apiKey).getIsSuperAdmin()) {
+            var users = userService.searchUserByCriteria(userResource.getMail(), userResource.getUsername());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
@@ -164,14 +171,14 @@ public class UserController {
 
         var userRequest = getUser(apiKey);
         if (userRequest != null) {
-            var user = userHelper.getUser(idUser);
+            var user = userRepository.findById(idUser);
             if (!ObjectUtils.isEmpty(user)) {
                 var apiKeyValue = apiKeyHelper.generateApiKey("ot_", 64);
                 if(!apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(apiKeyValue), idUser)){
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur pendant la génération du API Key !!!");
                 }
-                user.setApiKey(apiKeyValue);
-                return ResponseEntity.status(HttpStatus.OK).body(user);
+                user.get().setApiKey(apiKeyValue);
+                return ResponseEntity.status(HttpStatus.OK).body(user.get());
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         } else {
@@ -179,11 +186,11 @@ public class UserController {
         }
     }
 
-    private NodeUser getUser(String apiKey) {
+    private User getUser(String apiKey) {
         var keyState = apiKeyHelper.checkApiKey(apiKey);
         if (keyState != ApiKeyState.VALID){
             return null;
         }
-        return userHelper.getUserByApiKey(apiKey);
+        return userService.getUserByApiKey(MD5Password.getEncodedPassword(apiKey));
     }
 }

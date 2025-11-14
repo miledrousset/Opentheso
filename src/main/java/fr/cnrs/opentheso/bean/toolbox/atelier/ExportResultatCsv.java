@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,7 @@ public class ExportResultatCsv {
     private BufferedWriter writer;
     private ByteArrayOutputStream output;
     
-    public void createResultatFileRapport(ArrayList<ConceptResultNode> datas) {
+    public void createResultatFileRapport(List<ConceptResultNode> datas) {
 
         try {
             output = new ByteArrayOutputStream();

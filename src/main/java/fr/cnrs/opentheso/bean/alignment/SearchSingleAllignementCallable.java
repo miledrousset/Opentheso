@@ -31,14 +31,14 @@ import java.util.concurrent.Callable;
 @Slf4j
 public class SearchSingleAllignementCallable implements Callable<NodeAlignment> {
 
-    private AlignementSource alignementSource;
-    private DataSource connection;
-    private NodeAlignment nodeAlignment;
-    private List<String> thesaurusLangs;
-    private List<String> allLangsTheso;
-    private String idCurrentLang;
-    private String idTheso;
-    private String idConcept;
+    private final AlignementSource alignementSource;
+    private final DataSource connection;
+    private final NodeAlignment nodeAlignment;
+    private final List<String> thesaurusLangs;
+    private final List<String> allLangsTheso;
+    private final String idCurrentLang;
+    private final String idTheso;
+    private final String idConcept;
 
 
     public SearchSingleAllignementCallable(AlignementSource alignementSource,

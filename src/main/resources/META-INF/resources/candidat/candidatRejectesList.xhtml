@@ -10,9 +10,7 @@
                                          value="#{candidatBean.myCandidatsSelected3}">
                     <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyRejectCandidats()}" />
                 </p:selectBooleanCheckbox>
-                
-                <h:outputText value="#{candidatBean.getCountOfRejectedCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; margin-left: 50px; " />                  
-                
+                <h:outputText value="#{candidatBean.getCountOfRejectedCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; margin-left: 50px; " />
             </p:toolbarGroup>
             <p:toolbarGroup align="right">
                 <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
@@ -53,7 +51,7 @@
         </p:column>
         
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
-            <h:outputText value="#{candidat.creationDate}" />
+            <h:outputText value="#{candidatBean.formatDate(candidat.creationDate)}" />
         </p:column>  
 
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.processedBy')}">
@@ -61,7 +59,7 @@
         </p:column>        
         
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.processingDate')}" sortBy="#{candidat.insertionDate}">
-            <h:outputText value="#{candidat.insertionDate}" />
+            <h:outputText value="#{candidatBean.formatDate(candidat.insertionDate)}" />
         </p:column>           
         
         <p:column width="20" headerText="#{langueBean.getMsg('candidate.vote')}">

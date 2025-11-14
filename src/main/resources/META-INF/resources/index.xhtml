@@ -7,12 +7,12 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
 
             <!--- Ne surtout pas enlever cette action, les Uris qui arrivent de l'extérieur ne marchent plus -->
-            <f:viewAction action="#{selectedTheso.preRenderView()}"/>
+            <f:viewAction action="#{selectedThesaurus.preRenderView()}"/>
         </f:metadata>
     </f:view>
 
@@ -76,8 +76,8 @@
                     <div id="boutonNotification" style="top: 85px; right: 0; position: absolute; z-index: 10; margin-top: -25px" >
                         <h:panelGroup id="resultSearch" style="z-index: 10">
                             <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
-                                <p:commandButton icon="fa fa-list-ol" style="height: 25px;"
-                                                 styleClass="ui-button-raised ui-button-success"
+                                <p:commandButton icon="fa-solid fa-magnifying-glass-arrow-right" style="height: 25px;"
+                                                 styleClass="ui-button-raised"
                                                  update="messageIndex resultSearchBar"
                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
                             </div>

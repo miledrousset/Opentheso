@@ -46,29 +46,29 @@
                     
                     <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>                    
                     
-                    <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}"
-                                value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                    <p:menuitem rendered="#{copyAndPasteBetweenThesaurus.isCopyOn() and currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}"
+                                value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenThesaurus.reset()}"
                                 update="containerIndex messageIndex" icon="far fa-window-close" />
 
                     <p:menuitem disabled="false" styleClass="buttonIconOrange"
-                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                                value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!"
-                                actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
-                                action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
+                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedThesaurus.currentIdTheso) }"
+                                value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!"
+                                actionListener="#{copyAndPasteBetweenThesaurus.validatePaste()}"
+                                action="#{copyAndPasteBetweenThesaurus.setIsDropToRoot(true)}"
                                 update="containerIndex:idCopyAndPasteBetweenThesoToTop"
                                 process="@this"
                                 oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />                    
                     
                     <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
-                                process="@this" disabled="#{!selectedTheso.sortByNotation}"
+                                actionListener="#{selectedThesaurus.setSortByNotation(false)}" ajax="true"
+                                action="#{selectedThesaurus.reloadSelectedTheso()}"
+                                process="@this" disabled="#{!selectedThesaurus.sortByNotation}"
                                 update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
 
                     <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
-                                disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
+                                actionListener="#{selectedThesaurus.setSortByNotation(true)}" ajax="true"
+                                action="#{selectedThesaurus.reloadSelectedTheso()}"
+                                disabled="#{selectedThesaurus.sortByNotation}" icon="fas fa-sort-numeric-down"
                                 process="@this" update="containerIndex:formLeftTab" />
 
                 </p:menu>
@@ -82,8 +82,8 @@
         <div class="row">
             <div class="col-12">
                 <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-                        style="width: auto; border: none; min-height: 925px; max-height: 925px; overflow: auto;font-size: 12px;" 
-                        cache="#{roleOnTheso.nodePreference.tree_cache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
+                        style="width: auto; border: none; min-height: 925px; max-height: 925px; overflow: auto;font-size: 12px;"
+                        cache="#{roleOnThesaurus.nodePreference.treeCache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}"
                         droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" widgetVar="treeWidget">
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
@@ -107,10 +107,12 @@
                     </p:treeNode>
 
                     <p:treeNode type="facet" icon="fa fa-magnet fa_custom_magnet" >
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
                     </p:treeNode>
                     
                     <p:treeNode type="deprecated" icon="fa fa-solid fa-ban fa_custom_ban" >
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic" />
                     </p:treeNode>        
                 </p:tree>                

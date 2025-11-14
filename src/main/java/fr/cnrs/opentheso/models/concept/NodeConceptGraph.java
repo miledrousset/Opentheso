@@ -3,6 +3,8 @@ package fr.cnrs.opentheso.models.concept;
 import java.text.Normalizer;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 
 @Data
+@Builder
+@AllArgsConstructor
 public class NodeConceptGraph implements Comparable {
     private String prefLabel;
     private String idConcept;

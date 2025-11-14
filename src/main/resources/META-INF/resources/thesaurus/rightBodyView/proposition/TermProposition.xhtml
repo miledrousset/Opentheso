@@ -203,7 +203,7 @@
                 <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
                                  styleClass="ui-button-secondary button" 
                                  icon="fas fa-undo-alt" style="margin-right: 10px"
-                                 actionListener="PF('nouveauNomConcept').hiden();"
+                                 actionListener="PF('nouveauNomConcept').hide();"
                                  update="containerIndex:rightTab messageIndex"
                                  ajax="true" process="@form" />
 
@@ -250,7 +250,7 @@
                 <div class="col-7">
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}"
                                      style="width: 100%">
-                        <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code.toUpperCase()}" />
+                        <f:selectItems  value="#{synonymBean.nodeLangues}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code.toUpperCase()}" />
                     </p:selectOneMenu>
                 </div>
             </div>

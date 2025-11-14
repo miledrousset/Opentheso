@@ -55,43 +55,43 @@
 
                                 <p:spacer width="1" rendered="#{!status2.first and propositionBean.showButtonAction()}" />
 
-                                <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable()}">
+                                <h:panelGroup rendered="#{selectedThesaurus.isNetworkAvailable()}">
                                     <img src="#{conceptView.getDrapeauImgLocal(trad.lang)}" width="20" height="15" 
                                          title="#{trad.nomLang}" style="margin-right: 10px"/>
                                 </h:panelGroup>
 
-                                <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable()}">
+                                <h:panelGroup rendered="#{!selectedThesaurus.isNetworkAvailable()}">
                                     <p:commandLink value="[#{trad.lang.toUpperCase()}] " update="containerIndex indexTitle"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, 
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                              conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"/>
                                 </h:panelGroup>
 
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
                                                rendered="#{!trad.toAdd and !trad.toRemove and !trad.toUpdate}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                               action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                update="containerIndex indexTitle" /> 
 
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                               action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                style="font-size: 14px; color: green;" rendered="#{trad.toAdd}"
                                                update="containerIndex indexTitle"/>
 
                                 <h:panelGroup rendered="#{trad.toUpdate}">
                                     <p:commandLink value="#{trad.lexicalValue} " title="#{propositionBean.proposition.conceptID}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                    conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                    style="font-size: 14px; color: blue;" update="containerIndex indexTitle" />
                                     <p:commandLink value="(#{trad.oldValue})" title="#{propositionBean.proposition.conceptID}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                   action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                    conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                    style="font-size: 14px; color: blue; font-weight: bold; text-decoration : line-through;"
                                                    update="containerIndex indexTitle"/>
                                 </h:panelGroup> 
 
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                               action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
                                                conceptView.nodeConcept.concept.idConcept, trad.lang, currentUser)}"
                                                style="font-size: 14px; text-decoration: line-through; color: red;"
                                                update="containerIndex indexTitle" rendered="#{trad.toRemove}" />  

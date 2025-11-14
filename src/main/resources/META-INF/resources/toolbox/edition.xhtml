@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -49,11 +49,11 @@
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.toolbox')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.edition')}</span></h1>
                         </div>
 
-                        <p:panel rendered="#{viewEditionBean.isViewListTheso}">
+                        <p:panel rendered="#{viewEditionBean.isViewListThesaurus}">
                             <ui:include src="edition/viewListTheso.xhtml" />
                         </p:panel>
 
-                        <p:panel rendered="#{viewEditionBean.isViewModifyTheso}">
+                        <p:panel rendered="#{viewEditionBean.isViewModifyThesaurus}">
                             <ui:include src="edition/viewModifyTheso.xhtml" />
                         </p:panel>
 
@@ -65,7 +65,7 @@
                             <ui:include src="edition/viewImportCsv.xhtml" />
                         </p:panel>
 
-                        <p:panel rendered="#{viewEditionBean.isViewNewTheso}">
+                        <p:panel rendered="#{viewEditionBean.isViewNewThesaurus}">
                             <ui:include src="edition/viewNewTheso.xhtml" />
                         </p:panel>  
 

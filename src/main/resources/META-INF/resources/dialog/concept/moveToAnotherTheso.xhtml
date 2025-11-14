@@ -27,7 +27,7 @@
                     <h:outputText value="#{langueBean.getMsg('concept.fromTheso')} : "/>
                 </div>
                 <div class="col-8" style="margin-top: 3px; font-weight: bold">
-                    <h:outputText value="#{selectedTheso.thesoName} (#{moveConcept.idThesoFrom})"/>                        
+                    <h:outputText value="#{selectedThesaurus.thesoName} (#{moveConcept.idThesoFrom})"/>
                 </div>                    
             </div>     
 
@@ -38,9 +38,8 @@
                 <div class="col-8" style="margin-top: 3px">
                     <p:selectOneMenu id="thesoToSelect" value="#{moveConcept.idThesoTo}" 
                                      style="color: #000; height: 28px; max-width: 400px">
-                        <p:ajax event="valueChange" listener="#{moveConcept.action()}" />
                         <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
-                        <f:selectItems value="#{moveConcept.listThesoAsAdmin}" var="th" itemLabel="#{th.value} (#{th.id})" itemValue="#{th.id}"/>
+                        <f:selectItems value="#{moveConcept.getListThesoAsAdmin()}" var="th" itemLabel="#{th.value} (#{th.id})" itemValue="#{th.id}"/>
                     </p:selectOneMenu>
                 </div>                
             </div> 

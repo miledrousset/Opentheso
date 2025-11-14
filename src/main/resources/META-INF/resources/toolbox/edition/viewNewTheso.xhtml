@@ -23,7 +23,7 @@
                 <h:outputText value="#{langueBean.getMsg('statistique.label')}" style="margin-right: -6px" />
             </div>
             <div class="col-5">
-                <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{newThesoBean.title}" style="width: 100%"/>
+                <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{newThesaurusBean.title}" style="width: 100%"/>
             </div>
         </div>
 
@@ -34,12 +34,12 @@
             </div>
 
             <div class="col-5" >
-                <p:selectOneMenu value="#{newThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
+                <p:selectOneMenu value="#{newThesaurusBean.selectedLang}" styleClass="selectOneMenu_custom"
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="width: 100%; background: none;  box-shadow: none; padding: 0rem 0.5rem;"
                                  panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                    <f:selectItems  value="#{newThesoBean.allLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
-                                    itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/> 
+                    <f:selectItems  value="#{newThesaurusBean.allLangs}" var="lang" itemValue="#{lang.iso6391}"
+                                    itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"/>
                 </p:selectOneMenu>  
             </div>
         </div>      
@@ -56,19 +56,19 @@
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                 value="#{newThesoBean.selectedProject}" >
+                                 value="#{newThesaurusBean.selectedProject}" >
                     <f:selectItem  itemLabel="..." itemValue="" />
-                    <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                    <f:selectItems value="#{newThesaurusBean.nodeProjects}" var="selectedProject"
+                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                 </p:selectOneMenu>
 
                 <p:selectOneMenu rendered="#{!currentUser.nodeUser.isSuperAdmin()}" styleClass="selectOneMenu_custom"
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                 value="#{newThesoBean.selectedProject}" >
-                    <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                 value="#{newThesaurusBean.selectedProject}" >
+                    <f:selectItems value="#{newThesaurusBean.nodeProjects}" var="selectedProject"
+                                   itemLabel="#{selectedProject.label}" itemValue="#{selectedProject.id}"/>
                 </p:selectOneMenu>
             </div>           
         </div>        
@@ -77,11 +77,11 @@
             <div class="col-6" style="text-align: right"> 
                 <p:commandButton value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button" 
                                  icon="fas fa-undo-alt" update="containerIndex"
-                                 actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" />
+                                 actionListener="#{viewEditionBean.init()}" action="#{newThesaurusBean.init()}" />
             </div>
             <p:commandButton value="Créer" icon="pi pi-check"
                              update="containerIndex" styleClass="ui-button-success"
-                             actionListener="#{newThesoBean.addNewTheso()}" />
+                             actionListener="#{newThesaurusBean.addNewThesaurus()}" />
             <div class="col-6"> 
             </div>
         </div> 

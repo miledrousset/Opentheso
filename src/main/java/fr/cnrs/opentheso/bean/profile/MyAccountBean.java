@@ -1,23 +1,25 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
+import fr.cnrs.opentheso.services.ApiKeyService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.utils.MD5Password;
-
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 
 /**
  * Bean pour la gestion des actions de compte utilisateur telles que la mise à jour des informations de profil et des clés API.
@@ -25,284 +27,114 @@ import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
  *
  * @author miledrousset
  */
-@Named(value = "myAccountBean")
+@Slf4j
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "myAccountBean")
 public class MyAccountBean implements Serializable {
 
-    @Autowired
-    private CurrentUser currentUser;
-
-    @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
-    private ApiKeyHelper apiKeyHelper;
+    private final CurrentUser currentUser;
+    private final UserService userService;
+    private final ApiKeyService apiKeyService;
 
     private NodeUser nodeUser;
-    private String passWord1;
-    private String passWord2;
-    private String displayedKey;
-    private LocalDate keyExpireDate;
-    private Boolean isKeyExpired ;
-
-    // liste des (rôle -> projet) qui existent déjà pour l'utilisateur
-    ArrayList<NodeUserRoleGroup> allMyRoleProject;
-
-    public MyAccountBean() {
-    }
+    private String passWord1, passWord2, displayedKey;
+    private List<NodeUserRoleGroup> allMyRoleProject;
 
 
+    public void loadDataPage(){
 
-    /**
-     * Réinitialise les informations de profil de l'utilisateur.
-     */
-    public void reset(){
-        currentUser.reGetUser();
-        nodeUser = currentUser.getNodeUser();
-        displayedKey=nodeUser.getApiKey() == null ? null : new String(new char[64]).replace("\0", "*");
+        log.debug("Chargement des données nécessaire au fonctionnement de l'écran utilisateur");
+        nodeUser = userService.getUser(currentUser.getNodeUser().getIdUser());
+        displayedKey = StringUtils.isEmpty(nodeUser.getApiKey()) ? null : new String(new char[64]).replace("\0", "*");
         passWord1 = null;
         passWord2 = null;
-        initAllMyRoleProject();
-        keyExpireDate = nodeUser.getApiKeyExpireDate();
-        isKeyExpired = userHelper.isApiKeyExpired(nodeUser);
-
     }
 
-    /**
-     * Met à jour la clé API de l'utilisateur.
-     *
-     * @throws SQLException si une erreur d'accès à la base de données se produit.
-     */
-    public void updateKey() throws SQLException {
-        displayedKey = apiKeyHelper.generateApiKey("ot_", 64);
-        FacesMessage msg;
+    public void updateKey() {
+
+        displayedKey = apiKeyService.generateApiKey("ot_", 64);
         nodeUser.setApiKey(displayedKey);
-        if(apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La clé a bien été enregistrée.");
+
+        if (apiKeyService.saveApiKey(MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())) {
+            MessageUtils.showInformationMessage("La clé a bien été enregistrée.");
         } else {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de sauvegarde de la clé.");
+            MessageUtils.showErrorMessage("Erreur de sauvegarde de la clé.");
         }
-        FacesContext.getCurrentInstance().addMessage(null, msg);
 
     }
 
-    /**
-     * Efface toutes les données utilisateur de la session.
-     */
-    public void clear() {
-        if (allMyRoleProject != null) {
-            allMyRoleProject.clear();
-            allMyRoleProject = null;
-        }
-        nodeUser = null;
-        passWord1 = null;
-        passWord2 = null;
-        displayedKey=null;
-    }
-    /**
-     * Initialise la liste des rôles et projets pour l'utilisateur.
-     */
-    private void initAllMyRoleProject() {
-        allMyRoleProject = userHelper.getUserRoleGroup(nodeUser.getIdUser());
-    }
+    public void updateUserName() {
 
-    public void updatePseudo() {
-
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
-
-        if (nodeUser.getName() == null || nodeUser.getName().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(nodeUser.getName())) {
+            MessageUtils.showErrorMessage("Le pseudo est obligatoire !!!");
             return;
         }
 
-        if (!userHelper.updatePseudo(nodeUser.getIdUser(), nodeUser.getName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de pseudo !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Pseudo changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+        if (userService.updateUserInformation(currentUser.getNodeUser().getIdUser(), nodeUser.getName(), null, null, null)) {
+            MessageUtils.showInformationMessage("Pseudo changé avec succès");
+            PrimeFaces.current().ajax().update("containerIndex");
+        } else {
+            MessageUtils.showErrorMessage("Erreur pendant la modification du pseudo");
         }
     }
 
-    /**
-     * Met à jour la préférence d'alerte email de l'utilisateur.
-     */
     public void updateAlertEmail() {
-        FacesMessage msg;
-        if (!userHelper.setAlertMailForUser(nodeUser.getIdUser(), nodeUser.isAlertMail())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Alerte changée avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
+        if (userService.updateUserInformation(currentUser.getNodeUser().getIdUser(), null, null, null, nodeUser.isAlertMail())) {
+            MessageUtils.showInformationMessage("Alerte changée avec succès");
+            PrimeFaces.current().ajax().update("containerIndex");
+        } else {
+            MessageUtils.showErrorMessage("Erreur pendant la modification de l'alerte email");
+        }
     }
 
-    /**
-     * Met à jour l'adresse email de l'utilisateur.
-     */
     public void updateEmail() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
-        if (nodeUser.getMail() == null || nodeUser.getMail().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un Email est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(nodeUser.getMail())) {
+            MessageUtils.showErrorMessage("Un Email est obligatoire !!!");
             return;
         }
 
-        if (!userHelper.updateMail(nodeUser.getIdUser(), nodeUser.getMail())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'Email !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+        if (userService.updateUserInformation(currentUser.getNodeUser().getIdUser(), null, null, nodeUser.getMail(), null)) {
+            MessageUtils.showInformationMessage("Email changé avec succès");
+            PrimeFaces.current().ajax().update("containerIndex");
+        } else {
+            MessageUtils.showErrorMessage("Erreur pendant la modification du mot de passe");
         }
     }
 
-    /**
-     * Met à jour le mot de passe de l'utilisateur.
-     */
     public void updatePassword() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
-        if (passWord1 == null || passWord1.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (StringUtils.isEmpty(passWord1)) {
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
             return;
         }
-        if (passWord2 == null || passWord2.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (StringUtils.isEmpty(passWord2)) {
+            MessageUtils.showErrorMessage("Un mot de passe est obligatoire !!!");
             return;
         }
+
         if (!passWord1.equals(passWord2)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showErrorMessage("Mot de passe non identique !!!");
             return;
         }
 
-        if (!userHelper.updatePwd(nodeUser.getIdUser(),
-                MD5Password.getEncodedPassword(passWord2))) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
+        if (userService.updateUserInformation(currentUser.getNodeUser().getIdUser(), null,
+                MD5Password.getEncodedPassword(passWord2), null, null)) {
+            MessageUtils.showInformationMessage("Mot de passe changé avec succès");
+            PrimeFaces.current().ajax().update("containerIndex");
+        } else {
+            MessageUtils.showErrorMessage("Erreur pendant la modification du mot de passe");
         }
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
-    }
-
-
-
-
-
-
-// Getters et Setters
-
-    public ApiKeyHelper getApiKeyHelper() {
-        return apiKeyHelper;
-    }
-
-    public void setApiKeyHelper(ApiKeyHelper apiKeyHelper) {
-        this.apiKeyHelper = apiKeyHelper;
-    }
-
-    public Boolean getKeyExpired() {
-        return isKeyExpired;
-    }
-
-    public void setKeyExpired(Boolean keyExpired) {
-        isKeyExpired = keyExpired;
-    }
-
-    public LocalDate getKeyExpireDate() {
-        return keyExpireDate;
-    }
-
-    public void setKeyExpireDate(LocalDate keyExpireDate) {
-        this.keyExpireDate = keyExpireDate;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public NodeUser getNodeUser() {
-        return nodeUser;
-    }
-
-    public void setNodeUser(NodeUser nodeUser) {
-        this.nodeUser = nodeUser;
-    }
-
-    public String getPassWord1() {
-        return passWord1;
-    }
-
-    public void setPassWord1(String passWord1) {
-        this.passWord1 = passWord1;
-    }
-
-    public String getPassWord2() {
-        return passWord2;
-    }
-
-    public void setPassWord2(String passWord2) {
-        this.passWord2 = passWord2;
-    }
-
-    public String getDisplayedKey() {
-        return displayedKey;
-    }
-
-    public void setDisplayedKey(String displayedKey) {
-        this.displayedKey = displayedKey;
-    }
-
-    public ArrayList<NodeUserRoleGroup> getAllMyRoleProject() {
-        return allMyRoleProject;
-    }
-
-    public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
-        this.allMyRoleProject = allMyRoleProject;
     }
 
     public boolean isKeyExpired() {
-        return isKeyExpired;
-    }
-
-    public void setKeyExpired(boolean keyExpired) {
-        isKeyExpired = keyExpired;
+        if (ObjectUtils.isEmpty(nodeUser.getApiKeyExpireDate())) return false;
+        return LocalDate.now().isAfter(nodeUser.getApiKeyExpireDate());
     }
 }
 

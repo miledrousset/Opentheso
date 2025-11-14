@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
 
@@ -52,7 +52,7 @@
                         <div class="card shadow mb-4" style="height: 100%;"> 
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
                                 <p:dataTable rendered="#{superAdminBean.allProjects != null}"
-                                             value="#{superAdminBean.allProjects}" var="listProject" size="small"
+                                             value="#{superAdminBean.allProjects}" var="projet" size="small"
                                              widgetVar="listProject" styleClass="products-table"
                                              resizableColumns="true" scrollHeight="450" reflow="true"
                                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
@@ -67,11 +67,11 @@
                                     </f:facet>
 
                                     <p:column width="20" headerText="Id" >
-                                        <h:outputText value="#{listProject.idGroup}"/>
+                                        <h:outputText value="#{projet.id}"/>
                                     </p:column>
                                     
                                     <p:column width="80" headerText="#{langueBean.getMsg('profile.project')}" >
-                                        <h:outputText value="#{listProject.groupName}"/>
+                                        <h:outputText value="#{projet.label}"/>
                                     </p:column>
 
                                     <f:facet name="footer">

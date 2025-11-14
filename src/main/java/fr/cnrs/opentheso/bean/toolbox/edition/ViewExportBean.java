@@ -1,16 +1,14 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -18,39 +16,35 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.event.ToggleSelectEvent;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "viewExportBean")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "viewExportBean")
 public class ViewExportBean implements Serializable {
 
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private ExportFileBean downloadBean;
-    @Autowired @Lazy private LanguageBean languageBean;
+    private final ThesaurusService thesaurusService;
+    private final SelectedTheso selectedTheso;
+    private final LanguageBean languageBean;
+    private final PreferenceService preferenceService;
+    private final GroupService groupService;
 
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    private ArrayList<NodeLangTheso> languagesOfTheso;
-    private ArrayList<NodeGroup> groupList;
-    private NodePreference nodePreference;
+    private List<NodeLangTheso> languagesOfTheso;
+    private List<NodeGroup> groupList;
+    private Preferences nodePreference;
 
     private List<NodeLangTheso> selectedLanguages;
     private List<NodeGroup> selectedGroups;
@@ -69,8 +63,9 @@ public class ViewExportBean implements Serializable {
     private boolean toogleFilterByGroup;
     private boolean toogleExportByGroup;
     
-    private boolean toogleClearHtmlCharacter;    
-    
+    private boolean toogleClearHtmlCharacter;
+    private boolean toogleExportImage;
+
     private String selectedGroup;
     private String selectedIdLangTheso;
     private List<String> selectedIdGroups;
@@ -80,51 +75,10 @@ public class ViewExportBean implements Serializable {
     private String selectedLang2_PDF;
      
     private boolean exportDone;
-    
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }    
-    
-    public void clear() {
-        nodePreference = null;    
-        nodeIdValueOfTheso = null;            
-        csvDelimiter = ";";  
-        formatFile = null;  
-        typeSelected = null;  
-        selectedExportFormat = null;  
-        selectedLang1_PDF = null;  
-        selectedLang2_PDF = null;  
-        selectedIdLangTheso = null;
-        
-        if(languagesOfTheso != null){
-            languagesOfTheso.clear();
-            languagesOfTheso = null;
-        }
-        if(groupList != null){
-            groupList.clear();
-            groupList = null;
-        }
-        if(selectedLanguages != null){
-            selectedLanguages.clear();
-            selectedLanguages = null;
-        }
-        if(selectedGroups != null){
-            selectedGroups.clear();
-            selectedGroups = null;
-        }
-        if(selectedIdGroups != null){
-            selectedIdGroups.clear();
-            selectedIdGroups = null;
-        }
 
-        exportFormat = null;
-        types = null;
-    }    
-    
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = preferencesHelper.getThesaurusPreferences(nodeIdValueOfTheso.getId());
+        nodePreference = preferenceService.getThesaurusPreferences(nodeIdValueOfTheso.getId());
 
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
@@ -141,16 +95,17 @@ public class ViewExportBean implements Serializable {
         if (idLang == null || idLang.isEmpty()) {
             idLang = workLanguage;
         }
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), idLang);
+        languagesOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurusNode(nodeIdValueOfTheso.getId(), idLang);
 
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
-        groupList = groupHelper.getListConceptGroup(nodeIdValueOfTheso.getId(), idLang);
+        groupList = groupService.getListConceptGroup(nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;
         toogleClearHtmlCharacter = false;
+        toogleExportImage = false;
         
         if(selectedIdGroups == null){
             selectedIdGroups = new ArrayList<>();
@@ -159,7 +114,7 @@ public class ViewExportBean implements Serializable {
 
         if(groupList != null) {
             for (NodeGroup nodeGroup : groupList) {
-                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdgroup());
+                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdGroup());
             }
         }
 
@@ -179,9 +134,6 @@ public class ViewExportBean implements Serializable {
 
         exportFormat = Arrays.asList("rdf", "json", "jsonLd", "turtle");
         selectedExportFormat = "rdf";
-
-        downloadBean.setProgressBar(0);
-        downloadBean.setProgressStep(0);
 
         selectedGroup = "all";
     }
@@ -224,8 +176,17 @@ public class ViewExportBean implements Serializable {
     }      
     
     public void listenerForToogleClearHtmlCharacter() {
+    }
+    public void listenerForToogleAddImage() {
+    }
 
-    }      
+    public boolean isToogleExportImage() {
+        return toogleExportImage;
+    }
+
+    public void setToogleExportImage(boolean toogleExportImage) {
+        this.toogleExportImage = toogleExportImage;
+    }
 
     public boolean isToogleClearHtmlCharacter() {
         return toogleClearHtmlCharacter;
@@ -264,7 +225,7 @@ public class ViewExportBean implements Serializable {
         return formatFile;
     }
 
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
+    public List<NodeLangTheso> getLanguagesOfTheso() {
         return languagesOfTheso;
     }
 
@@ -272,11 +233,11 @@ public class ViewExportBean implements Serializable {
         this.languagesOfTheso = languagesOfTheso;
     }
 
-    public ArrayList<NodeGroup> getGroupList() {
+    public List<NodeGroup> getGroupList() {
         return groupList;
     }
 
-    public void setGroupList(ArrayList<NodeGroup> groupList) {
+    public void setGroupList(List<NodeGroup> groupList) {
         this.groupList = groupList;
     }
 
@@ -320,11 +281,11 @@ public class ViewExportBean implements Serializable {
         this.exportUriArk = exportUriArk;
     }
 
-    public NodePreference getNodePreference() {
+    public Preferences getNodePreference() {
         return nodePreference;
     }
 
-    public void setNodePreference(NodePreference nodePreference) {
+    public void setNodePreference(Preferences nodePreference) {
         this.nodePreference = nodePreference;
     }
 

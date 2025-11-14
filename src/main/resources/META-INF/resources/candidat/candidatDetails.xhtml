@@ -13,6 +13,13 @@
             border: solid #e9ecef;
             border-width: 0 0 0 0;
         }
+
+        .ui-widget-header .ui-inputfield, .ui-widget-content .ui-inputfield {
+            font-weight: normal;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-size: 1rem;
+        }
     </style>
 
     <div style="padding-left: 20px; padding-right: 20px">
@@ -62,7 +69,7 @@
                     
                     
                     <p:commandButton id="validateBtn" rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
-                                     disabled="#{!candidatBean.isModifiedLabel}"
+                                     disabled="#{!candidatBean.isModifiedLabel()}"
                                      update="vote"
                                      action="#{candidatBean.updateCandidateLabel()}"
                                      value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="fa-solid fa-save"
@@ -128,7 +135,7 @@
                             <div class="card mb-4 py-3 border-left-success" style="background: #ECF8F1; padding: 20px;">
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.domaine')}" style="font-size: 14px;"/></b>
 
-                                <p:autoComplete value="#{candidatBean.collectionTemps}" multiple="true" style="width: 100%; margin-bottom: 3px"
+                                <p:autoComplete value="#{candidatBean.collectionSelected}" style="width: 100%; margin-bottom: 3px"
                                                 var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
                                                 minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
                                                 converter="searchConverterIdValue" scrollHeight="300">
@@ -209,8 +216,8 @@
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" style="font-size: 14px;" /></b>
 
                                 <!-- pour les relations BT -->
-                                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
-                                                multiple="true" var="values" forceSelection="true" style="width: 100%; margin-bottom: 3px"
+                                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.traductionSelected}"
+                                                var="values" forceSelection="true" style="width: 100%; margin-bottom: 3px"
                                                 completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
 
@@ -251,8 +258,8 @@
                                 <!-- pour les relations RT -->
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="font-size: 14px;" /></b>
 
-                                <p:autoComplete value="#{candidatBean.termesAssociesTmp}"
-                                                multiple="true" var="values" forceSelection="true" style="width: 100%"
+                                <p:autoComplete value="#{candidatBean.termesAssociesSelected}"
+                                                var="values" forceSelection="true" style="width: 100%"
                                                 completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
 
@@ -393,8 +400,7 @@
                             <i class="fa fa-language" style="color: #78261f; margin-right: 10px" />
                             <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_traduction')}"
                                              update="idNewTraduction newTraductionForm"
-                                             oncomplete="PF('newTraduction').show();"
-                                             actionListener="#{traductionService.init()}"
+                                             actionListener="#{traductionCandidatBean.init()}"
                                              styleClass="rounded-button ui-button-outlined"
                                              style="color: #f47b2a;" />
                         </div>
@@ -439,7 +445,7 @@
                                                      style="color: #43B572"
                                                      update=":manage-traduction-content"
                                                      oncomplete="PF('editTraduction').show();"
-                                                     actionListener="#{traductionService.init(traduction)}" process="@this"
+                                                     actionListener="#{traductionCandidatBean.init(traduction)}" process="@this"
                                                      styleClass="rounded-button ui-button-outlined">
                                         <p:resetInput target=":manage-traduction-content"/>
                                     </p:commandButton>
@@ -447,7 +453,7 @@
 
                                 <div class="col-2" style="margin-top: -5px">
                                     <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
-                                                     actionListener="#{traductionService.init(traduction)}" update="confirmDeleteForm"
+                                                     actionListener="#{traductionCandidatBean.init(traduction)}" update="confirmDeleteForm"
                                                      oncomplete="PF('confirmDeleteTraduction').show();" />
                                 </div>
                             </div>
@@ -464,8 +470,7 @@
                             <i class="pi pi-align-justify" style="color: #78261f; margin-right: 10px; margin-left: 10px" />
                             <p:commandButton value="#{langueBean.getMsg('alignment.addNewAlignment')}"
                                              update="idAddManualAlignment" process="@this" ajax="true"
-                                             oncomplete="PF('addManualAlignment').show();"
-                                             actionListener="#{alignmentManualBean.reset()}"
+                                             actionListener="#{alignmentManualBean.showManuelAlignmentDialog()}"
                                              styleClass="rounded-button ui-button-outlined"
                                              style="color: #f47b2a;" />
 
@@ -590,7 +595,7 @@
                                                 <div class="col-2" style="text-align: right">
                                                     <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" process="@this" ajax="true"
                                                                      update="tabViewCandidat"
-                                                                     action="#{candidatBean.deleteImage(photo.uri)}"
+                                                                     action="#{imageCandidatBean.deleteImage(photo.uri)}"
                                                                      styleClass="rounded-button ui-button-outlined"
                                                                      style="color: #f47b2a;">
                                                         <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"

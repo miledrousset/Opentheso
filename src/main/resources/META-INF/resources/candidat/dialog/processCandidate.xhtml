@@ -37,12 +37,12 @@
                 <p:commandButton value="#{langueBean.getMsg('reject')}" class="ui-button-danger-private" icon="pi pi-trash"
                                  style="margin-right: 10px"  ajax="true"
                                  update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
-                                 actionListener="#{processCandidateBean.rejectCandidat(currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{processCandidateBean.rejectCandidat()}" />
 
                 <p:commandButton value="#{langueBean.getMsg('insert')}" styleClass="ui-button-success" icon="pi pi-check"
                                  ajax="true"
                                  update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
-                                 actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}"/>
+                                 actionListener="#{processCandidateBean.insertCandidat()}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

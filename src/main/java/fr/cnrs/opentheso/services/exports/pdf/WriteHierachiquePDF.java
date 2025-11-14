@@ -11,8 +11,8 @@ import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
-import fr.cnrs.opentheso.repositories.TermHelper;
 
+import fr.cnrs.opentheso.services.TermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +38,13 @@ public class WriteHierachiquePDF {
     private UriHelper uriHelper;
 
     @Autowired
-    private TermHelper termHelper;
+    private TermService termService;
 
+    private boolean isToogleExportImage;
 
     public void writeHierachiquePDF(List<Paragraph> paragraphs, List<Paragraph> paragraphTradList, String codeLanguage1,
-                                    String codeLanguage2, WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
-
+                                    String codeLanguage2, WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument, boolean isToogleExportImage) {
+        this.isToogleExportImage = isToogleExportImage;
         HashMap<String, String> labels = new HashMap<>();
         HashMap<String, List<String>> idToChildId = new HashMap<>();
         HashMap<String, ArrayList<String>> notes = new HashMap<>();
@@ -74,7 +75,7 @@ public class WriteHierachiquePDF {
 
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         Collections.sort(concepts, sortForHiera(isTrad, codeLanguage1, codeLanguage2, labels,
-                idToChildId, idToDoc, matchs, gps, images, resourceChecked, notesDiff, termHelper));
+                idToChildId, idToDoc, matchs, gps, images, resourceChecked, notesDiff, termService));
 
         for (SKOSResource concept : concepts) {
 
@@ -150,7 +151,9 @@ public class WriteHierachiquePDF {
         addNotes(paragraphs, space, idToDoc.get(key), notesDiff.get(key), writePdfSettings);
         addMatchs(paragraphs, matchs.get(key), space, writePdfSettings);
         addGpsCoordiantes(paragraphs, gps.get(key), space, writePdfSettings);
-        addImages(paragraphs, images.get(key), indentation, writePdfSettings);
+        if(isToogleExportImage) {
+            addImages(paragraphs, images.get(key), indentation, writePdfSettings);
+        }
     }
 
     private String getSpace(String indentation) {
@@ -196,6 +199,36 @@ public class WriteHierachiquePDF {
         }
     }
 
+    private void addImages(List<Paragraph> paragraphs, List<NodeImage> images, String indentation, WritePdfSettings writePdfSettings) {
+        if (CollectionUtils.isNotEmpty(images)) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
+            for (NodeImage imageElement : images) {
+                if (imageElement.getUri() != null && !imageElement.getUri().isEmpty()) {
+                    try {
+                        // Téléchargement de l'image
+                        URL imageUrl = new URL(imageElement.getUri());
+                        Image image = Image.getInstance(imageUrl);
+
+                        // Redimensionnement
+                        float scaleFactor = writePdfSettings.resiseImage(image);
+                        if (scaleFactor > 0) {
+                            image.scaleAbsolute(image.getWidth() / scaleFactor, image.getHeight() / scaleFactor);
+                            // Ajout de l'image au paragraphe avec indentation
+                            paragraphs.add(new Paragraph(new Chunk(image, indentation.length() * (2.9f), 0, true)));
+                        } else {
+                            paragraphs.add(new Paragraph("Erreur de redimensionnement de l'image : " + imageElement.getUri()));
+                        }
+                    } catch (BadElementException | IOException ex) {
+                        paragraphs.add(new Paragraph("Erreur de téléchargement de l'image (image vide) : " + imageElement.getUri()));
+                    }
+                } else {
+                    paragraphs.add(new Paragraph("Image invalide : " + imageElement.getUri()));
+                }
+            }
+        }
+    }
+
+    /*
     private void addImages(List<Paragraph> paragraphs, ArrayList<NodeImage> images, String indentation, WritePdfSettings writePdfSettings) {
 
         if (CollectionUtils.isNotEmpty(images)) {
@@ -209,6 +242,6 @@ public class WriteHierachiquePDF {
                         } catch (BadElementException | IOException ex) {}
                     });
         }
-    }
+    }*/
    
 }

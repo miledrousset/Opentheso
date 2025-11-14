@@ -33,19 +33,15 @@
                     <div class="col-5" style="margin-top: 3px">
                         <p:selectOneMenu value="#{alignmentBean.selectedAlignement}" style="width: 100%; background: white; border-color: #43B572"
                                          title="#{alignmentBean.alertWikidata}">
-                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                    
+                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>
                             <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update=":containerIndex:searchAlignementForm messageIndex"/>
-                        </p:selectOneMenu> 
+                        </p:selectOneMenu>
                     </div>
 
                     <div class="col-1">
                         <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
                                          ajax="true" process="@form"
-                                         actionListener="#{alignmentBean.searchAlignments(
-                                                           selectedTheso.selectedIdTheso, 
-                                                           alignmentBean.idConceptSelectedForAlignment,
-                                                           alignmentBean.conceptValueForAlignment,
-                                                           conceptView.selectedLang)}"
+                                         actionListener="#{alignmentBean.searchAlignments(alignmentManualBean)}"
                                          style="color: #f47b2a; margin-left: 5px"
                                          update=":containerIndex:searchAlignementForm messageIndex" />
                     </div>
@@ -113,7 +109,7 @@
                                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                                  ajax="true" process="@form"
                                                  update="containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
-                                                 action="#{alignmentBean.addManualAlignement(selectedTheso.selectedIdTheso, 
+                                                 action="#{alignmentBean.addManualAlignement(selectedThesaurus.selectedIdTheso,
                                                            alignmentBean.idConceptSelectedForAlignment,
                                                            currentUser.nodeUser.idUser)}"
                                                  oncomplete="PF('searchAlignement').hide();"/>                                
@@ -162,7 +158,7 @@
                                     </div>                                          
                                 </div>
                                 <div class="col-1">
-                                    <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedTheso.selectedIdTheso)}"
+                                    <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedThesaurus.selectedIdTheso)}"
                                                    ajax="true" process="@form"
                                                    update=":containerIndex:searchAlignementForm">
                                         <i class="pi pi-cloud-download" style="color: #f47b2a; font-size: 1.5rem; margin-top: 20px;"/>
@@ -311,7 +307,7 @@
                                          oncomplete="PF('searchAlignement').hide();"
                                          ajax="true" process="@form"
                                          actionListener="#{alignmentBean.addAlignment(
-                                                           selectedTheso.selectedIdTheso, 
+                                                           selectedThesaurus.selectedIdTheso,
                                                            alignmentBean.idConceptSelectedForAlignment,
                                                            currentUser.nodeUser.idUser, true)}"/>
                         </div>

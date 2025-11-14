@@ -1,9 +1,6 @@
 package fr.cnrs.opentheso.bean.search;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
@@ -11,91 +8,71 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.SearchService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import java.io.IOException;
+
+import fr.cnrs.opentheso.utils.MessageUtils;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-
+@Data
 @Named(value = "searchBean")
 @SessionScoped
+@RequiredArgsConstructor
 public class SearchBean implements Serializable {
 
-    @Autowired
-    private SelectedTheso selectedTheso;
+    private final Tree tree;
+    private final LanguageBean languageBean;
+    private final SelectedTheso selectedTheso;
+    private final CurrentUser currentUser;
+    private final RightBodySetting rightBodySetting;
+    private final LeftBodySetting leftBodySetting;
+    private final ConceptView conceptBean;
+    private final IndexSetting indexSetting;
+    private final TreeGroups treeGroups;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final PropositionBean propositionBean;
 
-    @Autowired
-    private CurrentUser currentUser;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
+    private final SearchService searchService;
 
-    @Autowired
-    private RightBodySetting rightBodySetting;
-
-    @Autowired
-    private LeftBodySetting leftBodySetting;
-
-    @Autowired
-    private ConceptView conceptBean;
-
-    @Autowired
-    private IndexSetting indexSetting;
-
-    @Autowired
-    private TreeGroups treeGroups;
-
-    @Autowired
-    private Tree tree;
-
-    @Autowired
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired
-    private PropositionBean propositionBean;
-    
-    @Autowired
-    private LanguageBean languageBean;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private SearchHelper searchHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
 
     private NodeSearchMini searchSelected;
-
-    private ArrayList<NodeSearchMini> listResultAutoComplete;
-    private ArrayList<NodeConceptSearch> nodeConceptSearchs;
+    private List<NodeSearchMini> listResultAutoComplete;
+    private List<NodeConceptSearch> nodeConceptSearchs;
     private String searchValue;
 
     // sert à afficher ou non le total de résultat
-    private boolean isSelectedItem;
+    private boolean selectedItem;
 
     // filter search
     private boolean exactMatch;
     private boolean indexMatch;
     private boolean withNote;
     private boolean withId;
-    private boolean isSearchInSpecificTheso;
-
+    private boolean isSearchInSpecificThesaurus;
 
     public void clear() {
         if (listResultAutoComplete != null) {
@@ -135,80 +112,57 @@ public class SearchBean implements Serializable {
     }
 
     public void reset() {
-        if (nodeConceptSearchs != null) {
-            for (NodeConceptSearch nodeConceptSearch : nodeConceptSearchs) {
-                nodeConceptSearch.clear();
-            }
-            nodeConceptSearchs = null;
-        }
-        if (listResultAutoComplete != null) {
-            listResultAutoComplete.clear();
-        }
+        nodeConceptSearchs = new ArrayList<>();
+        listResultAutoComplete = new ArrayList<>();
         searchSelected = null;
     }
 
     public List<NodeSearchMini> completTermFullText(String value) {
 
-        isSelectedItem = false;
-
-        if (listResultAutoComplete == null) {
-            listResultAutoComplete = new ArrayList<>();
-        } else {
-            listResultAutoComplete.clear();
-        }
-
         if (selectedTheso == null) {
-            return listResultAutoComplete;
+            return List.of();
         }
+
+        selectedItem = false;
+        listResultAutoComplete = new ArrayList<>();
+        if(StringUtils.isEmpty(value)) return List.of();
+        value = value.trim();
 
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getSelectedLang() != null) {
-            String idLang;
-            if (selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
-                idLang = null;
-            } else {
-                idLang = selectedTheso.getSelectedLang();
-            }
+
+            var idLang = "all".equalsIgnoreCase(selectedTheso.getSelectedLang()) ? null : selectedTheso.getSelectedLang();
+            var isCollectionPrivate = ObjectUtils.isEmpty(currentUser.getNodeUser());
 
             if (exactMatch) {
-                listResultAutoComplete = searchHelper.searchExactMatch(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchService.searchExactMatch(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
+
             if (indexMatch) {
-                listResultAutoComplete = searchHelper.searchStartWith(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchService.searchStartWith(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
 
             if (withId) {
-                listResultAutoComplete = searchHelper.searchByAllId(value,
-                        idLang, selectedTheso.getCurrentIdTheso());
-            }                
-                         
+                listResultAutoComplete = searchService.searchByAllId(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
+            }
+
+            if (withNote) {
+                listResultAutoComplete = searchService.searchNotes(value, idLang, selectedTheso.getCurrentIdTheso());
+            }
+
             if (!withId && !withNote && !indexMatch && !exactMatch) {
-                listResultAutoComplete = searchHelper.searchFullTextElastic(
-                        value,
-                        idLang,
-                        selectedTheso.getCurrentIdTheso());
+                listResultAutoComplete = searchService.searchFullTextElastic(value, idLang, selectedTheso.getCurrentIdTheso(), isCollectionPrivate);
             }
         }
+
         searchValue = value;
-        if (listResultAutoComplete == null) {
-            listResultAutoComplete = new ArrayList<>();
-        }
-        return listResultAutoComplete;
+        return listResultAutoComplete == null ? Collections.emptyList() : listResultAutoComplete;
     }
 
-    public void onSelect() {
+    public void onSelect() throws IOException {
         if (searchSelected == null) {
             return;
         }
         String[] values = searchSelected.getIdConcept().split("####");
-        if (values == null) {
-            return;
-        }
         String idConcept;
         if (values.length > 1) {
             idConcept = values[0];
@@ -225,21 +179,14 @@ public class SearchBean implements Serializable {
         } else {
             idConcept = searchSelected.getIdConcept();
 
-            if (nodeConceptSearchs == null) {
-                nodeConceptSearchs = new ArrayList<>();
-            } else {
-                nodeConceptSearchs.clear();
-            }
-
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang())
-            );
+            nodeConceptSearchs = new ArrayList<>();
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
             setViewsSearch();
             if (nodeConceptSearchs.size() == 1) {
                 onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
             }
         }
-        isSelectedItem = true;
+        selectedItem = true;
 
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex");
@@ -249,54 +196,43 @@ public class SearchBean implements Serializable {
      * recherche de la valeur saisie en respectant les filtres
      */
     public void applySearch() {
-        if (nodeConceptSearchs == null) {
-            nodeConceptSearchs = new ArrayList<>();
-        } else {
-            nodeConceptSearchs.clear();
-        }
 
-        if (roleOnThesoBean.getSelectedThesoForSearch() == null || roleOnThesoBean.getSelectedThesoForSearch().isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut choisir au moins un thésaurus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+        nodeConceptSearchs = new ArrayList<>();
+
+        if (roleOnThesoBean.getSelectedThesaurusForSearch() == null || roleOnThesoBean.getSelectedThesaurusForSearch().isEmpty()) {
+            MessageUtils.showErrorMessage("Il faut choisir au moins un thésaurus !");
             return;
         }
-
-        isSearchInSpecificTheso = true;
-        if ((selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) && roleOnThesoBean.getSelectedThesoForSearch().size() > 1) {
-            isSearchInSpecificTheso = false;
-        }
+        isSearchInSpecificThesaurus = (selectedTheso.getCurrentIdTheso() != null
+                && !selectedTheso.getCurrentIdTheso().isEmpty()) || roleOnThesoBean.getSelectedThesaurusForSearch().size() <= 1;
 
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
-        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
-            for (String idTheso : roleOnThesoBean.getSelectedThesoForSearch()) {
-                nodeConceptSearchs.addAll(searchInThesaurus(idTheso, searchLangOfTheso(roleOnThesoBean.getListTheso(), idTheso))); // languageBean.getIdLangue());
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            for (String idThesaurus : roleOnThesoBean.getSelectedThesaurusForSearch()) {
+                nodeConceptSearchs.addAll(searchInThesaurus(idThesaurus, searchLangOfTheso(roleOnThesoBean.getListThesaurus(), idThesaurus)));
             }
         } else {
             String idLang = null;
-            if (!selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
+            if (!"all".equalsIgnoreCase(selectedTheso.getSelectedLang())) {
                 idLang = selectedTheso.getSelectedLang();
             }
-            List<NodeConceptSearch> concepts = searchInThesaurus(selectedTheso.getCurrentIdTheso(), idLang);// languageBean.getIdLangue());
-            nodeConceptSearchs.addAll(concepts);
+            nodeConceptSearchs.addAll(searchInThesaurus(selectedTheso.getCurrentIdTheso(), idLang));
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
             if (nodeConceptSearchs.size() == 1) {
                 conceptBean.getConcept(nodeConceptSearchs.get(0).getIdTheso(), nodeConceptSearchs.get(0).getIdConcept(),
                         nodeConceptSearchs.get(0).getCurrentLang(), currentUser);
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
-
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
 
             PrimeFaces.current().executeScript("showResultSearchBar();");
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
         }
 
         rightBodySetting.setIndex("0");
@@ -305,8 +241,8 @@ public class SearchBean implements Serializable {
         PrimeFaces.current().ajax().update("resultSearchBar");
     }
 
-    private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
-        for (RoleOnThesoBean.ThesoModel theso : listTheso) {
+    private String searchLangOfTheso(List<RoleOnThesaurusBean.ThesaurusModel> listTheso, String idTheso) {
+        for (RoleOnThesaurusBean.ThesaurusModel theso : listTheso) {
             if (theso.getId().equals(idTheso)) {
                 return theso.getDefaultLang();
             }
@@ -314,32 +250,23 @@ public class SearchBean implements Serializable {
         return selectedTheso.getSelectedLang();
     }
 
-    /**
-     * permet de retourner le nom du thesaurus
-     *
-     * @param idTheso
-     * @param idLang
-     * @return
-     */
     public String getThesoName(String idTheso, String idLang) {
 
-        return thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
+        return thesaurusService.getTitleOfThesaurus(idTheso, idLang);
     }
 
     private List<NodeConceptSearch> searchInThesaurus(String idTheso, String idLang) {
 
-        List<String> nodeSearchsId;
+        var isPrivate = currentUser.getNodeUser() == null;
         List<NodeConceptSearch> concepts = new ArrayList<>();
-        String thesaurusLabel = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
-        NodeConceptSearch nodeConceptSearch;
+        var thesaurusLabel = thesaurusService.getTitleOfThesaurus(idTheso, idLang);
         if(searchValue == null)
             searchValue = "";
 
         if (withId) {
-            nodeSearchsId = searchHelper.searchForIds(searchValue, idTheso);
+            var nodeSearchsId = searchService.searchForIds(searchValue, idTheso);
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(
-                        idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -348,11 +275,9 @@ public class SearchBean implements Serializable {
         }
 
         if (withNote) {
-            nodeSearchsId = searchHelper.searchIdConceptFromNotes(searchValue, idLang, idTheso);
-
+            var nodeSearchsId = searchService.searchIdConceptFromNotes(searchValue, idLang, idTheso);
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(
-                        idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -360,13 +285,12 @@ public class SearchBean implements Serializable {
             }
         }
 
-        if (exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(
-                    searchValue, idLang, idTheso);
+        var isCollectionPrivate = ObjectUtils.isEmpty(currentUser.getNodeUser());
 
+        if (exactMatch) {
+            var nodeSearchMinis = searchService.searchExactMatch(searchValue, idLang, idTheso, isCollectionPrivate);
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(
-                        nodeSearchMini.getIdConcept(), idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -375,13 +299,9 @@ public class SearchBean implements Serializable {
         }
 
         if (indexMatch || searchValue.isEmpty()) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(
-                    searchValue,
-                    idLang,
-                    idTheso);
+            var nodeSearchMinis = searchService.searchStartWith(searchValue, idLang, idTheso, isCollectionPrivate);
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(
-                        nodeSearchMini.getIdConcept(), idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
@@ -391,31 +311,22 @@ public class SearchBean implements Serializable {
         }
 
         if (!withId && !withNote && !exactMatch && !indexMatch) {
-            
-            ArrayList<String> listIds = searchHelper.searchFullTextElasticId(
-                        searchValue,
-                        idLang,
-                        idTheso);                    
-            
-            
+            var listIds = searchService.searchFullTextElasticId(searchValue, idLang, idTheso, isPrivate);
+
             for (String idConcept : listIds) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(
-                        idConcept, idTheso, idLang);
+                var nodeConceptSearch = conceptService.getConceptForSearch(idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
                 concepts.add(nodeConceptSearch);
             }
         }
-    //    Collections.sort(concepts);
         return concepts;
     }
 
     public void afficherResultatRecherche() {
         if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+            MessageUtils.showErrorMessage(languageBean.getMsg("search.doSearchBefore") + " !");
         } else {
             PrimeFaces.current().executeScript("showResultSearchBar();");
         }
@@ -428,18 +339,17 @@ public class SearchBean implements Serializable {
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
      */
-    public void getAllPolyierarchy() {
+    public void getAllPolyierarchy() throws IOException {
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> nodeSearchsId = searchHelper.searchAllPolyierarchy(selectedTheso.getCurrentIdTheso());
+        List<String> nodeSearchsId = searchService.searchAllPolyHierarchy(selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(
-                    idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
 
         if (!nodeConceptSearchs.isEmpty()) {
@@ -449,15 +359,14 @@ public class SearchBean implements Serializable {
 
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche Poly-hiéarchie : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche Poly-hiéarchie : Aucun résultat trouvée !");
             return;
         }
 
@@ -468,7 +377,7 @@ public class SearchBean implements Serializable {
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
      */
-    public void getAllDeprecatedConcepts() {
+    public void getAllDeprecatedConcepts() throws IOException {
 
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
@@ -476,10 +385,10 @@ public class SearchBean implements Serializable {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> nodeSearchsId = searchHelper.searchAllDeprecatedConcepts(selectedTheso.getCurrentIdTheso());
+        List<String> nodeSearchsId = searchService.searchAllDeprecatedConcepts(selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(idConcept,
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept,
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
 
@@ -491,15 +400,14 @@ public class SearchBean implements Serializable {
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de concepts dépréciés : Pas de résultat !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche de concepts dépréciés : Pas de résultat !");
             return;
         }
 
@@ -510,17 +418,17 @@ public class SearchBean implements Serializable {
     /**
      * permet de retourner la liste des concepts qui ont plusieurs Groupes
      */
-    public void searchConceptWithMultiGroup() {
+    public void searchConceptWithMultiGroup() throws IOException {
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithMultiGroup(selectedTheso.getCurrentIdTheso());
+        List<String> nodeSearchsId = searchService.searchConceptWithMultiGroup(selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
@@ -528,15 +436,14 @@ public class SearchBean implements Serializable {
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche multi-groupes : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche multi-groupes : Aucun résultat trouvée !");
             return;
         }
 
@@ -547,17 +454,17 @@ public class SearchBean implements Serializable {
     /**
      * permet de retourner la liste des concepts qui ont plusieurs Groupes
      */
-    public void searchConceptWithoutGroup() {
+    public void searchConceptWithoutGroup() throws IOException {
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithoutGroup(selectedTheso.getCurrentIdTheso());
+        List<String> nodeSearchsId = searchService.searchConceptWithoutGroup(selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
@@ -565,15 +472,14 @@ public class SearchBean implements Serializable {
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche sans-groupes : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche sans-groupes : Aucun résultat trouvée !");
             return;
         }
 
@@ -584,34 +490,31 @@ public class SearchBean implements Serializable {
     /**
      * permet de retourner la liste des concepts qui sont en doublons
      */
-    public void searchConceptDuplicated() {
-        if (nodeConceptSearchs == null) {
-            nodeConceptSearchs = new ArrayList<>();
-        } else {
-            nodeConceptSearchs.clear();
-        }
+    public void searchConceptDuplicated() throws IOException {
 
-        ArrayList<String> nodeSearchLabels = searchHelper.searchConceptDuplicated( selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        nodeConceptSearchs = new ArrayList<>();
+        var nodeSearchLabels = searchService.searchConceptDuplicated( selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
-        for (String label : nodeSearchLabels) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearchFromLabel(label, selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang()));
+        for (var label : nodeSearchLabels) {
+            var element = conceptService.getConceptForSearchFromLabel(label, selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang());
+            if (element != null) {
+                nodeConceptSearchs.add(element);
+            }
         }
-        if (!nodeConceptSearchs.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
             Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
-        }
-        if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche doublons : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche doublons : Aucun résultat trouvée !");
             return;
         }
 
@@ -623,23 +526,23 @@ public class SearchBean implements Serializable {
      * permet de retourner la liste des concepts qui sont une relation RT et NT
      * ou BT ce qui est interdit
      */
-    public void searchConceptWithRTandBT() {
+    public void searchConceptWithRTandBT() throws IOException {
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> allIdConcepts = conceptHelper.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
+        var allIdConcepts = conceptService.getAllIdConceptOfThesaurus(selectedTheso.getCurrentIdTheso());
 
         ArrayList<String> nodeSearchsId = new ArrayList<>();
         for (String idConcept : allIdConcepts) {
-            if (searchHelper.isConceptHaveRTandBT(idConcept, selectedTheso.getCurrentIdTheso())) {
+            if (searchService.isConceptHaveRTandBT(idConcept, selectedTheso.getCurrentIdTheso())) {
                 nodeSearchsId.add(idConcept);
             }
         }
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptService.getConceptForSearch(idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
@@ -647,15 +550,14 @@ public class SearchBean implements Serializable {
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
-                isSelectedItem = true;
+                selectedItem = true;
                 setViewsConcept();
             } else {
                 setViewsSearch();
-                isSelectedItem = false;
+                selectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche relations interdites : Aucun résultat trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            MessageUtils.showWarnMessage("Recherche relations interdites : Aucun résultat trouvée !");
             return;
         }
 
@@ -675,29 +577,22 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
     }
 
-    public void onSelectConcept(String idTheso, String idConcept, String idLang) {
+    public void onSelectConcept(String idThesaurus, String idConcept, String idLang) throws IOException {
 
         propositionBean.setNewProposition(false);
-        roleOnThesoBean.initNodePref(idTheso);
-        selectedTheso.setSelectedIdTheso(idTheso);
+        roleOnThesoBean.initNodePref(idThesaurus);
+        selectedTheso.setSelectedIdTheso(idThesaurus);
         selectedTheso.setSelectedLang(idLang);
-        try {
-            selectedTheso.setSelectedThesoForSearch();
-       //      selectedTheso.setSelectedTheso();
-        } catch (IOException ex) {
-            Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        selectedTheso.setSelectedThesaurusForSearch();
 
-        roleOnThesoBean.setSelectedThesoForSearch(roleOnThesoBean.getSelectedThesoForSearch().stream()
-                .filter(theso -> theso.contains(idTheso))
+        roleOnThesoBean.setSelectedThesaurusForSearch(roleOnThesoBean.getSelectedThesaurusForSearch().stream()
+                .filter(theso -> theso.contains(idThesaurus))
                 .collect(Collectors.toList()));
-        conceptBean.getConcept(idTheso, idConcept, idLang, currentUser);
+        conceptBean.getConcept(idThesaurus, idConcept, idLang, currentUser);
         rightBodySetting.setIndex("0");
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
-
-    //    PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public NodeSearchMini getSearchSelected() {
@@ -708,28 +603,19 @@ public class SearchBean implements Serializable {
         this.searchSelected = searchSelected;
     }
 
-    public ArrayList<NodeConceptSearch> getNodeConceptSearchs() {
+    public List<NodeConceptSearch> getNodeConceptSearchs() {
         return nodeConceptSearchs;
     }
 
     public void setNodeConceptSearchs(ArrayList<NodeConceptSearch> nodeConceptSearchs) {
         this.nodeConceptSearchs = nodeConceptSearchs;
     }
-
-    public String getSearchValue() {
-        return searchValue;
-    }
-
-    public void setSearchValue(String searchValue) {
-        this.searchValue = searchValue;
-    }
-
     public boolean isIsSelectedItem() {
-        return isSelectedItem;
+        return selectedItem;
     }
 
-    public void setIsSelectedItem(boolean isSelectedItem) {
-        this.isSelectedItem = isSelectedItem;
+    public void setIsSelectedItem(boolean selectedItem) {
+        this.selectedItem = selectedItem;
     }
 
     public boolean isExactMatch() {
@@ -765,11 +651,10 @@ public class SearchBean implements Serializable {
     }
 
     public boolean isIsSearchInSpecificTheso() {
-        return isSearchInSpecificTheso;
+        return isSearchInSpecificThesaurus;
     }
 
-    public void setIsSearchInSpecificTheso(boolean isSearchInSpecificTheso) {
-        this.isSearchInSpecificTheso = isSearchInSpecificTheso;
+    public void setIsSearchInSpecificTheso(boolean isSearchInSpecificThesaurus) {
+        this.isSearchInSpecificThesaurus = isSearchInSpecificThesaurus;
     }
-
 }

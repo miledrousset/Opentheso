@@ -40,7 +40,7 @@
                                  update="messageIndex" oncomplete="PF('renameConcept').hide();"
                                  ajax="true" process="@form" icon="pi pi-check" 
                                  style="background-color: red !important; border-color: red !important;"
-                                 action="#{editConcept.updateForced(selectedTheso.currentIdTheso, selectedTheso.currentLang,
+                                 action="#{editConcept.updateForced(selectedThesaurus.currentIdTheso, selectedThesaurus.currentLang,
                                            currentUser.nodeUser.idUser)}"/>   
                 
                 
@@ -54,8 +54,8 @@
                                  styleClass="ui-button-success" ajax="true" process="@form" 
                                  icon="pi pi-check" value="#{langueBean.getMsg('btnValidate')}"
                                  update="messageIndex containerIndex:idRenameConcept" 
-                                 action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
-                                                   selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
+                                 action="#{editConcept.updateLabel(selectedThesaurus.currentIdTheso,
+                                                   selectedThesaurus.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

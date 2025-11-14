@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.ping;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,9 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
 
@@ -20,6 +22,7 @@ import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Ping", description = "")
 public class PingController {
+
     @GetMapping(produces = TEXT_PLAIN)
     @Operation(summary = "Permet de savoir si le Webservices fonctionne",
             tags = {"Ping"},

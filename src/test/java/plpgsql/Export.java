@@ -3,21 +3,13 @@ package plpgsql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
-import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
-import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
-import fr.cnrs.opentheso.models.concept.NodeConceptTree;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,9 +29,6 @@ public class Export {
         
         ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
-
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        System.out.println("Commence ");
         //List<NodeConceptGraph> listChilds = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
     }
   
@@ -133,29 +122,7 @@ public class Export {
     public void getFullConcept(){
         ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
-        
-        String idTheso = "th42";
-        String idConcept = "38559";
-        String idLang = "fr";
-        
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-    //    NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, -1, -1);
     }
-    
-    @Test
-    public void getListConceptFils(){
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-        
-        String idTheso = "th42";
-        String idConcept = "38559";
-        String idLang = "fr";
-        
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        System.out.println("start");
-    //    List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false);
-        System.out.println("stop");
-    }    
     
     
     @Test

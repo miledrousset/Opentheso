@@ -17,21 +17,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class SearchCorpus2 {
     private boolean haveCorpus;
 
-    public ArrayList<NodeCorpus> SearchCorpus(ArrayList<NodeCorpus> nodeCorpuses, NodeFullConcept nodeFullConcept) {
+    public List<NodeCorpus> SearchCorpus(List<NodeCorpus> nodeCorpuses, NodeFullConcept nodeFullConcept) {
         haveCorpus = false;
         if (nodeFullConcept != null) {
             for (NodeCorpus nodeCorpus : nodeCorpuses) {

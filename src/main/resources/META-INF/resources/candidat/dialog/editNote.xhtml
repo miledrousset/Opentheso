@@ -32,7 +32,7 @@
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  oncomplete="PF('editNote').hide();"
                                  update="tabViewCandidat messageIndex"
-                                 actionListener="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{noteBeanCandidat.updateNote()}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

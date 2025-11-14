@@ -9,23 +9,21 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.model.ResponsiveOption;
 
-/**
- *
- * @author miledrousset
- */
 
+@Getter
+@Setter
 @Named
 @ViewScoped
 public class GalleriaView implements Serializable {
 
     private List<ResponsiveOption> responsiveOptions1;
-
     private List<ResponsiveOption> responsiveOptions2;
-
     private List<ResponsiveOption> responsiveOptions3;
-
     private int activeIndex = 0;
 
 
@@ -53,25 +51,5 @@ public class GalleriaView implements Serializable {
     public void changeActiveIndex() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         this.activeIndex = Integer.valueOf(params.get("index"));
-    }
-
-    public List<ResponsiveOption> getResponsiveOptions1() {
-        return responsiveOptions1;
-    }
-
-    public List<ResponsiveOption> getResponsiveOptions2() {
-        return responsiveOptions2;
-    }
-
-    public List<ResponsiveOption> getResponsiveOptions3() {
-        return responsiveOptions3;
-    }
-
-    public int getActiveIndex() {
-        return activeIndex;
-    }
-
-    public void setActiveIndex(int activeIndex) {
-        this.activeIndex = activeIndex;
     }
 }

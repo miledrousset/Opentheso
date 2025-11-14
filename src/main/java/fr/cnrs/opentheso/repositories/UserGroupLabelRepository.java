@@ -1,88 +1,59 @@
 package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
-@Service
-public class UserGroupLabelRepository {
 
-    @Autowired
-    private DataSource dataSource;
+public interface UserGroupLabelRepository extends JpaRepository<UserGroupLabel, Integer> {
 
-    public List<UserGroupLabel> getAllProjects() {
-        List<UserGroupLabel> projects = new ArrayList<>();
+    @Query("SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +
+            "FROM UserGroupLabel ugl " +
+            "WHERE LOWER(ugl.label) LIKE LOWER(CONCAT('%', :label, '%'))" +
+            "ORDER BY ugl.label")
+    List<UserGroupLabel> findAllByLabel(@Param("label") String label);
 
-        try ( Connection conn = dataSource.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT label.*, lower(label.label_group) AS sorted_label_group FROM user_group_label label ORDER BY lower(label.label_group) ASC");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        UserGroupLabel userGroupLabel = new UserGroupLabel();
-                        userGroupLabel.setId(resultSet.getInt("id_group"));
-                        userGroupLabel.setLabel(resultSet.getString("sorted_label_group"));
-                        projects.add(userGroupLabel);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
+    @Query("SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label) " +
+            "FROM UserRoleGroup urg " +
+            "JOIN UserGroupLabel ugl ON urg.group.id = ugl.id " +
+            "WHERE urg.user.id = :idUser " +
+            "AND urg.role.id = :idRole " +
+            "ORDER BY ugl.label")
+    List<UserGroupLabel> findProjectsByRole(@Param("idUser") int idUser, @Param("idRole") int idRole);
 
-        }
-        return projects;
-    }
+    @Query("""
+        SELECT new fr.cnrs.opentheso.entites.UserGroupLabel(ugl.id, ugl.label)
+        FROM UserGroupLabel ugl
+        WHERE ugl.id IN (
+            SELECT urg.group.id FROM UserRoleGroup urg WHERE urg.user.id = :userId
+            UNION
+            SELECT uro.group.id FROM UserRoleOnlyOn uro WHERE uro.user.id = :userId
+        )
+        ORDER BY LOWER(ugl.label)
+    """)
+    List<UserGroupLabel> findAllGroupsOfUser(@Param("userId") int userId);
 
-    public List<UserGroupLabel> getProjectsByThesoStatus(boolean status) {
-        List<UserGroupLabel> projects = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT grp.id_group, lower(label.label_group) AS sorted_label_group "
-                        + "FROM thesaurus the, user_group_thesaurus grp, user_group_label label "
-                        + "WHERE the.private = " + status + " "
-                        + "AND grp.id_thesaurus = the.id_thesaurus "
-                        + "AND label.id_group = grp.id_group "
-                        + "ORDER BY lower(label.label_group) ASC");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        UserGroupLabel userGroupLabel = new UserGroupLabel();
-                        userGroupLabel.setId(resultSet.getInt("id_group"));
-                        userGroupLabel.setLabel(resultSet.getString("sorted_label_group"));
-                        projects.add(userGroupLabel);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {}
-        return projects;
-    }
+    Optional<UserGroupLabel> findByLabelLike(String label);
 
-    public List<UserGroupLabel> getProjectsByUserId(int userId) {
-        List<UserGroupLabel> projects = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT lab "
-                        + "FROM user_role_group grp, UserGroupLabel lab "
-                        + "WHERE grp.id_group = lab.id_group "
-                        + "AND grp.id_user = " + userId + " "
-                        + "ORDER BY lower(lab.label_group) ASC");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        UserGroupLabel userGroupLabel = new UserGroupLabel();
-                        userGroupLabel.setId(resultSet.getInt("id_group"));
-                        userGroupLabel.setLabel(resultSet.getString("label_group"));
-                        projects.add(userGroupLabel);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {}
-        return projects;
-    }
+    @Query(value = """
+        SELECT DISTINCT ugl.id_group AS id, ugl.label_group AS label, LOWER(ugl.label_group) AS sort_label
+        FROM user_role_group urg
+        JOIN user_group_label ugl ON urg.id_group = ugl.id_group
+        WHERE urg.id_user = :idUser
+        ORDER BY sort_label
+    """, nativeQuery = true)
+    List<Object[]> findProjectsByUserIdNative(@Param("idUser") int userId);
 
+    @Query("""
+        SELECT DISTINCT new fr.cnrs.opentheso.entites.UserGroupLabel(lab.id, lab.label)
+        FROM UserGroupThesaurus ugt
+        JOIN ugt.groupLabel lab
+        JOIN ugt.thesaurus th
+        WHERE th.isPrivate = :status""")
+    List<UserGroupLabel> findProjectsByThesaurusStatus(@Param("status") boolean status);
 }

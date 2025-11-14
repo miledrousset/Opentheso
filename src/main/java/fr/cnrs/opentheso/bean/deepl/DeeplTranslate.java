@@ -2,64 +2,50 @@ package fr.cnrs.opentheso.bean.deepl;
 
 import com.deepl.api.Language;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.repositories.DeeplHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.services.DeeplService;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.NoteService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 
-@Data
-@Named(value = "deeplTranslate")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "deeplTranslate")
 public class DeeplTranslate implements Serializable {
 
-    
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
+    private final NoteService noteService;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final CurrentUser currentUser;
+    private final SelectedTheso selectedTheso;
+    private final DeeplService deeplHelper;
+    private final ConceptView conceptView;
 
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private DeeplHelper deeplHelper;
-    @Autowired
-    private ConceptView conceptView;
-
-    private String fromLang;
-    private String fromLangLabel;
+    private String fromLang, fromLangLabel, textToTranslate, existingTranslatedText, sourceTranslatedText, translatingText;
     private String toLang = "en-GB";
-
-    private String textToTranslate;
-    private String existingTranslatedText;
-    private String sourceTranslatedText;
-
+    private List<Language> sourceLangs, targetLangs;
     private NodeNote nodeNote;
 
-    private String translatingText;
-
-    private List<Language> sourceLangs;
-    private List<Language> targetLangs;
-    @Autowired
-    private LanguageHelper languageHelper;
 
     public void init() {
-        String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
+
+        var keyApi = roleOnThesaurusBean.getNodePreference().getDeeplApiKey();
         sourceLangs = deeplHelper.getSourceLanguages(keyApi);
         targetLangs = deeplHelper.getTargetLanguages(keyApi);
         existingTranslatedText = null;
@@ -74,11 +60,8 @@ public class DeeplTranslate implements Serializable {
             PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
             return;
         }
-        NodeNote nodeNote1= noteHelper.getNodeNote(
-                identifier,
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang(),
-                nodeNoteType);
+        var nodeNote1= noteService.getNodeNote(identifier, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang(), nodeNoteType);
+
         if(nodeNote1 == null) {
             textToTranslate = null;
             PrimeFaces.current().ajax().update("containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm");
@@ -109,10 +92,20 @@ public class DeeplTranslate implements Serializable {
 
         this.fromLang = nodeNote1.getLang();
         fromLangLabel = getLanguage(fromLang);
-        if(fromLang.equalsIgnoreCase(languageHelper.normalizeIdLang(toLang))) {
+        if(fromLang.equalsIgnoreCase(normalizeIdLang(toLang))) {
             toLang = "fr";
         }
         retrieveExistingTranslatedText();
+    }
+
+    private String normalizeIdLang(String idLang){
+        return switch (idLang) {
+            case "en-GB" -> "en";
+            case "en-US" -> "en";
+            case "pt-BR" -> "pt";
+            case "pt-PT" -> "pt";
+            default -> idLang;
+        };
     }
 
     private String getLanguage(String idLang) {
@@ -126,62 +119,41 @@ public class DeeplTranslate implements Serializable {
 
     public void translate() {
 
-        String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
+        var keyApi = roleOnThesaurusBean.getNodePreference().getDeeplApiKey();
         translatingText = deeplHelper.translate(keyApi, textToTranslate, fromLang, toLang);
     }
 
     public void retrieveExistingTranslatedText() {
-        existingTranslatedText = noteHelper.getLabelOfNote(
-               // conceptView.getNodeConcept().getConcept().getIdConcept(),
-                nodeNote.getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                toLang, nodeNote.getNoteTypeCode());
-        sourceTranslatedText = noteHelper.getSourceOfNote(
-                //conceptView.getNodeConcept().getConcept().getIdConcept(),
-                nodeNote.getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                toLang, nodeNote.getNoteTypeCode());
+
+        var note = noteService.getNodeNote(nodeNote.getIdConcept(), selectedTheso.getCurrentIdTheso(), toLang, nodeNote.getNoteTypeCode());
+        if (note != null) {
+            existingTranslatedText = note.getLexicalValue();
+            sourceTranslatedText = note.getNoteSource();
+        }
     }
 
     public void saveTranslatedText() {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(nodeNote.getIdConcept(), toLang,
-                selectedTheso.getCurrentIdTheso(),
-                translatingText, nodeNote.getNoteTypeCode(),
-                source,//nodeNote.getNoteSource(),
-
-                currentUser.getNodeUser().getIdUser())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
+        noteService.addNote(nodeNote.getIdConcept(), toLang, selectedTheso.getCurrentIdTheso(), translatingText,
+                nodeNote.getNoteTypeCode(), source, currentUser.getNodeUser().getIdUser());
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         retrieveExistingTranslatedText();
-        updateConcept();
+        conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(), nodeNote.getIdConcept(), nodeNote.getLang(), currentUser);
         translatingText = "";
-    }
-
-    private void updateConcept() {
-        conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(),
-                nodeNote.getIdConcept(),
-                nodeNote.getLang(),
-                currentUser);
     }
 
     public void saveExistingTranslatedText() {
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(nodeNote.getIdConcept(), toLang,
+        
+        noteService.addNote(nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),
-                nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-        updateConcept();
+                nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser());
+
+        conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(), nodeNote.getIdConcept(), nodeNote.getLang(), currentUser);
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note mis à jour avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

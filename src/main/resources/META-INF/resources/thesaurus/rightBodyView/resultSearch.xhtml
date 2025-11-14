@@ -10,7 +10,7 @@
     <p:scrollPanel style="border: none; padding-left: 10px; padding-right: 10px; padding-top: -5px;
                    max-height: 995px; overflow: scroll; overflow-x: hidden;" mode="native">
 
-        <h:panelGroup rendered="#{!searchBean.isSelectedItem}" style="margin-bottom: 5px">
+        <h:panelGroup rendered="#{!searchBean.isIsSelectedItem()}" style="margin-bottom: 5px">
             <div class="row" style="background-color: #ecf8f1; height: 25px">
                 <div class="col-12">
                     <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>

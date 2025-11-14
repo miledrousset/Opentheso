@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
 
@@ -88,7 +88,7 @@
                             </div>
                         </div>
 
-                        <h:panelGroup id="contenu" rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}" >
+                        <h:panelGroup id="contenu" rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesaurusOfProject != null)}" >
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin-left: 20px; margin-right: 20px;">
                                 <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                     <div class="col-12">
@@ -122,7 +122,7 @@
                                                 <div class="row" style="margin-top: 10px">
                                                     <div class="col-12">
                                                         <div class="card mb-4 py-3 border-left-success">
-                                                            <p:dataTable value="#{myProjectBean.listeThesoOfProject}" var="listTheso" size="small"
+                                                            <p:dataTable value="#{myProjectBean.listeThesaurusOfProject}" var="listTheso" size="small"
                                                                          widgetVar="listTheso" styleClass="products-table"
                                                                          resizableColumns="true" scrollHeight="450" reflow="true"
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
@@ -141,7 +141,7 @@
 
                                                                 <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
+                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso)}"
                                                                                      update="idMoveThesoToAnotherProject"
                                                                                      oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
                                                                                      title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"

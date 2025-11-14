@@ -1,58 +1,52 @@
 package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.models.group.NodeGroupType;
+import fr.cnrs.opentheso.entites.ConceptGroupType;
+import fr.cnrs.opentheso.repositories.ConceptStatusRepository;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
-
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.GroupTypeService;
 import fr.cnrs.opentheso.services.IpAddressService;
+import fr.cnrs.opentheso.services.NoteService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
-import lombok.Data;
+import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
-@Data
-/**
- *
- * @author miledrousset
- */
-@Named(value = "groupView")
-@SessionScoped
+
+@Getter
+@Setter
 @Slf4j
+@SessionScoped
+@RequiredArgsConstructor
+@Named(value = "groupView")
 public class GroupView implements Serializable {
 
-    
-    @Autowired @Lazy private IndexSetting indexSetting;     
-    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired private IpAddressService ipAddressService;
-    @Autowired
-    private SelectedTheso selectedTheso;
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
+    private final NoteService noteService;
+    private final IndexSetting indexSetting;
+    private final GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final GroupTypeService groupTypeService;
+    private final IpAddressService ipAddressService;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final ConceptStatusRepository conceptStatusRepository;
+    private final ViewEditorThesaurusHomeBean viewEditorThesaurusHomeBean;
 
     private NodeGroup nodeGroup;
-    private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
-    private NodeGroupType nodeGroupType;
+    private List<NodeGroupTraductions> nodeGroupTraductions;
+    private ConceptGroupType nodeGroupType;
     
     private NodeNote note;
     private NodeNote scopeNote;
@@ -63,94 +57,70 @@ public class GroupView implements Serializable {
     private NodeNote historyNote;
 
     /// Notes du concept pour l'affichage du multilingue
-    private ArrayList<NodeNote> noteAllLang;
-    private ArrayList<NodeNote> scopeNoteAllLang;
-    private ArrayList<NodeNote> changeNoteAllLang;
-    private ArrayList<NodeNote> definitionAllLang;
-    private ArrayList<NodeNote> editorialNoteAllLang;
-    private ArrayList<NodeNote> exampleAllLang;
-    private ArrayList<NodeNote> historyNoteAllLang;
+    private List<NodeNote> noteAllLang;
+    private List<NodeNote> scopeNoteAllLang;
+    private List<NodeNote> changeNoteAllLang;
+    private List<NodeNote> definitionAllLang;
+    private List<NodeNote> editorialNoteAllLang;
+    private List<NodeNote> exampleAllLang;
+    private List<NodeNote> historyNoteAllLang;
     
     private int count;
+    private boolean toggleSwitchNotesLang = true;
 
-    private boolean toggleSwitchNotesLang;
-
-     @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(nodeGroupTraductions!= null){
-            nodeGroupTraductions.clear();
-            nodeGroupTraductions = null;
-        }
-        nodeGroup = null;
-        nodeGroupType = null;
-    }      
-    
-    /**
-     * Creates a new instance of ConceptBean
-     */
-    public GroupView() {
-        toggleSwitchNotesLang = true;
-    }
 
     public void init() {
-        /*  if(isUriRequest) {
-            isUriRequest = false;
-            return;
-        }*/
         count = 0;
         nodeGroup = null;
         nodeGroupType = null;
-        nodeGroupTraductions = null;
+        nodeGroupTraductions = new ArrayList<>();
+    }
+
+    public void clear(){
+        nodeGroupTraductions = new ArrayList<>();
+        nodeGroup = null;
+        nodeGroupType = null;
     }
 
     /**
      * récuparation des informations pour le concept sélectionné
-     *
-     * @param idTheso
-     * @param idGroup
-     * @param idLang
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
 
-        nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
+        nodeGroup = groupService.getThisConceptGroup(idGroup, idTheso, idLang);
         
-        nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
-        nodeGroupType = groupHelper.getGroupType(nodeGroup.getConceptGroup().getIdtypecode());
+        nodeGroupTraductions = groupService.getGroupTraduction(idGroup, idTheso, idLang);
+        nodeGroupType = groupTypeService.getGroupType(nodeGroup.getConceptGroup().getIdTypeCode());
         logGroup();
         setNotes(idTheso, idGroup, idLang);
 
-        count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
+        count = conceptStatusRepository.countConceptsInGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
-        viewEditorThesoHomeBean.reset();
+        viewEditorThesaurusHomeBean.reset();
     }
 
     private void logGroup() {
-        String ipAddress = ipAddressService.getClientIpAddress();
-        log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdgroup(),
+        var ipAddress = ipAddressService.getClientIpAddress();
+        log.info("Group: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeGroup.getLexicalValue(), nodeGroup.getConceptGroup().getIdGroup(),
                 selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
     }
 
-    public void setNotes(String idTheso, String idGroup, String idLang) {
-        ArrayList<NodeNote> nodeNotes;
+    public void setNotes(String idThesaurus, String idGroup, String idLang) {
+
         if (toggleSwitchNotesLang) {
-            nodeNotes = noteHelper.getListNotesAllLang(idGroup, idTheso);
-            setNotesForAllLang(nodeNotes);
+            setNotesForAllLang(noteService.getListNotesAllLang(idGroup, idThesaurus));
         } else {
-            nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
-            setAllNotes(nodeNotes);
+            setAllNotes(noteService.getListNotes(idGroup, idThesaurus, idLang));
         }
-    };
+    }
     
     /////////////////////////////////
     /////////////////////////////////
     // fonctions pour les notes /////    
     /////////////////////////////////
     /////////////////////////////////
-    private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
+    private void setAllNotes(List<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
             switch (nodeNote.getNoteTypeCode()) {
@@ -179,7 +149,7 @@ public class GroupView implements Serializable {
         }
     }
 
-    private void setNotesForAllLang(ArrayList<NodeNote> nodeNotes) {
+    private void setNotesForAllLang(List<NodeNote> nodeNotes) {
         clearNotesAllLang();
         clearNotes();
 

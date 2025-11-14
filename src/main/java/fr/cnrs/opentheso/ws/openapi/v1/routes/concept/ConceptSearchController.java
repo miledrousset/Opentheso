@@ -1,8 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
-
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.SearchService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConceptSearchController {
 
     @Autowired
-    private GroupHelper groupHelper;
-
+    private GroupService groupService;
     @Autowired
-    private SearchHelper searchHelper;
+    private SearchService searchService;
 
 
     @GetMapping("/{idThesaurus}/{input}")
@@ -37,7 +35,7 @@ public class ConceptSearchController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam(value = "group", required = false) String idGroup) {
 
-        var concepts = searchHelper.searchConceptWSV2(input, lang, idGroup, idThesaurus);
+        var concepts = searchService.searchConceptWSV2(input, lang, idGroup, idThesaurus);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(concepts);
     }
 
@@ -46,7 +44,7 @@ public class ConceptSearchController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                          @PathVariable("idLang") String idLang) {
 
-        var groups = groupHelper.getListRootConceptGroup(idThesaurus, idLang, true);
+        var groups = groupService.getListRootConceptGroup(idThesaurus, idLang, true, false);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(groups);
     }
 }

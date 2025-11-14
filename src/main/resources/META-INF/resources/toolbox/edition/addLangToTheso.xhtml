@@ -14,7 +14,7 @@
                     <h:outputText value="#{langueBean.getMsg('statistique.thesaurus.name')}:"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{editThesoBean.title}" style="width: 100%"/>
+                    <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{editThesaurusBean.title}" style="width: 100%"/>
                 </div>
             </div>
 
@@ -24,24 +24,24 @@
                     <h:outputText value="#{langueBean.getMsg('editTheso.langToAdd')}:"/>
                 </div>
                 <div class="col-7">
-                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable()}">
-                        <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
+                    <h:panelGroup rendered="#{selectedThesaurus.isNetworkAvailable()}">
+                        <p:selectOneMenu value="#{editThesaurusBean.selectedLang}" styleClass="selectOneMenu_custom"
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; width: 200px" >
 
-                        <f:selectItems value="#{editThesoBean.allLangs}" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" 
-                                       itemValue="#{lang.id_iso639_1}" var="lang" /> 
+                        <f:selectItems value="#{editThesaurusBean.allLangs}" itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"
+                                       itemValue="#{lang.iso6391}" var="lang" />
                         </p:selectOneMenu> 
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable()}">
-                        <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
+                    <h:panelGroup rendered="#{!selectedThesaurus.isNetworkAvailable()}">
+                        <p:selectOneMenu value="#{editThesaurusBean.selectedLang}" styleClass="selectOneMenu_custom"
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; width: 200px" >
 
-                            <f:selectItems value="#{editThesoBean.allLangs}" itemValue="#{lang.codePays}"
-                                           itemLabelEscaped="false" var="lang" itemLabel="#{lang.french_name}" /> 
+                            <f:selectItems value="#{editThesaurusBean.allLangs}" itemValue="#{lang.codePays}"
+                                           itemLabelEscaped="false" var="lang" itemLabel="#{lang.frenchName}" />
                         </p:selectOneMenu> 
                     </h:panelGroup>
                 </div>
@@ -54,9 +54,9 @@
                                  actionListener="PF('addLangToTheso').hide();" update="idAddLangToTheso"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
-                                 styleClass="ui-button-success"  oncomplete="PF('addLangToTheso').hide();"
-                                 actionListener="#{editThesoBean.addNewLang()}" icon="pi pi-check" 
-                                 action="#{roleOnTheso.showListTheso(currentUser, selectedTheso)}" />
+                                 ajax="true" process="@form" styleClass="ui-button-success"
+                                 oncomplete="PF('addLangToTheso').hide();" icon="pi pi-check"
+                                 actionListener="#{editThesaurusBean.addNewLang()}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

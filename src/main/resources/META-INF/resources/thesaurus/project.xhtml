@@ -47,8 +47,8 @@
                                              panelStyle="border: none; box-shadow: none; max-width: 300px" >
 
                                 <p:ajax event="change" listener="#{projectBean.changeProjectDescription()}" update="containerIndex messageIndex"  />
-                                <f:selectItems  value="#{projectBean.selectedLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
-                                                itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/>
+                                <f:selectItems  value="#{projectBean.selectedLangs}" var="lang" itemValue="#{lang.iso6391}"
+                                                itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"/>
                             </p:selectOneMenu>
 
                             <img src="#{projectBean.getDrapeauImgLocal(projectBean.langCodeSelected)}"
@@ -95,8 +95,8 @@
                                              panelStyle="border: none; box-shadow: none; max-width: 300px" >
 
                                 <p:ajax event="change" listener="#{projectBean.changeLangListener()}" update="containerIndex messageIndex"  />
-                                <f:selectItems  value="#{projectBean.allLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
-                                                itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/>
+                                <f:selectItems  value="#{projectBean.allLangs}" var="lang" itemValue="#{lang.iso6391}"
+                                                itemLabel="#{lang.iso6391} _ #{lang.frenchName} (#{lang.englishName})"/>
                             </p:selectOneMenu>
 
                             <img src="#{projectBean.getDrapeauImgLocal(projectBean.langCode)}"

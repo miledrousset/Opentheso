@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-
+import fr.cnrs.opentheso.services.GroupService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,14 +14,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_TURTLE_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_LD_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_RDF_UTF_8;
 
 
 @Slf4j
@@ -33,10 +42,10 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ConcepThesoSearchController {
 
     @Autowired
-    private GroupHelper groupHelper;
+    private RestRDFHelper restRDFHelper;
 
     @Autowired
-    private RestRDFHelper restRDFHelper;
+    private GroupService groupService;
 
 
     @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
@@ -88,16 +97,8 @@ public class ConcepThesoSearchController {
 
     private ResponseEntity searchFilter(String idTheso, String acceptHeader, String q, String lang, String groupsString, String match, String filter) {
 
-        String datas;
-        String[] groups = null;
-
-        if (lang == null) {
-            lang = "";
-        }
-
-        if (groupsString != null) {
-            groups = groupsString.split(",");
-        }
+        String[] groups = groupsString != null ? groupsString.split(",") : null;
+        lang = lang == null ? "" : lang;
 
         if (match != null && !match.equalsIgnoreCase("exact") && !match.equalsIgnoreCase("exactone")) {
             match = null;
@@ -105,7 +106,7 @@ public class ConcepThesoSearchController {
 
         var selectedMediaType = getMediaTypeFromRequest(acceptHeader);
 
-        datas = getDatas(idTheso, lang, groups, q, acceptHeader, filter, match);
+        var datas = getDatas(idTheso, lang, groups, q, acceptHeader, filter, match);
         return ResponseEntity.ok().contentType(selectedMediaType).body(datas);
     }
 
@@ -164,18 +165,13 @@ public class ConcepThesoSearchController {
         String[] groups = new String[arkGroups.length];
         int i = 0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(arkGroup, idTheso);
+            groups[i] = groupService.getIdGroupFromArkId(arkGroup, idTheso);
             i++;
         }
         return groups;
     }
 
-    private String getDatas(
-                                   String idTheso, String idLang,
-                                   String [] groups,
-                                   String value,
-                                   String format, String filter,
-                                   String match) {
+    private String getDatas(String idTheso, String idLang, String [] groups, String value, String format, String filter, String match) {
 
         format = HeaderHelper.removeCharset(format);
         if (filter != null && filter.equalsIgnoreCase("notation:")) {

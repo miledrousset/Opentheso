@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.TermRepository;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 
@@ -13,11 +13,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import java.util.ArrayList;
+
+import java.util.List;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_LD_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_RDF_UTF_8;
 
 
 @Slf4j
@@ -41,16 +45,15 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ThesaurusIdController {
 
     @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
     @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private TermRepository termRepository;
+
+    @Autowired
+    private ThesaurusService thesaurusService;
+    @Autowired
+    private ConceptService conceptService;
 
 
     @GetMapping(produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
@@ -85,24 +88,24 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(thesaurusId);
+        var listIdTopConceptOfThesaurus = conceptService.getAllTopConceptIds(thesaurusId);
 
-        ArrayList<NodeTermTraduction> nodeTermTraductions;
+        List<NodeTermTraduction> nodeTermTraductions;
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        for (String idConcept : listIdTopConceptOfTheso) {
+        for (String idConcept : listIdTopConceptOfThesaurus) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idConcept", idConcept);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeTermTraductions = termHelper.getAllTraductionsOfConcept(idConcept, thesaurusId);
-            for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
-                JsonObjectBuilder jobLang = Json.createObjectBuilder();
-                jobLang.add("lang", nodeTermTraduction.getLang());
-                jobLang.add("title", nodeTermTraduction.getLexicalValue());
-                jsonArrayBuilderLang.add(jobLang.build());
-            }
-            if (!nodeTermTraductions.isEmpty()) {
+            nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, thesaurusId);
+            if (CollectionUtils.isNotEmpty(nodeTermTraductions)) {
+                for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+                    JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                    jobLang.add("lang", nodeTermTraduction.getLang());
+                    jobLang.add("title", nodeTermTraduction.getLexicalValue());
+                    jsonArrayBuilderLang.add(jobLang.build());
+                }
                 job.add("labels", jsonArrayBuilderLang.build());
             }
             jsonArrayBuilder.add(job.build());
@@ -125,8 +128,8 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer.", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var date = conceptHelper.getLastModification(thesaurusId);
-        var datas = "{\"lastUpdate\":\"" + date.toString() + "\"}";
+        var date = conceptService.getLastModification(thesaurusId);
+        var datas = "{\"lastUpdate\":\"" + date + "\"}";
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -162,7 +165,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getListLang(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        ArrayList<String> listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(thesaurusId);
+        List<String> listLangOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurus(thesaurusId);
         JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();

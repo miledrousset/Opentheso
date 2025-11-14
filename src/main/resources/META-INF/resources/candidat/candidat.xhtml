@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -53,10 +53,10 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 card shadow mb-1">
                             <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}" style="background-color: #FAFAFA;">
 
-                                <p:ajax event="tabChange" listener="#{candidatBean.onTabChange}" update="messageIndex tabViewCandidat"/>
+                                <p:ajax event="tabChange" listener="#{candidatBean.onTabChange}" update="tabViewCandidat"/>
 
                                 <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
-                                    <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() || 
+                                    <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() ||
                                                               candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                                         <ui:include src="../candidat/candidatsList.xhtml" />
                                     </h:panelGroup>
@@ -110,22 +110,22 @@
                 <ui:include src="../candidat/dialog/deleteNote.xhtml" />
                 <ui:include src="../candidat/dialog/editNote.xhtml" />
 
-                <ui:include src="../candidat/dialog/showVoteNote.xhtml" />                
+                <ui:include src="../candidat/dialog/showVoteNote.xhtml" />
 
                 <ui:include src="../candidat/dialog/newTraduction.xhtml" />
                 <ui:include src="../candidat/dialog/editTraduction.xhtml" />
                 <ui:include src="../candidat/dialog/deleteTraduction.xhtml" />
 
-                <ui:include src="../candidat/dialog/participantsList.xhtml" /> 
+                <ui:include src="../candidat/dialog/participantsList.xhtml" />
                 <ui:include src="../candidat/dialog/envoyerInvitation.xhtml" />
 
                 <ui:include src="../candidat/dialog/processCandidate.xhtml" />
                 <ui:include src="../candidat/dialog/processCandidateList.xhtml" />
-                
-                <ui:include src="../candidat/dialog/moveToAnotherThesoCA.xhtml" />
-                                
 
-                <ui:include src="../candidat/dialog/deleteCandidate.xhtml" />       
+                <ui:include src="../candidat/dialog/moveToAnotherThesoCA.xhtml" />
+
+
+                <ui:include src="../candidat/dialog/deleteCandidate.xhtml" />
 
                 <ui:include src="../dialog/login/logout.xhtml" />
             </div>

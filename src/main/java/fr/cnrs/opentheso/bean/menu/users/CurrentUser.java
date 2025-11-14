@@ -1,19 +1,27 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.repositories.UserHelper;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.entites.User;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
-import fr.cnrs.opentheso.utils.MD5Password;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ProjectService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserService;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -21,81 +29,75 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import fr.cnrs.opentheso.services.connexion.LdapService;
+import fr.cnrs.opentheso.services.LdapService;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import jakarta.inject.Named;
+
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jena.sparql.function.library.leviathan.log;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
-
-@Data
+@Slf4j
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "currentUser")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentUser implements Serializable {
 
+    private final ConceptView conceptView;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
     @Value("${settings.workLanguage:fr}")
     private String workLanguage;
 
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy
-    private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-    @Autowired @Lazy
-    private MenuBean menuBean;
-    @Autowired @Lazy
-    private RightBodySetting rightBodySetting;
-    @Autowired @Lazy
-    private PropositionBean propositionBean;
-    @Autowired @Lazy
-    private SearchBean searchBean;
-    @Autowired @Lazy
-    private LanguageBean languageBean;
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-    @Autowired @Lazy
-    private ProjectBean projectBean;
-
-    @Autowired
-    private LdapService ldapService;
-
-    @Autowired
-    private UserGroupLabelRepository userGroupLabelRepository;
-
-    @Autowired
-    private UserHelper userHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
+    private final Tree tree;
+    private final MenuBean menuBean;
+    private final SearchBean searchBean;
+    private final TreeGroups treeGroups;
+    private final ProjectBean projectBean;
+    private final LanguageBean languageBean;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final PropositionBean propositionBean;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final RightBodySetting rightBodySetting;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final ProjectService projectService;
+    private final UserService userService;
+    private final LdapService ldapService;
+    private final ThesaurusService thesaurusService;
+    private final PreferenceService preferenceService;
+    private final UserRoleGroupService userRoleGroupService;
 
     private NodeUser nodeUser;
-    private String username;
-    private String password;
-    private boolean ldapEnable = false;
-
-    private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
-    
-    // nouvel objet pour gérer les permissions
+    private String username, password;
+    private boolean ldapEnable;
     private UserPermissions userPermissions;
-
+    private List<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
+    //pour KeyCloak
+    private boolean keyCloak = false;
+    private String mail;
 
     public void clear() {
         if (allAuthorizedProjectAsAdmin != null) {
@@ -115,13 +117,12 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         nodeUser = null;
-        
 
         // initialisation des permissions
         resetPermissionsAfterLogout();
         
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
-        roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);
+        roleOnThesaurusBean.setAndClearThesoInAuthorizedList(selectedTheso);
         indexSetting.setIsThesoActive(true);
         rightBodySetting.setIndex("0");
 
@@ -131,13 +132,14 @@ public class CurrentUser implements Serializable {
         selectedTheso.setSelectedProject();
 
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
-            roleOnThesoBean.setPublicThesos(this, selectedTheso);
+            roleOnThesaurusBean.setPublicThesaurus(this, selectedTheso.getCurrentIdTheso());
             if(StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())){
-                if (!thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
-                    indexSetting.setSelectedTheso(true);
-                } else {
+                var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+                if (thesaurus.getIsPrivate()) {
                     selectedTheso.setCurrentIdTheso(null);
                     indexSetting.setSelectedTheso(false);
+                } else {
+                    indexSetting.setSelectedTheso(true);
                 }
                 indexSetting.setProjectSelected(false);
             }
@@ -150,44 +152,69 @@ public class CurrentUser implements Serializable {
             indexSetting.setSelectedTheso(false);
         } else {
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
-                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                roleOnThesaurusBean.setAuthorizedThesaurus(projectBean.getListeThesoOfProject().stream()
                         .map(NodeIdValue::getId)
                         .collect(Collectors.toList()));
             } else {
-                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+                roleOnThesaurusBean.setAuthorizedThesaurus(Collections.emptyList());
             }
-            roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
+            roleOnThesaurusBean.addAuthorizedThesoToHM();
+            roleOnThesaurusBean.setUserRoleOnThisThesaurus(this, selectedTheso.getCurrentIdTheso());
 
-            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())
-                    && thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
+            var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso()) && thesaurus.getIsPrivate()) {
                 indexSetting.setSelectedTheso(true);
                 indexSetting.setProjectSelected(false);
             }
         }
-        
+
+        treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        tree.loadConceptTree();
+
+        var groups = groupService.getListGroupOfConcept(selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentLang());
+        try {
+            if (CollectionUtils.isNotEmpty(groups) && groups.stream().anyMatch(NodeGroup::isGroupPrivate)) {
+                indexSetting.setIsSelectedTheso(true);
+                indexSetting.setIsValueSelected(false);
+                indexSetting.setIsHomeSelected(true);
+                indexSetting.setIsThesoActive(true);
+                indexSetting.setProjectSelected(false);
+            }
+        } catch (Exception e) {
+            log.error("Erreur d'initialisation des groupes privés", e.getMessage());
+        }
+
+        conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
+                selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, false));
+        tree.reloadSelectedConcept();
+
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
         } else {
             PrimeFaces.current().ajax().update("containerIndex:contentConcept");
             PrimeFaces.current().ajax().update("containerIndex:searchBar");
             PrimeFaces.current().ajax().update("containerIndex:header");
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
             PrimeFaces.current().ajax().update("menuBar");
-            PrimeFaces.current().ajax().update("messageIndex");
         }
+    }
+
+    public void setUser(User user) {
+        nodeUser = new NodeUser(user.getId(), user.getUsername(), user.getMail(), user.getActive(),
+                user.getAlertMail(), user.getIsSuperAdmin(), user.getPassToModify(),
+                user.getApiKey(), user.getKeyNeverExpire(), user.getKeyExpiresAt(),
+                user.getIsServiceAccount(), user.getKeyDescription());
     }
 
     /**
      * Connect l'utilisateur si son compte en récupérant toutes les informations
      * lui concernant
-     *
      * le lien de l'index si le compte existe, un message d'erreur sinon init
      * c'est une parametre que viens du "isUserExist" ou return une 1 si on fait
      * le login normal (usuaire, pass), une 2 si on fait le login avec le
      * motpasstemp (et nous sommes dirigées a la page web de changer le
      * motpasstemp) #MR
-     *
-     * @throws java.io.IOException
      */
     public void login() throws Exception {
 
@@ -196,41 +223,37 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        int idUser;
-        if (ldapEnable) {
-            if (!ldapService.authentificationLdapCheck(username, password)) {
-                showErrorMessage("User or password LDAP wrong, please try again");
-                return;
+        User user = null;
+        if (keyCloak) {
+            Optional<User> user2 = userService.findByMail(mail);
+            if(user2.isPresent()) {
+                user = user2.get();
             }
-            idUser = userHelper.getIdUserFromPseudo(username);
         } else {
-            idUser = userHelper.getIdUser(username, MD5Password.getEncodedPassword(password));
+            user = userService.findByUsernameAndPassword(username, password);
         }
 
-        if (idUser == -1) {
+        if (user == null) {
             showErrorMessage("User or password wrong, please try again");
             return;
         }
 
-        // on récupère le compte de l'utilisatreur
-        nodeUser = userHelper.getUser(idUser);
-        if (nodeUser == null) {
-            showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
-            return;
-        }
+        // on récupère le compte de l'utilisateur
+        nodeUser = new NodeUser(user.getId(), user.getUsername(), user.getMail(), user.getActive(),
+                user.getAlertMail(), user.getIsSuperAdmin(), user.getPassToModify(),
+                user.getApiKey(), user.getKeyNeverExpire(), user.getKeyExpiresAt(),
+                user.getIsServiceAccount(), user.getKeyDescription());
 
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         if ("index".equals(menuBean.getActivePageName())) {
-            menuBean.setNotificationPannelVisible(true);
+            menuBean.setNotificationPanelVisible(true);
         }
 
         setInfos();
         //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
 
-        
-        
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
@@ -243,34 +266,41 @@ public class CurrentUser implements Serializable {
         if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
             indexSetting.setProjectSelected(false);
             if(!StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-                if (!thesaurusHelper.isThesoPrivate(selectedTheso.getCurrentIdTheso())) {
-                    indexSetting.setSelectedTheso(true);
-                } else {
+                var thesaurus = thesaurusService.getThesaurusById(selectedTheso.getCurrentIdTheso());
+                if (thesaurus.getIsPrivate()) {
                     selectedTheso.setCurrentIdTheso(null);
                     indexSetting.setSelectedTheso(false);
+                } else {
+                    indexSetting.setSelectedTheso(true);
                 }
             }
         } else {
             projectBean.initProject(selectedTheso.getProjectIdSelected(), this);
 
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
-                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                roleOnThesaurusBean.setAuthorizedThesaurus(projectBean.getListeThesoOfProject().stream()
                         .map(NodeIdValue::getId)
                         .collect(Collectors.toList()));
             } else {
-                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+                roleOnThesaurusBean.setAuthorizedThesaurus(Collections.emptyList());
             }
-            roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso(this, selectedTheso);
+            roleOnThesaurusBean.addAuthorizedThesoToHM();
+            roleOnThesaurusBean.setUserRoleOnThisThesaurus(this, selectedTheso.getCurrentIdTheso());
             projectBean.init();
         }
 
-        PrimeFaces.current().executeScript("PF('login').hiden();");
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("idLogin");
-            pf.ajax().update("containerIndex:header");
-        }
+        treeGroups.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        tree.loadConceptTree();
+
+        conceptView.setNodeFullConcept(conceptService.getConcept(conceptView.getIdConceptSelected(),
+                selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(), 0, 1, true));
+        tree.reloadSelectedConcept();
+
+        PrimeFaces.current().executeScript("PF('login').hide();");
+
+        PrimeFaces.current().ajax().update("idLogin");
+        PrimeFaces.current().ajax().update("containerIndex:header");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
     }
   
     /**
@@ -284,9 +314,9 @@ public class CurrentUser implements Serializable {
 
         // liste des projets de l'utilisateur
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListProjects(userGroupLabelRepository.getAllProjects());
+            userPermissions.setListProjects(userRoleGroupService.findAllUserRoleGroup());
         } else {  
-            userPermissions.setListProjects(userHelper.getProjectOfUser(nodeUser.getIdUser()));
+            userPermissions.setListProjects(userService.getProjectOfUser(nodeUser.getIdUser()));
             setListProjectForUser();
         }
         setAllListThesoOfAllProject();
@@ -295,7 +325,7 @@ public class CurrentUser implements Serializable {
     private void setAllListThesoOfAllProject(){
         // liste des thésaurus de l'utilisateur (tous les droits en partant du contributeur)
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListThesos(thesaurusHelper.getAllTheso(true));
+            userPermissions.setListThesaurus(thesaurusService.getAllThesaurus(true));
             userPermissions.setRole(1);
             userPermissions.setRoleName("superAdmin");   
             if(userPermissions.getSelectedProject() != -1) {
@@ -310,13 +340,13 @@ public class CurrentUser implements Serializable {
                 nodeProjectThesoRole.setIdProject(userGroupLabel.getId()); // id du projet
                 nodeProjectThesoRole.setProjectName(userGroupLabel.getLabel()); // label du projet
 
-                List<NodeThesoRole> nodeThesoRoles = userHelper.getAllRolesThesosByUserGroup(nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
+                List<NodeThesoRole> nodeThesoRoles = userService.getAllRolesThesosByUserGroup(nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
 
                 nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
                 nodeProjectThesoRoles.add(nodeProjectThesoRole);
             }
             userPermissions.setNodeProjectsWithThesosRoles(nodeProjectThesoRoles);
-            setListThesoForUser();
+            setListThesaurusForUser();
         }        
     }
     
@@ -339,9 +369,9 @@ public class CurrentUser implements Serializable {
         userPermissions.setProjectOfselectedThesoName("");
     }
     
-    private void setListThesoForUser(){
+    private void setListThesaurusForUser(){
         boolean resetTheso = true;
-        ArrayList<NodeIdValue> thesos = new ArrayList<>();
+        List<NodeIdValue> thesaurusList = new ArrayList<>();
         for (NodeProjectThesoRole nodeProjectsWithThesosRole : userPermissions.getNodeProjectsWithThesosRoles()) {
             if(userPermissions.getSelectedProject() == -1) {
                 for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
@@ -353,7 +383,7 @@ public class CurrentUser implements Serializable {
                             resetTheso = false;
                         }
                     }
-                    thesos.add(nodeIdValue);
+                    thesaurusList.add(nodeIdValue);
                 } 
             }  else {          
                 if(userPermissions.getSelectedProject() == nodeProjectsWithThesosRole.getIdProject()) {
@@ -366,15 +396,15 @@ public class CurrentUser implements Serializable {
                                 resetTheso = false;
                             }
                         }
-                        thesos.add(nodeIdValue);
+                        thesaurusList.add(nodeIdValue);
                     } 
                 }
             }
         }
 
-        userPermissions.setListThesos(thesos);
+        userPermissions.setListThesaurus(thesaurusList);
         if(resetTheso) {
-            resetUserPermissionsForThisTheso();
+            resetUserPermissionsForThisThesaurus();
             resetUserPermissionsForThisProject();
         }
         else
@@ -386,35 +416,37 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
         if(StringUtils.isEmpty(idTheso)) {
-            resetUserPermissionsForThisTheso();
+            resetUserPermissionsForThisThesaurus();
             return;
         }
 
         int idProject, idRole; 
         userPermissions.setSelectedTheso(idTheso);
-        userPermissions.setPreferredLangOfSelectedTheso(preferencesHelper.getWorkLanguageOfTheso(selectedTheso.getCurrentIdTheso()));
-        userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
+        userPermissions.setPreferredLangOfSelectedTheso(preferenceService.getWorkLanguageOfThesaurus(selectedTheso.getCurrentIdTheso()));
+        userPermissions.setSelectedThesoName(thesaurusService.getTitleOfThesaurus(idTheso, userPermissions.getPreferredLangOfSelectedTheso()));
         
         
-        userPermissions.setListLangsOfSelectedTheso(thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+        userPermissions.setListLangsOfSelectedTheso(thesaurusService.getAllUsedLanguagesOfThesaurusNode(
                 selectedTheso.getCurrentIdTheso(), userPermissions.getPreferredLangOfSelectedTheso()));
         
-        idProject = userHelper.getGroupOfThisTheso(selectedTheso.getCurrentIdTheso());
+        idProject = userService.getGroupOfThisThesaurus(selectedTheso.getCurrentIdTheso());
         
         if(nodeUser != null) {
             if(nodeUser.isSuperAdmin()) {
                 userPermissions.setRole(1);
                 userPermissions.setRoleName("superAdmin");                
             } else {
-                idRole = userHelper.getRoleOnThisTheso(nodeUser.getIdUser(), idProject, idTheso);
+                idRole = userService.getRoleOnThisThesaurus(nodeUser.getIdUser(), idProject, idTheso);
                 userPermissions.setRole(idRole);
-                userPermissions.setRoleName(userHelper.getRoleName(idRole));
+                userPermissions.setRoleName(userService.getRoleName(idRole));
             }
         }
-        
+
         userPermissions.setProjectOfselectedTheso(idProject);
-        userPermissions.setProjectOfselectedThesoName(userHelper.getGroupName(idProject));
-    }    
+        if (idProject != -1) {
+            userPermissions.setProjectOfselectedThesoName(userRoleGroupService.getUserGroupLabelRepository(idProject).getLabel());
+        }
+    }
     
     public void initUserPermissionsForThisProject(int idProject){
         if(userPermissions == null){
@@ -422,21 +454,21 @@ public class CurrentUser implements Serializable {
         }
 
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userHelper.getGroupName(idProject));
-        userPermissions.setListThesos(userHelper.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
+        userPermissions.setSelectedProjectName(userRoleGroupService.getUserGroupLabelRepository(idProject).getLabel());
+        userPermissions.setListThesaurus(userService.getThesaurusOfProject(idProject, workLanguage, nodeUser != null));
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
-            for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
+            for (NodeIdValue nodeIdValue : userPermissions.getListThesaurus()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
                     return;
             }
-            resetUserPermissionsForThisTheso();
+            resetUserPermissionsForThisThesaurus();
         }
     }
     
     /**
      * remise à zéro des variables pour le projet en cours
      */    
-    public void resetUserPermissionsForThisTheso(){
+    public void resetUserPermissionsForThisThesaurus(){
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
@@ -462,7 +494,7 @@ public class CurrentUser implements Serializable {
         if(userPermissions == null) return;
         userPermissions.setNodeProjectsWithThesosRoles(null);
         
-        resetUserPermissionsForThisTheso();
+        resetUserPermissionsForThisThesaurus();
     }
     
     /**
@@ -472,7 +504,7 @@ public class CurrentUser implements Serializable {
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
-        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByThesoStatus(false));
+        userPermissions.setListProjects(projectService.findProjectByThesaurusStatus(false));
         
         // contrôle si le projet actuel est dans la liste, sinon, on initialise le projet sélectionné à -1
         if(userPermissions.getSelectedProject() != -1){
@@ -507,11 +539,11 @@ public class CurrentUser implements Serializable {
             userPermissions = new UserPermissions();
         }
 
-        userPermissions.setListThesos(thesaurusHelper.getAllTheso(nodeUser != null));
+        userPermissions.setListThesaurus(thesaurusService.getAllThesaurus(nodeUser != null));
 
         // contrôle si le thésaurus actuel est dans la liste, sinon, on initialise le thésaurus à null
         if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())){
-            for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
+            for (NodeIdValue nodeIdValue : userPermissions.getListThesaurus()) {
                 if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso())){
                     return;
                 } 
@@ -519,8 +551,8 @@ public class CurrentUser implements Serializable {
             userPermissions.setSelectedTheso(null);
             userPermissions.setSelectedProjectName("");
         }         
-        if(userPermissions.getListThesos() == null || userPermissions.getListThesos().isEmpty()) {
-            resetUserPermissionsForThisTheso();
+        if(userPermissions.getListThesaurus() == null || userPermissions.getListThesaurus().isEmpty()) {
+            resetUserPermissionsForThisThesaurus();
         }   
     }
 
@@ -539,22 +571,16 @@ public class CurrentUser implements Serializable {
     }
     
     public boolean isHasRoleAsAdmin(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
-                (  
-                (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()) 
-                );
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && ((userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()));
     }
 
     public boolean isHasRoleAsSuperAdmin(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
-                (
-                (nodeUser.isSuperAdmin())
-                );
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && ((nodeUser.isSuperAdmin()));
     }
 
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesaurusBean.isAdminOnThisThesaurus()) && nodeUser.isActive();
     }
     
     private void showErrorMessage(String msg) {
@@ -566,18 +592,18 @@ public class CurrentUser implements Serializable {
     /**
      * Permet de mettre à jour toutes les informations concernant un user #MR
      */
-    private void setInfos() {
+    private void setInfos() throws IOException {
         username = "";
         password = "";
         if (nodeUser == null) {
             return;
         }
-        roleOnThesoBean.showListTheso(this, selectedTheso);
+        roleOnThesaurusBean.showListThesaurus(this, selectedTheso.getCurrentIdTheso());
         initAllAuthorizedProjectAsAdmin();
 
         /// Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
         // sinon, on nettoie l'interface et le thésaurus. 
-        roleOnThesoBean.redirectAndCleanTheso(selectedTheso);
+        roleOnThesaurusBean.redirectAndCleanThesaurus(selectedTheso);
     }
 
     /**
@@ -587,7 +613,7 @@ public class CurrentUser implements Serializable {
         if (nodeUser == null) {
             return;
         }
-        nodeUser = userHelper.getUser(nodeUser.getIdUser());
+        nodeUser = userService.getUser(nodeUser.getIdUser());
     }
 
     public String formatUserName(String userName) {
@@ -598,13 +624,10 @@ public class CurrentUser implements Serializable {
     }
 
     /**
-     * permet de savoir si l'utilisateur est admin au moins sur un projet pour
-     * contôler la partie import et export
-     *
-     * @return
+     * Permet de savoir si l'utilisateur est admin au moins sur un projet
      */
     private void initAllAuthorizedProjectAsAdmin() {
-        ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(nodeUser.getIdUser());
+        var allAuthorizedProjectAsAdminTemp = userRoleGroupService.getRoleProjectByUser(nodeUser.getIdUser());
         if (allAuthorizedProjectAsAdmin == null) {
             allAuthorizedProjectAsAdmin = new ArrayList<>();
         } else {

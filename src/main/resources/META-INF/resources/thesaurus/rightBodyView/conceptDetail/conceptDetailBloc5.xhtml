@@ -152,19 +152,19 @@
                                 </div>
                                 <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="margin-left: 0px">
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                    <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
+                                    <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedThesaurus.currentIdTheso}"
                                             value="#{conceptView.nodeFullConcept.identifier}" style="color: #164A78; font-size: 13px;">
                                     </p:link>
                                 </div>
                             </div>
                         </div>
                         <!-- identifiants pérennes -->
-                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
-                                                      || roleOnTheso.nodePreference.originalUriIsDoi || conceptView.nodeFullConcept.uri != ''}">
+                        <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk || roleOnThesaurus.nodePreference.originalUriIsHandle
+                                                      || roleOnThesaurus.nodePreference.originalUriIsDoi || conceptView.nodeFullConcept.uri != ''}">
                             <div class="list-group-item list-group-item-action">
                                 <div class="row" style="margin-left: 0px;">
-                                    <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
-                                                                  || roleOnTheso.nodePreference.originalUriIsDoi}">
+                                    <h:panelGroup rendered="#{roleOnThesaurus.nodePreference.originalUriIsArk || roleOnThesaurus.nodePreference.originalUriIsHandle
+                                                                  || roleOnThesaurus.nodePreference.originalUriIsDoi}">
                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
                                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
@@ -173,10 +173,8 @@
                                             <!-- Uri du concept -->
                                             <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                             <h:panelGroup rendered="#{not empty conceptView.nodeFullConcept.uri}">
-                                                <p:link
-                                                        href="#{not empty conceptView.nodeFullConcept.uri ? conceptView.nodeFullConcept.uri : '#'}"
-                                                        value="#{conceptView.nodeFullConcept.uri}"
-                                                        style="color: #164A78; font-size: 13px;" target="_blank">
+                                                <p:link href="#{not empty conceptView.nodeFullConcept.uri ? conceptView.nodeFullConcept.uri : '#'}"
+                                                        value="#{conceptView.nodeFullConcept.uri}" style="color: #164A78; font-size: 13px;" target="_blank">
                                                 </p:link>
                                             </h:panelGroup>
                                         </div>
@@ -217,10 +215,17 @@
                     <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2" style="text-align: left;">
                         <!-- QrCode-->
                         <div class="list-group-item list-group-item-action">
-                            <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
+                            <p:barcode value="#{roleOnThesaurus.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
                                        rendered="#{conceptView.nodeFullConcept.permanentId != ''}"
                                        type="qr" height="75px;"/>
                         </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 2px;">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
+                        <p:link href="https://pro.frantiq.fr/cgi-bin/koha/catalogue/search.pl?q=an:#{conceptView.nodeFullConcept.permanentId}"
+                                target="_blank"  value="Lien vers KohaPro" style="color: #164A78; font-size: 14px;">
+                        </p:link>
                     </div>
                 </div>
             </div>

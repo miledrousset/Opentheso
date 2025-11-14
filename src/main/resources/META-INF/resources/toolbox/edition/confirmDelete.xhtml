@@ -9,21 +9,21 @@
         <h:form>
         <div class="row">
             <div class="col-12" >
-                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteTheso')}: " style="font-size: 13px; color: black;"/>                    
+                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteTheso')} " style="font-size: 13px; color: black;"/>
             </div>
         </div>
 
         <div class="row" style="margin-top: 5px">
             <div class="col-12" >
-                <h:outputText value="#{deleteThesoBean.valueOfThesoToDelelete} (#{deleteThesoBean.idThesoToDelete})"
+                <h:outputText value="#{deleteThesaurusBean.valueOfThesaurusToDelete} (#{deleteThesaurusBean.idThesaurusToDelete})"
                               style="font-size: 15px; color: #C63632;"/>
             </div>            
         </div>
 
         <div class="row" style="margin-top: 15px">
             <div class="col-12" >
-                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteArkHandle')}: " style="font-size: 13px; color: black;"/> 
-                <p:toggleSwitch value="#{deleteThesoBean.deletePerennialIdentifiers}" onIcon="pi pi-times" offIcon="pi pi-check" style="margin-left: 10px">
+                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteArkHandle')} " style="font-size: 13px; color: black;"/>
+                <p:toggleSwitch value="#{deleteThesaurusBean.deletePerennialIdentifiers}" onIcon="pi pi-times" offIcon="pi pi-check" style="margin-left: 10px">
 
                 </p:toggleSwitch>
                      
@@ -45,9 +45,8 @@
 
             <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" icon="pi pi-check" 
                              update="containerIndex messageIndex" styleClass="ui-button-success" 
-                             oncomplete="PF('confirmDelete').hide();"
-                             actionListener="#{deleteThesoBean.deleteTheso(currentUser)}"
-                             action="#{roleOnTheso.showListTheso(currentUser, selectedTheso)}"/>
+                             oncomplete="PF('confirmDelete').hide();" process="@this" ajax="true"
+                             actionListener="#{deleteThesaurusBean.deleteThesaurus(currentUser)}"/>
         </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

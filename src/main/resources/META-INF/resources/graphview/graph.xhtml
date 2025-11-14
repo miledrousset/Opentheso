@@ -106,10 +106,10 @@
                                         <div >
                                                 <p:dataList emptyMessage="#{langueBean.getMsg('rightbody.conceptdialog.noRecordFound')}" value="#{graph_view.exportedData}" var="export" type="none" style="height: 100px;">
                                                     <p:chip rendered="#{export.right==null}" label="#{export.left}" styleClass="mr-2" style="color:#601e18; background-color:#ECF8F1 ">
-                                                        <p:ajax listener="#{dataGraphView.onSelectTheso}" update="messageIndex"/>
+                                                        <p:ajax listener="#{dataGraphView.onSelectThesaurus}" update="messageIndex"/>
                                                     </p:chip>
                                                     <p:chip rendered="#{export.right!=null}" label="#{export.left}, #{export.right}" styleClass="mr-2" style="color:#601e18; background-color:#FAEDE5">
-                                                        <p:ajax listener="#{dataGraphView.onSelectThesoConcept}" update="messageIndex"/>
+                                                        <p:ajax listener="#{dataGraphView.onSelectThesaurusConcept}" update="messageIndex"/>
                                                     </p:chip>
                                                 </p:dataList>
                                         </div>
@@ -121,8 +121,7 @@
                                                                  style="margin-left: 0px;" ajax="true" process="@this"
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
                                                                  onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}', '#{graph_view.name}'); return false;" />
-
-                                                <script type="text/javascript">
+                                                <h:outputScript target="body">
                                                     function openInNewTab(url, name) {
                                                         if (url) {
                                                             const encodedName = encodeURIComponent(name); // Encodage sécurisé
@@ -131,7 +130,7 @@
                                                             alert('URL introuvable.');
                                                         }
                                                     }
-                                                </script>
+                                                </h:outputScript>
                                             </div>
 
                                             <div class="col-6" style="text-align: right">                                            

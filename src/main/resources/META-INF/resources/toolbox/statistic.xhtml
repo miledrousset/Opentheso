@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -73,7 +73,7 @@
                                     <div class="col-4">
                                         <p:selectOneMenu id="langue" value="#{statistiqueBean.selectedLanguage}" 
                                                          style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
-                                            <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
+                                            <f:selectItems value="#{statistiqueBean.languagesOfThesaurus}" var="langue"
                                                            itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue.code}"/>
                                         </p:selectOneMenu>
                                     </div>
@@ -97,7 +97,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.thesaurus.name')} :"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+                                            <h:outputText style="float: left;" value="#{selectedThesaurus.thesoName} (#{selectedThesaurus.currentIdTheso})"/>
                                         </div>
                                     </div>
 
@@ -106,7 +106,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.concept.nbr')}"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrCanceptByThes}"/>
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrConceptByThesaurus}"/>
                                         </div>
                                     </div>
                                     
@@ -115,7 +115,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('candidat.titre')} :"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrCandidateByThes}"/>
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrCandidateByThesaurus}"/>
                                         </div>
                                     </div>     
                                     
@@ -124,7 +124,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('search.deprecated')} :"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrDeprecatedByThes}"/>
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrDeprecatedByThesaurus}"/>
                                         </div>
                                     </div>                                      
 
@@ -133,7 +133,7 @@
                                             <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.last_modification')}"/>
                                         </div>
                                         <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.derniereModification}"/>
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.dernierModification}"/>
                                         </div>
                                     </div>
 
@@ -194,7 +194,7 @@
                                                 icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
                                                              title="#{langueBean.getMsg('statistique.exporter_csv')}"
                                                              update="containerIndex:bloc1 containerIndex:bloc2" style=" height: 33px;" >
-                                                <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+                                                <p:fileDownload value="#{statistiqueBean.exportStatistiques()}" />
                                             </p:commandButton>                                            
                                         </div>
                                     </div>
@@ -216,7 +216,7 @@
                                                     <h:outputText style="font-size: 13px;" value="#{langueBean.getMsg('statistique.filter_nbr_result.title')}"/>
                                                 </div>
                                                 <div class="col-3">
-                                                    <p:selectOneMenu value="#{statistiqueBean.nbrResultat}" 
+                                                    <p:selectOneMenu value="#{statistiqueBean.norResult}"
                                                                      styleClass="selectOneMenu_custom">
                                                         <f:selectItem itemLabel="50" itemValue="50" />
                                                         <f:selectItem itemLabel="100" itemValue="100" />
@@ -265,7 +265,7 @@
                                         </div>
                                     </div>
 
-                                    <p:dataTable id="resultat" var="stat" value="#{statistiqueBean.canceptStatistiques}"
+                                    <p:dataTable id="resultat" var="stat" value="#{statistiqueBean.conceptStatistiques}"
                                                  style="margin-top: 10px" paginator="true" rows="10"
                                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
@@ -306,11 +306,11 @@
 
                                     <div class="row">
                                         <div class="col-12" style="text-align: right; margin-top: 20px;">
-                                            <p:commandButton id="commandExport" rendered="#{statistiqueBean.canceptStatistiques.size() != 0}" 
+                                            <p:commandButton id="commandExport" rendered="#{statistiqueBean.conceptStatistiques.size() != 0}"
                                                             icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
                                                              title="#{langueBean.getMsg('statistique.exporter_csv')}"
                                                              update="containerIndex:bloc1 containerIndex:bloc2" style=" height: 33px;" >
-                                                <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+                                                <p:fileDownload value="#{statistiqueBean.exportStatistiques()}" />
                                             </p:commandButton>                                               
                                             
                                         </div>
@@ -362,7 +362,7 @@
                         </div>
                     </p:dialog>
 
-                    <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.canceptStatistiqueSelected.label}'" 
+                    <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.conceptStatistiqueSelected.label}'"
                               widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="600" 
                               style="margin-top: 50px" >         
 
@@ -373,7 +373,7 @@
                                     <h:outputText style="float: right; font-weight: bold;" value="Id concept : "/>
                                 </div>
                                 <div class="col-6">
-                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.idConcept}"/>
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.conceptStatistiqueSelected.idConcept}"/>
                                 </div>
                             </div>
 
@@ -382,7 +382,7 @@
                                     <h:outputText style="float: right; font-weight: bold;" value="Type : "/>
                                 </div>
                                 <div class="col-6">
-                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.type}"/>
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.conceptStatistiqueSelected.type}"/>
                                 </div>
                             </div>
 
@@ -391,7 +391,7 @@
                                     <h:outputText style="float: right; font-weight: bold;" value="Utilisateur : "/>
                                 </div>
                                 <div class="col-6">
-                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.utilisateur}"/>
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.conceptStatistiqueSelected.utilisateur}"/>
                                 </div>
                             </div>
 
@@ -400,7 +400,7 @@
                                     <h:outputText style="float: right; font-weight: bold;" value="Date de création : "/>
                                 </div>
                                 <div class="col-6">
-                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateCreation}"/>
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.conceptStatistiqueSelected.dateCreation}"/>
                                 </div>
                             </div>
 
@@ -409,7 +409,7 @@
                                     <h:outputText style="float: right; font-weight: bold;" value="Date de modification : "/>
                                 </div>
                                 <div class="col-6">
-                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateModification}"/>
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.conceptStatistiqueSelected.dateModification}"/>
                                 </div>
                             </div>
                             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

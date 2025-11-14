@@ -76,7 +76,7 @@
                 
                 <p:column width="20">
                     <p:commandLink style="color: #F7A269;" 
-                                   actionListener="#{narrowerBean.updateRelation(narrower, currentUser.nodeUser.idUser)}"
+                                   actionListener="#{narrowerBean.updateRelation(narrower)}"
                                    ajax="true" process="@form"
                                    update="containerIndex:formRightTab messageIndex">
                         <i class="pi pi-check-circle" />
@@ -94,7 +94,7 @@
                 <p:commandButton rendered="#{narrowerBean.applyToBranch}"  value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  ajax="true" process="@form"  oncomplete="PF('changeRelation').hide();"
                                  update="messageIndex idChangeRelation"
-                                 actionListener="#{narrowerBean.applyRelationToBranch(conceptView.nodeConcept.concept.idConcept, currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{narrowerBean.applyRelationToBranch(conceptView.nodeConcept.concept.idConcept)}" />
             </h:panelGroup>
         </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

@@ -27,7 +27,7 @@
                                  oncomplete="PF('deprecateConcept').hide();"
                                  actionListener="#{editConcept.deprecateConcept(
                                                    conceptView.nodeConcept.concept.idConcept,
-                                                   selectedTheso.currentIdTheso,
+                                                   selectedThesaurus.currentIdTheso,
                                                    currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

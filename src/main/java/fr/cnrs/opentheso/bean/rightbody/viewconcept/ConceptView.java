@@ -1,15 +1,8 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import fr.cnrs.opentheso.mappers.NodeFullConceptMapper;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.CorpusHelper;
-import fr.cnrs.opentheso.repositories.FacetHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
-import fr.cnrs.opentheso.repositories.LanguageHelper;
-import fr.cnrs.opentheso.repositories.PathHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
@@ -23,181 +16,101 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.repositories.CorpusLinkRepository;
+import fr.cnrs.opentheso.repositories.LanguageRepository;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.ConceptTypeService;
+import fr.cnrs.opentheso.services.FacetService;
+import fr.cnrs.opentheso.services.GpsService;
 import fr.cnrs.opentheso.services.IpAddressService;
-import jakarta.faces.context.ExternalContext;
+import fr.cnrs.opentheso.services.PathService;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.ResourceService;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
-import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 
 /**
  *
  * @author miledrousset
  */
-@Data
-@SessionScoped
+@Getter
+@Setter
 @Slf4j
+@SessionScoped
+@RequiredArgsConstructor
 @Named(value = "conceptView")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ConceptView implements Serializable {
 
-    
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-    @Autowired @Lazy
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy
-    private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired @Lazy
-    private Tree tree;
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy
-    private LanguageBean languageBean;
+    private final Tree tree;
+    private final IndexSetting indexSetting;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final ViewEditorThesaurusHomeBean viewEditorThesoHomeBean;
+    private final ViewEditorHomeBean viewEditorHomeBean;
+    private final LanguageRepository languageRepository;
+    private final PathService pathService;
+    private final GpsService gpsService;
+    private final LanguageBean languageBean;
+    private final SelectedTheso selectedTheso;
+    private final RelationService relationsService;
+    private final CorpusLinkRepository corpusLinkRepository;
+    private final IpAddressService ipAddressService;
+    private final CurrentUser currentUser;
+    private final ResourceService resourceService;
+    private final ConceptService conceptService;
+    private final FacetService facetService;
+    private final ConceptTypeService conceptTypeService;
+    private final NodeFullConceptMapper nodeFullConceptMapper;
+    private final SelectedTheso selectedThesaurus;
 
-    @Autowired
-    private DaoResourceHelper daoResourceHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private FacetHelper facetHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private CorpusHelper corpusHelper;
-
-    @Autowired
-    private PathHelper pathHelper;
-
-    @Autowired
-    private GpsHelper gpsHelper;
-
-    @Autowired
-    private LanguageHelper languageHelper;
-
-    @Autowired
-    private SelectedTheso selectedTheso;
-
-    @Autowired private IpAddressService ipAddressService;
-
-    private NodeConcept nodeConcept;
-    
-    /// nouvelle méthode de récupération du concept 
-    private NodeFullConcept nodeFullConcept;    
-    
-    private String selectedLang;
-    private GpsMode gpsModeSelected;
-    private ArrayList<NodeCorpus> nodeCorpuses;
-    private ArrayList<NodePath> pathLabel;
-    
-    private List<List<NodePath>> pathLabel2;    
-    
-    private ArrayList<NodeIdValue> nodeFacets;
-
-    /// pagination
-    private int offset;
-    private int step;
-    private boolean haveNext;
-
-    // total de la branche
-    private int countOfBranch;
-
-    // pour savoir si le concept a des relations vers des corpus
-    private boolean haveCorpus;
-    private boolean searchedForCorpus;
-
-    /// Notes du concept, un type de note par concept et par langue
-    private NodeNote note;
-    private NodeNote scopeNote;
-    private NodeNote changeNote;
-    private NodeNote definition;
-    private NodeNote editorialNote;
-    private NodeNote example;
-    private NodeNote historyNote;
-
-    /// Notes du concept pour l'affichage du multilingue
-    private ArrayList<NodeNote> noteAllLang;
-    private ArrayList<NodeNote> scopeNoteAllLang;
-    private ArrayList<NodeNote> changeNoteAllLang;
-    private ArrayList<NodeNote> definitionAllLang;
-    private ArrayList<NodeNote> editorialNoteAllLang;
-    private ArrayList<NodeNote> exampleAllLang;
-    private ArrayList<NodeNote> historyNoteAllLang;
-
+    private int step, countOfBranch, offset;
     private String mapScripte = "";
-    
-    private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
-    private ArrayList <NodeCustomRelation> nodeCustomRelations;
-    
-    
+    private String idConceptSelected = "";
+    private String idLangSelected = "";
+    private boolean haveNext, haveCorpus, searchedForCorpus, toggleSwitchAltLabelLang, toggleSwitchNotesLang;
+    private NodeConcept nodeConcept;
+    private NodeFullConcept nodeFullConcept;
+    private String selectedLang, creator, contributors;
+    private GpsMode gpsModeSelected;
+    private List<NodeCorpus> nodeCorpuses;
+    private List<NodePath> pathLabel;
+    private List<List<NodePath>> pathLabel2;
+    private List<NodeIdValue> nodeFacets;
+    private List<NodeCustomRelation> nodeCustomRelationReciprocals, nodeCustomRelations;
     private List<ResponsiveOption> responsiveOptions;
+    private NodeNote note, scopeNote, changeNote, definition, editorialNote, example, historyNote;
+    private List<NodeNote> noteAllLang, scopeNoteAllLang, changeNoteAllLang, definitionAllLang, editorialNoteAllLang,
+            exampleAllLang, historyNoteAllLang;
 
-    private boolean toggleSwitchAltLabelLang;
-    private boolean toggleSwitchNotesLang;
-
-    private String creator;
-    private String contributors;
-    @Autowired
-    private CurrentUser currentUser;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        nodeCorpuses = new ArrayList<>();
-        pathLabel = new ArrayList<>();
-        pathLabel2 = new ArrayList<>();
-        note = null;
-        scopeNote = null;
-        changeNote = null;
-        definition = null;
-        editorialNote = null;
-        example = null;
-        historyNote = null;
-        nodeConcept = new NodeConcept();
-        nodeFullConcept = new NodeFullConcept();
-        nodeFacets = new ArrayList<>();
-
-        selectedLang = null;
-        nodeCustomRelationReciprocals = null;
-    }
-
-    /**
-     * Creates a new instance of ConceptBean
-     */
-    public ConceptView() {
-    }
 
     public void init() {
         toggleSwitchAltLabelLang = true;
@@ -212,7 +125,7 @@ public class ConceptView implements Serializable {
         clearNotes();
 
         offset = 0;
-        step = 20;
+        step = 40;
         haveNext = false;
 
         nodeCorpuses = null;
@@ -236,6 +149,7 @@ public class ConceptView implements Serializable {
         example = null;
         historyNote = null;
     }
+
     private void clearNotesAllLang() {    
         noteAllLang = new ArrayList<>();
         scopeNoteAllLang = new ArrayList<>();
@@ -247,34 +161,69 @@ public class ConceptView implements Serializable {
     }
     
     public String getDrapeauImgLocal(String codePays) {
+        var facesContext = FacesContext.getCurrentInstance();
+        var externalContext = facesContext.getExternalContext();
+        var ctxPath = externalContext.getRequestContextPath();
+
         if (StringUtils.isEmpty(codePays)) {
-            return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
+            return ctxPath + "/resources/img/flag/noflag.png";
         }
-        return FacesContext.getCurrentInstance().getExternalContext()
-                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
+
+        String resourcePath = "/resources/img/flag/" + codePays.toLowerCase() + ".png";
+
+        try (InputStream is = facesContext.getExternalContext().getResourceAsStream(resourcePath)) {
+            if (is != null) {
+                return ctxPath + resourcePath;
+            }
+        } catch (Exception ignored) {
+        }
+
+        return ctxPath + "/resources/img/flag/noflag.png";
     }
     
     public String getFlagFromCodeLang(String idLang){
-        String flag = languageHelper.getFlagFromIdLang(idLang);
-        return FacesContext.getCurrentInstance().getExternalContext()
-                .getRequestContextPath() + "/resources/img/flag/" + flag + ".png";        
+        var ctx = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestContextPath();
+
+        var defaultFlag = ctx + "/resources/img/flag/noflag.png";
+
+        if (StringUtils.isEmpty(idLang)) {
+            return defaultFlag;
+        }
+
+        return languageRepository.findByIso6391(idLang)
+                .map(languageIso639 -> {
+                    var codePays = languageIso639.getCodePays();
+                    if (StringUtils.isEmpty(codePays)) {
+                        return defaultFlag;
+                    }
+
+                    String resourcePath = "/resources/img/flag/" + codePays.toLowerCase() + ".png";
+
+                    try (InputStream is = FacesContext.getCurrentInstance()
+                            .getExternalContext()
+                            .getResourceAsStream(resourcePath)) {
+                        if (is != null) {
+                            return ctx + resourcePath;
+                        }
+                    } catch (Exception ignored) {}
+
+                    return defaultFlag;
+                })
+                .orElse(defaultFlag);
     }
 
     /**
      * permet de retourner le label du type de concept en focntion de la langue de l'interface
      *
      * @param conceptType
-     * @param idTheso
+     * @param idThesaurus
      * @return
      */
-    public String getLabelOfConceptType(String conceptType, String idTheso) {
+    public String getLabelOfConceptType(String conceptType, String idThesaurus) {
 
-        String idLang = getIdLangOfInterface();
-        return relationsHelper.getLabelOfTypeConcept(
-                conceptType,
-                idTheso,
-                idLang);
+        return conceptTypeService.getLabelOfTypeConcept(conceptType, idThesaurus, getIdLangOfInterface());
     }
 
     /**
@@ -293,7 +242,8 @@ public class ConceptView implements Serializable {
         if (StringUtils.isEmpty(idLang)) {
             idLang = languageBean.getIdLangue();
         }
-        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step + 1);
+        boolean isPrivate = currentUser.getNodeUser() != null;
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step + 1, isPrivate);
         if(nodeFullConcept == null) return;
 
         logConcept();
@@ -303,8 +253,7 @@ public class ConceptView implements Serializable {
             roleOnThesoBean.initNodePref(idTheso);
         }
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
+        nodeConcept = nodeFullConceptMapper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         searchedForCorpus = false;
@@ -313,7 +262,7 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, interfaceLang);
+            nodeCustomRelations = relationsService.getAllNodeCustomRelation(idConcept, idTheso, idLang, interfaceLang);
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -339,11 +288,8 @@ public class ConceptView implements Serializable {
             if (roleOnThesoBean.getNodePreference().isBreadcrumb())
                 pathOfConcept2(idTheso, idConcept, idLang);
 
-            if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
-                tree.expandTreeToPath(
-                        idConcept,
-                        idTheso,
-                        idLang);
+            if (roleOnThesoBean.getNodePreference().isAutoExpandTree()) {
+                tree.expandTreeToPath(idConcept, idTheso, idLang);
                 if (PrimeFaces.current().isAjaxRequest()) {
                     PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
                     PrimeFaces.current().ajax().update("containerIndex:languageSelect");
@@ -357,7 +303,23 @@ public class ConceptView implements Serializable {
     public void searchCorpus(String idThesaurus) {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(idThesaurus);
+
+        var corpusList = corpusLinkRepository.findAllByIdThesaurusOrderBySortAsc(selectedTheso.getCurrentIdTheso());
+        if (corpusList.isEmpty()) {
+            nodeCorpuses = List.of();
+        } else {
+            nodeCorpuses = corpusList.stream()
+                    .map(element -> NodeCorpus.builder()
+                            .corpusName(element.getCorpusName())
+                            .active(element.isActive())
+                            .omekaS(element.isOmekaS())
+                            .isOnlyUriLink(element.isOnlyUriLink())
+                            .uriLink(element.getUriLink())
+                            .uriCount(element.getUriCount())
+                            .build())
+                    .toList();
+        }
+
         nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {
@@ -407,7 +369,7 @@ public class ConceptView implements Serializable {
 
     public boolean isGpsDisable(CurrentUser currentUser) {
         return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
-                !(roleOnThesoBean.isManagerOnThisTheso() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isSuperAdmin()));
+                !(roleOnThesoBean.isManagerOnThisThesaurus() || roleOnThesoBean.isAdminOnThisThesaurus() || roleOnThesoBean.isSuperAdmin()));
     }
 
     private String formatCoordonnees(List<Gps> listeCoordonnees) {
@@ -438,18 +400,21 @@ public class ConceptView implements Serializable {
         selectedLang = idLang;
         offset = 0;
 
-        nodeFullConcept = conceptHelper.getConcept2(idConcept, idTheso, idLang, offset, step+1);
+        this.idConceptSelected = idConcept;
+        this.idLangSelected = idLang;
+
+        boolean isPrivate = currentUser.getNodeUser() != null;
+        nodeFullConcept = conceptService.getConcept(idConcept, idTheso, idLang, offset, step+1, isPrivate);
         if(nodeFullConcept == null) return;
         logConcept();
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
+        nodeConcept = nodeFullConceptMapper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso, idLang);
         if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(idConcept, idTheso, idLang, getIdLangOfInterface());
+            nodeCustomRelations = relationsService.getAllNodeCustomRelation(idConcept, idTheso, idLang, getIdLangOfInterface());
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
@@ -479,7 +444,12 @@ public class ConceptView implements Serializable {
 
     private void logConcept(){
         String ipAddress = ipAddressService.getClientIpAddress();
-        log.info("Concept: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}", nodeFullConcept.getPrefLabel().getLabel(), nodeFullConcept.getPrefLabel().getId(), selectedTheso.getThesoName(), selectedTheso.getCurrentIdTheso(), ipAddress);
+        log.info("Concept: {}, identifier: {}, Thesaurus: {}, Idt: {}, IP: {}",
+                (nodeFullConcept.getPrefLabel() == null ? "" : nodeFullConcept.getPrefLabel().getLabel()),
+                (nodeFullConcept.getPrefLabel() == null ? "(" + nodeFullConcept.getIdentifier() + ")" : nodeFullConcept.getPrefLabel().getId()),
+                selectedTheso.getThesoName(),
+                selectedTheso.getCurrentIdTheso(),
+                ipAddress);
     }
 
     /**
@@ -525,17 +495,16 @@ public class ConceptView implements Serializable {
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
 
-        List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(idConcept, idTheso);
-        if (nodeFacets == null)
-            nodeFacets = new ArrayList<>();
-        else
-            nodeFacets.clear();
-        for (String facetId : facetIds) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(facetId);
-            nodeIdValue.setValue(facetHelper.getLabelOfFacet(facetId, idTheso, idLang));
-            nodeFacets.add(nodeIdValue);
-        }
+        var facetList = facetService.getFacetsByConceptAndThesaurus(idConcept, idTheso);
+        nodeFacets = facetList.stream()
+                .map(facet -> {
+                    var facetValue = facetService.getFacet(facet.getIdFacet(), idTheso, idLang);
+                    return NodeIdValue.builder()
+                        .id(facet.getIdFacet())
+                        .value(facetValue != null ? facetValue.getLexicalValue() : "")
+                        .build();
+                })
+                .toList();
     }
 
     public void setOffset() {
@@ -552,12 +521,11 @@ public class ConceptView implements Serializable {
     }
 
     public void countTheTotalOfBranch(String idThesaurus) {
-        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(idThesaurus,
-                nodeFullConcept.getIdentifier());
+        List<String> listIdsOfBranch = conceptService.getIdsOfBranch2(idThesaurus, nodeFullConcept.getIdentifier());
         this.countOfBranch = listIdsOfBranch.size();
     }
 
-    public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
+    public void setNodeCustomRelationWithReciprocal(List<NodeCustomRelation> nodeCustomRelations) {
         nodeCustomRelationReciprocals = new ArrayList<>();
         for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
             if (nodeCustomRelation.isReciprocal())
@@ -567,14 +535,17 @@ public class ConceptView implements Serializable {
             nodeCustomRelationReciprocals = null;
     }
 
-    public void getNextNT(String idTheso, String idConcept, String idLang) {
+    public void getNextNT() {
+
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            List<ConceptRelation> conceptRelations = daoResourceHelper.getListNT(
-                    idTheso,
-                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
-                    idLang, offset, step + 1);
-            if (conceptRelations != null && !conceptRelations.isEmpty()) {
-                nodeFullConcept.getNarrowers().addAll(conceptRelations);
+            var conceptRelations = resourceService.getListNT(selectedThesaurus.getSelectedIdTheso(),
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(), selectedLang, offset, step + 1);
+            if (CollectionUtils.isNotEmpty(conceptRelations)) {
+                for (ConceptRelation conceptRelation : conceptRelations) {
+                    if (!nodeFullConcept.getNarrowers().contains(conceptRelation)) {
+                        nodeFullConcept.getNarrowers().add(conceptRelation);
+                    }
+                }
                 setOffset();
                 return;
             }
@@ -590,9 +561,9 @@ public class ConceptView implements Serializable {
      * #MR
      */
     private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
-        List<String> graphPaths = pathHelper.getGraphOfConcept(idConcept, idTheso);
-        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);
-        pathLabel2 = pathHelper.getPathWithLabel2(paths, idTheso, idLang);
+        List<String> graphPaths = pathService.getGraphOfConcept(idConcept, idTheso);
+        List<List<String>> paths = pathService.getPathFromGraph(graphPaths);
+        pathLabel2 = pathService.getPathWithLabel2(paths, idTheso, idLang);
     }    
     
     private void setRoles() {
@@ -912,7 +883,7 @@ public class ConceptView implements Serializable {
         gps.setIdConcept(nodeFullConcept.getIdentifier());
         gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
-        gpsHelper.saveNewGps(gps);
+        gpsService.saveNewGps(gps);
         mapScripte = createMap(idThesaurus);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
@@ -925,16 +896,16 @@ public class ConceptView implements Serializable {
 
         if (StringUtils.isEmpty(gpsList)) {
             nodeFullConcept.setGps(null);
-            gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
+            gpsService.deleteGpsByConceptIdAndThesaurusId(nodeFullConcept.getIdentifier(), idThesaurus);
         } else {
             List<Gps> gpsListTmps = readGps(gpsList, idThesaurus, nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
                 nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
                 gpsModeSelected = getGpsMode(gpsListTmps);
-                gpsHelper.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
+                gpsService.deleteGpsByConceptIdAndThesaurusId(nodeFullConcept.getIdentifier(), idThesaurus);
                 for (Gps gps : gpsListTmps) {
-                    gpsHelper.saveNewGps(gps);
+                    gpsService.saveNewGps(gps);
                 }
             } else {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");
@@ -1002,7 +973,7 @@ public class ConceptView implements Serializable {
     }
 
     public String margeTranslateNotes(){
-        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUse_deepl_translation())
+        if(currentUser.getNodeUser() != null && currentUser.isHasRoleAsManager() && roleOnThesoBean.getNodePreference().isUseDeeplTranslation())
             return "col-xl-2 col-lg-2 col-md-2 col-sm-2";
         else
             return "col-xl-1 col-lg-1 col-md-1 col-sm-1";

@@ -1,7 +1,5 @@
 package fr.cnrs.opentheso.services.exports.csv;
 
-
-import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
@@ -23,6 +21,7 @@ import fr.cnrs.opentheso.models.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.models.skosapi.SKOSReplaces;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.services.ConceptService;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +31,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -46,7 +46,7 @@ public class CsvWriteHelper {
     private final String delim_multi_datas = "##";
 
     @Autowired
-    private ConceptHelper conceptHelper;
+    private ConceptService conceptService;
 
     /**
      * Export en CSV avec tous les champs
@@ -138,7 +138,8 @@ public class CsvWriteHelper {
                 
                 // pour les Facettes qui appartiennent au concept 
                 header.add("iso-thes:superOrdinate");            
-                
+                header.add("superOrdinateId");
+
                 // pour signaler que le concept est déprécié
                 header.add("owl:deprecated");
                 // pour signaler que le concept est remplacé par un autre concept
@@ -284,9 +285,17 @@ public class CsvWriteHelper {
         //narrowerId
         record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.NARROWER));
         //broader
-        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER));
-        //broaderId 
-        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER));
+        var broader = getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER);
+        if (StringUtils.isEmpty(broader)) {
+            broader = getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.TOP_CONCEPT_OF);
+        }
+        record.add(broader);
+        //broaderId
+        var broaderId = getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER);
+        if (StringUtils.isEmpty(broaderId)) {
+            broaderId = getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.TOP_CONCEPT_OF);
+        }
+        record.add(broaderId);
         //related
         record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.RELATED));
         //relatedId 
@@ -324,8 +333,10 @@ public class CsvWriteHelper {
         record.add(getSubGroup(skosResource.getRelationsList()));        
         
         // iso-thes:superOrdinate pour référencer les Facettes du Concept
-        record.add(getFacettesOfConcept(skosResource.getRelationsList()));           
-        
+        record.add(getFacettesOfConceptParent(skosResource.getRelationsList()));
+
+        record.add(getFacettesOfConceptParentId(skosResource.getRelationsList()));
+
         // owl:deprecated pour les concepts dépréciés
         if(skosResource.getStatus() == SKOSProperty.DEPRECATED)
             record.add("true");
@@ -395,13 +406,19 @@ public class CsvWriteHelper {
                 .collect(Collectors.joining(delim_multi_datas));
     }                
     
-    private String getFacettesOfConcept(ArrayList<SKOSRelation> sKOSRelations) {
+    private String getFacettesOfConceptParent(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
                 .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUPER_ORDINATE))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
-    }    
-    
+    }
+    private String getFacettesOfConceptParentId(ArrayList<SKOSRelation> sKOSRelations) {
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUPER_ORDINATE))
+                .map(sKOSRelation -> sKOSRelation.getLocalIdentifier())
+                .collect(Collectors.joining(delim_multi_datas));
+    }
+
     private String getSubGroup(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
                 .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUBGROUP))
@@ -525,7 +542,6 @@ public class CsvWriteHelper {
     /**
      * Export des données limitées en CSV
      *
-     * @param ds
      * @param idTheso
      * @param idLang
      * @param idGroups
@@ -548,16 +564,16 @@ public class CsvWriteHelper {
                 header.add("alignment");
                 csvFilePrinter.printRecord(header);
 
-                ArrayList<String> idConcepts = null;
+                List<String> idConcepts = null;
                 if (idGroups == null || idGroups.isEmpty()) {
-                    idConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+                    idConcepts = conceptService.getAllIdConceptOfThesaurus(idTheso);
                 } else {
                     if (idConcepts == null) {
                         idConcepts = new ArrayList<>();
                     }
-                    ArrayList<String> idConceptsTemp;
+
                     for (String idGroup : idGroups) {
-                        idConceptsTemp = conceptHelper.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
+                        var idConceptsTemp = conceptService.getAllIdConceptOfThesaurusByGroup(idTheso, idGroup);
                         if (idConceptsTemp != null) {
                             idConcepts.addAll(idConceptsTemp);
                         }
@@ -576,7 +592,7 @@ public class CsvWriteHelper {
                 boolean first = true;
                 for (String idConcept : idConcepts) {
                     try {
-                        nodeConcept = conceptHelper.getConcept(idConcept, idTheso, idLang, -1, -1);
+                        nodeConcept = conceptService.getConceptOldVersion(idConcept, idTheso, idLang, -1, -1);
                         record.add(nodeConcept.getConcept().getIdConcept());
                         record.add(nodeConcept.getConcept().getIdArk());
                         record.add(nodeConcept.getConcept().getIdHandle());
@@ -776,7 +792,7 @@ public class CsvWriteHelper {
      * @param idLang
      * @return
      */
-    public byte[] writeCsvFromNodeCompareTheso(ArrayList<NodeCompareTheso> nodeCompareThesos, String idLang) {
+    public byte[] writeCsvFromNodeCompareTheso(List<NodeCompareTheso> nodeCompareThesos, String idLang) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {
@@ -837,10 +853,7 @@ public class CsvWriteHelper {
                 
                 csvFilePrinter.printRecord(header);
 
-                ArrayList<NodeDeprecated> nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(idTheso, idLang);
-                if (nodeDeprecateds == null) {
-                    return null;
-                }
+                var nodeDeprecateds = conceptService.getAllDeprecatedConceptOfThesaurus(idTheso, idLang);
 
                 /// écritures des données
                 ArrayList<Object> record = new ArrayList<>();

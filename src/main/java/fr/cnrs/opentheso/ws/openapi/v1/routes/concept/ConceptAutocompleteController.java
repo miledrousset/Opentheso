@@ -3,9 +3,8 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
-
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.SearchService;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,8 +13,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,29 +25,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/openapi/v1/concept/{idTheso}/autocomplete")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptAutocompleteController {
 
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private RestRDFHelper restRDFHelper;
-
-    @Autowired
-    private SearchHelper searchHelper;
+    private final RestRDFHelper restRDFHelper;
+    private final GroupService groupService;
+    private final SearchService searchService;
 
 
     @GetMapping(value = "/{input}", produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "Recherche les termes proches de du terme entré",
-            description = "Ancienne version : `/api/autocomplete/{input}?theso=<idTheso>` ou `/api/autocomplete?value=<input>&theso=<idTheso>`<br/>Permet de  récupérer les termes proches du terme entré pour ainsi pouvoir effectuer de l'auto-complétion avec possibilité de filtrer par langue et groupe",
+    @Operation(summary = "Recherche les termes proches du terme en entré",
+            description = "Ancienne version : `/api/autocomplete?input=<input>&theso=<idTheso>` ou `/api/autocomplete?value=<input>&theso=<idTheso>`<br/>Permet de  récupérer les termes proches du terme entré pour ainsi pouvoir effectuer de l'auto-complétion avec possibilité de filtrer par langue et groupe",
             tags = {"Concept"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Fichier contenant les termes proches de l'entrée", content = { @Content(mediaType = APPLICATION_JSON_UTF_8) }),
@@ -64,6 +62,7 @@ public class ConceptAutocompleteController {
 
         var groups = groupsString != null ? groupsString.split(",") : null;
         var full = fullString != null && fullString.equalsIgnoreCase("true");
+        input = URLDecoder.decode(input, StandardCharsets.UTF_8);
         var datas = restRDFHelper.findAutocompleteConcepts(idTheso, lang, groups, input, full);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
@@ -74,7 +73,7 @@ public class ConceptAutocompleteController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-        var concepts = searchHelper.searchConceptWSV2(input, lang, idGroup, idTheso);
+        var concepts = searchService.searchConceptWSV2(input, lang, idGroup, idTheso);
         var jsonString = new ObjectMapper().writeValueAsString(concepts);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
     }
@@ -83,7 +82,7 @@ public class ConceptAutocompleteController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                                @PathVariable("idLang") String idLang) throws JsonProcessingException {
 
-        var groups = groupHelper.getListRootConceptGroup(idThesaurus, idLang, true);
+        var groups = groupService.getListRootConceptGroup(idThesaurus, idLang, true, false);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
     }
 }

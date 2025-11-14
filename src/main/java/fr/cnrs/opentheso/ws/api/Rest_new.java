@@ -1,9 +1,17 @@
 package fr.cnrs.opentheso.ws.api;
 
-import java.sql.Date;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
+
 import java.util.List;
 import java.util.Map;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,19 +21,10 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,28 +49,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 @Tag(name = "Ancienne API", description = "Anciennes requêtes API REST")
 public class Rest_new {
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private D3jsHelper d3jsHelper;
-    
-    @Autowired
-    private RestRDFHelper restRDFHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
+    private final TermRepository termRepository;
+    private final D3jsHelper d3jsHelper;
+    private final RestRDFHelper restRDFHelper;
+    private final GroupService groupService;
+    private final ThesaurusService thesaurusService;
+    private final ConceptService conceptService;
 
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
@@ -243,9 +232,13 @@ public class Rest_new {
     @GetMapping(value = "/{idTheso}.{idConcept}", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
     public ResponseEntity<Object> getJsonFromIdConcept__(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
 
+        var data = restRDFHelper.exportConceptFromId(idConcept, idTheso, CustomMediaType.APPLICATION_RDF_UTF_8);
+        if (data == null) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
+        }
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
-                .body(restRDFHelper.exportConceptFromId(idConcept, idTheso, CustomMediaType.APPLICATION_RDF_UTF_8));
+                .body(data);
     }
 
     //Produire du Json
@@ -445,7 +438,7 @@ public class Rest_new {
         String[] groups = new String[arkGroups.length];
         int i=0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(arkGroup, idTheso);
+            groups[i] = groupService.getIdGroupFromArkId(arkGroup, idTheso);
             i++;
         }
         return groups;
@@ -579,7 +572,7 @@ public class Rest_new {
             if (StringUtils.isEmpty(idark)) {
                 return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             } else {
-                idConcept = conceptHelper.getIdConceptFromArkId(idark, idTheso);
+                idConcept = conceptService.getIdConceptFromArkId(idark, idTheso);
                 if(idConcept == null)
                     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             }
@@ -713,7 +706,7 @@ public class Rest_new {
     }
 
     private String getlistAllPublicTheso__() {
-        List<String> listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(false);
+        List<String> listPublicTheso = thesaurusService.getAllIdOfThesaurus(false);
 
         NodeThesaurus nodeThesaurus;
 
@@ -724,7 +717,7 @@ public class Rest_new {
             job.add("idTheso", idTheso);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+            nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());
@@ -747,9 +740,9 @@ public class Rest_new {
 
     private String getlistAllGroupOfTheso__(String idTheso) {
 
-        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(idTheso);
+        List<String> listIdGroupOfTheso = groupService.getGroupsByThesaurus(idTheso);
 
-        ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+        List<NodeGroupTraductions> nodeGroupTraductions;
 
         String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
@@ -758,7 +751,7 @@ public class Rest_new {
             job.add("idGroup", idGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idGroup, idTheso);
+            nodeGroupTraductions = groupService.getAllGroupTraduction(idGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());
@@ -781,9 +774,9 @@ public class Rest_new {
 
     private String getlistAllTopConceptOfTheso__(String idTheso) {
 
-        List<String> listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(idTheso);
+        List<String> listIdTopConceptOfTheso = conceptService.getAllTopConceptIds(idTheso);
 
-        ArrayList<NodeTermTraduction> nodeTermTraductions;
+        List<NodeTermTraduction> nodeTermTraductions;
 
         String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
@@ -792,7 +785,7 @@ public class Rest_new {
             job.add("idConcept", idConcept);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeTermTraductions = termHelper.getAllTraductionsOfConcept(idConcept, idTheso);
+            nodeTermTraductions = termRepository.findAllTraductionsOfConcept(idConcept, idTheso);
             for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeTermTraduction.getLang());
@@ -827,7 +820,7 @@ public class Rest_new {
 
     private String getlistLangOfTheso__(String idTheso) {
 
-        var listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(idTheso);
+        var listLangOfTheso = thesaurusService.getAllUsedLanguagesOfThesaurus(idTheso);
         var jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();
@@ -848,8 +841,8 @@ public class Rest_new {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getInfoLastUpdate__(idTheso));
     }
 
-    private String getInfoLastUpdate__(String idTheso) {
-        Date date = conceptHelper.getLastModification(idTheso);
+    private String getInfoLastUpdate__(String idThesaurus) {
+        var date = conceptService.getLastModification(idThesaurus);
         if (date == null) {
             return messageEmptyJson();
         }

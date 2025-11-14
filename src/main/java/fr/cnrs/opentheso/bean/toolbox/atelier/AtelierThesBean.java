@@ -1,22 +1,20 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
-import java.io.ByteArrayInputStream;
-import jakarta.faces.view.ViewScoped;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bean.fusion.FusionService;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
+import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import jakarta.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 
-import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.fusion.FusionService;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -26,53 +24,25 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 
+@Getter
+@Setter
+@SessionScoped
+@RequiredArgsConstructor
 @Named("atelierThesBean")
-@ViewScoped
 public class AtelierThesBean implements Serializable {
 
-    @Autowired @Lazy
-    private AtelierThesService atelierThesService;
+    private final AtelierThesService atelierThesService;
+    private final FusionService fusionService;
 
-    @Autowired @Lazy
-    private FusionService fusionService;
-
+    private NodeIdValue thesaurusSelected;
     private List<String> titles;
     private List<List<String>> values = new ArrayList<>();
-    private NodeIdValue thesoSelected;
-    private ArrayList<NodeIdValue> nodeListTheso;
-    private ArrayList<ConceptResultNode> result;
-    private int spanTable;
-    private int choiceDelimiter = 0;
+    private List<NodeIdValue> nodeListThesaurus;
+    private List<ConceptResultNode> result;
+    private int spanTable, choiceDelimiter = 0;
     private char delimiterCsv = ',';
-    private String selectedColumn;
-    private String actionSelected;
+    private String selectedColumn, actionSelected;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-    public void clear(){
-
-        if(titles!= null){
-            titles.clear();
-            titles = null;
-        }
-        if(values!= null){
-            values.clear();
-            values = null;
-        }
-        if(nodeListTheso!= null){
-            nodeListTheso.clear();
-            nodeListTheso = null;
-        }
-        if(result!= null){
-            result.clear();
-            result = null;
-        }
-        thesoSelected = null;
-        selectedColumn = null;
-        actionSelected = null;
-    }
 
     @PostConstruct
     public void init() {
@@ -81,7 +51,7 @@ public class AtelierThesBean implements Serializable {
         fusionService.setConceptsExists(new ArrayList<>());
         fusionService.setConceptsModifies(new ArrayList<>());
 
-        thesoSelected = null;
+        thesaurusSelected = null;
         actionSelected = null;
         fusionService.setFusionBtnEnable(false);
         fusionService.setFusionDone(false);
@@ -92,7 +62,7 @@ public class AtelierThesBean implements Serializable {
         titles = new ArrayList<>();
         values = new ArrayList<>();
         result = new ArrayList<>();
-        nodeListTheso = atelierThesService.searchAllThesaurus();
+        nodeListThesaurus = atelierThesService.searchAllThesaurus();
     }
 
     public void clearAll() {
@@ -108,7 +78,7 @@ public class AtelierThesBean implements Serializable {
             result = new ArrayList<>();
         else
             result.clear();
-        nodeListTheso = atelierThesService.searchAllThesaurus();
+        nodeListThesaurus = atelierThesService.searchAllThesaurus();
     }
 
     public void actionChoice() {
@@ -121,14 +91,15 @@ public class AtelierThesBean implements Serializable {
     }
 
     public void fusionner() {
-        fusionService.lancerFussion(thesoSelected);
+        fusionService.lancerFussion(thesaurusSelected);
     }
 
     public void comparer() {
+        
         int position = titles.indexOf(selectedColumn);
-        result = atelierThesService.comparer(values, position, thesoSelected);
+        result = atelierThesService.comparer(values, position, thesaurusSelected);
 
-        showMessage(FacesMessage.SEVERITY_INFO, result.size() + " résultat(s) trouvées !");
+        MessageUtils.showInformationMessage(result.size() + " résultat(s) trouvées !");
 
         PrimeFaces.current().executeScript("PF('bui').hide();");
     }
@@ -142,9 +113,9 @@ public class AtelierThesBean implements Serializable {
                 values.add(temp.get(i));
             }
             spanTable = 12 / titles.size();
-            showMessage(FacesMessage.SEVERITY_INFO, values.size() + " donnée(s) trouvées !");
+            MessageUtils.showInformationMessage(values.size() + " donnée(s) trouvées !");
         } else {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune donnée trouvées !");
+            MessageUtils.showErrorMessage("Aucune donnée trouvées !");
         }
 
         PrimeFaces.current().executeScript("PF('waitDialog').hide();");
@@ -163,60 +134,16 @@ public class AtelierThesBean implements Serializable {
 
     }
 
-    public List<List<String>> getValues() {
-        return values;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListTheso() {
-        return nodeListTheso;
-    }
-
-    public void setNodeListTheso(ArrayList<NodeIdValue> nodeListTheso) {
-        this.nodeListTheso = nodeListTheso;
-    }
-
-    public NodeIdValue getThesoSelected() {
-        return thesoSelected;
-    }
-
-    public void setThesoSelected(NodeIdValue thesoSelected) {
-        this.thesoSelected = thesoSelected;
-    }
-
-    public ArrayList<ConceptResultNode> getResult() {
-        return result;
-    }
-
-    public List<String> getTitles() {
-        return titles;
-    }
-
-    public void setTitles(List<String> titles) {
-        this.titles = titles;
-    }
-
-    public int getSpanTable() {
-        return spanTable;
-    }
-
-    public String getSelectedColumn() {
-        return selectedColumn;
-    }
-
-    public void setSelectedColumn(String selectedColumn) {
-        this.selectedColumn = selectedColumn;
-    }
-
     public String onFlowProcess(FlowEvent event) {
         if ("actions".equals(event.getNewStep())){
             return event.getNewStep();
         }
         if ("actions".equals(event.getOldStep())) {
             if (StringUtils.isEmpty(actionSelected)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
+                MessageUtils.showErrorMessage("Vous devez selectionnez une action !");
                 return event.getOldStep();
             } else if ("opt2".equals(actionSelected)) {
-                showMessage(FacesMessage.SEVERITY_INFO, "Cette action n'est pas disponible pour le moment ..");
+                MessageUtils.showInformationMessage("Cette action n'est pas disponible pour le moment ..");
                 return event.getOldStep();
             } else {
                 return event.getNewStep();
@@ -226,14 +153,14 @@ public class AtelierThesBean implements Serializable {
                 if ("actions".equals(event.getNewStep())) {
                     return event.getNewStep();
                 } else if (CollectionUtils.isEmpty(values)) {
-                    showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez ajouter des données d'entrées !");
+                    MessageUtils.showErrorMessage("Vous devez ajouter des données d'entrées !");
                     return event.getOldStep();
                 } else {
                     return event.getNewStep();
                 }
             } else {
                 if (!fusionService.isLoadDone()) {
-                    showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez importer un thesaurus !");
+                    MessageUtils.showErrorMessage("Vous devez importer un thesaurus !");
                     return event.getOldStep();
                 }
                 return event.getNewStep();
@@ -241,8 +168,8 @@ public class AtelierThesBean implements Serializable {
         } else if ("thesaurus".equals(event.getOldStep())) {
             if ("entre".equals(event.getNewStep())) {
                 return event.getNewStep();
-            } else if (thesoSelected == null) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionner un thesaurus !");
+            } else if (thesaurusSelected == null) {
+                MessageUtils.showErrorMessage("Vous devez selectionner un thesaurus !");
                 return event.getOldStep();
             } else {
                 return event.getNewStep();
@@ -252,33 +179,4 @@ public class AtelierThesBean implements Serializable {
             return event.getNewStep();
         }
     }
-
-    public int getChoiceDelimiter() {
-        return choiceDelimiter;
-    }
-
-    public void setChoiceDelimiter(int choiceDelimiter) {
-        this.choiceDelimiter = choiceDelimiter;
-    }
-
-    private void showMessage(FacesMessage.Severity messageType, String messageValue) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-    }
-
-    public String getActionSelected() {
-        return actionSelected;
-    }
-
-    public boolean isRubriqueSelected(String nomAction) {
-        return nomAction.equals(actionSelected);
-    }
-
-    public void setActionSelected(String actionSelected) {
-        this.actionSelected = actionSelected;
-    }
-
-
-
 }

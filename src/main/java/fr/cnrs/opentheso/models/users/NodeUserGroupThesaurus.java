@@ -1,9 +1,15 @@
 package fr.cnrs.opentheso.models.users;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeUserGroupThesaurus {
 
     private String idThesaurus;
@@ -11,4 +17,5 @@ public class NodeUserGroupThesaurus {
     private int idGroup;
     private String groupName;
     private boolean privateTheso;
+    private Date created;
 }

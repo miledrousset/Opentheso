@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.client.alignement;
 
 import fr.cnrs.opentheso.client.CurlHelper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -11,6 +13,11 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import java.util.ArrayList;
@@ -24,15 +31,11 @@ import fr.cnrs.opentheso.models.alignment.SelectedResource;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import lombok.Data;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
-import javax.net.ssl.HttpsURLConnection;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 
@@ -62,36 +65,75 @@ public class WikidataHelper {
         }
 
         ArrayList<NodeAlignment> listeAlign = null;
-        
+
         try {
-            lexicalValue = URLEncoder.encode(lexicalValue, "UTF-8");
-            lexicalValue = lexicalValue.replaceAll(" ", "%20");
-            query = query.replaceAll("##value##", lexicalValue);
-            query = query.replaceAll("##lang##", lang);            
-            URL url = new URL(query);
+            // Encodage du terme
+            String encodedValue = URLEncoder.encode(lexicalValue, StandardCharsets.UTF_8);
 
-            var cons = (HttpsURLConnection) url.openConnection();
-            cons.setRequestMethod("GET");
-            cons.setRequestProperty("Accept", "application/json");
+            // Remplacement dans la query
+            String finalQuery = query
+                    .replace("##value##", encodedValue)
+                    .replace("##lang##", lang);
 
-            if (cons.getResponseCode() != 200){
-                if (cons.getResponseCode() != 202) {
-                    return null;
-                }
+            // Création du client
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Requête GET
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(finalQuery))
+                    .header("Accept", "application/json")
+                    .header("User-Agent", "Opentheso/1.0") // important !
+                    .GET()
+                    .build();
+
+            // Envoi + récupération de la réponse
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200 || response.statusCode() == 202) {
+                String json = response.body();
+                listeAlign = getValuesFromJson(json, idC, idTheso, source);
+            } else {
+                System.err.println("Erreur HTTP : " + response.statusCode());
+                return null;
             }
 
-            var br = new BufferedReader(new InputStreamReader((cons.getInputStream())));
-            String output;
-            String xmlRecord = "";
-            while ((output = br.readLine()) != null) {
-                xmlRecord += output;
-            }
-            cons.disconnect();
-            br.close();
-            listeAlign = getValuesFromJson(xmlRecord, idC, idTheso, source);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return listeAlign;        
+        return listeAlign;
+
+
+//        try {
+//            lexicalValue = URLEncoder.encode(lexicalValue, "UTF-8");
+//            lexicalValue = lexicalValue.replaceAll(" ", "%20");
+//            query = query.replaceAll("##value##", lexicalValue);
+//            query = query.replaceAll("##lang##", lang);
+//            query = query + "&origin=*";
+//            URL url = new URL(query);
+//
+//            var cons = (HttpsURLConnection) url.openConnection();
+//            cons.setRequestMethod("GET");
+//            cons.setRequestProperty("Accept", "application/json");
+//
+//            if (cons.getResponseCode() != 200){
+//                if (cons.getResponseCode() != 202) {
+//                    return null;
+//                }
+//            }
+//
+//            var br = new BufferedReader(new InputStreamReader((cons.getInputStream())));
+//            String output;
+//            String xmlRecord = "";
+//            while ((output = br.readLine()) != null) {
+//                xmlRecord += output;
+//            }
+//            cons.disconnect();
+//            br.close();
+//            listeAlign = getValuesFromJson(xmlRecord, idC, idTheso, source);
+//        } catch (Exception e) {}
+//
+//        return listeAlign;
      }
     
     private ArrayList<NodeAlignment> getValuesFromJson(String jsonValue, String idConcept, String idTheso, String source){
@@ -271,9 +313,11 @@ public class WikidataHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(String jsonDatas, String entity, List<String> languages) {
-        ArrayList<SelectedResource> traductions = new ArrayList<>();
-
+    private List<SelectedResource> getTraductions(String jsonDatas, String entity, List<String> languages) {
+        List<SelectedResource> traductions = new ArrayList<>();
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return traductions;
+        }
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
         JsonObject jsonObject1;
@@ -313,7 +357,12 @@ public class WikidataHelper {
      */
     private List<SelectedResource> getDescriptions(String jsonDatas, String entity, List<String> languages) {
 
-        ArrayList<SelectedResource> descriptions = new ArrayList<>();
+        List<SelectedResource> descriptions = new ArrayList<>();
+
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return descriptions;
+        }
+
         JsonObject jsonObject = new JsonHelper().getJsonObject(jsonDatas);
 
         JsonObject jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("descriptions");
@@ -339,12 +388,16 @@ public class WikidataHelper {
      * @param entity
      * @return
      */
-    private ArrayList<SelectedResource> getImages(String jsonDatas, String entity) {
+    private List<SelectedResource> getImages(String jsonDatas, String entity) {
         // pour construire l'URL de Wikimedia, il faut ajouter 
         // http://commons.wikimedia.org/wiki/Special:FilePath/
         // puis le nom de l'image
 
         String fixedUrl = "https://commons.wikimedia.org/wiki/Special:FilePath/";
+
+        if (StringUtils.isEmpty(jsonDatas)) {
+            return Collections.emptyList();
+        }
 
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);

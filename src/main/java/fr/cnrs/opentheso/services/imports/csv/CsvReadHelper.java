@@ -8,9 +8,12 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.models.notes.NodeNote;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -308,7 +311,7 @@ public class CsvReadHelper {
      * @param in
      * @return
      */
-    public boolean readFileAlignmentToDelete(Reader in) {
+/*    public boolean readFileAlignmentToDelete(Reader in) {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -348,6 +351,87 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }*/
+
+    public boolean readFileAlignmentToDelete(Reader in) {
+        conceptObjects = new ArrayList<>();
+
+        try {
+            // Nettoyer le flux au cas où il contient un BOM
+            BufferedReader br = new BufferedReader(in);
+            br.mark(1);
+            if (br.read() != '\uFEFF') {
+                br.reset(); // pas de BOM, on revient au début
+            }
+
+            // Construction du format CSV
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader() // utilise la première ligne comme header
+                    .setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true)
+                    .setIgnoreHeaderCase(true)
+                    .setTrim(true)
+                    .build();
+
+            CSVParser csvParser = csvFormat.parse(br);
+
+            for (CSVRecord record : csvParser) {
+                ConceptObject conceptObject = new ConceptObject();
+
+                // Lecture du localId (gestion de la casse et BOM)
+                String localId = getSafe(record, "localId");
+                if (localId == null || localId.isEmpty()) {
+                    localId = getSafe(record, "localid"); // fallback
+                }
+
+                if (localId == null || localId.isEmpty()) {
+                    continue;
+                }
+                conceptObject.setLocalId(localId.trim());
+
+                // Lecture de l'URI à supprimer
+                String uri = getSafe(record, "Uri");
+                if (uri == null || uri.isEmpty()) {
+                    uri = getSafe(record, "uri");
+                }
+
+                if (uri != null && !uri.isEmpty()) {
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+                    nodeIdValue.setId("");
+                    nodeIdValue.setValue(uri.trim());
+                    conceptObject.alignments.add(nodeIdValue);
+                }
+
+                conceptObjects.add(conceptObject);
+            }
+
+            return true;
+
+        } catch (IOException ex) {
+            log.error(CsvReadHelper.class.getName() +  ex.getMessage());
+            message = "Erreur lors de la lecture du fichier CSV : " + ex.getMessage();
+            return false;
+        }
+    }
+    /**
+     * Récupère la valeur d'une colonne de façon sécurisée,
+     * en gérant les BOM éventuels dans le nom de colonne.
+     */
+    private String getSafe(CSVRecord record, String header) {
+        try {
+            // Essai direct
+            if (record.isMapped(header)) {
+                return record.get(header);
+            }
+            // Essai avec un éventuel BOM
+            String withBom = "\uFEFF" + header;
+            if (record.isMapped(withBom)) {
+                return record.get(withBom);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
     }
 
     /**
@@ -692,7 +776,7 @@ public class CsvReadHelper {
      * @param usedLangs
      * @return
      */
-    public boolean readFileReplaceValueByNewValue(Reader in, ArrayList<String> usedLangs) {
+    public boolean readFileReplaceValueByNewValue(Reader in, List<String> usedLangs) {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -765,12 +849,8 @@ public class CsvReadHelper {
                 return null;
             }
             value = record.get("skos:preflabel@"+ idLang);
-            if(value != null && !value.isEmpty()) {
-                nodeReplaceValueByValue.setOldValue(value);
-                return nodeReplaceValueByValue;
-            } else {
-                return null;
-            }
+            nodeReplaceValueByValue.setOldValue(value);
+            return nodeReplaceValueByValue;
         } catch (Exception e) {
             //System.err.println("");
         }      
@@ -791,9 +871,7 @@ public class CsvReadHelper {
             }
             try {
                 value = record.get("skos:altlabel@"+ idLang);
-                if(value != null && !value.isEmpty()) {
-                    nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                nodeReplaceValueByValue.setOldValue(value);
             } catch (Exception e) {
             }
             return nodeReplaceValueByValue;
@@ -817,9 +895,7 @@ public class CsvReadHelper {
             }
             try { 
                 value = record.get("skos:definition@"+ idLang);
-                if(value != null && !value.isEmpty()) {
-                    nodeReplaceValueByValue.setOldValue(value);
-                }                 
+                nodeReplaceValueByValue.setOldValue(value);
             } catch (Exception e) {
             }                
             return nodeReplaceValueByValue;
@@ -1246,13 +1322,24 @@ public class CsvReadHelper {
      */
     private ConceptObject getSuperOrdinate(ConceptObject conceptObject, CSVRecord record) {
         String value;
-        try {
-            value = record.get("iso-thes:superOrdinate");
-            if (StringUtils.isNotEmpty(value)) {
-                conceptObject.superOrdinate = getId(value.trim());
+        if (record.isMapped("superOrdinateId")) {
+            try {
+                value = record.get("superOrdinateId");
+                if (StringUtils.isNotEmpty(value)) {
+                    conceptObject.superOrdinate = value.trim();
+                }
+            } catch (Exception e) {
+                //System.err.println("");
             }
-        } catch (Exception e) {
-            //System.err.println("");
+        } else {
+            try {
+                value = record.get("iso-thes:superOrdinate");
+                if (StringUtils.isNotEmpty(value)) {
+                    conceptObject.superOrdinate = getId(value.trim());
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }
         }
 
         return conceptObject;

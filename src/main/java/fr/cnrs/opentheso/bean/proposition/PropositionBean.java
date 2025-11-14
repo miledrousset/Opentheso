@@ -1,30 +1,27 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.models.propositions.Proposition;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.services.PreferenceService;
 import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.bean.search.SearchBean;
+import fr.cnrs.opentheso.services.ThesaurusService;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,55 +29,36 @@ import org.primefaces.PrimeFaces;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
-    
+    private final IndexSetting indexSetting;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final SelectedTheso selectedTheso;
+    private final RightBodySetting rightBodySetting;
+    private final PropositionService propositionService;
+    private final LanguageBean languageBean;
+    private final PreferenceService preferenceService;
+    private final ThesaurusService thesaurusService;
 
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
-    private RightBodySetting rightBodySetting;
-
-    @Autowired @Lazy
-    private PropositionService propositionService;
-
-    @Autowired @Lazy
-    private SearchBean searchBean;
-
-    @Autowired @Lazy
-    private LanguageBean languageBean;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-
-    private boolean isRubriqueVisible, isNewProposition, isConsultation;
     private Proposition proposition;
-    private String nom, email, commentaire, commentaireAdmin;
-    private String message;
-    private String actionNom;
+    private PropositionDao propositionSelected;
+    private List<PropositionDao> propositions;
+    private boolean isRubriqueVisible, isNewProposition, isConsultation, prefTermeAccepted, varianteAccepted,
+            traductionAccepted, noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
+            editorialNotesAccepted, examplesAccepted, historyAccepted;
+    private String nom, email, commentaire, commentaireAdmin, message, actionNom;
     private String filter2 = "3";
     private String showAllPropositions = "1";
     private int nbrNewPropositions;
 
-    private PropositionDao propositionSelected;
-    private List<PropositionDao> propositions;
-    private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
-            noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
-            editorialNotesAccepted, examplesAccepted, historyAccepted;
 
     public void init() {
         nom = "";
@@ -96,7 +74,7 @@ public class PropositionBean implements Serializable {
 
         this.propositionSelected = propositionDao;
 
-        NodePreference preference = preferencesHelper.getThesaurusPreferences(propositionDao.getIdTheso());
+        var preference = preferenceService.getThesaurusPreferences(propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("rightbody.proposal.avertissement"));
             return;
@@ -105,7 +83,7 @@ public class PropositionBean implements Serializable {
         roleOnThesoBean.initNodePref(propositionDao.getIdTheso());
         selectedTheso.setSelectedIdTheso(propositionDao.getIdTheso());
         selectedTheso.setSelectedLang(propositionDao.getLang());
-        selectedTheso.setSelectedThesoForSearch();
+        selectedTheso.setSelectedThesaurusForSearch();
         rightBodySetting.setIndex("3");
         indexSetting.setIsSelectedTheso(true);
         isRubriqueVisible = true;
@@ -133,7 +111,6 @@ public class PropositionBean implements Serializable {
         editorialNotesAccepted = false;
         examplesAccepted = false;
         historyAccepted = false;
-
         isConsultation = true;
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
@@ -200,7 +177,6 @@ public class PropositionBean implements Serializable {
                 historyAccepted = true;
             }
         }
-
     }
 
     public void annuler() {
@@ -217,15 +193,11 @@ public class PropositionBean implements Serializable {
     public void chercherProposition() {
         String idTheso = selectedTheso.getSelectedIdTheso();//"2".equals(filter2) ? selectedTheso.getSelectedIdTheso() : "%";
         if(StringUtils.isEmpty(idTheso)) return;
-        switch (showAllPropositions) {
-            case "1":
-                propositions = propositionService.searchPropositionsNonTraitter(idTheso);
-                break;
-           /* case "2":
-                propositions = propositionService.searchOldPropositions(idTheso);
-                break;*/
-            default:
-                propositions = propositionService.searchAllPropositions(idTheso);
+
+        if ("1".equalsIgnoreCase(showAllPropositions)) {
+            propositions = propositionService.searchPropositionsNonTraitee(idTheso);
+        } else {
+            propositions = propositionService.searchAllPropositions(idTheso);
         }
     }
 
@@ -344,7 +316,7 @@ public class PropositionBean implements Serializable {
         }
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
-        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
+        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hide();");
     }
 
     private void switchToConceptOnglet() {
@@ -383,7 +355,8 @@ public class PropositionBean implements Serializable {
             return;
         }
 
-        if (propositionService.envoyerProposition(proposition, nom, email, commentaire)) {
+        var thesaurusName = thesaurusService.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        if (propositionService.envoyerProposition(proposition, nom, email, commentaire, thesaurusName)) {
             showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalSent"));
         }
 
@@ -494,7 +467,7 @@ public class PropositionBean implements Serializable {
 
     public Boolean isCanMakeAction(CurrentUser currentUser) {
         return (currentUser.getNodeUser() != null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
-                && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
+                && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisThesaurus());
     }
 
     public boolean isSameUser(CurrentUser currentUser) {

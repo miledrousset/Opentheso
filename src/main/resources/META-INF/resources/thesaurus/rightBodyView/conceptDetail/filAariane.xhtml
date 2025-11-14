@@ -14,13 +14,13 @@
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
                 <!-- gestion de type de concept -->
-                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and
+                <p:menuitem rendered="#{roleOnThesaurus.nodePreference.useCustomRelation and
                                             (conceptView.nodeConcept.nodeCustomRelations == null or conceptView.nodeConcept.nodeCustomRelations.size() == 0)}"
                             value="#{langueBean.getMsg('concept.editConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idEditConceptType" icon="fas fa-edit"
                             oncomplete="PF('editConceptType').show();"  />
 
-                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation}"
+                <p:menuitem rendered="#{roleOnThesaurus.nodePreference.useCustomRelation}"
                             value="#{langueBean.getMsg('concept.manageConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idManageConceptType containerIndex:manageConceptTypeForm" icon="fas fa-cog"
                             oncomplete="PF('manageConceptType').show();"  />
@@ -38,15 +38,15 @@
                             icon="fas fa-cut" update="containerIndex:formRightTab messageIndex" />
 
                 <!-- Coller comme terme spécifique -->
-                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and
-                                        (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and
+                                        (dragAndDrop.nodeConceptDrag.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}" icon="fas fa-paste"
                             update="containerIndex:rightTab messageIndex" />
 
                 <!-- Coller à la racine -->
-                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn()) and (!dragAndDrop.nodeConceptDrag.concept.topConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
                             actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
@@ -69,28 +69,28 @@
                             update="idApproveConcept" action="#{editConcept.reset('')}"
                             oncomplete="PF('approveConcept').show();"  />
 
-                <p:menuitem disabled="false" rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
+                <p:menuitem disabled="false" rendered="#{!copyAndPasteBetweenTheso.isCopyOn()}"
                             value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
-                            actionListener="#{copyAndPasteBetweenTheso.onStartCopy()}"
+                            actionListener="#{copyAndPasteBetweenThesaurus.onStartCopy()}"
                             icon="fas fa-regular fa-copy" update="containerIndex:rightTab messageIndex" />
 
-                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
-                            actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" icon="fas fa-paste"
-                            action="#{copyAndPasteBetweenTheso.setIsDropToRoot(false)}"
+                <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn()) and (copyAndPasteBetweenTheso.idThesaurusOrigin != selectedThesaurus.currentIdTheso) }"
+                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenThesaurus.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
+                            actionListener="#{copyAndPasteBetweenThesaurus.validatePaste()}" icon="fas fa-paste"
+                            action="#{copyAndPasteBetweenThesaurus.setIsDropToRoot(false)}"
                             update="containerIndex:rightTab containerIndex"
                             oncomplete="PF('copyAndPasteBetweenTheso').show();" />
 
-                <p:menuitem  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
+                <p:menuitem  rendered="#{copyAndPasteBetweenThesaurus.isCopyOn()}"
                              value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
-                             action="#{copyAndPasteBetweenTheso.reset()}" icon="fas fa-ban"
+                             action="#{copyAndPasteBetweenThesaurus.reset()}" icon="fas fa-ban"
                              update="containerIndex:rightTab messageIndex" />
 
-                <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                <p:separator rendered="#{(roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
-                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                <p:menuitem  rendered="#{(roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                              value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
-                             action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
+                             action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedThesaurus.currentIdTheso)}"
                              icon="fas fa-truck-moving"
                              oncomplete="PF('moveToAnotherTheso').show();"
                              update="containerIndex:idMoveToAnotherTheso containerIndex:moveToAnotherThesoForm"/>
@@ -98,7 +98,7 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <!-- Gestion Ark -->
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useArk or roleOnThesaurus.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
                             disabled="false"
                             actionListener="#{editConcept.infosArk()}"
@@ -107,21 +107,21 @@
                             oncomplete="PF('generateArk').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useArk or roleOnThesaurus.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_ark')}"
                             disabled="false"
                             action="#{editConcept.generateArkForConceptWithoutArk()}"
                             update="messageIndex"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useArk or roleOnThesaurus.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}"
                             disabled="false"
                             oncomplete="PF('generateArkForThisBranch').show();"
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateArkForThisBranch generateArkForThisBranchForm" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useArk or roleOnThesaurus.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_ark')}"
                             oncomplete="PF('generateAllArk').show();"
                             disabled="false"
@@ -130,7 +130,7 @@
 
                 <!-- gestion de Handle -->
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle')}"
                             disabled="false"
                             actionListener="#{editConcept.infosHandle()}"
@@ -139,7 +139,7 @@
                             oncomplete="PF('generateHandle').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.delete_handle')}"
                             disabled="false"
                             actionListener="#{editConcept.infosDeleteHandle()}"
@@ -148,17 +148,17 @@
                             oncomplete="PF('deleteHandle').show();"
                             style="font-size: 12px;"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}"
                             disabled="false" action="#{editConcept.generateHandleForConceptWithoutHandle()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle_for_branch')}"
                             disabled="false" action="#{editConcept.generateHandleForThisBranch()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnThesaurus.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnThesaurus.isAdminOnThisThesaurus())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}"
                             disabled="false" action="#{editConcept.generateAllHandle()}"
                             update="messageIndex" />
@@ -174,7 +174,7 @@
 
                 <p:menuitem value="#{langueBean.getMsg('actions.repairLoopedRelationships')}"
                             title="#{langueBean.getMsg('actions.repairLoopedRelationshipsToolTip')}"
-                            action="#{restoreTheso.deleteLoopRelations(selectedTheso.currentIdTheso, conceptView.nodeConcept.concept.idConcept)}" icon="fas fa-toolbox"
+                            action="#{restoreTheso.deleteLoopRelations()}" icon="fas fa-toolbox"
                             update="messageIndex containerIndex:rightTab"/>
 
             </p:menu>
@@ -183,7 +183,7 @@
             <p:tooltip for="newFacet" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')} #{conceptView.nodeConcept.term.lexicalValue}" showDelay="1000" />
         </h:panelGroup>
 
-        <h:form rendered="#{roleOnTheso.nodePreference.breadcrumb}" style="padding-left: 5px;">
+        <h:form rendered="#{roleOnThesaurus.nodePreference.breadcrumb}" style="padding-left: 5px;">
             <ui:repeat var="path" value="#{conceptView.pathLabel2}" varStatus="status">
                 <ui:repeat var="subPath" value="#{path}" varStatus="substatus">
                     <h:panelGroup rendered="#{subPath.startOfPath}">
@@ -194,13 +194,13 @@
                     </h:panelGroup>
 
                     <p:commandLink rendered="#{subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                                   value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                    subPath.idConcept, selectedTheso.currentLang, currentUser)}"
+                                   value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso,
+                                    subPath.idConcept, selectedThesaurus.currentLang, currentUser)}"
                                    update="containerIndex" process="@form" ajax="true" />
 
                         <h:panelGroup rendered="#{!substatus.last}" >
                             <p:commandLink rendered="#{!subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang, currentUser)}"
+                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedThesaurus.selectedIdTheso, subPath.idConcept, selectedThesaurus.currentLang, currentUser)}"
                                            update="containerIndex" process="@form" ajax="true"/>                          
                             <h:outputText rendered="#{!substatus.last}" value=" > " style="font-size: 13px; font-weight: bold"/>                        
                         </h:panelGroup>

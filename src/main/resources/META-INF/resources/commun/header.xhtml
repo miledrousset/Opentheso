@@ -21,48 +21,48 @@
         </button>
 
         <!-- Nom du thésaurus -->
-        <h:panelGroup rendered="#{selectedTheso.isFromUrl}">
+        <h:panelGroup rendered="#{selectedThesaurus.isFromUrl()}">
             <p:commandButton icon="pi pi-arrow-circle-left" style="margin-right: 15px"
-                             actionListener="#{selectedTheso.setIsFromUrl(false)}" process="@this" ajax="true"
+                             actionListener="#{selectedThesaurus.setFromUrl(false)}" process="@this" ajax="true"
                              onclick="changeUrl();" update="wrapper"/>
 
-            <h:outputLabel value="#{selectedTheso.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
+            <h:outputLabel value="#{selectedThesaurus.getThesoName()}" style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{!selectedTheso.isFromUrl}">
+        <h:panelGroup rendered="#{!selectedThesaurus.isFromUrl()}">
             <!-- liste des projets -->
-            <p:selectOneMenu value="#{selectedTheso.projectIdSelected}" filter="true" filterMatchMode="contains"
+            <p:selectOneMenu value="#{selectedThesaurus.projectIdSelected}" filter="true" filterMatchMode="contains"
                              style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px;
                          background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
-                <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
+                <p:ajax event="valueChange" listener="#{selectedThesaurus.setSelectedProject()}" update="thesoSelect containerIndex" />
                 <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
                 <f:selectItems value="#{currentUser.userPermissions.listProjects}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
             </p:selectOneMenu>
 
             <!-- liste des thésaurus -->
-            <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
+            <p:selectOneMenu id="thesoSelect" value="#{selectedThesaurus.selectedIdTheso}" style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
                          color: #FFF !important;"
                              filter="true" filterMatchMode="contains">
-                <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
+                <p:ajax event="valueChange" listener="#{selectedThesaurus.setSelectedTheso()}" />
                 <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
-                <f:selectItems value="#{currentUser.userPermissions.listThesos}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
+                <f:selectItems value="#{currentUser.userPermissions.listThesaurus}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
             </p:selectOneMenu>
 
-            <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
+            <p:commandLink action="#{selectedThesaurus.reloadSelectedTheso()}" style="margin-left: 15px;">
                 <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
             </p:commandLink>
         </h:panelGroup>
 
-        <p:commandLink rendered="#{selectedTheso.selectedIdTheso != null and selectedTheso.selectedIdTheso != '' and currentUser.nodeUser != null
-                                   and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+        <p:commandLink rendered="#{selectedThesaurus.selectedIdTheso != null and selectedThesaurus.selectedIdTheso != '' and currentUser.nodeUser != null
+                                   and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
-                       actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
+                       actionListener="#{editThesaurusBean.init(selectedThesaurus.currentIdTheso)}"
                        action="#{viewEditionBean.setViewModifyTheso(true)}">
             <i class="fa fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedTheso.isFromUrl}">
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedThesaurus.isFromUrl()}">
             <i class="fa fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
@@ -76,14 +76,14 @@
                 </p:link>
                 <p:tooltip value="OpenApi" for="linkOpenApi" />
 
-                <p:link id="linkGraphQL" href="#{request.contextPath}/graphiql" target="_blank" style="text-decoration: none;">
+                <p:link id="linkGraphQL" href="#{request.contextPath}/graphiql.html" target="_blank" style="text-decoration: none;">
                     <img src="#{request.contextPath}/resources/img/graphql.png" style="height:20px; margin-right: 10px;" alt="Swagger QL"/>
                 </p:link>
                 <p:tooltip value="GraphQL" for="linkGraphQL" />
             </h:panelGroup>
 
 
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnThesaurus.isAdminOnThisThesaurus() or roleOnThesaurus.isSuperAdmin())}"
                 style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
                 <p:commandLink rendered="#{newVersionBean.newVersionFound()}" onclick="PF('newVersionNotificationPanel').show()"
                                update="containerIndex:notificationNewVersion">
@@ -93,7 +93,7 @@
             </h:panelGroup>
 
             <!-- Nav Item - Alerts -->
-            <h:panelGroup rendered="#{currentUser.isHasRoleAsAdmin() and menuBean.isNotificationPannelVisible()}"
+            <h:panelGroup rendered="#{currentUser.isHasRoleAsAdmin() and menuBean.isNotificationPanelVisible()}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}"
                                rendered="#{propositionBean.getNbrNewPropositions() > 0}" >

@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.models.exports;
 
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.entites.Preferences;
+import fr.cnrs.opentheso.services.ConceptService;
+
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -13,13 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UriHelper {
 
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    private NodePreference nodePreference;
+    private Preferences nodePreference;
     private String idTheso;
+    @Autowired
+    private ConceptService conceptService;
 
-    
+
     /**
      * Cette fonction permet de retourner l'URI du thesaurus
      * Choix de l'URI pour l'export : 1 seule URI est possible pour l'export
@@ -149,7 +149,8 @@ public class UriHelper {
     
     public String getIdArk(String idConcept) {
         if(nodePreference.isOriginalUriIsArk()){
-            return conceptHelper.getIdArkOfConcept(idConcept, idTheso);
+            var concept = conceptService.getConcept(idConcept, idTheso);
+            return concept.getIdArk();
         }
         return null;
     }

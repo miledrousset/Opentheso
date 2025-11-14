@@ -1,177 +1,106 @@
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
-import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.entites.Preferences;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.services.HomePageService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import java.io.Serializable;
+import java.util.List;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.primefaces.PrimeFaces;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "preferenceBean")
+
+@Slf4j
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "preferenceBean")
 public class PreferenceBean implements Serializable {
 
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private PreferencesHelper preferencesHelper;
+    private final SelectedTheso selectedTheso;
+    private final PreferenceService preferenceService;
+    private final HomePageService homePageService;
+    private final ThesaurusService thesaurusService;
+    private final RoleOnThesaurusBean roleOnThesaurus;
 
     private String uriType;
-    private NodePreference nodePreference;
-    private ArrayList<NodeLangTheso> languagesOfTheso;
+    private Preferences preferences;
+    private List<NodeLangTheso> languagesOfThesaurus;
 
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        if (languagesOfTheso != null) {
-            languagesOfTheso.clear();
-            languagesOfTheso = null;
-        }
-        nodePreference = null;
-        uriType = null;
-    }
-
-    /**
-     * Creates a new instance of preferenceBean
-     */
-    public PreferenceBean() {
-    }
 
     public void init() {
+
         if (selectedTheso.getCurrentIdTheso() == null) {
             return;
         }
-        nodePreference = roleOnThesoBean.getNodePreference();
-        // les langues du thésaurus
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
+
+        preferences = preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso());
+        if (this.preferences == null) {
+            log.error("Aucun paramètre n'est trouvé pour le thésaurus id {}", selectedTheso.getCurrentIdTheso());
+            return;
+        }
+
+        languagesOfThesaurus = thesaurusService.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(),
+                preferences.getSourceLang());
 
         uriType = "uri";
-        if (nodePreference.isOriginalUriIsHandle()) {
+        if (this.preferences.isOriginalUriIsHandle()) {
             uriType = "handle";
-        }
-        if (nodePreference.isOriginalUriIsArk()) {
+        } else if (this.preferences.isOriginalUriIsArk()) {
             uriType = "ark";
-        }
-        if (nodePreference.isOriginalUriIsDoi()) {
+        } else if (this.preferences.isOriginalUriIsDoi()) {
             uriType = "doi";
         }
-
     }
 
     public void updateSelectedServer(String selectedServer){
-       
+
         switch (selectedServer) {
             case "ark":
-                nodePreference.setUseArkLocal(false);
-                nodePreference.setUseHandle(false);
-                preferencesHelper.setUseArk(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
+                preferences.setUseArk(preferences.isUseArk());
+                preferences.setUseArkLocal(false);
+                preferences.setUseHandle(false);
                 break;
             case "arklocal":
-                nodePreference.setUseArk(false);
-                nodePreference.setUseHandle(false);  
-                preferencesHelper.setUseArkLocal(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
+                preferences.setUseArk(false);
+                preferences.setUseArkLocal(preferences.isUseArkLocal());
+                preferences.setUseHandle(false);
                 break;
             case "handle":
-                nodePreference.setUseArk(false);
-                nodePreference.setUseArkLocal(false);      
-                preferencesHelper.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
-                break;                
-            default:
-                break;
+                preferences.setUseArk(false);
+                preferences.setUseArkLocal(false);
+                preferences.setUseHandle(preferences.isUseHandle());
         }
+        preferenceService.setIdentifierFlags(selectedTheso.getCurrentIdTheso(), preferences.isUseArk(), preferences.isUseArkLocal(), preferences.isUseHandle());
     }
     
     public String getGoogleAnalytics() {
-        return preferencesHelper.getCodeGoogleAnalytics();
+        return homePageService.getCodeGoogleAnalytics();
     }
 
     public void savePreference() {
-        setUriType();
-        PrimeFaces pf = PrimeFaces.current();
 
-        FacesMessage msg;
-        
-        if (!preferencesHelper.updateAllPreferenceUser(
-                nodePreference, selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur d'enregistrement des préférences !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Préférences enregistrées avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        init();
-
-        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
-    }
-
-    private void setUriType() {
         if (uriType == null) {
             return;
         }
-        nodePreference.setOriginalUriIsArk(false);
-        nodePreference.setOriginalUriIsHandle(false);
-        if (uriType.equalsIgnoreCase("ark")) {
-            nodePreference.setOriginalUriIsArk(true);
-        }
-        if (uriType.equalsIgnoreCase("handle")) {
-            nodePreference.setOriginalUriIsHandle(true);
-        }
-    }
 
-    public NodePreference getNodePreference() {
-        return nodePreference;
-    }
+        preferences.setOriginalUriIsArk(uriType.equalsIgnoreCase("ark"));
+        preferences.setOriginalUriIsHandle(uriType.equalsIgnoreCase("handle"));
+        preferenceService.updateAllPreferenceUser(preferences);
 
-    public void setNodePreference(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
+        roleOnThesaurus.setNodePreference(preferenceService.getThesaurusPreferences(selectedTheso.getCurrentIdTheso()));
 
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
-        return languagesOfTheso;
-    }
-
-    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
-        this.languagesOfTheso = languagesOfTheso;
-    }
-
-    public String getUriType() {
-        return uriType;
-    }
-
-    public void setUriType(String uriType) {
-        this.uriType = uriType;
+        MessageUtils.showInformationMessage("Préférences enregistrées avec succès");
     }
 
 }

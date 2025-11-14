@@ -5,10 +5,13 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 
 @SessionScoped
 @Named(value = "indexSetting")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class IndexSetting implements Serializable {
 
     // si un thésaurus est sélectionné 

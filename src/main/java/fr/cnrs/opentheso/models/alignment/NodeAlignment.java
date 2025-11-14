@@ -1,17 +1,23 @@
 package fr.cnrs.opentheso.models.alignment;
 
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeAlignment {
 
     private int id_alignement;
-    private int id_source;
+    private Integer id_source;
     private Date created;
     private Date modified;
     private int id_author;
@@ -25,10 +31,8 @@ public class NodeAlignment {
     private String def_target;
     private String img_target;
     private boolean save;
-    
     private String alignmentLabelType;
     private String alignmentLabelSkosType;
-
     private String concept_target_bold;
     private String countryName;
     private String name;
@@ -38,16 +42,10 @@ public class NodeAlignment {
     private String toponymName;
     private String adminName1;
     private String adminName2;
-    
     private List<String> traduction;
     private List<NodeLangTheso> allTraductions;
-    
-    private String uriTargetUrl;
-
-    private String definitionLocal, labelLocal, uriTargetLocal, alignementTypeLocal, conceptOrigin;
-
     private List<SelectedResource> selectedTraductionsList, selectedDefinitionsList, selectedImagesList;
-    private boolean alignementLocalValide;
-    private boolean alreadyLoaded;
+    private String uriTargetUrl, definitionLocal, labelLocal, uriTargetLocal, alignementTypeLocal, conceptOrigin;
+    private boolean alignementLocalValide, alreadyLoaded;
 
 }

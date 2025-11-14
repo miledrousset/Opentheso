@@ -1,10 +1,6 @@
 package fr.cnrs.opentheso.bean.leftbody.viewconcepts;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-
-import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -15,51 +11,49 @@ import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.RelationService;
+import fr.cnrs.opentheso.services.ResourceService;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-
 import jakarta.enterprise.context.SessionScoped;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "treeConcepts")
+
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "treeConcepts")
 public class TreeConcepts implements Serializable {
 
-    @Autowired @Lazy private RightBodySetting rightBodySetting;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private GroupView groupView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private PropositionBean propositionBean;
-
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private RelationsHelper relationsHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
+    private final GroupView groupView;
+    private final CurrentUser currentUser;
+    private final ConceptView conceptView;
+    private final GroupService groupService;
+    private final SelectedTheso selectedTheso;
+    private final PropositionBean propositionBean;
+    private final ConceptService conceptService;
+    private final RelationService relationService;
+    private final ResourceService resourceService;
+    private final RightBodySetting rightBodySetting;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
 
-    
+
     public void reset() {
         root = null;
         selectedNode = null;
@@ -80,10 +74,11 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation());
+        List<NodeGroup> racineNode = groupService.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation(),
+                ObjectUtils.isEmpty(currentUser.getNodeUser()));
 
         for (NodeGroup nodeGroup : racineNode) {
-            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
+            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),true,false,false,false,"group");
 
             if (nodeGroup.isHaveChildren()) {
@@ -93,18 +88,6 @@ public class TreeConcepts implements Serializable {
             }
         }
         return true;
-    }
-
-    public TreeNode getRoot() {
-        return root;
-    }
-
-    public TreeNode getSelectedNode() {
-        return selectedNode;
-    }
-
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
@@ -118,8 +101,7 @@ public class TreeConcepts implements Serializable {
     }
 
     private boolean addGroupsChild(TreeNode parent) {
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
+        var listeSubGroup = groupService.getListChildsOfGroup(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         if (listeSubGroup == null) {
             parent.setType("group");
@@ -127,7 +109,7 @@ public class TreeConcepts implements Serializable {
         }
 
         for (NodeGroup nodeGroup : listeSubGroup) {
-            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
+            TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdGroup(), nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),false,true,false,false,"subGroup");
 
             if (nodeGroup.isHaveChildren()) {
@@ -142,7 +124,7 @@ public class TreeConcepts implements Serializable {
     private boolean addConceptsChild(TreeNode parent) {
         
         // il faut ici récupérer les Topterms de la collection #MR        
-        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListTopConceptsOfGroup(idTheso, idLang,
+        var listeConceptsOfGroup = conceptService.getListTopConceptsOfGroup(idTheso, idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
         
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
@@ -155,7 +137,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeGroup.getId(), idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(idTheso, nodeGroup.getId(), idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -169,9 +151,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
-
+        var ConceptsId = relationService.getListNT(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
         if (ConceptsId == null || ConceptsId.isEmpty()) {
             parent.setType("file");
             return true;
@@ -181,8 +161,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeNT.getIdConcept(),
-                    idTheso, idLang, -1, -1);
+            var childs = resourceService.getListNT(idTheso, nodeNT.getIdConcept() , idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);

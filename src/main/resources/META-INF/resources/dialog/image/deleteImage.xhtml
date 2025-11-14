@@ -44,7 +44,7 @@
 
                     <p:column width="10%" headerText="Action" >                        
                         <p:commandLink title="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@form" 
-                                       action="#{imageBean.deleteImage( imageToEdit, currentUser.nodeUser.idUser)}"
+                                       action="#{imageBean.deleteImage(imageToEdit, currentUser.nodeUser.idUser)}"
                                        update="containerIndex:formRightTab containerIndex:idDeleteImage messageIndex">
                             <i class="pi pi-trash" style="color: #C63632; font-size: 1.1rem; padding-top: 4px;"/>
                         </p:commandLink>

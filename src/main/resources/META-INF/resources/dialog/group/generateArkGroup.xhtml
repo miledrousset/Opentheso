@@ -29,7 +29,7 @@
                 <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex messageIndex" 
                                  ajax="true" process="@form"
-                                 actionListener="#{addGroupBean.generateArkGroup(groupView.nodeGroup.conceptGroup.idgroup, groupView.nodeGroup.lexicalValue, selectedTheso.currentIdTheso)}" 
+                                 actionListener="#{addGroupBean.generateArkGroup(groupView.nodeGroup.conceptGroup.idGroup, groupView.nodeGroup.lexicalValue, selectedThesaurus.currentIdTheso)}"
                                  oncomplete="PF('generateArkGroup').hide();"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />

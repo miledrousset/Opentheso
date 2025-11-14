@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.ws.graphql;
 
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.repositories.DaoResourceHelper;
-import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.services.ResourceService;
+import fr.cnrs.opentheso.services.SearchService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,18 +16,19 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
-
 public class GraphQLController {
- //   private final NodeFullConceptService nodeFullConceptService;
-    private final DaoResourceHelper daoResourceHelper;
-    private final SearchHelper searchHelper;
+
+    private final ResourceService resourceService;
+    private final SearchService searchService;
+    private final CurrentUser currentUser;
 
     @QueryMapping
-    public NodeFullConcept getNodeFullConcept(
-            @Argument String idTheso,
-            @Argument String idConcept,
-            @Argument String idLang) {
-        return daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, 0, 10);
+    public NodeFullConcept getNodeFullConcept(@Argument String idTheso,
+                                              @Argument String idConcept,
+                                              @Argument String idLang) {
+
+        boolean isPrivate = currentUser.getNodeUser() == null;
+        return resourceService.getFullConcept(idTheso, idConcept, idLang, 0, 10, isPrivate);
     }
 
     @QueryMapping
@@ -35,7 +37,8 @@ public class GraphQLController {
             @Argument String value,
             @Argument List<String> idGroups,
             @Argument String idLang) {
-        ArrayList<String> listIds;
+
+        List<String> listIds;
         if(CollectionUtils.isNotEmpty(idGroups)) {
             String[] stringArray;
             if(idGroups.size() == 1 && StringUtils.isBlank(idGroups.get(0))) {
@@ -43,13 +46,14 @@ public class GraphQLController {
             } else {
                 stringArray = idGroups.toArray(new String[0]);
             }
-            listIds = searchHelper.searchAutoCompletionWSForWidget(value, idLang, stringArray, idTheso);
+            listIds = searchService.searchAutoCompletionWSForWidget(value, idLang, stringArray, idTheso);
         } else {
-            listIds = searchHelper.searchFullTextElasticId(value, idLang, idTheso);
+            listIds = searchService.searchFullTextElasticId(value, idLang, idTheso, false);
         }
         List<NodeFullConcept> nodeFullConcepts = new ArrayList<>();
         for (String idConcept : listIds) {
-            nodeFullConcepts.add(daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, 0, 10));
+            boolean isPrivate = currentUser.getNodeUser() == null;
+            nodeFullConcepts.add(resourceService.getFullConcept(idTheso, idConcept, idLang, 0, 10, isPrivate));
         }
         return nodeFullConcepts;
     }

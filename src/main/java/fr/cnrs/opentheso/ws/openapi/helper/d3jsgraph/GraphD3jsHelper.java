@@ -1,52 +1,49 @@
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
-import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.entites.Preferences;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.services.ConceptAddService;
+import fr.cnrs.opentheso.services.ConceptService;
+import fr.cnrs.opentheso.services.GroupService;
+import fr.cnrs.opentheso.services.PreferenceService;
+import fr.cnrs.opentheso.services.ThesaurusService;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class GraphD3jsHelper {
 
-    @Autowired
-    private GroupHelper groupHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private UriHelper uriHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-    
-    @Autowired
-    private PreferencesHelper preferencesHelper;
+    private final UriHelper uriHelper;
+    private final PreferenceService preferenceService;
+    private final ThesaurusService thesaurusService;
+    private final GroupService groupService;
+    private final ConceptService conceptService;
+    private final ConceptAddService conceptAddService;
+    private final CurrentUser currentUser;
 
     private NodeGraphD3js nodeGraphD3js;
-    private NodePreference nodePreference;
-    
+    private Preferences nodePreference;
+
     public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
         nodeGraphD3js.setNodes(new ArrayList<>());
@@ -55,29 +52,30 @@ public class GraphD3jsHelper {
     
     public void getGraphByTheso(String idTheso, String idLang, boolean limit){
 
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         uriHelper.setIdTheso(idTheso);
         uriHelper.setNodePreference(nodePreference);
         
         // récupérer les conceptScheme
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
         if(nodeThesaurus == null){
             return;
         }
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        ArrayList<NodeUri> nodeTTs = conceptHelper.getAllTopConcepts(idTheso);
+        var nodeTTs = conceptService.getAllTopConcepts(idTheso);
         nodeGraphD3js.getRelationships().addAll(getRelationshipOfTheso(nodeTTs, idTheso));        
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
+        List<String> listIdConcept = conceptService.getAllIdConceptOfThesaurus(idTheso);
         if (listIdConcept.size() > 2000) {
             listIdConcept = listIdConcept.subList(0, 2000);
         }
         
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1); 
+            boolean isPrivate = currentUser.getNodeUser() != null;
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1, isPrivate);
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
@@ -85,28 +83,29 @@ public class GraphD3jsHelper {
 
     public void getGraphByConcept(String idTheso, String idConcept, String idLang){
         
-        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
+        nodePreference = preferenceService.getThesaurusPreferences(idTheso);
 
         uriHelper.setIdTheso(idTheso);
         uriHelper.setNodePreference(nodePreference);
 
-        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusService.getNodeThesaurus(idTheso);
         if(nodeThesaurus == null){
             return;
         }        
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
-        if(!conceptHelper.isIdExiste(idConcept)){
+        if(!conceptAddService.isIdExiste(idConcept)){
             return;
         }
         
         /// récupérer les concepts
-        List<String> listIdConcept = conceptHelper.getIdsOfBranch2(idTheso, idConcept);
+        List<String> listIdConcept = conceptService.getIdsOfBranch2(idTheso, idConcept);
         if (listIdConcept.size() > 2000) {
             listIdConcept = listIdConcept.subList(0, 2000);
         }        
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(idC, idTheso, idLang, -1, -1 ); 
+            boolean isPrivate = currentUser.getNodeUser() != null;
+            NodeFullConcept nodeFullConcept = conceptService.getConcept(idC, idTheso, idLang, -1, -1, isPrivate);
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso, idLang));
         }
@@ -135,7 +134,7 @@ public class GraphD3jsHelper {
         node.setProperties(properties);
         return node;
     }    
-    private List<Relationship> getRelationshipOfTheso(ArrayList<NodeUri> nodeUri, String idTheso){
+    private List<Relationship> getRelationshipOfTheso(List<NodeUri> nodeUri, String idTheso){
         List<Relationship> relationships = new ArrayList<>();
         for (NodeUri nodeUri1 : nodeUri) {
             Relationship relationship = new Relationship();
@@ -152,7 +151,7 @@ public class GraphD3jsHelper {
     
     private Node getDatasOfCollection(ConceptIdLabel conceptIdLabel, String idTheso){
         Node node = new Node();
-        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(conceptIdLabel.getIdentifier(), idTheso);
+        NodeGroupLabel nodeGroupLabel = groupService.getNodeGroupLabel(conceptIdLabel.getIdentifier(), idTheso);
  
         node.setId(conceptIdLabel.getUri());
         List<String> labels = new ArrayList<>();

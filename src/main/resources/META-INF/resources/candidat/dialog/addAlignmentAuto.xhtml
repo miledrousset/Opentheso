@@ -41,11 +41,7 @@
                     <div class="col-1">
                         <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
                                          ajax="true" process="@form"
-                                         actionListener="#{alignmentBean.searchAlignments(
-                                                           selectedTheso.selectedIdTheso,
-                                                           alignmentBean.idConceptSelectedForAlignment,
-                                                           alignmentBean.conceptValueForAlignment,
-                                                           selectedTheso.currentLang)}"
+                                         actionListener="#{alignmentBean.searchAlignments(alignmentManualBean)}"
                                          style="color: #f47b2a; margin-left: 5px"
                                          update="searchAlignementForm messageIndex" />
                     </div>
@@ -113,7 +109,7 @@
                                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                                  ajax="true" process="@form"
                                                  update="tabViewCandidat:containerIndexCandidat:searchAlignementForm messageIndex"
-                                                 action="#{alignmentBean.addManualAlignement(selectedTheso.selectedIdTheso,
+                                                 action="#{alignmentBean.addManualAlignement(selectedThesaurus.selectedIdTheso,
                                                            alignmentBean.idConceptSelectedForAlignment,
                                                            currentUser.nodeUser.idUser)}"
                                                  oncomplete="PF('searchAlignement').hide();"/>
@@ -161,7 +157,7 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedTheso.selectedIdTheso)}"
+                                    <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedThesaurus.selectedIdTheso)}"
                                                    ajax="true" process="@this"
                                                    update="tabViewCandidat:containerIndexCandidat:searchAlignementForm">
                                         <i class="pi pi-cloud-download" style="color: #f47b2a; font-size: 1.5rem; margin-top: 20px;"/>

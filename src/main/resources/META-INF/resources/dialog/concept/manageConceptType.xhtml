@@ -45,7 +45,7 @@
                                        disabled="#{nodeConceptType.permanent}"
                                        ajax="true" process="@form"
                                        update="messageIndex dataType"
-                                       action="#{editConcept.applyChangeForConceptType(nodeConceptType, currentUser.nodeUser.idUser)}">
+                                       action="#{editConcept.applyChangeForConceptType(nodeConceptType)}">
                             <i class="pi pi-save" style="font-size: 1rem; padding-top: 5px; color: #{nodeConceptType.permanent ? '#8C8C8C;':'#F47B2A'};" />
                         </p:commandLink>                        
                     </p:column>   

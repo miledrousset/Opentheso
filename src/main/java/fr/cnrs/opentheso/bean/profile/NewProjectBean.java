@@ -1,190 +1,122 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.repositories.UserHelper;
-import fr.cnrs.opentheso.models.users.NodeUserGroup;
-
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.services.ProjectService;
+import fr.cnrs.opentheso.services.UserRoleGroupService;
+import fr.cnrs.opentheso.services.UserService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import java.util.Comparator;
+import java.util.List;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "newProjectBean")
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "newProjectBean")
 public class NewProjectBean implements Serializable {
-    
-    @Autowired @Lazy private MyProjectBean myProjectBean;
-    @Autowired @Lazy private CurrentUser currentUser;
 
-    @Autowired
-    private UserHelper userHelper;
- 
+    private final MyProjectBean myProjectBean;
+    private final CurrentUser currentUser;
+    private final UserRoleGroupService userRoleGroupService;
+    private final UserService userService;
+    private final ProjectService projectService;
+
     private String projectName;
-    private ArrayList<NodeUserGroup> listeProjectOfUser;
-            
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        if(listeProjectOfUser!= null){
-            listeProjectOfUser.clear();
-            listeProjectOfUser = null;
-        }
-        projectName = null;
-    }    
-    
-    public NewProjectBean() {
-    }
-    
-    
-    /**
-     * permet d'initialiser les variables 
-     *
-     */
+    private List<UserGroupLabel> listeProjectOfUser;
+
+
     public void init() {
         projectName = null;
-        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeProjectOfUser = userHelper.getAllProject();
+        if (currentUser.getNodeUser().isSuperAdmin()) {
+            listeProjectOfUser = userRoleGroupService.findAllUserRoleGroup();
+            listeProjectOfUser.sort(Comparator.comparing(UserGroupLabel::getLabel, String.CASE_INSENSITIVE_ORDER));
             return;
         }
-        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(currentUser.getNodeUser().getIdUser());        
+        listeProjectOfUser = projectService.getProjectByUser(currentUser.getNodeUser().getIdUser(), 2);
     }   
     
     /**
-     * permet de créer un nouveau projet de regroupement de thésaurus, 
+     * Permet de créer un nouveau projet de regroupement de thésaurus,
      * si l'utilisateur est SuperAdmin, le projet n'aura pas d'utilisateur pas défaut,
      * si l'utilisateur est Admin, il aura les droits admin dessus par défaut
      */
     public void addNewProject(){
-        FacesMessage msg;
         
-        if(projectName== null || projectName.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un label est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(StringUtils.isEmpty(projectName)) {
+            MessageUtils.showErrorMessage("Le label est obligatoire");
             return;              
         }
-        
-        if(userHelper.isUserGroupExist(projectName)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
-        }        
-        if(!userHelper.addNewProject(projectName)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        var userGroup = projectService.getUserGroupLabelByLabel(projectName);
+        if(userGroup != null){
+            MessageUtils.showErrorMessage("Le label existe déjà !!!");
             return;             
         }
+
+        var userGroupCreated = projectService.saveNewProject(UserGroupLabel.builder().label(projectName).build());
         currentUser.initUserPermissions();
         // on vérifie si l'utilisateur en cours est un Admin 
-        if(!currentUser.getNodeUser().isSuperAdmin()){
-            if(currentUser.getAllAuthorizedProjectAsAdmin() != null && !currentUser.getAllAuthorizedProjectAsAdmin().isEmpty()) {
-                // on donne le droit admin pour l'utilisateur courant sur ce groupe
-                int projectId = userHelper.getThisProjectId(projectName);
-                if(projectId == -1) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne BDD !!!");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;   
-                }
-                if(!userHelper.addUserRoleOnGroup(currentUser.getNodeUser().getIdUser(),
-                        2,
-                        projectId)) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;             
-                }
-            }
+        if(!currentUser.getNodeUser().isSuperAdmin() && CollectionUtils.isNotEmpty(currentUser.getAllAuthorizedProjectAsAdmin())){
+            // on donne le droit admin pour l'utilisateur courant sur ce groupe
+            userRoleGroupService.addUserRoleOnGroup(currentUser.getNodeUser().getIdUser(), 2, userGroupCreated.getId());
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet créé avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        MessageUtils.showInformationMessage("Projet créé avec succès !!!");
         myProjectBean.init();
     }      
 
-    public void updateProject(NodeUserGroup nodeUserGroup){
-        FacesMessage msg;
+    public void updateProject(UserGroupLabel userGroupLabel){
         
-        if(nodeUserGroup== null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
-        }   
-        if(nodeUserGroup.getGroupName().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le label est obligatoire !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(ObjectUtils.isEmpty(userGroupLabel)) {
+            MessageUtils.showErrorMessage("Aucun projet sélectioné !!!");
             return;              
         }
-        
-        if(userHelper.isUserGroupExist(nodeUserGroup.getGroupName())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if(StringUtils.isEmpty(userGroupLabel.getLabel())) {
+            MessageUtils.showErrorMessage("Le label est obligatoire !!!");
+            return;              
+        }
+
+        var userGroup = projectService.getUserGroupLabelByLabel(projectName);
+        if(userGroup != null){
+            MessageUtils.showErrorMessage("Ce nom de projet existe déjà !!!");
             init();
             return;             
-        }          
-        if(!userHelper.updateProject(nodeUserGroup.getGroupName(), nodeUserGroup.getIdGroup())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de modification !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet modifié avec succès !!!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        projectService.saveNewProject(userGroupLabel);
+        MessageUtils.showInformationMessage("Projet modifié avec succès !!!");
         myProjectBean.init();
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }     
+        PrimeFaces.current().ajax().update("containerIndex");
     }      
-    
-    /**
-     * permet de supprimer un Groupe/projet
-     *
-     * @param nodeUserGroup
-     */
-    public void deleteProject(NodeUserGroup nodeUserGroup) {
-        FacesMessage msg;
 
-        if (!userHelper.deleteProjectGroup(nodeUserGroup.getIdGroup())) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur :", nodeUserGroup.getGroupName()));
-            return;
-        }
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Suppression OK :", nodeUserGroup.getGroupName()));
+
+    public void deleteProject(UserGroupLabel userGroupLabel) {
+
+        projectService.deleteProject(userGroupLabel.getId());
+        MessageUtils.showInformationMessage("Suppression OK :" + userGroupLabel.getLabel());
+
         currentUser.initUserPermissions();
-        myProjectBean.init();        
+        myProjectBean.init();
         init();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }        
-    }    
-    
-    public String getProjectName() {
-        return projectName;
+        PrimeFaces.current().ajax().update("containerIndex");
     }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public ArrayList<NodeUserGroup> getListeProjectOfUser() {
-        return listeProjectOfUser;
-    }
-
-    public void setListeProjectOfUser(ArrayList<NodeUserGroup> listeProjectOfUser) {
-        this.listeProjectOfUser = listeProjectOfUser;
-    }    
 }

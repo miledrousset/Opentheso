@@ -1,260 +1,235 @@
 package fr.cnrs.opentheso.services;
 
-import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.entites.ConceptDcTerm;
+import fr.cnrs.opentheso.entites.PreferredTerm;
+import fr.cnrs.opentheso.entites.PropositionModification;
+import fr.cnrs.opentheso.entites.PropositionModificationDetail;
+import fr.cnrs.opentheso.entites.User;
+import fr.cnrs.opentheso.models.PropositionProjection;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
-import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.propositions.Proposition;
+import fr.cnrs.opentheso.models.propositions.PropositionActionEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionCategoryEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
+import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.repositories.ConceptHelper;
-import fr.cnrs.opentheso.repositories.DcElementHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
-import fr.cnrs.opentheso.models.propositions.PropositionDao;
-import fr.cnrs.opentheso.models.propositions.PropositionDetailDao;
-import fr.cnrs.opentheso.repositories.propositions.PropositionDetailHelper;
-import fr.cnrs.opentheso.repositories.propositions.PropositionHelper;
-import fr.cnrs.opentheso.models.propositions.Proposition;
-import fr.cnrs.opentheso.models.propositions.PropositionActionEnum;
-import fr.cnrs.opentheso.models.propositions.PropositionCategoryEnum;
-import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.repositories.ConceptDcTermRepository;
+import fr.cnrs.opentheso.repositories.NonPreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PreferredTermRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationDetailRepository;
+import fr.cnrs.opentheso.repositories.PropositionModificationRepository;
+import fr.cnrs.opentheso.repositories.PropositionRepository;
+import fr.cnrs.opentheso.repositories.TermRepository;
+import fr.cnrs.opentheso.utils.MessageUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
+@Data
+@Slf4j
 @Service
-public class PropositionService implements Serializable {
+@RequiredArgsConstructor
+public class PropositionService {
 
-    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-
-    @Autowired @Lazy
-    private Tree tree;
-
-    @Autowired @Lazy
-    private ConceptView conceptView;
-
-    @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired @Lazy
-    private IndexSetting indexSetting;
-
-    @Autowired @Lazy
-    private SelectedTheso selectedTheso;
-
-    @Autowired @Lazy
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Autowired @Lazy
-    private MailBean mailBean;
-
-    @Autowired
-    private DcElementHelper dcElementHelper;
-
-    @Autowired
-    private ThesaurusHelper thesaurusHelper;
-
-    @Autowired
-    private ConceptHelper conceptHelper;
-
-    @Autowired
-    private NoteHelper noteHelper;
-
-    @Autowired
-    private PropositionDetailHelper propositionDetailHelper;
-
-    @Autowired
-    private TermHelper termHelper;
-
-    @Autowired
-    private PropositionHelper propositionHelper;
+    private final Tree tree;
+    private final ConceptView conceptView;
+    private final CurrentUser currentUser;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesaurusBean roleOnThesoBean;
+    private final MailService mailBean;
+    private final TermRepository termRepository;
+    private final ConceptDcTermRepository conceptDcTermRepository;
+    private final PropositionModificationRepository propositionModificationRepository;
+    private final PropositionModificationDetailRepository propositionModificationDetailRepository;
+    private final NonPreferredTermRepository nonPreferredTermRepository;
+    private final NonPreferredTermService nonPreferredTermService;
+    private final TermService termService;
+    private final PreferenceService preferenceService;
+    private final PreferredTermRepository preferredTermRepository;
+    private final PropositionRepository propositionRepository;
+    private final ConceptService conceptService;
+    private final NoteService noteService;
 
 
+    public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire, String thesaurusName) {
 
-    public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
+        log.debug("Début de l'envoi de la proposition");
+        if (propositionModificationRepository.findPropositionByEmailConceptLang(email, proposition.getConceptID(),
+                selectedTheso.getCurrentLang()) != null) {
 
-        if (propositionHelper.searchPropositionByEmailAndConceptAndLang(email,
-                proposition.getConceptID(), selectedTheso.getCurrentLang()) != null) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous avez déjà une proposition pour le même concept en cours de etraitement !");
+            log.error("Il existe déjà une proposition pour le même concept en cours de traitement !");
+            MessageUtils.showWarnMessage("Vous avez déjà une proposition pour le même concept en cours de traitement !");
             return false;
         }
 
-        PropositionDao propositionDao = new PropositionDao();
-        propositionDao.setNom(nom);
-        propositionDao.setEmail(email);
-        propositionDao.setCommentaire(commentaire);
-        propositionDao.setDatePublication(DATE_FORMAT.format(new Date()));
-        propositionDao.setIdConcept(proposition.getConceptID());
-        propositionDao.setIdTheso(selectedTheso.getCurrentIdTheso());
-        propositionDao.setLang(selectedTheso.getCurrentLang());
-        propositionDao.setStatus(PropositionStatusEnum.ENVOYER.name());
-        propositionDao.setThesoName(thesaurusHelper.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+        var propositionModification = PropositionModification.builder()
+                .nom(nom)
+                .email(email)
+                .commentaire(commentaire)
+                .idConcept(proposition.getConceptID())
+                .idTheso(selectedTheso.getCurrentIdTheso())
+                .lang(selectedTheso.getCurrentLang())
+                .status(PropositionStatusEnum.ENVOYER.name())
+                .date(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()))
+                .build();
+
+        log.debug("Recherche du nom du thésaurus à partir de son id {} et la langue {}",
+                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         try {
-            String subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
-            String contentFile = "<html><body>"
-                    + "Cher(e) " + propositionDao.getNom() + ", <br/> "
+            var subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
+            var contentFile = "<html><body>"
+                    + "Cher(e) " + propositionModification.getNom() + ", <br/> "
                     + "<p> Votre proposition a bien été reçue par nos administrateurs, elle sera étudiée dans les plus brefs délais.<br/>"
                     + "Vous recevrez un mail dès que votre proposition sera traitée.<br/></p> "
-                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionDao.getThesoName() + "(" + propositionDao.getIdTheso() + ")" + "</b> "
-                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionDao.getIdConcept()
-                    + "&idt=" + propositionDao.getIdTheso() + "\">" + proposition.getNomConcept().getLexicalValue() + "</a>). <br/><br/> Cordialement,<br/>"
-                    + "L'équipe " + propositionDao.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
-            sendEmail(propositionDao.getEmail(), subject, contentFile);
+                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + thesaurusName + "(" + propositionModification.getIdTheso() + ")" + "</b> "
+                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionModification.getIdConcept()
+                    + "&idt=" + propositionModification.getIdTheso() + "\">" + proposition.getNomConcept().getLexicalValue() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "L'équipe " + thesaurusName + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
+
+            log.debug("Envoi de l'émail...");
+            sendEmail(propositionModification.getEmail(), subject, contentFile);
         } catch (Exception ex) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion a été enregistrée !");
+            MessageUtils.showWarnMessage("Erreur détectée pendant l'envoie du mail de notification! \nVotre proposition a été enregistrée !");
         }
 
-        int propositionID = propositionHelper.createNewProposition(propositionDao);
-
-        if (propositionID == -1) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Erreur pendant l'enregistrement de la proposition !");
-            return false;
-        }
+        log.debug("Enregistrement de la proposition dans la base");
+        var propositionSaved = propositionModificationRepository.save(propositionModification);
 
         if (StringUtils.isNotEmpty(proposition.getNomConceptProp())) {
-            PropositionDetailDao propositionDetail = new PropositionDetailDao();
-            propositionDetail.setIdProposition(propositionID);
-            propositionDetail.setAction(PropositionActionEnum.UPDATE.name());
-            propositionDetail.setCategorie(PropositionCategoryEnum.NOM.name());
-            propositionDetail.setLang(selectedTheso.getCurrentLang());
-            propositionDetail.setValue(proposition.getNomConceptProp());
-            propositionDetail.setOldValue(proposition.getNomConcept().getLexicalValue());
-            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
+            propositionModificationDetailRepository.save(PropositionModificationDetail.builder()
+                    .idProposition(propositionSaved.getId())
+                    .action(PropositionActionEnum.UPDATE.name())
+                    .categorie(PropositionCategoryEnum.NOM.name())
+                    .lang(selectedTheso.getCurrentLang())
+                    .value(proposition.getNomConceptProp())
+                    .oldValue(proposition.getNomConcept().getLexicalValue())
+                    .build());
         }
 
         if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
+            log.debug("Enregistrement des synonymes présent dans la proposition");
             for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
-                if (synonymProp.isToAdd() || synonymProp.isToUpdate() || synonymProp.isToRemove()) {
-                    PropositionActionEnum action;
-                    if (synonymProp.isToAdd()) {
-                        action = PropositionActionEnum.ADD;
-                    } else if (synonymProp.isToRemove()) {
-                        action = PropositionActionEnum.DELETE;
-                    } else {
-                        action = PropositionActionEnum.UPDATE;
-                    }
-
-                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                    propositionDetail.setIdProposition(propositionID);
-                    propositionDetail.setAction(action.name());
-                    propositionDetail.setCategorie(PropositionCategoryEnum.SYNONYME.name());
-                    propositionDetail.setLang(synonymProp.getLang());
-                    propositionDetail.setValue(synonymProp.getLexicalValue());
-                    propositionDetail.setOldValue(synonymProp.getOldValue());
-                    propositionDetail.setStatus(synonymProp.getStatus());
-                    propositionDetail.setHiden(synonymProp.isHiden());
-                    propositionDetail.setIdTerm(synonymProp.getIdTerm());
-                    propositionDetailHelper.createNewPropositionDetail(propositionDetail);
-                }
+                saveSynonyms(propositionSaved.getId(), synonymProp);
             }
         }
 
         if (!CollectionUtils.isEmpty(proposition.getTraductionsProp())) {
-            for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
+            log.debug("Enregistrement des traductions présents dans la proposition");
+            for (var traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd() || traductionProp.isToUpdate() || traductionProp.isToRemove()) {
-                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                    PropositionActionEnum action;
+                    var propositionDetail = new PropositionModificationDetail();
+
                     if (traductionProp.isToAdd()) {
-                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setAction(PropositionActionEnum.ADD.name());
                         propositionDetail.setOldValue(traductionProp.getLexicalValue());
                     } else if (traductionProp.isToRemove()) {
-                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setAction(PropositionActionEnum.DELETE.name());
                         propositionDetail.setOldValue(traductionProp.getOldValue());
                     } else {
-                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setAction(PropositionActionEnum.UPDATE.name());
                         propositionDetail.setOldValue(traductionProp.getOldValue());
                     }
 
-                    propositionDetail.setIdProposition(propositionID);
-                    propositionDetail.setAction(action.name());
+                    propositionDetail.setIdProposition(propositionSaved.getId());
                     propositionDetail.setCategorie(PropositionCategoryEnum.TRADUCTION.name());
                     propositionDetail.setLang(traductionProp.getLang());
                     propositionDetail.setValue(traductionProp.getLexicalValue());
                     propositionDetail.setIdTerm(traductionProp.getIdTerm());
-                    propositionDetailHelper.createNewPropositionDetail(propositionDetail);
+                    propositionModificationDetailRepository.save(propositionDetail);
                 }
             }
         }
 
         if (proposition.getNote() != null) {
-            noteManagement(propositionID, proposition.getNote(), PropositionCategoryEnum.NOTE.name());
+            log.debug("Enregistrement des notes présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getNote(), PropositionCategoryEnum.NOTE.name());
         }
 
         if (proposition.getChangeNote() != null) {
-            noteManagement(propositionID, proposition.getChangeNote(), PropositionCategoryEnum.CHANGE_NOTE.name());
+            log.debug("Enregistrement des changes notes présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getChangeNote(), PropositionCategoryEnum.CHANGE_NOTE.name());
         }
 
         if (proposition.getDefinition() != null) {
-            noteManagement(propositionID, proposition.getDefinition(), PropositionCategoryEnum.DEFINITION.name());
+            log.debug("Enregistrement des définitions présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getDefinition(), PropositionCategoryEnum.DEFINITION.name());
         }
 
         if (proposition.getEditorialNote() != null) {
-            noteManagement(propositionID, proposition.getEditorialNote(), PropositionCategoryEnum.EDITORIAL_NOTE.name());
+            log.debug("Enregistrement des editorials notes présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getEditorialNote(), PropositionCategoryEnum.EDITORIAL_NOTE.name());
         }
 
         if (proposition.getExample() != null) {
-            noteManagement(propositionID, proposition.getExample(), PropositionCategoryEnum.EXAMPLE.name());
+            log.debug("Enregistrement des examples présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getExample(), PropositionCategoryEnum.EXAMPLE.name());
         }
 
         if (proposition.getHistoryNote() != null) {
-            noteManagement(propositionID, proposition.getHistoryNote(), PropositionCategoryEnum.HISTORY.name());
+            log.debug("Enregistrement des histories notes présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getHistoryNote(), PropositionCategoryEnum.HISTORY.name());
         }
 
         if (proposition.getScopeNote() != null) {
-            noteManagement(propositionID, proposition.getScopeNote(), PropositionCategoryEnum.SCOPE.name());
+            log.debug("Enregistrement des scopes présents dans la proposition");
+            noteManagement(propositionSaved.getId(), proposition.getScopeNote(), PropositionCategoryEnum.SCOPE.name());
         }
 
         return true;
     }
 
-    private void noteManagement(int propositionID, NotePropBean note, String category) {
-        if (note.isToAdd() || note.isToUpdate() || note.isToRemove()) {
-            var propositionDetail = new PropositionDetailDao();
+    private void saveSynonyms(Integer propositionId, SynonymPropBean synonymProp) {
+        if (synonymProp.isToAdd() || synonymProp.isToUpdate() || synonymProp.isToRemove()) {
             PropositionActionEnum action;
-            if (note.isToAdd()) {
+            if (synonymProp.isToAdd()) {
                 action = PropositionActionEnum.ADD;
-                propositionDetail.setOldValue(note.getLexicalValue());
-            } else if (note.isToRemove()) {
+            } else if (synonymProp.isToRemove()) {
                 action = PropositionActionEnum.DELETE;
-                propositionDetail.setOldValue(note.getOldValue());
             } else {
                 action = PropositionActionEnum.UPDATE;
-                propositionDetail.setOldValue(note.getOldValue());
             }
 
-            propositionDetail.setIdProposition(propositionID);
-            propositionDetail.setAction(action.name());
-            propositionDetail.setCategorie(category);
-            propositionDetail.setLang(note.getLang());
-            propositionDetail.setValue(note.getLexicalValue());
-            propositionDetail.setIdTerm(note.getIdTerm());
-            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
+            propositionModificationDetailRepository.save(PropositionModificationDetail.builder()
+                    .idProposition(propositionId)
+                    .action(action.name())
+                    .categorie(PropositionCategoryEnum.SYNONYME.name())
+                    .lang(synonymProp.getLang())
+                    .value(synonymProp.getLexicalValue())
+                    .oldValue(synonymProp.getOldValue())
+                    .status(synonymProp.getStatus())
+                    .hiden(synonymProp.isHiden())
+                    .idTerm(synonymProp.getIdTerm())
+                    .build());
         }
     }
 
@@ -262,39 +237,44 @@ public class PropositionService implements Serializable {
         if (FacesContext.getCurrentInstance() == null) {
             return "";
         }
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-        return path;
+
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin")
+                + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
 
     public int searchNbrNewProposition() {
-        if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) return 0;
-        return propositionHelper.searchNbrPorpositoinByStatus(selectedTheso.getCurrentIdTheso(), PropositionStatusEnum.ENVOYER.name());
+
+        log.debug("Recherche du nombre des nouvelles propositions");
+        if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso()))
+            return 0;
+
+        var result = propositionModificationRepository.findAllByIdThesoAndStatus(selectedTheso.getCurrentIdTheso(),
+                PropositionStatusEnum.ENVOYER.name());
+        return CollectionUtils.isEmpty(result) ? 0 : result.size();
     }
 
-    public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
-        //return true;
-        if (currentUser.getNodeUser() != null) {
-            if(!currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)) {
-                return mailBean.sendMail(emailDestination, subject, contentFile);
-            }
-            if (currentUser.getNodeUser().isAlertMail()) {
-                return mailBean.sendMail(emailDestination, subject, contentFile);
-            } else {
-                return true;
-            }
+    public void sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
+        if (currentUser.getNodeUser() != null
+                && !currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)
+                && currentUser.getNodeUser().isAlertMail()) {
+            new Thread(() -> mailBean.sendMail(emailDestination, subject, contentFile)).start();
         }
-        return mailBean.sendMail(emailDestination, subject, contentFile);
     }
 
     public void refuserProposition(PropositionDao propositionSelected, String commentaireAdmin) {
 
-        propositionHelper.updateProposition(PropositionStatusEnum.REFUSER.name(), currentUser.getNodeUser().getName(),
-                propositionSelected.getId(), commentaireAdmin);
+        var propositionSaved = propositionModificationRepository.findById(propositionSelected.getId());
+        if (propositionSaved.isPresent()) {
+            propositionSaved.get().setStatus(PropositionStatusEnum.REFUSER.name());
+            propositionSaved.get().setApprouvePar(currentUser.getNodeUser().getName());
+            propositionSaved.get().setDate(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()));
+            propositionSaved.get().setAdminComment(commentaireAdmin);
+            propositionModificationRepository.save(propositionSaved.get());
+        }
 
         try {
-            String subject = "[Opentheso] Résultat de votre proposition";
-            String contentFile = "<html><body>"
+            var subject = "[Opentheso] Résultat de votre proposition";
+            var contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
                     + " a été refusée par les administrateurs.<br/>"
@@ -307,14 +287,14 @@ public class PropositionService implements Serializable {
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+            MessageUtils.showErrorMessage("Erreur detectée pendant l'envoie du mail de notification!");
         }
     }
 
     public void supprimerPropostion(PropositionDao propositionSelected) {
 
-        propositionDetailHelper.supprimerPropositionDetails(propositionSelected.getId());
-        propositionHelper.supprimerProposition(propositionSelected.getId());
+        propositionModificationDetailRepository.deleteById(propositionSelected.getId());
+        propositionModificationRepository.deleteById(propositionSelected.getId());
     }
 
     public void insertProposition(Proposition proposition, PropositionDao propositionSelected,
@@ -323,19 +303,18 @@ public class PropositionService implements Serializable {
                                   boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
 
         if (prefTermeAccepted && proposition.isUpdateNomConcept()) {
-            Term term = termHelper.getThisTerm(
-                    propositionSelected.getIdConcept(),
-                    propositionSelected.getIdTheso(),
+            Term term = termService.getThisTerm(propositionSelected.getIdConcept(), propositionSelected.getIdTheso(),
                     propositionSelected.getLang());
+
             term.setLexicalValue(proposition.getNomConceptProp());
-            termHelper.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
+            termService.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
 
             tree.reset();
             tree.initialise(propositionSelected.getIdTheso(), propositionSelected.getLang());
             roleOnThesoBean.initNodePref(propositionSelected.getIdTheso());
             selectedTheso.setSelectedIdTheso(propositionSelected.getIdTheso());
             selectedTheso.setSelectedLang(propositionSelected.getLang());
-            selectedTheso.setSelectedThesoForSearch();
+            selectedTheso.setSelectedThesaurusForSearch();
             indexSetting.setIsSelectedTheso(true);
         }
 
@@ -343,45 +322,26 @@ public class PropositionService implements Serializable {
             for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
                 if (synonymPropBean.isToAdd()) {
 
-                    String idTerm = termHelper.getIdTermOfConcept(propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
-
-                    if (!termHelper.addNonPreferredTerm(
-                            idTerm,
-                            synonymPropBean.getLexicalValue(),
-                            synonymPropBean.getLang().toLowerCase(),
-                            selectedTheso.getCurrentIdTheso(),
-                            "",
-                            synonymPropBean.isHiden() ? "Hidden" : "USE",
-                            synonymPropBean.isHiden(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La création du nouveau synonyme a échoué !");
-                        return;
-                    }
+                    var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept());
+                    var term = Term.builder()
+                            .idTerm(preferredTerm.map(PreferredTerm::getIdTerm).orElse(null))
+                            .lexicalValue(synonymPropBean.getLexicalValue())
+                            .lang(synonymPropBean.getLang().toLowerCase())
+                            .idThesaurus(selectedTheso.getCurrentIdTheso())
+                            .hidden(synonymPropBean.isHiden())
+                            .status(synonymPropBean.isHiden() ? "Hidden" : "USE")
+                            .build();
+                    log.debug("Enregistrement du synonyme");
+                    nonPreferredTermService.addNonPreferredTerm(term, currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToRemove()) {
-
-                    if (!termHelper.deleteNonPreferedTerm(
-                            synonymPropBean.getIdTerm(),
-                            synonymPropBean.getLang().toLowerCase(),
-                            synonymPropBean.getLexicalValue(),
-                            selectedTheso.getCurrentIdTheso(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La suppression du synonyme a échoué !");
-                        return;
-                    }
+                    log.debug("Suppression du non preferred term '{}'", synonymPropBean.getLexicalValue());
+                    nonPreferredTermService.deleteNonPreferredTerm(synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
+                            synonymPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                 } else if (synonymPropBean.isToUpdate()) {
-
-                    if (!termHelper.updateTermSynonyme(
-                            synonymPropBean.getOldValue(),
-                            synonymPropBean.getLexicalValue(),
-                            synonymPropBean.getIdTerm(),
-                            synonymPropBean.getLang().toLowerCase(),
-                            selectedTheso.getCurrentIdTheso(),
-                            synonymPropBean.isHiden(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La modification du synonyme a échoué !");
+                    if (nonPreferredTermService.updateNonPreferredTerm(synonymPropBean.getOldValue(), synonymPropBean.getLexicalValue(),
+                            synonymPropBean.getIdTerm(), synonymPropBean.getLang().toLowerCase(),
+                            selectedTheso.getCurrentIdTheso(), synonymPropBean.isHiden(), currentUser.getNodeUser().getIdUser())) {
+                        MessageUtils.showErrorMessage("La modification du synonyme a échoué !");
                         return;
                     }
                 }
@@ -391,41 +351,21 @@ public class PropositionService implements Serializable {
         if (traductionAccepted && CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
             for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd()) {
-                    if (!termHelper.addTraduction(
-                            traductionProp.getLexicalValue(),
-                            traductionProp.getIdTerm(),
-                            traductionProp.getLang(),
-                            "", "",
-                            selectedTheso.getCurrentIdTheso(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "L'ajout d'une traduction a échouée !");
-                        return;
-                    }
+                    var term = Term.builder()
+                            .lexicalValue(traductionProp.getLexicalValue())
+                            .idTerm(traductionProp.getIdTerm())
+                            .lang(traductionProp.getLang().toLowerCase())
+                            .idThesaurus(selectedTheso.getCurrentIdTheso())
+                            .source("")
+                            .status("")
+                            .build();
+                    termService.addTermTraduction(term, currentUser.getNodeUser().getIdUser());
                 } else if (traductionProp.isToRemove()) {
-                    if (!termHelper.deleteTraductionOfTerm(
-                            traductionProp.getIdTerm(),
-                            traductionProp.getLexicalValue(),
-                            traductionProp.getLang(),
-                            selectedTheso.getCurrentIdTheso(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La suppression d'une traduction a échouée !");
-                        return;
-                    }
+                    termRepository.deleteByIdTermAndLangAndIdThesaurus(traductionProp.getIdTerm(),
+                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso());
                 } else if (traductionProp.isToUpdate()) {
-                    if (!termHelper.updateTraduction(
-                            traductionProp.getLexicalValue(),
-                            traductionProp.getIdTerm(),
-                            traductionProp.getLang(),
-                            selectedTheso.getCurrentIdTheso(),
-                            currentUser.getNodeUser().getIdUser())) {
-
-                        showMessage(FacesMessage.SEVERITY_ERROR, "La modification de la traduction "
-                                + traductionProp.getLexicalValue() + " (" + traductionProp.getLang()
-                                + ") a échouée !");
-                        return;
-                    }
+                    termService.updateTermTraduction(traductionProp.getLexicalValue(), traductionProp.getIdTerm(),
+                            traductionProp.getLang(), selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser());
                 }
             }
         }
@@ -449,7 +389,6 @@ public class PropositionService implements Serializable {
             } else if (proposition.getChangeNote().isToRemove()) {
                 deleteNote(proposition.getChangeNote());
             }
-
         }
 
         if (definitionAccepted && proposition.getDefinition() != null) {
@@ -460,7 +399,6 @@ public class PropositionService implements Serializable {
             } else if (proposition.getDefinition().isToRemove()) {
                 deleteNote(proposition.getDefinition());
             }
-
         }
 
         if (editorialNotesAccepted && proposition.getEditorialNote() != null) {
@@ -471,7 +409,6 @@ public class PropositionService implements Serializable {
             } else if (proposition.getEditorialNote().isToRemove()) {
                 deleteNote(proposition.getEditorialNote());
             }
-
         }
 
         if (examplesAccepted && proposition.getExample() != null) {
@@ -493,7 +430,6 @@ public class PropositionService implements Serializable {
             } else if (proposition.getScopeNote().isToRemove()) {
                 deleteNote(proposition.getScopeNote());
             }
-
         }
 
         if (historyAccepted && proposition.getHistoryNote() != null) {
@@ -504,23 +440,27 @@ public class PropositionService implements Serializable {
             } else if (proposition.getHistoryNote().isToRemove()) {
                 deleteNote(proposition.getHistoryNote());
             }
-
         }
 
-        conceptHelper.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(),
-                currentUser.getNodeUser().getIdUser());
+        conceptService.updateDateOfConcept(propositionSelected.getIdTheso(), propositionSelected.getLang(), currentUser.getNodeUser().getIdUser());
 
-        ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
-        ///////////////  
+        conceptDcTermRepository.save(ConceptDcTerm.builder()
+                .name(DCMIResource.CONTRIBUTOR)
+                .value(currentUser.getNodeUser().getName())
+                .idConcept(propositionSelected.getIdConcept())
+                .idThesaurus(propositionSelected.getIdTheso())
+                .build());
 
-        propositionHelper.updateProposition(PropositionStatusEnum.APPROUVER.name(), currentUser.getNodeUser().getName(),
-                propositionSelected.getId(), commentaireAdmin);
+        var propositionSaved = propositionModificationRepository.findById(propositionSelected.getId());
+        if (propositionSaved.isPresent()) {
+            propositionSaved.get().setStatus(PropositionStatusEnum.APPROUVER.name());
+            propositionSaved.get().setApprouvePar(currentUser.getNodeUser().getName());
+            propositionSaved.get().setDate(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()));
+            propositionSaved.get().setAdminComment(commentaireAdmin);
+            propositionModificationRepository.save(propositionSaved.get());
+        }
 
-        conceptView.getConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept(),
-                propositionSelected.getLang(), currentUser);
+        conceptView.getConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept(), propositionSelected.getLang(), currentUser);
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
@@ -534,38 +474,25 @@ public class PropositionService implements Serializable {
                     + "<br/>"
                     + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention."
                     + "<br/><br/> Cordialement,<br/>"
-                    + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
+                    + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath()
+                    + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+            MessageUtils.showErrorMessage("Erreur détectée pendant l'envoie du mail de notification!");
         }
     }
 
     private void deleteNote(NotePropBean notePropBean) {
-        if (!noteHelper.deleteThisNote(
-                notePropBean.getIdNote(),
-                notePropBean.getIdConcept(),
-                notePropBean.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                notePropBean.getNoteTypeCode(),
-                notePropBean.getLexicalValue(),
-                currentUser.getNodeUser().getIdUser())) {
-
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+        noteService.deleteThisNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(), notePropBean.getNoteTypeCode(), notePropBean.getLexicalValue(),
+                currentUser.getNodeUser().getIdUser());
     }
 
     private void updateNote(NotePropBean notePropBean) {
-        if (!noteHelper.updateNote(
-                notePropBean.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                notePropBean.getIdConcept(),
-                notePropBean.getLang(),
-                selectedTheso.getCurrentIdTheso(),
-                notePropBean.getLexicalValue(),
-                notePropBean.getNoteTypeCode(),
-                currentUser.getNodeUser().getIdUser())) {
+        if (!noteService.updateNote(notePropBean.getIdNote(), notePropBean.getIdConcept(), notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), notePropBean.getNoteSource(),
+                notePropBean.getNoteTypeCode(), currentUser.getNodeUser().getIdUser())) {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -573,41 +500,36 @@ public class PropositionService implements Serializable {
     }
 
     private void addNewNote(NotePropBean notePropBean, String typeNote) {
-        if (!noteHelper.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
-                selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), typeNote, "", currentUser.getNodeUser().getIdUser())) {
-
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+        noteService.addNote(conceptView.getNodeConcept().getConcept().getIdConcept(), notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(), notePropBean.getLexicalValue(), typeNote, "",
+                currentUser.getNodeUser().getIdUser());
     }
 
     public boolean updateNomConcept(String newConceptName) {
 
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
-        String idTerm = termHelper.isTermEqualTo(
-                newConceptName, selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-
-        if (idTerm != null) {
-            String label = termHelper.getLexicalValue(idTerm,
+        var value = fr.cnrs.opentheso.utils.StringUtils.convertString(newConceptName);
+        var termFound = termRepository.findByLexicalValueAndLangAndIdThesaurus(value, selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        if (termFound.isPresent()) {
+            var term = termRepository.findByIdTermAndIdThesaurusAndLang(termFound.get().getIdTerm(),
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            var label = term.isPresent() ? term.get().getLexicalValue() : "";
+            MessageUtils.showWarnMessage("Le label '" + label + "' existe déjà !");
             return false;
         }
 
-        if (termHelper.isAltLabelExist(idTerm,
-                selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return false;
-        }
         return true;
     }
 
-    private void showMessage(FacesMessage.Severity type, String message) {
-        FacesMessage msg = new FacesMessage(type, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
+    public List<fr.cnrs.opentheso.entites.Proposition> getPropositionByConceptAndThesaurus(String idThesaurus, String idConcept) {
+
+        log.debug("Recherche des propositions pour le concept id {} ({})", idConcept, idThesaurus);
+        var propositions = propositionRepository.findAllByIdConceptAndIdThesaurusOrderByCreated(idThesaurus, idConcept);
+        if (CollectionUtils.isEmpty(propositions)) {
+            log.debug("Aucune proposition n'est trouvée pour le concept id {}", idConcept);
+            return List.of();
+        }
+        return propositions;
     }
 
     public Proposition selectProposition(NodeConcept nodeConcept) {
@@ -667,7 +589,8 @@ public class PropositionService implements Serializable {
     }
 
     public void preparerPropositionSelect(Proposition proposition, PropositionDao propositionDao) {
-        List<PropositionDetailDao> propositionDetails = propositionDetailHelper.getPropositionDetail(propositionDao.getId());
+
+        var propositionDetails = propositionModificationDetailRepository.findAllByIdProposition(propositionDao.getId());
 
         proposition.setConceptID(conceptView.getNodeConcept().getConcept().getIdConcept());
         proposition.setNomConceptProp(null);
@@ -704,27 +627,8 @@ public class PropositionService implements Serializable {
                     break;
             }
         }
-     /*   for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotesTerm()) {
-            switch (nodeNote.getNotetypecode()) {
-                case "changeNote":
-                    proposition.setChangeNote(toNotePropBean(nodeNote));
-                    break;
-                case "definition":
-                    proposition.setDefinition(toNotePropBean(nodeNote));
-                    break;
-                case "editorialNote":
-                    proposition.setEditorialNote(toNotePropBean(nodeNote));
-                    break;
-                case "example":
-                    proposition.setExample(toNotePropBean(nodeNote));
-                    break;
-                case "historyNote":
-                    proposition.setHistoryNote(toNotePropBean(nodeNote));
-                    break;
-            }
-        }*/
 
-        for (PropositionDetailDao propositionDetailDao : propositionDetails) {
+        for (var propositionDetailDao : propositionDetails) {
             if (PropositionCategoryEnum.NOM.name().equals(propositionDetailDao.getCategorie())) {
                 proposition.setUpdateNomConcept(true);
                 proposition.setNomConceptProp(propositionDetailDao.getValue());
@@ -933,7 +837,7 @@ public class PropositionService implements Serializable {
         }
 
         if (propositionDao.getStatus().equals(PropositionStatusEnum.ENVOYER.name())) {
-            propositionHelper.setLuStatusProposition(propositionDao.getId());
+            propositionModificationRepository.updateStatus(propositionDao.getId(), PropositionStatusEnum.LU.name());
         }
     }
 
@@ -976,21 +880,172 @@ public class PropositionService implements Serializable {
 
     public List<PropositionDao> searchAllPropositions(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
-        propositions.addAll(searchPropositionsNonTraitter(idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(PropositionStatusEnum.APPROUVER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(PropositionStatusEnum.REFUSER.name(), idTheso));
+        propositions.addAll(searchPropositionsNonTraitee(idTheso));
+        propositions.addAll(getAllPropositionByStatus(PropositionStatusEnum.APPROUVER.name(), idTheso));
+        propositions.addAll(getAllPropositionByStatus(PropositionStatusEnum.REFUSER.name(), idTheso));
         return propositions;
     }
 
-    public List<PropositionDao> searchPropositionsNonTraitter(String idTheso) {
+    public List<PropositionDao> searchPropositionsNonTraitee(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(PropositionStatusEnum.ENVOYER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(PropositionStatusEnum.LU.name(), idTheso));
+        propositions.addAll(getAllPropositionByStatus(PropositionStatusEnum.ENVOYER.name(), idTheso));
+        propositions.addAll(getAllPropositionByStatus(PropositionStatusEnum.LU.name(), idTheso));
         return propositions;
     }
 
-    public List<PropositionDao> searchOldPropositions(String idTheso) {
-        return propositionHelper.getOldPropositionByStatus(idTheso);
+    private List<PropositionDao> getAllPropositionByStatus(String status, String idTheso) {
+        return propositionModificationRepository
+                .findAllPropositionsByStatusAndTheso(status, idTheso)
+                .stream()
+                .map(this::mapToDao)
+                .toList();
+    }
+
+    private PropositionDao mapToDao(PropositionProjection projection) {
+        PropositionDao dao = new PropositionDao();
+        dao.setId(projection.getId());
+        dao.setIdConcept(projection.getIdConcept());
+        dao.setLang(projection.getLang());
+        dao.setIdTheso(projection.getIdTheso());
+        dao.setStatus(projection.getStatus());
+        dao.setDatePublication(projection.getDate());
+        dao.setNom(projection.getNom());
+        dao.setEmail(projection.getEmail());
+        dao.setCommentaire(projection.getCommentaire());
+        dao.setUserAction(projection.getApprouvePar());
+        dao.setDateUpdate(projection.getApprouveDate());
+        dao.setAdminComment(projection.getAdminComment());
+        dao.setNomConcept(projection.getLexicalValue());
+        dao.setCodeDrapeau(projection.getCodePays());
+        return dao;
+    }
+
+    public void createProposition(PropositionFromApi proposition, User user) {
+
+        var thesaurusLang = preferenceService.getWorkLanguageOfThesaurus(proposition.getIdTheso());
+
+        int propositionId = propositionModificationRepository.save(PropositionModification.builder()
+                        .nom(user.getUsername())
+                        .email(user.getMail())
+                        .commentaire(proposition.getCommentaire())
+                        .date(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()))
+                        .idConcept(proposition.getConceptID())
+                        .idTheso(proposition.getIdTheso())
+                        .lang(thesaurusLang)
+                        .status(PropositionStatusEnum.ENVOYER.name())
+                        .build())
+                .getId();
+
+        saveTerme(proposition, propositionId, thesaurusLang);
+
+        if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
+            saveTraductions(proposition, propositionId, thesaurusLang);
+        }
+
+        if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
+            saveSynonymes(proposition, propositionId);
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
+            for (NotePropBean note : proposition.getNotes()) {
+                noteManagement(propositionId, note, PropositionCategoryEnum.NOTE.name());
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (NotePropBean definition : proposition.getDefinitions()) {
+                noteManagement(propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
+            }
+        }
+    }
+
+    public void updateThesaurusId(String oldIdThesaurus, String newIdThesaurus) {
+
+        log.debug("Mise à jour du thésaurus id pour les propositions présentes dans le thésaurus id {}", oldIdThesaurus);
+        propositionRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+        propositionModificationRepository.updateThesaurusId(newIdThesaurus, oldIdThesaurus);
+    }
+
+    public void deleteByThesaurus(String idThesaurus) {
+
+        log.debug("Suppression des propositions présentes dans le thésaurus id {}", idThesaurus);
+        propositionModificationDetailRepository.deleteByIdThesaurus(idThesaurus);
+        propositionModificationRepository.deleteAllByIdTheso(idThesaurus);
+        propositionRepository.deleteAllByIdThesaurus(idThesaurus);
+    }
+
+    private void saveTerme(PropositionFromApi proposition,  Integer propositionId, String thesaurusLang) {
+        var prefLabel = proposition.getTraductionsProp().stream()
+                .filter(element -> element.getLang().equals(thesaurusLang))
+                .findFirst();
+        prefLabel.ifPresent(traductionPropBean -> propositionModificationDetailRepository.save(PropositionModificationDetail.builder()
+                .idProposition(propositionId)
+                .action(PropositionActionEnum.UPDATE.name())
+                .categorie(PropositionCategoryEnum.NOM.name())
+                .lang(traductionPropBean.getLang())
+                .value(traductionPropBean.getLexicalValue())
+                .oldValue(traductionPropBean.getOldValue())
+                .build()));
+    }
+
+    private void saveTraductions(PropositionFromApi proposition, Integer propositionId,  String thesaurusLang) {
+
+        var traduction = proposition.getTraductionsProp().stream().filter(element -> !element.getLang().equals(thesaurusLang)).findFirst();
+
+        if (traduction.isPresent()) {
+            if (traduction.get().isToAdd() || traduction.get().isToUpdate() || traduction.get().isToRemove()) {
+                var propositionDetail = new PropositionModificationDetail();
+                if (traduction.get().isToAdd()) {
+                    propositionDetail.setAction(PropositionActionEnum.ADD.name());
+                    propositionDetail.setOldValue(traduction.get().getLexicalValue());
+                } else if (traduction.get().isToRemove()) {
+                    propositionDetail.setAction(PropositionActionEnum.DELETE.name());
+                    propositionDetail.setOldValue(traduction.get().getOldValue());
+                } else {
+                    propositionDetail.setAction(PropositionActionEnum.UPDATE.name());
+                    propositionDetail.setOldValue(traduction.get().getOldValue());
+                }
+
+                var preferredTerm = preferredTermRepository.findByIdThesaurusAndIdConcept(proposition.getIdTheso(), proposition.getConceptID());
+                if (preferredTerm.isPresent()) {
+                    propositionDetail.setIdProposition(propositionId);
+                    propositionDetail.setCategorie(PropositionCategoryEnum.TRADUCTION.name());
+                    propositionDetail.setLang(traduction.get().getLang());
+                    propositionDetail.setValue(traduction.get().getLexicalValue());
+                    propositionDetail.setIdTerm(preferredTerm.get().getIdTerm());
+                    propositionModificationDetailRepository.save(propositionDetail);
+                }
+            }
+        }
+    }
+
+    private void saveSynonymes(PropositionFromApi proposition, Integer propositionId) {
+        for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
+            saveSynonyms(propositionId, synonymProp);
+        }
+    }
+
+    private void noteManagement(int propositionID, NotePropBean note, String category) {
+        if (note.isToAdd() || note.isToUpdate() || note.isToRemove()) {
+            var propositionDetail = new PropositionModificationDetail();
+            if (note.isToAdd()) {
+                propositionDetail.setAction(PropositionActionEnum.ADD.name());
+                propositionDetail.setOldValue(note.getLexicalValue());
+            } else if (note.isToRemove()) {
+                propositionDetail.setAction(PropositionActionEnum.DELETE.name());
+                propositionDetail.setOldValue(note.getOldValue());
+            } else {
+                propositionDetail.setAction(PropositionActionEnum.UPDATE.name());
+                propositionDetail.setOldValue(note.getOldValue());
+            }
+
+            propositionDetail.setIdProposition(propositionID);
+            propositionDetail.setCategorie(category);
+            propositionDetail.setLang(note.getLang());
+            propositionDetail.setValue(note.getLexicalValue());
+            propositionDetail.setIdTerm(note.getIdTerm());
+            propositionModificationDetailRepository.save(propositionDetail);
+        }
     }
 
 }

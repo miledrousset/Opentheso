@@ -118,7 +118,7 @@
                                     <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
                                                           multiple="true"
                                                           filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
-                                        <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                        <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idGroup}"/>
                                     </p:selectCheckboxMenu>
                                 </div>
                             </div>
@@ -136,7 +136,22 @@
                                 <p:ajax  listener="#{viewExportBean.listenerForToogleClearHtmlCharacter()}"/>
                             </p:toggleSwitch>
                         </div>
-                    </div>                    
+                    </div>
+
+                    <!-- inclure les images -->
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="#{langueBean.getMsg('export.filterAddImage')}"
+                                          title="#{langueBean.getMsg('export.filterAddImageTooltip')} !!"/>
+                        </div>
+
+                        <div class="col-5">
+                            <p:toggleSwitch id="toggleFilterImage" value="#{viewExportBean.toogleExportImage}">
+                                <p:ajax  listener="#{viewExportBean.listenerForToogleAddImage()}"/>
+                            </p:toggleSwitch>
+                        </div>
+                    </div>
+
                 </p:panel>
 
 
@@ -179,7 +194,7 @@
                                         <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
                                                               multiple="true"
                                                               filter="true" filterMatchMode="startsWith" panelStyle="width: 21rem; font-size: 12px;" scrollHeight="250" padding="1rem" >
-                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idGroup}"/>
                                         </p:selectCheckboxMenu>
                                     </div>
                                 </div>
@@ -261,7 +276,7 @@
                                         <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
                                                               multiple="true"
                                                               filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
-                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idGroup}"/>
                                         </p:selectCheckboxMenu>
                                     </div>
                                 </div>
@@ -337,7 +352,7 @@
                             <div class="col-5">
                                 <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
                                                       filter="true" filterMatchMode="contains" panelStyle="width: 21rem; font-size: 0.8rem;" scrollHeight="250" >
-                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idGroup}"/>
                                 </p:selectCheckboxMenu>
                             </div>
                         </div>
@@ -386,9 +401,6 @@
                                          actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                          update="containerIndex"/>
 
-
-
-
                         <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
@@ -413,7 +425,7 @@
     </script>
 
 
-                                <p:dialog modal="true" widgetVar="statusDialog" header="    #{langueBean.getMsg('candidat.export')}     " draggable="false" closable="false" resizable="false"
+    <p:dialog modal="true" widgetVar="statusDialog" header="    #{langueBean.getMsg('candidat.export')}     " draggable="false" closable="false" resizable="false"
               style="width: 400px">
 
         <div id='laodingDiv' class="loader" >Loading...</div>

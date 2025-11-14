@@ -1,27 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-/**
- *
- * @author miledrousset
- */
-@Named(value = "profileBean")
+
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
+@Named(value = "profileBean")
 public class ProfileBean implements Serializable {
 
-    @Autowired @Lazy private MyAccountBean myAccountBean;
+    private final MyAccountBean myAccountBean;
  
     private boolean isMyAccountActive;
     private boolean isMyProjectActive;
@@ -33,26 +27,8 @@ public class ProfileBean implements Serializable {
     private String myProjectColor;
     private String usersColor;
     private String projectsColor;
-    private String thesaurusColor;    
+    private String thesaurusColor;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        myAccountColor = null;
-        myProjectColor = null;
-        usersColor = null;
-        projectsColor = null;
-        thesaurusColor = null;       
-    }
-    
-    @PostConstruct
-    public void postInit(){
-    }    
-    
-    public ProfileBean() {
-    }
 
     public void reset() {
         isMyAccountActive = true;
@@ -61,15 +37,10 @@ public class ProfileBean implements Serializable {
         isProjectsActive = false;
         isThesaurusActive = false;
 
-        
         // activation de la couleur par defaut
         resetColor();
         myAccountColor = "white";
-        myAccountBean.reset();
-    }
-
-    public boolean isIsMyAccountActive() {
-        return isMyAccountActive;
+        myAccountBean.loadDataPage();
     }
 
     public void setIsMyAccountActive(boolean isMyAccountActive) {
@@ -82,10 +53,6 @@ public class ProfileBean implements Serializable {
         myAccountColor = "white";      
     }
 
-    public boolean isIsMyProjectActive() {
-        return isMyProjectActive;
-    }
-
     public void setIsMyProjectActive(boolean isMyProjectActive) {
         this.isMyProjectActive = isMyProjectActive;
         isMyAccountActive = false;
@@ -94,10 +61,6 @@ public class ProfileBean implements Serializable {
         isThesaurusActive = false;
         resetColor();
         myProjectColor = "white";          
-    }
-
-    public boolean isIsUsersActive() {
-        return isUsersActive;
     }
 
     public void setIsUsersActive(boolean isUsersActive) {
@@ -110,10 +73,6 @@ public class ProfileBean implements Serializable {
         usersColor = "white";          
     }
 
-    public boolean isIsProjectsActive() {
-        return isProjectsActive;
-    }
-
     public void setIsProjectsActive(boolean isProjectsActive) {
         this.isProjectsActive = isProjectsActive;
         isMyAccountActive = false;
@@ -122,10 +81,6 @@ public class ProfileBean implements Serializable {
         isUsersActive = false;
         resetColor();
         projectsColor = "white";           
-    }
-
-    public boolean isIsThesaurusActive() {
-        return isThesaurusActive;
     }
 
     public void setIsThesaurusActive(boolean isThesaurusActive) {
@@ -137,51 +92,6 @@ public class ProfileBean implements Serializable {
         resetColor();
         thesaurusColor = "white";           
     }
-
-    public String getProjectsColor() {
-        return projectsColor;
-    }
-
-    public void setProjectsColor(String projectsColor) {
-        this.projectsColor = projectsColor;
-    }
-
-    public String getThesaurusColor() {
-        return thesaurusColor;
-    }
-
-    public void setThesaurusColor(String thesaurusColor) {
-        this.thesaurusColor = thesaurusColor;
-    }
-
-
-    
-    
-
-    public String getUsersColor() {
-        return usersColor;
-    }
-
-    public void setUsersColor(String usersColor) {
-        this.usersColor = usersColor;
-    }
-    
-
-    public String getMyProjectColor() {
-        return myProjectColor;
-    }
-
-    public void setMyProjectColor(String myProjectColor) {
-        this.myProjectColor = myProjectColor;
-    }
-
-    public String getMyAccountColor() {
-        return myAccountColor;
-    }
-
-    public void setMyAccountColor(String myAccountColor) {
-        this.myAccountColor = myAccountColor;
-    }
     
     private void resetColor(){
         myAccountColor = "#B3DDC4";
@@ -190,6 +100,4 @@ public class ProfileBean implements Serializable {
         projectsColor = "#B3DDC4";
         thesaurusColor = "#B3DDC4";
     }
-    
-    
 }

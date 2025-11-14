@@ -33,7 +33,7 @@
 
                 <p:commandButton class="btn btn-danger" title="Supprimer" oncomplete="PF('deleteNote').hide();"
                                  update="tabViewCandidat messageIndex" process="@this"
-                                 actionListener="#{noteBeanCandidat.deleteNote(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{noteBeanCandidat.deleteNote()}"/>
             </div>    
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

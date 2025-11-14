@@ -88,25 +88,25 @@ public class NodeConcept {
     }
 
     public void clear(){
-        if(nodeBT != null) nodeBT.clear();
         concept = null;
         term = null;
-        if(nodeNT != null) nodeNT.clear();
-        if(nodeRT != null) nodeRT.clear();
-        if(nodeEM != null) nodeEM.clear();
-        if(nodeNotesTerm != null) nodeNotesTerm.clear();
-        if(nodeNotesConcept != null) nodeNotesConcept.clear();
-        if(nodeNotes != null) nodeNotes.clear();        
-        if(nodeimages != null) nodeimages.clear();
-        if(nodeConceptGroup != null) nodeConceptGroup.clear();
-        if(nodeTermTraductions != null) nodeTermTraductions.clear();
-        if(nodeAlignments != null) nodeAlignments.clear();
-        if(nodeGps != null) nodeGps.clear();
-        if(replacedBy != null) replacedBy.clear();    
-        if(replaces != null) replaces.clear();    
-        if(nodeExternalResources != null) nodeExternalResources.clear(); 
-        if(nodeCustomRelations != null) nodeCustomRelations.clear(); 
-        if(dcElements != null) dcElements.clear();
+        nodeBT = new ArrayList<>();
+        nodeNT = new ArrayList<>();
+        nodeRT = new ArrayList<>();
+        nodeEM = new ArrayList<>();
+        nodeNotesTerm = new ArrayList<>();
+        nodeNotesConcept = new ArrayList<>();
+        nodeNotes = new ArrayList<>();
+        nodeimages = new ArrayList<>();
+        nodeConceptGroup = new ArrayList<>();
+        nodeTermTraductions = new ArrayList<>();
+        nodeAlignments = new ArrayList<>();
+        nodeGps = new ArrayList<>();
+        replacedBy = new ArrayList<>();
+        replaces = new ArrayList<>();
+        nodeExternalResources = new ArrayList<>();
+        nodeCustomRelations = new ArrayList<>();
+        dcElements = new ArrayList<>();
     }
     
 }

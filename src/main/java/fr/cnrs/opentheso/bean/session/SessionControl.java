@@ -1,17 +1,20 @@
 package fr.cnrs.opentheso.bean.session;
 
-import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
+import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenThesaurus;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesaurusBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
-import org.primefaces.PrimeFaces;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesaurusHomeBean;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UIViewRoot;
@@ -21,30 +24,29 @@ import jakarta.faces.component.html.HtmlSelectManyCheckbox;
 import jakarta.faces.component.html.HtmlSelectOneMenu;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 
 
-@Named(value = "sessionControl")
+@Getter
+@Setter
 @SessionScoped
+@AllArgsConstructor
+@Named(value = "sessionControl")
 public class SessionControl implements Serializable {
 
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private TreeGroups treeGroups;
-    @Autowired @Lazy private TreeConcepts treeConcepts;
-    @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private ListIndex listIndex;
-    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
-    @Autowired @Lazy private IndexSetting indexSetting;
-
-    @Autowired
-    private SelectedTheso selectedTheso;
+    private final Tree tree;
+    private final ListIndex listIndex;
+    private final TreeGroups treeGroups;
+    private final CurrentUser currentUser;
+    private final TreeConcepts treeConcepts;
+    private final IndexSetting indexSetting;
+    private final SelectedTheso selectedTheso;
+    private final RoleOnThesaurusBean roleOnThesaurusBean;
+    private final ViewEditorThesaurusHomeBean viewEditorThesaurusHomeBean;
+    private final CopyAndPasteBetweenThesaurus copyAndPasteBetweenThesaurus;
 
     
     public void isTimeout() throws IOException {
@@ -58,11 +60,11 @@ public class SessionControl implements Serializable {
             listIndex.reset();
             treeGroups.reset();
             treeConcepts.reset();
-            viewEditorThesoHomeBean.reset();
-            roleOnThesoBean.showListTheso(currentUser, selectedTheso);
-            copyAndPasteBetweenTheso.reset();
+            viewEditorThesaurusHomeBean.reset();
+            roleOnThesaurusBean.showListThesaurus(currentUser, selectedTheso.getCurrentIdTheso());
+            copyAndPasteBetweenThesaurus.reset();
             indexSetting.setIsThesoActive(true);
-            roleOnThesoBean.setAndClearThesoInAuthorizedList(selectedTheso);
+            roleOnThesaurusBean.setAndClearThesoInAuthorizedList(selectedTheso);
             PrimeFaces.current().ajax().update("containerIndex");
         }
 
@@ -89,20 +91,16 @@ public class SessionControl implements Serializable {
         while (childrenIt.hasNext()) {
             UIComponent component = childrenIt.next();
             if (component != null) {
-                if (component instanceof HtmlInputText) {
-                    HtmlInputText com = (HtmlInputText) component;
+                if (component instanceof HtmlInputText com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectOneMenu) {
-                    HtmlSelectOneMenu com = (HtmlSelectOneMenu) component;
+                if (component instanceof HtmlSelectOneMenu com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectBooleanCheckbox) {
-                    HtmlSelectBooleanCheckbox com = (HtmlSelectBooleanCheckbox) component;
+                if (component instanceof HtmlSelectBooleanCheckbox com) {
                     com.resetValue();
                 }
-                if (component instanceof HtmlSelectManyCheckbox) {
-                    HtmlSelectManyCheckbox com = (HtmlSelectManyCheckbox) component;
+                if (component instanceof HtmlSelectManyCheckbox com) {
                     com.resetValue();
                 }
 

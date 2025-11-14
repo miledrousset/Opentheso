@@ -51,7 +51,7 @@
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('addNarrowerLink').hide();" id="addNarrowerLinkBtn"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{narrowerBean.addNewNarrowerLink(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{narrowerBean.addNewNarrowerLink()}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-8">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}"  title="th680"
-                                 style="width: 100%;" value="#{setAlignmentSourceBean.sourceIdTheso}" />
+                                 style="width: 100%;" value="#{setAlignmentSourceBean.sourceIdThesaurus}" />
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
                 <p:commandButton value="#{langueBean.getMsg('btnAdd')}" update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('addSource').hide();" ajax="true" process="@form"
                                  styleClass="ui-button-success" icon="pi pi-check"
-                                 actionListener="#{setAlignmentSourceBean.addAlignmentSource(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{setAlignmentSourceBean.addAlignmentSource()}"/>
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

@@ -2,19 +2,23 @@ package fr.cnrs.opentheso.entites;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_group_label")
@@ -27,5 +31,14 @@ public class UserGroupLabel implements Serializable {
 
     @Column(name = "label_group")
     private String label;
+
+    @OneToMany(mappedBy = "idGroup", fetch = FetchType.EAGER)
+    private List<UserGroupThesaurus> thesaurusLinks;
+
+
+    public UserGroupLabel(Integer id, String label) {
+        this.id = id;
+        this.label = label;
+    }
 
 }

@@ -1,10 +1,10 @@
 package fr.cnrs.opentheso.services.exports.pdf;
 
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
-
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -39,13 +40,15 @@ public class WriteAlphaPDF {
     private final static String USE = TAB_NIVEAU + "USE: ";
     private final static String GPS = TAB_NIVEAU + "GPS: ";
 
+    private boolean isToogleExportImage;
+
     @Autowired
     private UriHelper uriHelper;
 
 
     public void writeAlphabetiquePDF(SKOSXmlDocument xmlDocument, List<Paragraph> paragraphs, List<Paragraph> paragraphTradList,
-            String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings) {
-
+                                     String codeLanguage1, String codeLanguage2, WritePdfSettings writePdfSettings, boolean isToogleExportImage) {
+        this.isToogleExportImage = isToogleExportImage;
         var concepts = xmlDocument.getConceptList();
         List<String> resourceChecked = new ArrayList<>();
         HashMap<String, List<Integer>> traductions = new HashMap<>();
@@ -82,7 +85,8 @@ public class WriteAlphaPDF {
             addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2, writePdfSettings);
             addMatchs(paragraphs, concept.getMatchList(), writePdfSettings);
             addGpsCoordiantes(paragraphs, concept.getGpsCoordinates(), writePdfSettings);
-            addImages(paragraphs, concept.getNodeImages(), writePdfSettings);
+            if(isToogleExportImage)
+                addImages(paragraphs, concept.getNodeImages(), writePdfSettings);
         }
     }
 
@@ -235,6 +239,36 @@ public class WriteAlphaPDF {
     }
 
     private void addImages(List<Paragraph> paragraphs, List<NodeImage> images, WritePdfSettings writePdfSettings) {
+        if (CollectionUtils.isNotEmpty(images)) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
+            for (NodeImage imageElement : images) {
+                if (imageElement.getUri() != null && !imageElement.getUri().isEmpty()) {
+                    try {
+                        // Téléchargement de l'image
+                        URL imageUrl = new URL(imageElement.getUri());
+                        Image image = Image.getInstance(imageUrl);
+
+                        // Redimensionnement
+                        float scaleFactor = writePdfSettings.resiseImage(image);
+                        if (scaleFactor > 0) {
+                            image.scaleAbsolute(image.getWidth() / scaleFactor, image.getHeight() / scaleFactor);
+                            // Ajout de l'image au paragraphe avec indentation
+                            paragraphs.add(new Paragraph(new Chunk(image, 11, 0, true)));
+                        } else {
+                            paragraphs.add(new Paragraph("Erreur de redimensionnement de l'image : " + imageElement.getUri()));
+                        }
+                    } catch (BadElementException | IOException ex) {
+                        paragraphs.add(new Paragraph("Erreur de téléchargement de l'image (image vide) : " + imageElement.getUri()));
+                    }
+                } else {
+                    paragraphs.add(new Paragraph("Image invalide : " + imageElement.getUri()));
+                }
+            }
+        }
+    }
+
+    /*
+    private void addImages(List<Paragraph> paragraphs, List<NodeImage> images, WritePdfSettings writePdfSettings) {
 
         if (CollectionUtils.isNotEmpty(images)) {
             paragraphs.add(new Paragraph(Chunk.NEWLINE));
@@ -247,5 +281,5 @@ public class WriteAlphaPDF {
                 }
             });
         }
-    }
+    }*/
 }

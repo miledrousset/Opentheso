@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
 
@@ -52,7 +52,7 @@
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
 
-                                <h:panelGroup rendered="#{(selectedTheso.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}" >
+                                <h:panelGroup rendered="#{(selectedThesaurus.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}" >
                                     <div class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
                                         <ui:include src="actionsOnThisTheso.xhtml" />
                                     </div>
@@ -171,7 +171,7 @@
                                             <p:panel>
                                                 <h6 style="color: #43B572; font-weight: bold; margin-top: 10px">Liste des thésaurus</h6>
                                                 <h:outputText value="Veuillez selectionez un thésaurus : " />
-                                                <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
+                                                <p:dataTable var="thes" value="#{atelierThesBean.nodeListThesaurus}"
                                                              selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px" lazy="false">
                                                     <p:column selectionBox="true" style="width: 35px; text-align: center" />
                                                     <p:column headerText="Id">

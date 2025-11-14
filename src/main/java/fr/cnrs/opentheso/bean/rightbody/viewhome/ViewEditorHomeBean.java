@@ -1,67 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.repositories.HtmlPageHelper;
-import fr.cnrs.opentheso.repositories.PreferencesHelper;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.services.HomePageService;
+import fr.cnrs.opentheso.utils.MessageUtils;
+
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
 import java.io.Serializable;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+@Getter
+@Setter
 @SessionScoped
+@RequiredArgsConstructor
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
-    @Value("${settings.workLanguage:fr}")
-    private String workLanguage;
+    private final HomePageService homePageService;
+    private final SelectedTheso selectedTheso;
 
-    @Autowired @Lazy
-    private LanguageBean languageBean;
+    private boolean isViewPlainText, isInEditing, isInEditingHomePage, isInEditingGoogleAnalytics;
+    private String text, colorOfHtmlButton, colorOfTextButton, codeGoogleAnalitics;
 
-    @Autowired
-    private HtmlPageHelper htmlPageHelper;
 
-    @Autowired
-    private PreferencesHelper preferencesHelper;
-
-    private boolean isViewPlainText = false;
-    private String text;
-
-    private boolean isInEditing;
-    private String colorOfHtmlButton;
-    private String colorOfTextButton;
-
-    private boolean isInEditingHomePage;
-
-    private String codeGoogleAnalitics;
-    private boolean isInEditingGoogleAnalytics;
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
-
-    public void clear() {
-        text = null;
-        colorOfHtmlButton = null;
-        colorOfTextButton = null;
-        codeGoogleAnalitics = null;
-    }
 
     public void reset() {
         isInEditing = false;
@@ -70,21 +40,13 @@ public class ViewEditorHomeBean implements Serializable {
         codeGoogleAnalitics = null;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
-        //selectedTheso.setOptionThesoSelected("Option1");
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     public void initText() {
-        String lang = languageBean.getIdLangue().toLowerCase();
-        if (lang == null || lang.isEmpty()) {
-            lang = workLanguage;
-        }
 
-        text = htmlPageHelper.getHomePage(lang);
+        text = getHomePage();
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -96,71 +58,59 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void initGoogleAnalytics() {
 
-        codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics();
+        codeGoogleAnalitics = homePageService.getCodeGoogleAnalytics();
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
         isInEditingHomePage = false;
-
     }
 
     public void updateGoogleAnalytics() {
 
-        preferencesHelper.setCodeGoogleAnalytics(codeGoogleAnalitics);
+        homePageService.setCodeGoogleAnalytics(codeGoogleAnalitics);
+
         isInEditing = false;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
-        reset();
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        selectedTheso.setOptionThesoSelected("Option1");
+
+        reset();
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
-    public String getHomePage(String idLang) {
-        String lang = languageBean.getIdLangue().toLowerCase();
-        if (lang == null || lang.isEmpty()) {
-            lang = workLanguage;
-        }
-        String homePage = htmlPageHelper.getHomePage(lang);
-        return homePage;
+    public String getHomePage() {
+        return homePageService.getHomePage();
     }
 
     /**
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on
      * applique une mise à jour
      */
-    public void updateHomePage() {
-        FacesMessage msg;
-        String lang = languageBean.getIdLangue().toLowerCase();
-        if (lang == null || lang.isEmpty()) {
-            lang = workLanguage;
-        }
-        if (!htmlPageHelper.setHomePage(text, lang)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+    public void updateHomePage() throws IOException {
 
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        var lang = homePageService.getLanguage();
+
+        if (!homePageService.setHomePage(text, lang)) {
+            MessageUtils.showErrorMessage("L'ajout a échoué !");
             return;
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "texte ajouté avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        MessageUtils.showInformationMessage("Texte ajouté avec succès");
+
         isInEditing = false;
         isViewPlainText = false;
         isInEditingHomePage = false;
         isInEditingGoogleAnalytics = false;
+
+        selectedTheso.setOptionThesoSelected("Option1");
+
         reset();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        String currentUrl = ec.getRequestContextPath() + ((HttpServletRequest) ec.getRequest()).getServletPath();
+        ec.redirect(currentUrl);
     }
 
     public void setViewPlainTextTo(boolean status) {
@@ -172,87 +122,10 @@ public class ViewEditorHomeBean implements Serializable {
             colorOfTextButton = "#8C8C8C;";
         }
         isViewPlainText = status;
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     public boolean isTextVisible() {
         return !isInEditingGoogleAnalytics && !isInEditingHomePage;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public boolean isViewPlainText() {
-        return isViewPlainText;
-    }
-
-    public void setViewPlainText(boolean viewPlainText) {
-        isViewPlainText = viewPlainText;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public boolean isInEditing() {
-        return isInEditing;
-    }
-
-    public void setInEditing(boolean inEditing) {
-        isInEditing = inEditing;
-    }
-
-    public String getColorOfHtmlButton() {
-        return colorOfHtmlButton;
-    }
-
-    public void setColorOfHtmlButton(String colorOfHtmlButton) {
-        this.colorOfHtmlButton = colorOfHtmlButton;
-    }
-
-    public String getColorOfTextButton() {
-        return colorOfTextButton;
-    }
-
-    public void setColorOfTextButton(String colorOfTextButton) {
-        this.colorOfTextButton = colorOfTextButton;
-    }
-
-    public boolean isInEditingHomePage() {
-        return isInEditingHomePage;
-    }
-
-    public void setInEditingHomePage(boolean inEditingHomePage) {
-        isInEditingHomePage = inEditingHomePage;
-    }
-
-    public String getCodeGoogleAnalitics() {
-        return codeGoogleAnalitics;
-    }
-
-    public void setCodeGoogleAnalitics(String codeGoogleAnalitics) {
-        this.codeGoogleAnalitics = codeGoogleAnalitics;
-    }
-
-    public boolean isInEditingGoogleAnalytics() {
-        return isInEditingGoogleAnalytics;
-    }
-
-    public void setInEditingGoogleAnalytics(boolean inEditingGoogleAnalytics) {
-        isInEditingGoogleAnalytics = inEditingGoogleAnalytics;
     }
 }

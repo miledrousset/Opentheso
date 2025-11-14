@@ -9,46 +9,47 @@
               width="550" showEffect="fade" modal="true" resizable="false" 
               position="top" style="margin-top: 30px" >       
 
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
+        <h:form id="removeConceptAndChildFromGroupForm">
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
+                </div>
             </div>
-        </div>
 
-        <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
-            <p:dataTable id="listeConceptGroupeToDelete" size="small" 
-                         var="domaines" value="#{removeConceptAndChildFromGroupBean.nodeGroups}"
-                         widgetVar="listThesoTable" styleClass="products-table"
-                         resizableColumns="false" reflow="true" stripedRows="true"
-                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+                <p:dataTable id="listeConceptGroupeToDelete" size="small"
+                             var="domaines" value="#{removeConceptAndChildFromGroupBean.nodeGroups}"
+                             widgetVar="listThesoTable" styleClass="products-table"
+                             resizableColumns="false" reflow="true" stripedRows="true"
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
-                <f:facet name="header">
-                    <div class="products-table-header">
+                    <f:facet name="header">
+                        <div class="products-table-header">
                         <span style="font-weight: bold">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.listOfCollections')}" />
                         </span>
-                    </div>
-                </f:facet>
+                        </div>
+                    </f:facet>
 
-                <p:column headerText="Label">
-                    <h:outputText rendered="#{domaines.lexicalValue != ''}"
-                                  value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idgroup}"
-                                  style="color: #43B572"/>                    
-                    <h:outputText rendered="#{domaines.lexicalValue == ''}" 
-                                  value="(#{domaines.conceptGroup.idgroup})" 
-                                  style="color: #FF7979"/>
-                </p:column>
+                    <p:column headerText="Label">
+                        <h:outputText rendered="#{domaines.lexicalValue != ''}"
+                                      value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idGroup}"
+                                      style="color: #43B572"/>
+                        <h:outputText rendered="#{domaines.lexicalValue == ''}"
+                                      value="(#{domaines.conceptGroup.idGroup})"
+                                      style="color: #FF7979"/>
+                    </p:column>
 
-                <p:column width="80" headerText="Supprimer">
-                    <p:commandLink style="color: #FF7979" ajax="true" process="@this"
-                                   action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(
-                                             domaines.conceptGroup.idgroup, currentUser.nodeUser.idUser)}"
-                                   update="messageIndex containerIndex:formRightTab">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </p:column>                    
-            </p:dataTable>
-        </div>
+                    <p:column width="80" headerText="Supprimer">
+                        <p:commandLink style="color: #FF7979" ajax="true" process="@this"
+                                       action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(domaines.conceptGroup.idGroup)}"
+                                       update="containerIndex:formRightTab containerIndex:removeConceptAndChildFromGroupForm">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
     </p:dialog> 
 </ui:fragment>

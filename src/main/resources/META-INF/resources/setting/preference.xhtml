@@ -7,9 +7,9 @@
 
     <f:view>
         <f:metadata>
-            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
-            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
-            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewParam name="idc" value="#{selectedThesaurus.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedThesaurus.idGroupFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedThesaurus.idThesoFromUri}"/>
         </f:metadata>
     </f:view>
     <h:head>
@@ -60,7 +60,7 @@
                                                                       title="#{langueBean.getMsg('preferences.localUrlTooltip')} (exp: https://monsite.fr/opentheso/)"/>
                                                     </div>
                                                     <div class="col-6">
-                                                        <p:inputText id="inputTextCheminSite" value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"/>
+                                                        <p:inputText id="inputTextCheminSite" value="#{preferenceBean.preferences.cheminSite}" style="width: 100%;"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -87,7 +87,7 @@
                                                             <f:selectItem itemLabel="Handle" itemValue="handle"/>
                                                             <!-- <f:selectItem itemLabel="Doi" itemValue="doi" itemDisabled="true"/> -->   
                                                         </p:selectOneRadio>
-                                                        <p:inputText value="#{preferenceBean.nodePreference.originalUri}" 
+                                                        <p:inputText value="#{preferenceBean.preferences.originalUri}" 
                                                                      style="width: 100%;"/> 
                                                     </div> 
                                                     <div class="col-1" style="margin-top: 22px; margin-left: -10px;">
@@ -107,10 +107,10 @@
                                                         <h:outputText value="#{langueBean.getMsg('toolbox.defaultLanguage')}" style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-6">
-                                                        <p:selectOneMenu id="langOfTheso" value="#{preferenceBean.nodePreference.sourceLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                                        <p:selectOneMenu id="langOfTheso" value="#{preferenceBean.preferences.sourceLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                                          style="width: 100%; background: none;  box-shadow: none; "
                                                                          panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                                                            <f:selectItems  value="#{preferenceBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
+                                                            <f:selectItems  value="#{preferenceBean.languagesOfThesaurus}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/>
                                                         </p:selectOneMenu>
                                                     </div>
                                                 </div>
@@ -123,7 +123,7 @@
                                                         <h:outputText value="#{langueBean.getMsg('preferences.identifierType')}" style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-6">
-                                                        <p:selectOneMenu value="#{preferenceBean.nodePreference.identifierType}" 
+                                                        <p:selectOneMenu value="#{preferenceBean.preferences.identifierType}" 
                                                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                                          style="width: 100%; background: none;  box-shadow: none; ">
                                                             <f:selectItem itemLabel="#{langueBean.getMsg('preferences.alphanumeric')}" itemValue="1" />
@@ -140,11 +140,11 @@
                                                         <h:outputText value="#{langueBean.getMsg('preferences.persistentNameTheso')}" style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-6">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
+                                                        <p:inputText value="#{preferenceBean.preferences.preferredName}" style="width: 100%;"/>
                                                     </div>
                                                     <div class="col-3" style="text-align: left; margin-top: 6px;">
                                                         <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
-                                                        <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="#{langueBean.getMsg('preferences.testLink')}" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
+                                                        <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.preferences.preferredName}" value="#{langueBean.getMsg('preferences.testLink')}" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
                                                     </div>                                                
                                                 </div>
 
@@ -157,7 +157,7 @@
                                                         <h:outputText value="#{langueBean.getMsg('preferences.activateAutoTreeDeployment')}" style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.autoExpandTree}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -171,7 +171,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  /> 
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.treeCache}" style="font-size: 12px;"  />
                                                     </div>
                                                 </div>
                                             </div>
@@ -184,7 +184,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.sortByNotation}" style="font-size: 12px;"  />
                                                     </div>
                                                 </div>
                                             </div>
@@ -197,7 +197,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.webservices}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.webservices}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -210,7 +210,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.breadcrumb}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.breadcrumb}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>                                        
@@ -222,7 +222,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.useConceptTree}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.useConceptTree}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>  
@@ -235,7 +235,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.displayUserName}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.displayUserName}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>    
@@ -248,7 +248,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.suggestion}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.suggestion}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>   
@@ -261,7 +261,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.useCustomRelation}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.useCustomRelation}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div> 
@@ -274,7 +274,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.showHistoryNote}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.showHistoryNote}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>     
@@ -285,7 +285,7 @@
                                                                       style="font-size: 14px; font-weight: bold;"/>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.showEditorialNote}" style="font-size: 12px;" />
+                                                        <p:toggleSwitch value="#{preferenceBean.preferences.showEditorialNote}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
                                             </div>                                                
@@ -301,7 +301,7 @@
                                                                           style="font-size: 14px; font-weight: bold;"/>
                                                         </div>
                                                         <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                            <p:toggleSwitch value="#{preferenceBean.nodePreference.use_deepl_translation}" style="font-size: 12px;" >
+                                                            <p:toggleSwitch value="#{preferenceBean.preferences.useDeeplTranslation}" style="font-size: 12px;" >
                                                                 <p:ajax event="change" update="deepl" />
                                                             </p:toggleSwitch>
                                                                 
@@ -309,28 +309,22 @@
                                                     </div>
                                                 </div>
 
-                                                <h:panelGroup id="deeplApiKey" rendered="#{preferenceBean.nodePreference.use_deepl_translation}">
+                                                <h:panelGroup id="deeplApiKey" rendered="#{preferenceBean.preferences.useDeeplTranslation}">
                                                     <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                                         <div class="row" style="padding-top: 3px;">
                                                             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
-                                                                <h:outputText value="#{langueBean.getMsg('preferences.deeplApiKey')}"
-                                                                              style="font-size: 14px; font-weight: bold;"/>
+                                                                <h:outputText value="#{langueBean.getMsg('preferences.deeplApiKey')}" style="font-size: 14px; font-weight: bold;"/>
                                                             </div>
                                                             <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
-                                                                <p:password value="#{preferenceBean.nodePreference.deepl_api_key}" style="width: 100%"/>
+                                                                <p:password value="#{preferenceBean.preferences.deeplApiKey}"  style="width: 100%"/>
                                                                 
-                                                                <h:outputText rendered="#{preferenceBean.nodePreference.deepl_api_key != null and preferenceBean.nodePreference.deepl_api_key != '' }"
-                                                                              value="#{langueBean.getMsg('preferences.actualDeeplApiKey')} = ........#{preferenceBean.nodePreference.deepl_api_key.substring(preferenceBean.nodePreference.deepl_api_key.length()/2)}"/>                                                                
+                                                                <h:outputText rendered="#{preferenceBean.preferences.deeplApiKey != null and preferenceBean.preferences.deeplApiKey != '' }"
+                                                                              value="#{langueBean.getMsg('preferences.actualDeeplApiKey')} = ........#{preferenceBean.preferences.deeplApiKey.substring(preferenceBean.preferences.deeplApiKey.length()/2)}"/>
                                                             </div>
                                                         </div>
                                                     </div>  
                                                 </h:panelGroup>
-    
                                             </h:panelGroup>
-                                            
-                                            
-
-
                                         </div>        
                                     </div>
                                 </div>

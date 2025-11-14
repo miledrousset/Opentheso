@@ -4,8 +4,9 @@ import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.notes.NodeNote;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,8 @@ import java.util.List;
 
 
 @Data
+@Builder
+@AllArgsConstructor
 public class CandidatDto implements Serializable {
 
     private String idTerm;
@@ -53,7 +56,7 @@ public class CandidatDto implements Serializable {
     private List<NodeAlignment> alignments;
     
     // ajoutés par Miled 
-    private ArrayList<NodeIdValue> collections;
+    private List<NodeIdValue> collections;
     private List<NodeNote> nodeNotes;    
 
     private List<NodeIdValue> termesGenerique;

@@ -17,9 +17,7 @@
             <div class="row" style="margin-top: 10px">
                 <div class="col-12">
                     <p:inputTextarea value="#{processCandidateBean.adminMessage}"
-                             style="width: 100%; resize: none; font-size: 13px; background: white;" >
-                        <p:ajax event="change"  listener="#{processCandidateBean.action()}"/>
-                    </p:inputTextarea>    
+                             style="width: 100%; resize: none; font-size: 13px; background: white;" />
                 </div>
             </div>
             <p:spacer height="20px;"/>
@@ -37,7 +35,7 @@
                 <p:commandButton value="#{langueBean.getMsg('insert')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="processCandidateListForm tabViewCandidat messageIndex" 
                                  oncomplete="PF('processCandidateList').hide();" process="@this" 
-                                 actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}" />
+                                 actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser, roleOnThesaurus.nodePreference)}" />
             </div>
             <input type="hidden" name="csrfToken" value="${sessionScope.CSRF_TOKEN}" />
         </h:form>

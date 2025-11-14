@@ -1,10 +1,7 @@
 package fr.cnrs.opentheso.models.imports;
 
-import fr.cnrs.opentheso.repositories.AlignmentHelper;
-import fr.cnrs.opentheso.repositories.GpsHelper;
-import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
-import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
+import fr.cnrs.opentheso.entites.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
