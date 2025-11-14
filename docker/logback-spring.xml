@@ -20,8 +20,10 @@
             <!-- Nom des fichiers avec rotation journalière et compression -->
             <fileNamePattern>${LOG_PATH:-./logs}/opentheso-%d{yyyy-MM}.%i.log.gz</fileNamePattern>
 
+
             <!-- Taille maximale d'un fichier avant rotation -->
-            <maxFileSize>200mb</maxFileSize>
+            <maxFileSize>400mb</maxFileSize>
+
 
             <!-- Nombre maximum de jours à conserver -->
             <maxHistory>12</maxHistory>
@@ -29,6 +31,7 @@
             <!-- Taille totale maximale des logs conservés -->
             <totalSizeCap>4GB</totalSizeCap>
         </rollingPolicy>
+
 
         <!-- Format des logs dans le fichier  -->
         <encoder>
@@ -46,11 +49,6 @@
         <appender-ref ref="FILE" />
     </root>
 
-    <root level="ERROR">  <!-- Changer de DEBUG à INFO ou ERROR selon vos besoins -->
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
-    </root>
-
     <!-- Configurer les logs pour les profils -->
     <springProfile name="local">
         <root level="INFO">
@@ -61,7 +59,7 @@
 
     <!-- Configurer les logs pour le profil 'prod' -->
     <springProfile name="prod">
-        <root level="ERROR">
+        <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
         </root>
